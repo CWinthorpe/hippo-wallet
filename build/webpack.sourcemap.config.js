@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const { createSentryWebpackPlugin } = require('./sentry');
 
 const config = {
   mode: 'production',
@@ -12,7 +11,6 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    createSentryWebpackPlugin('sourcemap'),
   ],
 };
 

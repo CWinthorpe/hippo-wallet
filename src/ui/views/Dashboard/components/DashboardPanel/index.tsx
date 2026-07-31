@@ -1,5 +1,4 @@
 import { KEYRING_TYPE, ThemeIconType } from '@/constant';
-import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
@@ -1000,8 +999,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         visible={isShowRabbyPoints}
         onClose={() => setIsShowRabbyPoints(false)}
       />
-      <RateModal />
-
       <RecentConnectionsPopup
         visible={isShowDappsPopup}
         onClose={() => {

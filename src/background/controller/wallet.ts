@@ -2863,8 +2863,13 @@ export class WalletController extends BaseController {
   setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
   getTxFailedResult = bgRetryTxMethods.getTxFailedResult;
 
-  setCustomRPC = (chainEnum: CHAINS_ENUM, url: string) => {
-    RPCService.setRPC(chainEnum, url);
+  setCustomRPC = (
+    chainEnum: CHAINS_ENUM,
+    url: string,
+    fallbackUrls: string[] = [],
+    broadcastUrl?: string
+  ) => {
+    RPCService.setRPC(chainEnum, url, fallbackUrls, broadcastUrl);
     const chain = findChain({
       enum: chainEnum,
     });
@@ -2905,10 +2910,7 @@ export class WalletController extends BaseController {
       id: chainId,
     });
     if (!chain) throw new Error(`ChainId ${chainId} is not supported`);
-    const [_, rpcChainId] = await Promise.all([
-      RPCService.ping(chain.enum),
-      RPCService.request(url, 'eth_chainId', []),
-    ]);
+    const rpcChainId = await RPCService.request(url, 'eth_chainId', []);
     return chainId === Number(rpcChainId);
   };
 

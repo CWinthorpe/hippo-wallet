@@ -22,7 +22,7 @@ const CreatePassword = () => {
 
   const bootWithPrivacyAgreement = useCallback(
     async (password: string) => {
-      await wallet.setUserDataTrackingOptOut(false);
+      await wallet.setUserDataTrackingOptOut(true);
       return wallet.boot(password);
     },
     [wallet]

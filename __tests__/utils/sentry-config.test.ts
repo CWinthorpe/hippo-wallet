@@ -1,50 +1,21 @@
-jest.mock('@/utils/env', () => ({
-  getSentryEnv: () => 'test',
-}));
-jest.mock('@/utils/user-data-tracking', () => ({
-  shouldReportUserBehaviorData: jest.fn().mockResolvedValue(true),
-}));
-
 import { getSentryConfig } from '@/utils/sentry-config';
 
-describe('Sentry configuration', () => {
+describe('private-build Sentry configuration', () => {
   const config = getSentryConfig();
 
-  test('keeps automatic session tracking disabled', () => {
+  test('has no remote transport or PII collection', () => {
+    expect(config.enabled).toBe(false);
+    expect(config.dsn).toBeUndefined();
+    expect(config.sendDefaultPii).toBe(false);
+  });
+
+  test('installs no integrations and drops all events', async () => {
     const filterIntegrations = config.integrations as (
       defaultIntegrations: Array<{ name: string }>
     ) => Array<{ name: string }>;
-    const integrations = filterIntegrations([
-      { name: 'BrowserSession' },
-      { name: 'GlobalHandlers' },
-      { name: 'LinkedErrors' },
-    ]);
 
-    expect(integrations).toEqual([
-      { name: 'GlobalHandlers' },
-      { name: 'LinkedErrors' },
-    ]);
-  });
-
-  test('drops sensitive UI breadcrumbs and sanitizes request URLs', () => {
-    expect(config.beforeBreadcrumb?.({ category: 'console' })).toBeNull();
-    expect(config.beforeBreadcrumb?.({ category: 'ui.click' })).toBeNull();
-    expect(
-      config.beforeBreadcrumb?.({
-        category: 'fetch',
-        data: {
-          url:
-            'https://api.example/0x0123456789abcdef0123456789abcdef01234567?token=secret',
-          to:
-            'chrome-extension://rabby/index.html#/address/0x0123456789abcdef0123456789abcdef01234567',
-        },
-      })
-    ).toEqual({
-      category: 'fetch',
-      data: {
-        url: 'https://api.example/[redacted]',
-        to: 'chrome-extension://rabby/index.html',
-      },
-    });
+    expect(filterIntegrations([{ name: 'GlobalHandlers' }])).toEqual([]);
+    expect(config.beforeBreadcrumb?.({ category: 'fetch' })).toBeNull();
+    await expect(config.beforeSend?.({} as any, {} as any)).resolves.toBeNull();
   });
 });

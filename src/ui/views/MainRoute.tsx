@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
 import Welcome from './Welcome';
@@ -39,10 +39,10 @@ import AddressDetail from './AddressDetail';
 import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
-import { getUiType, useWallet } from '../utils';
+
 import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
-import { matomoRequestEvent } from '@/utils/matomo-request';
+
 import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
@@ -63,6 +63,7 @@ import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFro
 import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
 import ImportAddressSuccess from './AddAddress/ImportAddressSuccess';
 import { HardwareWallets } from './AddAddress/HardwareWallets';
+import { MobileWallets } from './AddAddress/MobileWallets';
 import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
 import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
 import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
@@ -83,17 +84,16 @@ import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
-import { DARK_MODE_TYPE, KEYRING_CLASS } from '@/constant';
+import { KEYRING_CLASS } from '@/constant';
 import {
   MetamaskModeDappsGuide,
   MetamaskModeDappsList,
 } from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
-import { ga4 } from '@/utils/ga4';
+
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
-import dayjs from 'dayjs';
-import { PreferenceStore } from '@/background/service/preference';
+
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
 import {
@@ -107,122 +107,9 @@ import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
 import { BiometricUnlockSetup } from './BiometricUnlockSetup';
 import { ManageApprovals } from './ManageApprovals';
 import { ManageBatchRevokeApprovals } from './ManageBatchApprovals';
-import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
-
-declare global {
-  interface Window {
-    _paq: any;
-  }
-}
-
-const LogPageView = () => {
-  const path = window.location.hash.replace(/#/, '');
-
-  useEffect(() => {
-    ga4.firePageViewEvent({
-      pageLocation: path,
-    });
-
-    const trackMatomoPageView = async () => {
-      if (!window._paq || !(await shouldReportUserBehaviorData())) {
-        return;
-      }
-
-      window._paq.push(['setCustomUrl', path]);
-      window._paq.push(['trackPageView']);
-    };
-
-    trackMatomoPageView();
-  }, [path]);
-
-  return null;
-};
-
 const Main = () => {
-  const wallet = useWallet();
-
-  useEffect(() => {
-    (async () => {
-      const UIType = getUiType();
-      if (UIType.isNotification || UIType.isPop) {
-        const hasOtherProvider = await wallet.getHasOtherProvider();
-        matomoRequestEvent({
-          category: 'User',
-          action: 'active',
-          label: UIType.isPop
-            ? `popup|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`
-            : `request|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`,
-        });
-
-        ga4.fireEvent(
-          UIType.isPop
-            ? `Popup_${hasOtherProvider ? 'HasMM' : 'NoMM'}`
-            : `Request_${hasOtherProvider ? 'HasMM' : 'NoMM'}`,
-          {
-            event_category: 'User Active',
-          }
-        );
-        const preference: PreferenceStore = await wallet.getPreference();
-        if (
-          dayjs(preference.ga4EventTime || 0)
-            .utc()
-            .isSame(dayjs().utc(), 'day')
-        ) {
-          return;
-        }
-        await wallet.trackGasAccountActiveStatusOncePerDay();
-
-        ga4.fireEvent(
-          `ThemeMode_${
-            preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'
-          }`,
-          {
-            event_category: 'Settings Snapshot',
-          }
-        );
-        ga4.fireEvent(
-          `DappAccount_${preference.isEnabledDappAccount ? 'On' : 'Off'}`,
-          {
-            event_category: 'Settings Snapshot',
-          }
-        );
-
-        const isEnabledWhiteList = await wallet.isWhitelistEnabled();
-        ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
-          event_category: 'Settings Snapshot',
-        });
-
-        ga4.fireEvent(
-          `PwdForNonWhitelistedTx_${
-            preference.isEnabledPwdForNonWhitelistedTx ? 'On' : 'Off'
-          }`,
-          {
-            event_category: 'Settings Snapshot',
-          }
-        );
-
-        const isBiometricsEnabled = preference.biometricUnlockEnabled;
-        ga4.fireEvent(
-          `Unlock_Biometrics_${isBiometricsEnabled ? 'On' : 'Off'}`,
-          {
-            event_category: 'Settings Snapshot',
-          }
-        );
-
-        ga4.fireEvent(
-          `PerpsFloating_${preference.perpsWidgetEnabled ? 'On' : 'Off'}`,
-          {
-            event_category: 'Settings Snapshot',
-          }
-        );
-        wallet.updateGa4EventTime(Date.now());
-      }
-    })();
-  }, []);
-
   return (
     <>
-      <Route path="/" component={LogPageView} />
       <Switch>
         <Route exact path="/welcome">
           <Welcome />
@@ -406,6 +293,10 @@ const Main = () => {
 
         <PrivateRoute exact path="/add-address/hardware-wallets">
           <HardwareWallets />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/mobile-wallets">
+          <MobileWallets />
         </PrivateRoute>
 
         <PrivateRoute exact path="/add-address/institutional-wallets">

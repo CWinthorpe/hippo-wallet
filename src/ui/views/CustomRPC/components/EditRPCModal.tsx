@@ -4,12 +4,14 @@ import { Input, Button, InputRef } from 'antd';
 import styled from 'styled-components';
 import { useDebounce } from 'react-use';
 import { useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { Popup, PageHeader } from 'ui/component';
 import { isValidateUrl } from 'ui/utils/url';
 import { RPCItem } from '@/background/service/rpc';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
+
+const { TextArea } = Input;
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -35,20 +37,19 @@ const Footer = styled.div`
 const EditRPCWrapped = styled.div`
   position: relative;
   height: 100%;
-  .rpc-input.rpc-input {
-    height: 52px;
+  overflow: auto;
+  padding-bottom: 84px;
 
-    height: 52px;
+  .rpc-input.rpc-input {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
     background: transparent !important;
     border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
     border-radius: 6px;
-
     color: var(--r-neutral-title1, #192945) !important;
     font-size: 15px;
-    /* font-weight: 500; */
+
     &:focus {
       border-color: var(--r-blue-default, #7084ff) !important;
     }
@@ -59,7 +60,22 @@ const EditRPCWrapped = styled.div`
       color: var(--r-neutral-foot, #6a7587) !important;
     }
   }
+
+  input.rpc-input {
+    height: 48px;
+  }
 `;
+
+const parseFallbackUrls = (value: string) =>
+  value
+    .split(/\r?\n/)
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+export type RPCFormValue = Pick<
+  RPCItem,
+  'url' | 'fallbackUrls' | 'broadcastUrl'
+>;
 
 const EditRPCModal = ({
   chain,
@@ -72,61 +88,105 @@ const EditRPCModal = ({
   rpcInfo: { id: CHAINS_ENUM; rpc: RPCItem } | null;
   visible: boolean;
   onCancel(): void;
-  onConfirm(url: string): void;
+  onConfirm(value: RPCFormValue): void;
 }) => {
   const wallet = useWallet();
   const chainItem = useMemo(() => findChainByEnum(chain), [chain]);
   const [rpcUrl, setRpcUrl] = useState('');
+  const [fallbackText, setFallbackText] = useState('');
+  const [broadcastUrl, setBroadcastUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const canSubmit = useMemo(() => {
-    return rpcUrl && !rpcErrorMsg && !isValidating;
-  }, [rpcUrl, rpcErrorMsg, isValidating]);
+  const [validatedConfiguration, setValidatedConfiguration] = useState('');
   const { t } = useTranslation();
 
   const inputRef = useRef<InputRef>(null);
-
-  const handleRPCChanged = (url: string) => {
-    setRpcUrl(url);
-    if (!isValidateUrl(url)) {
-      setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidRPCUrl'));
-    }
-  };
+  const validationSequence = useRef(0);
+  const fallbackUrls = useMemo(() => parseFallbackUrls(fallbackText), [
+    fallbackText,
+  ]);
+  const configuredUrls = useMemo(
+    () => [rpcUrl, ...fallbackUrls, broadcastUrl].filter(Boolean),
+    [rpcUrl, fallbackUrls, broadcastUrl]
+  );
+  const configurationKey = useMemo(
+    () => JSON.stringify([chainItem?.id, ...configuredUrls]),
+    [chainItem?.id, configuredUrls]
+  );
+  const urlsAreWellFormed = configuredUrls.every(isValidateUrl);
+  const canSubmit = Boolean(
+    rpcUrl &&
+      urlsAreWellFormed &&
+      !rpcErrorMsg &&
+      !isValidating &&
+      validatedConfiguration === configurationKey
+  );
 
   const rpcValidation = async () => {
-    if (!chainItem) return;
-
-    if (!isValidateUrl(rpcUrl)) {
+    const validationId = ++validationSequence.current;
+    if (!chainItem || !rpcUrl || !urlsAreWellFormed) {
+      if (validationId === validationSequence.current) {
+        setValidatedConfiguration('');
+        setRpcErrorMsg(
+          rpcUrl && !urlsAreWellFormed
+            ? t('page.customRpc.EditRPCModal.invalidRPCUrl')
+            : ''
+        );
+      }
       return;
     }
+
     try {
       setIsValidating(true);
-      const isValid = await wallet.validateRPC(rpcUrl, chainItem.id);
-      setIsValidating(false);
-      if (!isValid) {
+      const validity = await Promise.all(
+        configuredUrls.map((url) => wallet.validateRPC(url, chainItem.id))
+      );
+      if (validationId !== validationSequence.current) {
+        return;
+      }
+      if (validity.some((valid) => !valid)) {
+        setValidatedConfiguration('');
         setRpcErrorMsg(t('page.customRpc.EditRPCModal.invalidChainId'));
       } else {
         setRpcErrorMsg('');
+        setValidatedConfiguration(configurationKey);
       }
     } catch (e) {
-      setIsValidating(false);
-      setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
+      if (validationId === validationSequence.current) {
+        setValidatedConfiguration('');
+        setRpcErrorMsg(t('page.customRpc.EditRPCModal.rpcAuthFailed'));
+      }
+    } finally {
+      if (validationId === validationSequence.current) {
+        setIsValidating(false);
+      }
     }
   };
 
-  useDebounce(rpcValidation, 200, [rpcUrl]);
+  useEffect(() => {
+    validationSequence.current += 1;
+    setValidatedConfiguration('');
+    setIsValidating(false);
+  }, [configurationKey]);
+
+  useDebounce(rpcValidation, 250, [
+    rpcUrl,
+    fallbackText,
+    broadcastUrl,
+    chainItem?.id,
+  ]);
 
   useEffect(() => {
-    if (rpcInfo) {
-      setRpcUrl(rpcInfo.rpc.url);
-    } else {
-      setRpcUrl('');
-    }
+    setRpcUrl(rpcInfo?.rpc.url || '');
+    setFallbackText((rpcInfo?.rpc.fallbackUrls || []).join('\n'));
+    setBroadcastUrl(rpcInfo?.rpc.broadcastUrl || '');
   }, [rpcInfo]);
 
   useEffect(() => {
     if (!visible) {
       setRpcUrl('');
+      setFallbackText('');
+      setBroadcastUrl('');
       setRpcErrorMsg('');
     }
     setTimeout(() => {
@@ -136,15 +196,11 @@ const EditRPCModal = ({
 
   return (
     <Popup
-      height={440}
+      height={600}
       visible={visible}
       onCancel={onCancel}
-      bodyStyle={{
-        paddingBottom: 0,
-      }}
-      style={{
-        zIndex: 1001,
-      }}
+      bodyStyle={{ paddingBottom: 0 }}
+      style={{ zIndex: 1001 }}
       isSupportDarkMode
     >
       <EditRPCWrapped>
@@ -153,24 +209,53 @@ const EditRPCModal = ({
         </PageHeader>
         <div className="text-center">
           <img
-            className="w-[56px] h-[56px] mx-auto mb-12"
+            className="w-[48px] h-[48px] mx-auto mb-8"
             src={chainItem?.logo || ''}
           />
-          <div className="mb-8 text-20 text-r-neutral-title-1 leading-none">
+          <div className="mb-16 text-20 text-r-neutral-title-1 leading-none">
             {chainItem?.name}
           </div>
-          <div className="mb-8 text-14 text-r-neutral-title-1 text-left">
-            {t('page.customRpc.EditRPCModal.rpcUrl')}
-          </div>
+        </div>
+
+        <div className="mb-8 text-13 text-r-neutral-title-1 text-left">
+          Primary read / estimate RPC
         </div>
         <Input
           ref={inputRef}
           className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
           value={rpcUrl}
-          placeholder={t('page.customRpc.EditRPCModal.rpcUrlPlaceholder')}
-          onChange={(e) => handleRPCChanged(e.target.value)}
+          placeholder="https://eth.drpc.org"
+          onChange={(event) => setRpcUrl(event.target.value.trim())}
         />
+
+        <div className="mt-16 mb-8 text-13 text-r-neutral-title-1 text-left">
+          Ordered read fallbacks (optional, one URL per line)
+        </div>
+        <TextArea
+          className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
+          value={fallbackText}
+          autoSize={{ minRows: 2, maxRows: 3 }}
+          placeholder="https://rpc.mevblocker.io"
+          onChange={(event) => setFallbackText(event.target.value)}
+        />
+
+        <div className="mt-16 mb-8 text-13 text-r-neutral-title-1 text-left">
+          Signed transaction broadcast RPC (optional)
+        </div>
+        <Input
+          className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
+          value={broadcastUrl}
+          placeholder="Defaults to the primary RPC"
+          onChange={(event) => setBroadcastUrl(event.target.value.trim())}
+        />
+
+        <div className="mt-8 text-12 leading-16 text-r-neutral-foot">
+          Fallbacks apply only to stateless reads and estimates. Signed raw
+          transactions go to exactly one broadcast endpoint and are never
+          retried elsewhere. Use credential-free URLs in this private build.
+        </div>
         {rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>}
+
         <Footer>
           <Button
             type="primary"
@@ -187,7 +272,13 @@ const EditRPCModal = ({
             size="large"
             className="w-[172px]"
             disabled={!canSubmit}
-            onClick={() => onConfirm(rpcUrl)}
+            onClick={() =>
+              onConfirm({
+                url: rpcUrl,
+                fallbackUrls,
+                broadcastUrl: broadcastUrl || undefined,
+              })
+            }
           >
             {isValidating ? t('global.Loading') : t('global.Save')}
           </Button>

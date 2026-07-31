@@ -482,67 +482,65 @@ class ProviderController extends BaseController {
     }
 
     const currentAddress = account?.address?.toLowerCase() || '0x';
+    const rpcCacheChainId = `${chainServerId}:${RPCService.getRoutingVersion()}`;
     const cache = RpcCache.get(currentAddress, {
       method,
       params,
-      chainId: chainServerId,
+      chainId: rpcCacheChainId,
     });
     if (cache) return cache;
     const chain = findChain({
       serverId: chainServerId,
     })!;
-    if (!chain.isTestnet) {
-      if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
-        const promise = RPCService.requestCustomRPC(
-          chain.enum as CHAINS_ENUM,
-          method,
-          params
-        ).then((result) => {
-          RpcCache.set(currentAddress, {
-            method,
-            params,
-            result,
-            chainId: chainServerId,
-          });
-          return result;
-        });
+    if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
+      const promise = RPCService.requestCustomRPC(
+        chain.enum as CHAINS_ENUM,
+        method,
+        params
+      ).then((result) => {
         RpcCache.set(currentAddress, {
           method,
           params,
-          result: promise,
-          chainId: chainServerId,
+          result,
+          chainId: rpcCacheChainId,
         });
-        return promise;
-      } else {
-        const promise = RPCService.requestDefaultRPC({
-          chainServerId,
-          method,
-          params,
-          origin,
-        }).then((result) => {
-          RpcCache.set(currentAddress, {
-            method,
-            params,
-            result,
-            chainId: chainServerId,
-          });
-          return result;
-        });
-        RpcCache.set(currentAddress, {
-          method,
-          params,
-          result: promise,
-          chainId: chainServerId,
-        });
-        return promise;
-      }
-    } else {
-      const chainData = findChain({
-        serverId: chainServerId,
-      })!;
-      const client = customTestnetService.getClient(chainData.id);
-      return client.request({ method, params });
+        return result;
+      });
+      RpcCache.set(currentAddress, {
+        method,
+        params,
+        result: promise,
+        chainId: rpcCacheChainId,
+      });
+      return promise;
     }
+
+    if (!chain.isTestnet) {
+      const promise = RPCService.requestDefaultRPC({
+        chainServerId,
+        method,
+        params,
+        origin,
+      }).then((result) => {
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result,
+          chainId: rpcCacheChainId,
+        });
+        return result;
+      });
+      RpcCache.set(currentAddress, {
+        method,
+        params,
+        result: promise,
+        chainId: rpcCacheChainId,
+      });
+      return promise;
+    }
+
+    const client = customTestnetService.getClient(chain.id);
+    return client.request({ method, params });
   };
 
   ethRequestAccounts = async (req) => {
@@ -1197,7 +1195,7 @@ class ProviderController extends BaseController {
               if (RPCService.hasCustomRPC(chain)) {
                 const rpc = RPCService.getRPCByChain(chain);
                 if (rpc) {
-                  const origin = getOriginFromUrl(rpc.url);
+                  const origin = getOriginFromUrl(rpc.broadcastUrl || rpc.url);
                   errMsg = `[From ${origin}] ${errMsg}`;
                 }
               }
@@ -1272,8 +1270,6 @@ class ProviderController extends BaseController {
 
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
             if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
-              let fePushedFailed = false;
-
               const rawTx = isTempoTx
                 ? tempoSerializedRawTx
                 : bytesToHex(
@@ -1285,51 +1281,14 @@ class ProviderController extends BaseController {
                 throw new Error('tempo transaction serialize failed');
               }
 
-              try {
-                const [
-                  fePushedHash,
-                  url,
-                ] = await RPCService.defaultRPCSubmitTxWithFallback(
-                  chainServerId,
-                  'eth_sendRawTransaction',
-                  [rawTx]
-                );
-
-                hash = fePushedHash;
-
-                params.frontend_push_result = {
-                  success: true,
-                  has_pushed: true,
-                  raw_tx: rawTx,
-                  url,
-                  return_tx_id: fePushedHash!,
-                };
-
-                openapiService.submitTxV2(params).catch((error) => {
-                  console.log('ignore BE error', error);
-                });
-              } catch (fePushError) {
-                fePushedFailed = true;
-
-                const urls = RPCService.getDefaultRPCByChainServerId(
-                  chainServerId
-                );
-                params.frontend_push_result = {
-                  success: false,
-                  has_pushed: true,
-                  url: urls?.rpcUrl?.[0] || '',
-                  error_msg:
-                    typeof fePushError === 'object'
-                      ? fePushError.message
-                      : String(fePushError),
-                };
-              }
-
-              if (fePushedFailed) {
-                adoptBE7702Params();
-                const res = await openapiService.submitTxV2(params);
-                hash = res.tx_id;
-              }
+              const [
+                fePushedHash,
+              ] = await RPCService.defaultRPCSubmitTxWithFallback(
+                chainServerId,
+                'eth_sendRawTransaction',
+                [rawTx]
+              );
+              hash = fePushedHash;
             } else {
               adoptBE7702Params();
               const res = await openapiService.submitTxV2(params);
@@ -1365,12 +1324,19 @@ class ProviderController extends BaseController {
 
           const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
           const rawTx = bytesToHex(tx.serialize());
-          const client = customTestnetService.getClient(chainData.id);
-
-          hash = await client.request({
-            method: 'eth_sendRawTransaction',
-            params: [rawTx as any],
-          });
+          if (RPCService.hasCustomRPC(chain)) {
+            hash = await RPCService.requestCustomRPC(
+              chain,
+              'eth_sendRawTransaction',
+              [rawTx]
+            );
+          } else {
+            const client = customTestnetService.getClient(chainData.id);
+            hash = await client.request({
+              method: 'eth_sendRawTransaction',
+              params: [rawTx as any],
+            });
+          }
           onTransactionCreated({ hash, reqId, pushType });
           notificationService.setStatsData(statsData);
         }
@@ -1382,8 +1348,9 @@ class ProviderController extends BaseController {
         })!;
         let errMsg = e.details || e.message || JSON.stringify(e);
         if (chainData && chainData.isTestnet) {
+          const customRPC = RPCService.getRPCByChain(chain);
           const rpcUrl = RPCService.hasCustomRPC(chain)
-            ? RPCService.getRPCByChain(chain)?.url
+            ? customRPC?.broadcastUrl || customRPC?.url
             : (chainData as TestnetChain).rpcUrl;
           errMsg = rpcUrl
             ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`

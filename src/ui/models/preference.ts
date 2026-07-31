@@ -263,11 +263,11 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('isShowTestnet');
     },
 
-    async setUserDataTrackingOptOut(value: boolean, store) {
+    async setUserDataTrackingOptOut(_value: boolean, store) {
       dispatch.preference.setField({
-        userDataTrackingOptOut: value,
+        userDataTrackingOptOut: true,
       });
-      await store.app.wallet.setUserDataTrackingOptOut(value);
+      await store.app.wallet.setUserDataTrackingOptOut(true);
       dispatch.preference.getPreference('userDataTrackingOptOut');
     },
 

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.93.99",
+  "version": "0.93.100",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -55,7 +55,7 @@
       ]
     }
   ],
-  "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'",
   "permissions": [
     "storage",
     "unlimitedStorage",

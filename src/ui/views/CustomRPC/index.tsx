@@ -14,7 +14,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { PageHeader } from 'ui/component';
 import ChainIcon from 'ui/component/ChainIcon';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import EditRPCModal from './components/EditRPCModal';
+import EditRPCModal, { RPCFormValue } from './components/EditRPCModal';
 import './style.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useMemoizedFn } from 'ahooks';
@@ -102,6 +102,15 @@ const Footer = styled.div`
   justify-content: center;
 `;
 
+const getRpcOrigin = (url?: string) => {
+  if (!url) return '';
+  try {
+    return new URL(url).origin;
+  } catch {
+    return 'Invalid RPC URL';
+  }
+};
+
 const RPCItemComp = ({
   item,
   onEdit,
@@ -160,6 +169,21 @@ const RPCItemComp = ({
     });
   };
 
+  const routeSummary = useMemo(() => {
+    const primaryOrigin = getRpcOrigin(item.rpc.url);
+    const fallbackCount = item.rpc.fallbackUrls?.length || 0;
+    const broadcastOrigin = getRpcOrigin(item.rpc.broadcastUrl || item.rpc.url);
+    return [
+      primaryOrigin,
+      fallbackCount
+        ? `${fallbackCount} read fallback${fallbackCount === 1 ? '' : 's'}`
+        : '',
+      broadcastOrigin !== primaryOrigin ? `broadcast ${broadcastOrigin}` : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  }, [item.rpc]);
+
   return (
     <RPCItemWrapper>
       <div className="switch-wrapper">
@@ -172,7 +196,7 @@ const RPCItemComp = ({
       />
       <div className="right">
         <p>{chainItem?.name || ''}</p>
-        <p title={item.rpc.url}>{item.rpc.url}</p>
+        <p title={routeSummary}>{routeSummary}</p>
       </div>
       <div className="operation">
         <ThemeIcon
@@ -244,10 +268,12 @@ const CustomRPC = () => {
     setChainSelectorVisible(true);
   };
 
-  const handleConfirmCustomRPC = async (url: string) => {
+  const handleConfirmCustomRPC = async (value: RPCFormValue) => {
     await dispatch.customRPC.setCustomRPC({
       chain: selectedChain,
-      url,
+      url: value.url,
+      fallbackUrls: value.fallbackUrls,
+      broadcastUrl: value.broadcastUrl,
     });
     setChainSelectorVisible(false);
     setRPCModalVisible(false);
@@ -335,11 +361,11 @@ const CustomRPC = () => {
           ))}
         </RPCListContainer>
       )}
-      {/* <Footer>
+      <Footer>
         <Button size="large" type="primary" block onClick={handleClickAdd}>
           {t('page.customRpc.add')}
         </Button>
-      </Footer> */}
+      </Footer>
       <ChainSelectorModal
         visible={chainSelectorVisible}
         onChange={handleChainChanged}

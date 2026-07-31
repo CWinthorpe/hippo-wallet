@@ -11295,13 +11295,6 @@
       "node_modules/@debank/common/dist/utils.js"
     ]
   },
-  "node_modules/@debank/festats/dist/index.js": {
-    "enable": true,
-    "global": {
-      "XMLHttpRequest": "r",
-      "fetch": "r"
-    }
-  },
   "node_modules/@dnd-kit/accessibility/dist/accessibility.esm.js": {
     "enable": true,
     "require": [
@@ -58699,61 +58692,31 @@
       "__SENTRY_DEBUG__": "r"
     }
   },
-  "node_modules/@sentry/browser-utils/build/esm/getNativeImplementation.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/debug-build.js",
-      "node_modules/@sentry/browser-utils/build/esm/types.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/supports.js"
-    ]
-  },
   "node_modules/@sentry/browser-utils/build/esm/htmlTreeAsString.js": {
     "enable": true,
     "global": {
       "Element": "r",
       "HTMLElement": "r",
       "Node": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser-utils/build/esm/instrument/dom.js": {
     "enable": true,
     "global": {
       "clearTimeout": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/types.js",
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser-utils/build/esm/instrument/history.js": {
     "enable": true,
     "global": {
       "URL": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/types.js",
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/supports.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser-utils/build/esm/instrument/xhr.js": {
     "enable": true,
     "global": {
       "XMLHttpRequest": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/types.js",
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser-utils/build/esm/is.js": {
     "enable": true,
@@ -58830,27 +58793,11 @@
       "URLSearchParams": "r"
     }
   },
-  "node_modules/@sentry/browser-utils/build/esm/types.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
   "node_modules/@sentry/browser/build/npm/esm/prod/client.js": {
     "enable": true,
     "global": {
       "__SENTRY_RELEASE__": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/eventbuilder.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/client.js",
-      "node_modules/@sentry/core/build/esm/logs/internal.js",
-      "node_modules/@sentry/core/build/esm/metrics/internal.js",
-      "node_modules/@sentry/core/build/esm/utils/env.js",
-      "node_modules/@sentry/core/build/esm/utils/ipAddress.js",
-      "node_modules/@sentry/core/build/esm/utils/sdkMetadata.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/debug-build.js": {
     "enable": true,
@@ -58868,16 +58815,7 @@
     "enable": true,
     "global": {
       "WebAssembly": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/utils/eventbuilder.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/syncpromise.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js": {
     "enable": true,
@@ -58885,68 +58823,14 @@
       "setTimeout": "r"
     },
     "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
-      "node_modules/@sentry/core/build/esm/utils/browser.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
       "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/breadcrumbs.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/htmlTreeAsString.js",
-      "node_modules/@sentry/browser-utils/build/esm/instrument/dom.js",
-      "node_modules/@sentry/browser-utils/build/esm/instrument/history.js",
-      "node_modules/@sentry/browser-utils/build/esm/instrument/xhr.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/debug-build.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/breadcrumbs.js",
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/instrument/console.js",
-      "node_modules/@sentry/core/build/esm/instrument/fetch.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/breadcrumb-log-level.js",
-      "node_modules/@sentry/core/build/esm/utils/browser.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/severity.js",
-      "node_modules/@sentry/core/build/esm/utils/string.js",
-      "node_modules/@sentry/core/build/esm/utils/url.js"
     ]
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/integrations/browserapierrors.js": {
     "enable": true,
     "global": {
       "XMLHttpRequest": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/browsersession.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/instrument/history.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/debug-build.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
-    ]
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/culturecontext.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/tracing/spans/captureSpan.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/integrations/fetchStreamPerformance.js": {
     "enable": true,
@@ -58955,45 +58839,11 @@
       "setTimeout": "r"
     }
   },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/globalhandlers.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/debug-build.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/eventbuilder.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
-      "node_modules/@sentry/core/build/esm/instrument/globalError.js",
-      "node_modules/@sentry/core/build/esm/instrument/globalUnhandledRejection.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/browser.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js",
-      "node_modules/@sentry/core/build/esm/utils/url.js"
-    ]
-  },
   "node_modules/@sentry/browser/build/npm/esm/prod/integrations/httpclient.js": {
     "enable": true,
     "global": {
       "Request": "r"
     }
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/httpcontext.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/tracing/spans/captureSpan.js"
-    ]
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/integrations/linkederrors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/eventbuilder.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/aggregate-errors.js"
-    ]
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/integrations/spanstreaming.js": {
     "enable": true,
@@ -59011,11 +58861,7 @@
     "enable": true,
     "global": {
       "document": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/htmlTreeAsString.js",
-      "node_modules/@sentry/browser-utils/build/esm/is.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/profiling/UIProfiler.js": {
     "enable": true,
@@ -59042,37 +58888,6 @@
       "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
     ]
   },
-  "node_modules/@sentry/browser/build/npm/esm/prod/sdk.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/client.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/breadcrumbs.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/browserapierrors.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/browsersession.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/culturecontext.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/globalhandlers.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/httpcontext.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/integrations/linkederrors.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/normalizeStringifyValue.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/stack-parsers.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/transports/fetch.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/utils/detectBrowserExtension.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/integrations/conversationId.js",
-      "node_modules/@sentry/core/build/esm/integrations/dedupe.js",
-      "node_modules/@sentry/core/build/esm/integrations/eventFilters.js",
-      "node_modules/@sentry/core/build/esm/integrations/functiontostring.js",
-      "node_modules/@sentry/core/build/esm/sdk.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
-  },
-  "node_modules/@sentry/browser/build/npm/esm/prod/stack-parsers.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
-  },
   "node_modules/@sentry/browser/build/npm/esm/prod/tracing/browserTracingIntegration.js": {
     "enable": true,
     "global": {
@@ -59096,14 +58911,6 @@
       "URL": "r"
     }
   },
-  "node_modules/@sentry/browser/build/npm/esm/prod/transports/fetch.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser-utils/build/esm/getNativeImplementation.js",
-      "node_modules/@sentry/core/build/esm/transports/base.js",
-      "node_modules/@sentry/core/build/esm/utils/promisebuffer.js"
-    ]
-  },
   "node_modules/@sentry/browser/build/npm/esm/prod/transports/offline.js": {
     "enable": true,
     "global": {
@@ -59114,13 +58921,7 @@
     "enable": true,
     "global": {
       "console": "r"
-    },
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/debug-build.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/helpers.js",
-      "node_modules/@sentry/core/build/esm/utils/browser.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
-    ]
+    }
   },
   "node_modules/@sentry/browser/build/npm/esm/prod/utils/lazyLoadIntegration.js": {
     "enable": true,
@@ -59138,7 +58939,11 @@
     ]
   },
   "node_modules/@sentry/core/build/esm/asyncContext/index.js": {
-    "enable": false
+    "enable": false,
+    "require": [
+      "node_modules/@sentry/core/build/esm/asyncContext/stackStrategy.js",
+      "node_modules/@sentry/core/build/esm/carrier.js"
+    ]
   },
   "node_modules/@sentry/core/build/esm/asyncContext/stackStrategy.js": {
     "enable": true,
@@ -59153,14 +58958,6 @@
   "node_modules/@sentry/core/build/esm/attributes.js": {
     "enable": false
   },
-  "node_modules/@sentry/core/build/esm/breadcrumbs.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/carrier.js": {
     "enable": true,
     "require": [
@@ -59173,48 +58970,13 @@
     "global": {
       "clearTimeout": "r",
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/api.js",
-      "node_modules/@sentry/core/build/esm/constants.js",
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/envelope.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/logs/internal.js",
-      "node_modules/@sentry/core/build/esm/metrics/internal.js",
-      "node_modules/@sentry/core/build/esm/session.js",
-      "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js",
-      "node_modules/@sentry/core/build/esm/tracing/spans/beforeSendSpan.js",
-      "node_modules/@sentry/core/build/esm/tracing/spans/extractGenAiSpans.js",
-      "node_modules/@sentry/core/build/esm/transports/base.js",
-      "node_modules/@sentry/core/build/esm/utils/clientreport.js",
-      "node_modules/@sentry/core/build/esm/utils/data-collection/resolveDataCollectionOptions.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/eventUtils.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/merge.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/parseSampleRate.js",
-      "node_modules/@sentry/core/build/esm/utils/prepareEvent.js",
-      "node_modules/@sentry/core/build/esm/utils/promisebuffer.js",
-      "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js",
-      "node_modules/@sentry/core/build/esm/utils/should-ignore-span.js",
-      "node_modules/@sentry/core/build/esm/utils/spanUtils.js",
-      "node_modules/@sentry/core/build/esm/utils/syncpromise.js",
-      "node_modules/@sentry/core/build/esm/utils/timer.js",
-      "node_modules/@sentry/core/build/esm/utils/transactionEvent.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/currentScopes.js": {
     "enable": false,
     "require": [
-      "node_modules/@sentry/core/build/esm/asyncContext/stackStrategy.js",
-      "node_modules/@sentry/core/build/esm/carrier.js",
-      "node_modules/@sentry/core/build/esm/scope.js",
-      "node_modules/@sentry/core/build/esm/utils/propagationContext.js"
+      "node_modules/@sentry/core/build/esm/asyncContext/index.js",
+      "node_modules/@sentry/core/build/esm/carrier.js"
     ]
   },
   "node_modules/@sentry/core/build/esm/debug-build.js": {
@@ -59230,31 +58992,11 @@
       "node_modules/@sentry/core/build/esm/scope.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/envelope.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/eventProcessors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/syncpromise.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/exports.js": {
     "enable": false,
     "require": [
       "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/session.js",
-      "node_modules/@sentry/core/build/esm/utils/prepareEvent.js",
-      "node_modules/@sentry/core/build/esm/utils/scopeData.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
+      "node_modules/@sentry/core/build/esm/utils/prepareEvent.js"
     ]
   },
   "node_modules/@sentry/core/build/esm/fetch.js": {
@@ -59263,17 +59005,6 @@
       "Headers": "r"
     }
   },
-  "node_modules/@sentry/core/build/esm/instrument/console.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/string.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/instrument/fetch.js": {
     "enable": true,
     "global": {
@@ -59281,82 +59012,7 @@
       "URL": "r",
       "clearTimeout": "r",
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/supports.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/instrument/globalError.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/instrument/globalUnhandledRejection.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/instrument/handlers.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/instrument/handlers.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/integration.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/integrations/conversationId.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/semanticAttributes.js",
-      "node_modules/@sentry/core/build/esm/utils/spanUtils.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/integrations/dedupe.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/integrations/eventFilters.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/eventUtils.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/string.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/integrations/functiontostring.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/integration.js",
-      "node_modules/@sentry/core/build/esm/utils/object.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/integrations/http/get-request-url.js": {
     "enable": true,
@@ -59383,36 +59039,6 @@
       "__SENTRY_TRACING__": "r"
     }
   },
-  "node_modules/@sentry/core/build/esm/logs/envelope.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/isBrowser.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/logs/internal.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/carrier.js",
-      "node_modules/@sentry/core/build/esm/logs/envelope.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/metrics/envelope.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/isBrowser.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/metrics/internal.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/carrier.js",
-      "node_modules/@sentry/core/build/esm/metrics/envelope.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/scope.js": {
     "enable": true,
     "require": [
@@ -59433,12 +59059,7 @@
     "enable": true,
     "global": {
       "console": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/session.js": {
     "enable": true,
@@ -59454,16 +59075,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js": {
-    "enable": false,
-    "require": [
-      "node_modules/@sentry/core/build/esm/constants.js",
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/semanticAttributes.js",
-      "node_modules/@sentry/core/build/esm/tracing/utils.js",
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/spanUtils.js"
-    ]
+    "enable": false
   },
   "node_modules/@sentry/core/build/esm/tracing/idleSpan.js": {
     "enable": true,
@@ -59472,14 +59084,6 @@
       "setTimeout": "r"
     }
   },
-  "node_modules/@sentry/core/build/esm/tracing/spans/extractGenAiSpans.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/tracing/spans/hasSpanStreamingEnabled.js",
-      "node_modules/@sentry/core/build/esm/tracing/spans/spanJsonToStreamedSpan.js",
-      "node_modules/@sentry/core/build/esm/utils/isBrowser.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/tracing/spans/spanBuffer.js": {
     "enable": true,
     "global": {
@@ -59487,27 +59091,8 @@
       "setTimeout": "r"
     }
   },
-  "node_modules/@sentry/core/build/esm/tracing/spans/spanJsonToStreamedSpan.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/spanUtils.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/tracing/utils.js": {
-    "enable": false,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/weakRef.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/transports/base.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/promisebuffer.js",
-      "node_modules/@sentry/core/build/esm/utils/ratelimit.js"
-    ]
+    "enable": false
   },
   "node_modules/@sentry/core/build/esm/transports/offline.js": {
     "enable": true,
@@ -59515,12 +59100,6 @@
       "clearTimeout": "r",
       "setTimeout": "r"
     }
-  },
-  "node_modules/@sentry/core/build/esm/utils/aggregate-errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js"
-    ]
   },
   "node_modules/@sentry/core/build/esm/utils/anr.js": {
     "enable": true,
@@ -59535,35 +59114,13 @@
     "enable": true,
     "global": {
       "HTMLElement": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/clientreport.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/envelope.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/data-collection/defaultPiiToCollectionOptions.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/data-collection/filtering-snippets.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/data-collection/filterQueryParams.js": {
     "enable": true,
     "global": {
       "URLSearchParams": "r"
     }
-  },
-  "node_modules/@sentry/core/build/esm/utils/data-collection/resolveDataCollectionOptions.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/data-collection/defaultPiiToCollectionOptions.js"
-    ]
   },
   "node_modules/@sentry/core/build/esm/utils/debounce.js": {
     "enable": true,
@@ -59573,10 +59130,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/debug-ids.js": {
-    "enable": false,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
+    "enable": false
   },
   "node_modules/@sentry/core/build/esm/utils/debug-logger.js": {
     "enable": true,
@@ -59607,20 +59161,7 @@
     "global": {
       "TextDecoder": "r",
       "TextEncoder": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/carrier.js",
-      "node_modules/@sentry/core/build/esm/utils/dsn.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js",
-      "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/eventbuilder.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/flushIfServerless.js": {
     "enable": true,
@@ -59642,17 +59183,9 @@
       "Request": "r"
     }
   },
-  "node_modules/@sentry/core/build/esm/utils/isBrowser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/node.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/utils/misc.js": {
     "enable": false,
     "require": [
-      "node_modules/@sentry/core/build/esm/utils/object.js",
       "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js",
       "node_modules/@sentry/core/build/esm/utils/worldwide.js"
     ]
@@ -59661,11 +59194,7 @@
     "enable": true,
     "global": {
       "process": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/env.js",
-      "node_modules/process/browser.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/normalizationHints.js": {
     "enable": false
@@ -59674,44 +59203,26 @@
     "enable": false,
     "global": {
       "global": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/object.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/object.js": {
     "enable": false,
     "require": [
       "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/is.js"
+      "node_modules/@sentry/core/build/esm/utils/debug-logger.js"
     ]
   },
   "node_modules/@sentry/core/build/esm/utils/prepareEvent.js": {
     "enable": true,
     "require": [
-      "node_modules/@sentry/core/build/esm/constants.js",
-      "node_modules/@sentry/core/build/esm/eventProcessors.js",
-      "node_modules/@sentry/core/build/esm/scope.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-ids.js",
-      "node_modules/@sentry/core/build/esm/utils/misc.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js",
-      "node_modules/@sentry/core/build/esm/utils/scopeData.js",
-      "node_modules/@sentry/core/build/esm/utils/string.js",
-      "node_modules/@sentry/core/build/esm/utils/syncpromise.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js"
+      "node_modules/@sentry/core/build/esm/scope.js"
     ]
   },
   "node_modules/@sentry/core/build/esm/utils/promisebuffer.js": {
     "enable": true,
     "global": {
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/syncpromise.js",
-      "node_modules/@sentry/core/build/esm/utils/timer.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/propagationContext.js": {
     "enable": true,
@@ -59725,12 +59236,6 @@
       "node_modules/@sentry/core/build/esm/utils/worldwide.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/utils/ratelimit.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js"
-    ]
-  },
   "node_modules/@sentry/core/build/esm/utils/request.js": {
     "enable": true,
     "global": {
@@ -59739,29 +59244,6 @@
       "URL": "r",
       "setTimeout": "r"
     }
-  },
-  "node_modules/@sentry/core/build/esm/utils/scopeData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/currentScopes.js",
-      "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js",
-      "node_modules/@sentry/core/build/esm/utils/merge.js",
-      "node_modules/@sentry/core/build/esm/utils/spanUtils.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/sdkMetadata.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/version.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/should-ignore-span.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/string.js"
-    ]
   },
   "node_modules/@sentry/core/build/esm/utils/spanOnScope.js": {
     "enable": true,
@@ -59774,22 +59256,7 @@
     "enable": false,
     "global": {
       "console": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/semanticAttributes.js",
-      "node_modules/@sentry/core/build/esm/tracing/spanstatus.js",
-      "node_modules/@sentry/core/build/esm/tracing/utils.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/propagationContext.js",
-      "node_modules/@sentry/core/build/esm/utils/time.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/string.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/supports.js": {
     "enable": true,
@@ -59801,30 +59268,13 @@
       "Headers": "r",
       "Request": "r",
       "Response": "r"
-    },
-    "require": [
-      "node_modules/@sentry/core/build/esm/debug-build.js",
-      "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
-      "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/syncpromise.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js"
-    ]
+    }
   },
   "node_modules/@sentry/core/build/esm/utils/time.js": {
     "enable": false,
     "require": [
       "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js",
       "node_modules/@sentry/core/build/esm/utils/worldwide.js"
-    ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/transactionEvent.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/semanticAttributes.js"
     ]
   },
   "node_modules/@sentry/core/build/esm/utils/tunnel.js": {
@@ -59948,30 +59398,12 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/@sentry/react/build/esm/isSyntheticEvent.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/core/build/esm/utils/is.js"
-    ]
-  },
   "node_modules/@sentry/react/build/esm/reactrouter-compat-utils/instrumentation.js": {
     "enable": true,
     "global": {
       "clearTimeout": "r",
       "setTimeout": "r"
     }
-  },
-  "node_modules/@sentry/react/build/esm/sdk.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@sentry/browser/build/npm/esm/prod/normalizeStringifyValue.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/sdk.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
-      "node_modules/@sentry/core/build/esm/utils/normalize.js",
-      "node_modules/@sentry/core/build/esm/utils/sdkMetadata.js",
-      "node_modules/@sentry/react/build/esm/isSyntheticEvent.js",
-      "node_modules/react/index.js"
-    ]
   },
   "node_modules/@sentry/replay-canvas/build/npm/esm/index.js": {
     "enable": true,
@@ -94758,7 +94190,6 @@
       "node_modules/@aave-dao/aave-address-book/dist/GhoMantle.mjs",
       "node_modules/@aave/contract-helpers/dist/esm/commons/types.js",
       "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/@debank/festats/dist/index.js",
       "node_modules/@eth-optimism/contracts/dist/index.js",
       "node_modules/@ethereumjs/common/dist/esm/index.js",
       "node_modules/@ethereumjs/rlp/dist/esm/index.js",
@@ -94805,13 +94236,13 @@
       "node_modules/@safe-global/sdk-starter-kit/dist/src/constants.js",
       "node_modules/@scure/bip39/esm/index.js",
       "node_modules/@scure/bip39/esm/wordlists/english.js",
-      "node_modules/@sentry/browser/build/npm/esm/prod/sdk.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/@sentry/core/build/esm/asyncContext/stackStrategy.js",
+      "node_modules/@sentry/core/build/esm/carrier.js",
+      "node_modules/@sentry/core/build/esm/utils/prepareEvent.js",
       "node_modules/axios/index.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/buffer/index.js",
       "node_modules/dayjs/dayjs.min.js",
-      "node_modules/dayjs/plugin/utc.js",
       "node_modules/dexie/import-wrapper-prod.mjs",
       "node_modules/eth-rpc-errors/dist/classes.js",
       "node_modules/eth-rpc-errors/dist/index.js",
@@ -94985,7 +94416,6 @@
       "node_modules/@rabby-wallet/rabby-api/dist/index.js",
       "node_modules/@rabby-wallet/rabby-api/dist/plugins/web-sign.js",
       "node_modules/process/browser.js",
-      "node_modules/uuid/dist/esm-browser/v4.js",
       "src/background/utils/fetchAdapter.ts",
       "src/background/utils/index.ts",
       "src/constant/index.ts"
@@ -95303,13 +94733,6 @@
       "node_modules/@onekeyfe/hd-web-sdk/build/onekey-js-sdk.js",
       "node_modules/hdkey/lib/hdkey.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js"
-    ]
-  },
-  "src/stats.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/@debank/festats/dist/index.js",
-      "src/utils/user-data-tracking.ts"
     ]
   },
   "src/ui/assets/add-address/index.ts": {
@@ -97573,6 +96996,7 @@
       "src/ui/assets/index.ts",
       "src/ui/assets/success.svg",
       "src/ui/assets/token-default.svg",
+      "src/ui/assets/walletlogo/walletconnect.svg",
       "src/ui/component/AccountSelector/AccountSelectorModal.tsx",
       "src/ui/component/AddAddressOptions/style.less",
       "src/ui/component/AddressList/AddressItem.tsx",
@@ -97881,7 +97305,6 @@
       "node_modules/@metamask/post-message-stream/dist/browser.js",
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/@sentry/react/build/esm/errorboundary.js",
-      "node_modules/@sentry/react/build/esm/sdk.js",
       "node_modules/@zumer/snapdom/dist/snapdom.mjs",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/ahooks/es/useMount/index.js",
@@ -97982,7 +97405,6 @@
       "src/ui/component/index.tsx",
       "src/ui/component/NameAndAddress/index.tsx",
       "src/ui/component/NewUserImport/index.tsx",
-      "src/ui/component/Popup/index.tsx",
       "src/ui/component/SeedPhraseBackupAlert.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
@@ -97995,7 +97417,6 @@
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useGnosisNetworks.ts",
       "src/ui/hooks/usePreference.ts",
-      "src/ui/models/rateGuidance.ts",
       "src/ui/store-hooks.ts",
       "src/ui/store.ts",
       "src/ui/style/cssvars-custom.css",
@@ -98034,10 +97455,7 @@
       "src/utils/ga4.ts",
       "src/utils/index.ts",
       "src/utils/matomo-request.ts",
-      "src/utils/rateGuidance.ts",
-      "src/utils/string.ts",
-      "src/utils/transaction.ts",
-      "src/utils/user-data-tracking.ts"
+      "src/utils/transaction.ts"
     ]
   },
   "src/ui/models/account.ts": {
@@ -98051,12 +97469,6 @@
     ]
   },
   "src/ui/models/exchange.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/@rematch/core/dist/core.esm.js"
-    ]
-  },
-  "src/ui/models/rateGuidance.ts": {
     "enable": true,
     "require": [
       "node_modules/@rematch/core/dist/core.esm.js"
@@ -98122,7 +97534,6 @@
       "src/i18n.ts",
       "src/ui/models/account.ts",
       "src/ui/models/exchange.ts",
-      "src/ui/models/rateGuidance.ts",
       "src/ui/utils/account.ts",
       "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/index.ts",
@@ -98134,8 +97545,8 @@
       "src/ui/views/Perps/utils.ts",
       "src/utils/account.ts",
       "src/utils/chain.ts",
+      "src/utils/env.ts",
       "src/utils/ga4.ts",
-      "src/utils/rateGuidance.ts",
       "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object"
     ]
   },
@@ -98687,6 +98098,19 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/views/AddAddress/shared.tsx"
+    ]
+  },
+  "src/ui/views/AddAddress/MobileWallets.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/walletlogo/walletconnect.svg",
       "src/ui/component/index.tsx",
       "src/ui/views/AddAddress/shared.tsx"
     ]
@@ -101035,6 +100459,7 @@
       "src/ui/views/AddAddress/ImportKeyOrSeed.tsx",
       "src/ui/views/AddAddress/index.tsx",
       "src/ui/views/AddAddress/InstitutionalWallets.tsx",
+      "src/ui/views/AddAddress/MobileWallets.tsx",
       "src/ui/views/AddFromCurrentSeedPhrase/index.tsx",
       "src/ui/views/AddressBackup/Mnemonics.tsx",
       "src/ui/views/AddressBackup/PrivateKey.tsx",
@@ -101891,6 +101316,7 @@
       "src/ui/views/AddAddress/ImportKeyOrSeed.tsx",
       "src/ui/views/AddAddress/index.tsx",
       "src/ui/views/AddAddress/InstitutionalWallets.tsx",
+      "src/ui/views/AddAddress/MobileWallets.tsx",
       "src/ui/views/AddAddress/useCreateAddress.ts",
       "src/ui/views/AddFromCurrentSeedPhrase/index.tsx",
       "src/ui/views/AddressBackup/Mnemonics.tsx",
@@ -101994,8 +101420,7 @@
       "src/utils/index.ts",
       "src/utils/matomo-request.ts",
       "src/utils/string.ts",
-      "src/utils/transaction.ts",
-      "src/utils/user-data-tracking.ts"
+      "src/utils/transaction.ts"
     ]
   },
   "src/ui/views/ManageAddress/hooks.tsx": {
@@ -102950,33 +102375,11 @@
       "node_modules/webextension-polyfill/dist/browser-polyfill.js"
     ]
   },
-  "src/utils/ga4.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/utils/env.ts",
-      "src/utils/user-data-tracking.ts"
-    ]
-  },
   "src/utils/index.ts": {
     "enable": true,
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/utils/chain.ts"
-    ]
-  },
-  "src/utils/matomo-request.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/nanoid/index.browser.js",
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/utils/user-data-tracking.ts"
-    ]
-  },
-  "src/utils/rateGuidance.ts": {
-    "enable": true,
-    "require": [
-      "src/utils/env.ts"
     ]
   },
   "src/utils/tempo.ts": {
@@ -103013,13 +102416,6 @@
     "enable": true,
     "require": [
       "node_modules/lodash/lodash.js"
-    ]
-  },
-  "src/utils/user-data-tracking.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/eventBus.ts"
     ]
   },
   "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object": {

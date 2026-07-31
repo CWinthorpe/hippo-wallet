@@ -40,10 +40,17 @@ export const customRPC = createModel<RootModel>()({
       payload: {
         chain: CHAINS_ENUM;
         url: string;
+        fallbackUrls?: string[];
+        broadcastUrl?: string;
       },
       store
     ) {
-      await store.app.wallet.setCustomRPC(payload.chain, payload.url);
+      await store.app.wallet.setCustomRPC(
+        payload.chain,
+        payload.url,
+        payload.fallbackUrls || [],
+        payload.broadcastUrl
+      );
       dispatch.customRPC.getAllRPC();
     },
 

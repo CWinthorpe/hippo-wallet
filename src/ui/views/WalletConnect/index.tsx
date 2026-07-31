@@ -42,6 +42,7 @@ const WalletConnectTemplate: React.FC<{
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
   const [bridgeURL, setBridgeURL] = useState('');
+  const [initError, setInitError] = useState('');
   const [brand, setBrand] = useState(
     state?.brand || location.state?.brand || {}
   );
@@ -120,13 +121,24 @@ const WalletConnectTemplate: React.FC<{
   };
 
   const handleImportByWalletconnect = async () => {
-    const chain = findChainByEnum(siteRef.current?.chain);
-    const { stashId } = await wallet.initWalletConnect(
-      brand.brand,
-      curStashId,
-      chain?.id
-    );
-    setCurStashId(stashId);
+    let stashId: number | null | undefined;
+    try {
+      const chain = findChainByEnum(siteRef.current?.chain);
+      const result = await wallet.initWalletConnect(
+        brand.brand,
+        curStashId,
+        chain?.id
+      );
+      stashId = result.stashId;
+      setCurStashId(stashId);
+      setInitError('');
+    } catch (error) {
+      const errorMessage =
+        (error as Error)?.message || 'WalletConnect initialization failed';
+      setInitError(errorMessage);
+      message.error(errorMessage);
+      return;
+    }
 
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
@@ -264,14 +276,20 @@ const WalletConnectTemplate: React.FC<{
           {t('page.newAddress.walletConnect.viaWalletConnect')}
         </p>
       </div>
-      <ScanCopyQRCode
-        showURL={showURL}
-        changeShowURL={setShowURL}
-        qrcodeURL={walletconnectUri}
-        refreshFun={handleRefresh}
-        canChangeBridge={false}
-        brandName={brandName}
-      />
+      {initError ? (
+        <div className="m-20 rounded-[6px] bg-r-red-light px-16 py-12 text-13 text-r-red-default">
+          {initError}
+        </div>
+      ) : (
+        <ScanCopyQRCode
+          showURL={showURL}
+          changeShowURL={setShowURL}
+          qrcodeURL={walletconnectUri}
+          refreshFun={handleRefresh}
+          canChangeBridge={false}
+          brandName={brandName}
+        />
+      )}
     </div>
   );
 };

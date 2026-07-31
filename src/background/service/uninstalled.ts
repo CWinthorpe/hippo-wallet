@@ -1,129 +1,35 @@
-import { createPersistStore } from 'background/utils';
-import { keyringService, transactionHistoryService } from '.';
-import { KEYRING_CLASS } from '@/constant';
 import browser from 'webextension-polyfill';
-import i18n from './i18n';
 
-export type UninstalledStore = {
-  imported: boolean;
-  tx?: boolean;
-  wallet?: boolean;
-  local?: boolean;
-};
+const UPSTREAM_TRACKING_STORAGE_KEYS = [
+  'UninstalledMetric',
+  'clientId',
+  'extensionId',
+];
 
+/** Compatibility service retained for existing call sites. */
 class Uninstalled {
-  store: UninstalledStore = {
-    imported: false,
-    tx: false,
-    wallet: false,
-    local: false,
-  };
-
   init = async () => {
-    const storage = await createPersistStore<UninstalledStore>({
-      name: 'UninstalledMetric',
-      template: {
-        imported: false,
-        tx: false,
-        wallet: false,
-        local: false,
-      },
-    });
-
-    this.store = storage || this.store;
-    i18n.off('languageChanged', this.handleLanguageChanged);
-    i18n.on('languageChanged', this.handleLanguageChanged);
-  };
-
-  private handleLanguageChanged = () => {
-    this.setUninstalled();
-  };
-
-  syncStatus = async () => {
-    if (
-      !this.store.tx &&
-      transactionHistoryService.store.transactions &&
-      Object.keys(transactionHistoryService.store.transactions).length
-    ) {
-      this.setTx();
-      this.setImported();
+    try {
+      await browser.storage.local.remove(UPSTREAM_TRACKING_STORAGE_KEYS);
+      await browser.storage.session?.remove?.('sessionData');
+    } catch (e) {
+      // Older extension targets may not expose every storage area.
     }
-
-    if (this.store.wallet) {
-      return;
-    }
-
-    const typedAccounts = await keyringService.getAllTypedAccounts();
-    if (typedAccounts.length) {
-      typedAccounts.forEach((account) => {
-        this.setWalletByKeyringType(account.type);
-      });
-    }
+    await this.setUninstalled();
   };
 
-  setImported = () => {
-    this.store.imported = true;
-    this.setUninstalled();
-  };
-
-  setWallet = () => {
-    this.store.wallet = true;
-    this.setUninstalled();
-  };
-
-  setTx = () => {
-    this.store.tx = true;
-    this.setUninstalled();
-  };
-
-  setLocal = () => {
-    this.store.local = true;
-    this.setUninstalled();
-  };
-
-  setWalletByKeyringType = (keyringType: string) => {
-    if (this.store.imported && this.store.wallet && this.store.local) {
-      return;
-    }
-    this.setImported();
-    let isLocal = false;
-    let isHardware = false;
-    isLocal = ([
-      KEYRING_CLASS.PRIVATE_KEY,
-      KEYRING_CLASS.MNEMONIC,
-    ] as string[]).includes(keyringType);
-    isHardware = ([
-      ...Object.values(KEYRING_CLASS.HARDWARE),
-    ] as string[]).includes(keyringType);
-    if (isLocal) {
-      this.setLocal();
-    }
-    if (isLocal || isHardware) {
-      this.setWallet();
-    }
-  };
+  syncStatus = async () => undefined;
+  setImported = () => undefined;
+  setWallet = () => undefined;
+  setTx = () => undefined;
+  setLocal = () => undefined;
+  setWalletByKeyringType = (_keyringType: string) => undefined;
 
   setUninstalled = async () => {
     try {
-      let search = '';
-      if (this.store.imported) {
-        search = 'i';
-      }
-      if (this.store.wallet) {
-        search += 'w';
-      }
-
-      if (this.store.tx) {
-        search += 't';
-      }
-      if (this.store.local) {
-        search += 'l';
-      }
-      await browser.runtime.setUninstallURL(
-        `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
-          browser.runtime.getManifest().version
-        }&lang=${encodeURIComponent(i18n.language)}`
-      );
+      // Clear any URL persisted by an upstream installation. The private build
+      // never reports wallet/import/transaction state during uninstall.
+      await browser.runtime.setUninstallURL('');
     } catch (e) {
       // ignore
     }

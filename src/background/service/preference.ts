@@ -396,7 +396,7 @@ class PreferenceService {
       this.store.ga4EventTime = 0;
     }
     if (this.store.userDataTrackingOptOut == null) {
-      this.store.userDataTrackingOptOut = false;
+      this.store.userDataTrackingOptOut = true;
     }
     if (!this.store.sceneAccountMap) {
       this.store.sceneAccountMap = {};
@@ -972,10 +972,10 @@ class PreferenceService {
     this.store.sendEnableTime = time;
   };
   getUserDataTrackingOptOut = () => {
-    return this.store.userDataTrackingOptOut === true;
+    return true;
   };
-  setUserDataTrackingOptOut = (value: boolean) => {
-    this.store.userDataTrackingOptOut = value;
+  setUserDataTrackingOptOut = (_value: boolean) => {
+    this.store.userDataTrackingOptOut = true;
   };
   getNeedSwitchWalletCheck = () => {
     if (this.store.needSwitchWalletCheck == null) {

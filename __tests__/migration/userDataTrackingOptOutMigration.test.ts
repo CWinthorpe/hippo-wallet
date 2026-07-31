@@ -3,7 +3,7 @@
  */
 import userDataTrackingOptOutMigration from '../../src/migrations/userDataTrackingOptOutMigration';
 
-test('sets userDataTrackingOptOut to false for existing users', async () => {
+test('forces userDataTrackingOptOut on for existing users', async () => {
   const result = await userDataTrackingOptOutMigration.migrator({
     preference: {
       currentVersion: '0.93.92',
@@ -11,7 +11,7 @@ test('sets userDataTrackingOptOut to false for existing users', async () => {
     } as any,
   });
 
-  expect(result?.preference?.userDataTrackingOptOut).toBe(false);
+  expect(result?.preference?.userDataTrackingOptOut).toBe(true);
   expect(result?.preference?.currentVersion).toBe('0.93.92');
 });
 

@@ -9,7 +9,7 @@ export default {
       return {
         preference: {
           ...data.preference,
-          userDataTrackingOptOut: false,
+          userDataTrackingOptOut: true,
         },
       };
     } catch (e) {

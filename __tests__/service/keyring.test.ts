@@ -1,3 +1,125 @@
+jest.mock('@rabby-wallet/eth-watch-keyring', () => ({
+  __esModule: true,
+  default: class MockWatchKeyring {
+    static type = 'Watch Address';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-bitbox02-keyring/eth-bitbox02-keyring', () => ({
+  __esModule: true,
+  default: class MockBitBoxKeyring {
+    static type = 'BitBox02 Hardware';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-ledger-keyring', () => ({
+  __esModule: true,
+  default: class MockLedgerBridgeKeyring {
+    static type = 'Ledger Hardware';
+  },
+}));
+
+jest.mock('@rabby-wallet/eth-walletconnect-keyring', () => ({
+  WalletConnectKeyring: class MockWalletConnectKeyring {
+    static type = 'WalletConnect';
+  },
+}));
+
+jest.mock('@rabby-wallet/eth-coinbase-keyring', () => ({
+  __esModule: true,
+  default: class MockCoinbaseKeyring {
+    static type = 'Coinbase';
+  },
+}));
+
+jest.mock('@rabby-wallet/eth-trezor-keyring', () => ({
+  __esModule: true,
+  default: class MockTrezorKeyring {
+    static type = 'Trezor Hardware';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-onekey-keyring/eth-onekey-keyring', () => ({
+  __esModule: true,
+  default: class MockOnekeyKeyring {
+    static type = 'Onekey Hardware';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-lattice-keyring/eth-lattice-keyring', () => ({
+  __esModule: true,
+  default: class MockLatticeKeyring {
+    static type = 'Lattice Hardware';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-keystone-keyring', () => ({
+  __esModule: true,
+  default: class MockKeystoneKeyring {
+    static type = 'Keystone Hardware';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-cobo-argus-keyring', () => ({
+  __esModule: true,
+  default: class MockCoboArgusKeyring {
+    static type = 'Cobo Argus';
+  },
+}));
+
+jest.mock('background/service/keyring/eth-gnosis-keyring', () => ({
+  __esModule: true,
+  default: class MockGnosisKeyring {
+    static type = 'Gnosis';
+  },
+  TransactionBuiltEvent: 'TransactionBuiltEvent',
+  TransactionConfirmedEvent: 'TransactionConfirmedEvent',
+}));
+
+jest.mock('background/service/keyring/eth-imkey-keyring/eth-imkey-keyring', () => ({
+  EthImKeyKeyring: class MockImKeyKeyring {
+    static type = 'ImKey Hardware';
+  },
+}));
+
+jest.mock('background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getPopupOpen: jest.fn(() => false),
+    getHiddenAddresses: jest.fn(() => []),
+  },
+}));
+
+jest.mock('background/service/i18n', () => ({
+  __esModule: true,
+  default: { t: (key: string) => key },
+}));
+
+jest.mock('background/service/contactBook', () => ({
+  __esModule: true,
+  default: {
+    init: jest.fn().mockResolvedValue(undefined),
+    getContactByAddress: jest.fn(),
+    addAlias: jest.fn(),
+    getCacheAlias: jest.fn(),
+    removeCacheAlias: jest.fn(),
+    updateAlias: jest.fn(),
+  },
+}));
+
+jest.mock('background/service/uninstalled', () => ({
+  __esModule: true,
+  default: {
+    setWalletByKeyringType: jest.fn(),
+  },
+}));
+
+jest.mock('background/service/keyring/bridge', () => ({
+  getKeyringBridge: jest.fn(),
+  hasBridge: jest.fn(() => false),
+}));
+
+import * as nodeCrypto from 'crypto';
 import { KeyringService } from 'background/service/keyring';
 import sinon from 'sinon';
 import mockEncryptor from './mock-encryptor';
@@ -5,6 +127,25 @@ import contactBook from '@/background/service/contactBook';
 import { normalizeAddress } from '@/background/utils';
 import { Wallet } from '@ethereumjs/wallet';
 import { utils } from '@ethereumjs/rlp';
+
+Object.defineProperty(globalThis, 'crypto', {
+  value: (nodeCrypto as any).webcrypto,
+  configurable: true,
+});
+
+beforeAll(async () => {
+  const key = await (nodeCrypto as any).webcrypto.subtle.importKey(
+    'raw',
+    new Uint8Array(32),
+    { name: 'AES-GCM' },
+    true,
+    ['encrypt', 'decrypt']
+  );
+  Object.defineProperty(globalThis, 'CryptoKey', {
+    value: key.constructor,
+    configurable: true,
+  });
+});
 
 const password = 'password123';
 const walletOneSeedWords =
@@ -29,8 +170,8 @@ describe('KeyringService setup', () => {
     });
 
     it('should booted', async () => {
-      keyringService.boot('password');
-      expect(keyringService.store.getState().booted).toBeUndefined();
+      await keyringService.boot('password');
+      expect(keyringService.store.getState().booted).toBeDefined();
     });
   });
 

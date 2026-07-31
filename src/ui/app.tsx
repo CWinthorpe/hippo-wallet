@@ -17,12 +17,9 @@ import store from './store';
 
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
-import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
-
-Sentry.init(getSentryConfig());
 
 function initAppMeta() {
   const head = document.querySelector('head');

@@ -6,6 +6,7 @@ import { AddMoreAddressesFromSeedPhrase } from '@/ui/views/AddAddress/AddMoreAdd
 import { AddNewAddress } from '@/ui/views/AddAddress/AddNewAddress';
 import { CreateAddressSuccess } from '@/ui/views/AddAddress/CreateAddressSuccess';
 import { HardwareWallets } from '@/ui/views/AddAddress/HardwareWallets';
+import { MobileWallets } from '@/ui/views/AddAddress/MobileWallets';
 import ImportAddressSuccess from '@/ui/views/AddAddress/ImportAddressSuccess';
 import ImportKeyOrSeed from '@/ui/views/AddAddress/ImportKeyOrSeed';
 import { InstitutionalWallets } from '@/ui/views/AddAddress/InstitutionalWallets';
@@ -40,6 +41,7 @@ export const AddAddressModal: React.FC = () => {
       'add-new-address',
       'import-key-or-seed',
       'hardware-wallets',
+      'mobile-wallets',
       'institutional-wallets',
     ].includes(importType);
   }, [importType]);
@@ -134,6 +136,8 @@ const AddAddressModalContent: React.FC = () => {
         />
       ) : importType === 'hardware-wallets' ? (
         <HardwareWallets isInModal onBack={onBack} onNavigate={onNavigate} />
+      ) : importType === 'mobile-wallets' ? (
+        <MobileWallets isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'institutional-wallets' ? (
         <InstitutionalWallets
           isInModal

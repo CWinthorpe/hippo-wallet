@@ -4,7 +4,6 @@ import { createPersistStore } from 'background/utils';
 export * from '@rabby-wallet/rabby-api/dist/types';
 import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign';
 import fetchAdapter from 'background/utils/fetchAdapter';
-import { v4 as uuidv4 } from 'uuid';
 
 class baseStore {
   store: {
@@ -21,6 +20,8 @@ class baseStore {
       apiKey: null,
       apiTime: null,
     };
+    this.store.apiKey = null;
+    this.store.apiTime = null;
     createPersistStore({
       name: 'openapi',
       template: {
@@ -31,9 +32,10 @@ class baseStore {
       },
     }).then((res) => {
       this.store = res;
-      if (!this.store.apiKey) {
-        this.generateAPIKey();
-      }
+      // Do not attach a persistent installation identifier to functional API
+      // traffic. Public endpoints remain signed by WebSignApiPlugin.
+      this.store.apiKey = null;
+      this.store.apiTime = null;
     });
   }
 
@@ -57,23 +59,18 @@ class baseStore {
     return this.store.apiKey;
   }
 
-  set apiKey(value: string | null) {
-    this.store.apiKey = value;
+  set apiKey(_value: string | null) {
+    this.store.apiKey = null;
+    this.store.apiTime = null;
   }
 
   get apiTime() {
     return this.store.apiTime;
   }
 
-  set apiTime(value: number | null) {
-    this.store.apiTime = value;
+  set apiTime(_value: number | null) {
+    this.store.apiTime = null;
   }
-
-  generateAPIKey = () => {
-    const uuid = uuidv4();
-    this.store.apiKey = uuid;
-    this.store.apiTime = Math.floor(Date.now() / 1000);
-  };
 }
 
 const testnetStore = new (class TestnetStore extends baseStore {

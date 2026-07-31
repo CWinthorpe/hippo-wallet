@@ -141,7 +141,7 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
       return;
     }
     await form.validateFields();
-    await wallet.setUserDataTrackingOptOut(false);
+    await wallet.setUserDataTrackingOptOut(true);
     onSubmit?.(form.getFieldsValue().password);
   });
 

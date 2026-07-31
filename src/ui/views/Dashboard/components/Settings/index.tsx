@@ -80,8 +80,6 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
 import { useMemoizedFn } from 'ahooks';
-import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
-import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import {
@@ -628,7 +626,6 @@ const SettingsInner = ({
   const [biometricBusy, setBiometricBusy] = useState(false);
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
-  const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
 
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
@@ -660,9 +657,7 @@ const SettingsInner = ({
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
-  const userDataTrackingOptOut = useRabbySelector(
-    (state) => state.preference.userDataTrackingOptOut
-  );
+
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
   const openapiStore = useRabbySelector((state) => state.openapi);
@@ -774,19 +769,6 @@ const SettingsInner = ({
     }
   });
 
-  const handleToggleUserDataTrackingOptOut = useMemoizedFn(
-    async (checked: boolean) => {
-      try {
-        setDataAnalysisPending(true);
-        await dispatch.preference.setUserDataTrackingOptOut(!checked);
-      } catch (error) {
-        message.error((error as Error)?.message || 'Failed to update setting');
-      } finally {
-        setDataAnalysisPending(false);
-      }
-    }
-  );
-
   const handleClickClearWatchMode = () => {
     confirm({
       className: 'modal-support-darkmode',
@@ -879,10 +861,6 @@ const SettingsInner = ({
     syncCurrencyList();
   }, [visible, syncCurrencyList]);
 
-  const {
-    mockExposureRateGuide,
-    resetExposureRateGuide,
-  } = useMakeMockDataForRateGuideExposure();
   const renderData = {
     features: {
       label: t('page.dashboard.settings.features.label'),
@@ -1076,15 +1054,10 @@ const SettingsInner = ({
         {
           leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
-          content: t('page.dashboard.settings.settings.dataAnalysis'),
-          rightIcon: (
-            <Switch
-              checked={!userDataTrackingOptOut}
-              onChange={handleToggleUserDataTrackingOptOut}
-              loading={dataAnalysisPending}
-              disabled={dataAnalysisPending}
-            />
-          ),
+          content: `${t(
+            'page.dashboard.settings.settings.dataAnalysis'
+          )} (disabled in private build)`,
+          rightIcon: <Switch checked={false} disabled />,
         },
         {
           leftIcon: RcIconCustomTestnet,
@@ -1342,42 +1315,6 @@ const SettingsInner = ({
           leftIcon: RcIconClearCC,
           content: <span>{t('page.dashboard.settings.clearWatchMode')}</span>,
           onClick: handleClickClearWatchMode,
-        },
-        {
-          leftIcon: RcIconSettingsCodeCC,
-          content: <div className="shrink-0">Mock Exposure Rate Guidance</div>,
-          rightIcon: (
-            <div className="flex items-center justify-end gap-8">
-              <Button
-                type="link"
-                danger
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  mockExposureRateGuide();
-                  message.success({
-                    className: 'toast-message-2025',
-                    content: 'Mock exposure rate guide data',
-                  });
-                }}
-              >
-                Mock
-              </Button>
-              <Button
-                type="primary"
-                ghost
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  resetExposureRateGuide();
-                  message.success({
-                    className: 'toast-message-2025',
-                    content: 'Reset exposure rate guide mock data',
-                  });
-                }}
-              >
-                Reset
-              </Button>
-            </div>
-          ),
         },
         {
           leftIcon: RcIconSettingsGitForkCC,
@@ -1663,8 +1600,6 @@ const SettingsInner = ({
       >
         <div className={clsx('content')}>
           {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-
-          <RateModalTriggerOnSettings className="mb-[16px]" />
 
           {Object.values(renderData).map((group, idxl1) => {
             return (

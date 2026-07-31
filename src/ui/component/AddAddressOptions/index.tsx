@@ -9,6 +9,7 @@ import { connectStore } from '@/ui/store';
 import { useAddAddressWalletOptions } from '@/ui/views/AddAddress/shared';
 import { Item } from '@/ui/component';
 import { ReactComponent as RcRightArrow } from 'ui/assets/address/right-arrow.svg';
+import { ReactComponent as RcIconWalletConnect } from 'ui/assets/walletlogo/walletconnect.svg';
 import {
   RcAddAddressOptionCreateIcon,
   RcAddAddressOptionSeedPhraseIcon,
@@ -173,6 +174,22 @@ const AddAddressOptions: React.FC<{
             onNavigate?.('hardware-wallets');
           } else {
             history.push('/add-address/hardware-wallets');
+          }
+        },
+      },
+      {
+        key: 'connect-mobile-wallet',
+        label: t('page.newAddress.connectMobileWalletApps'),
+        icon: (
+          <RowIcon backgroundClassName="bg-r-blue-light-1">
+            <RcIconWalletConnect className="h-[22px] w-[22px]" />
+          </RowIcon>
+        ),
+        onClick: () => {
+          if (UI_TYPE.isDesktop) {
+            onNavigate?.('mobile-wallets');
+          } else {
+            history.push('/add-address/mobile-wallets');
           }
         },
       },

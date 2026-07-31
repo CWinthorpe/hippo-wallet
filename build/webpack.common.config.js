@@ -317,6 +317,9 @@ const config = {
       'process.env.release': JSON.stringify(APP_VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
       'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
+      'process.env.WALLETCONNECT_PROJECT_ID': JSON.stringify(
+        process.env.WALLETCONNECT_PROJECT_ID || ''
+      ),
     }),
     new CopyPlugin({
       patterns: [
