@@ -101,7 +101,7 @@ const GlobalStyle = createGlobalStyle`
       align-items: center;
 
       &:hover {
-        background: var(--r-blue-light1, #edf0ff);
+        background: var(--r-blue-light1, #EAF2FF);
       }
 
       &-icon {
@@ -151,7 +151,7 @@ const GlobalStyle = createGlobalStyle`
 
     .ant-badge {
       .ant-badge-count {
-        background-color: var(--r-blue-default, #7084ff);
+        background-color: var(--r-blue-default, #0372FF);
         padding: 2px 6px;
         font-size: 13px;
         line-height: 1;
@@ -519,7 +519,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
     points: {
       icon: RcIconPointsCC,
-      eventKey: 'Rabby Points',
+      eventKey: 'Hippo Points',
       content: t('page.dashboard.home.panel.rabbyPoints'),
       onClick: () => {
         setIsShowRabbyPoints(true);
@@ -527,7 +527,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     mobile: {
       icon: RcIconMobileSyncCC,
-      eventKey: 'Rabby Mobile',
+      eventKey: 'Hippo Mobile',
       content: t('page.dashboard.home.panel.mobile'),
       onClick: () => {
         openInternalPageInTab('sync');

@@ -52,7 +52,7 @@ class PermissionService {
       site = {
         origin: INTERNAL_REQUEST_ORIGIN,
         icon: '',
-        name: 'Rabby Wallet',
+        name: 'Hippo Wallet',
         chain: CHAINS_ENUM.ETH,
         isSigned: false,
         isTop: false,

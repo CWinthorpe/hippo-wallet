@@ -54,7 +54,7 @@ const Root = styled.div`
 
     &:focus {
       outline: none;
-      border-color: var(--r-blue-default, #4c65ff);
+      border-color: var(--r-blue-default, #0372ff);
     }
   }
 `;

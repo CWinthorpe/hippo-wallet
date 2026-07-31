@@ -37,7 +37,8 @@ export const MobileWallets: React.FC<{
 
       <div className="mb-[12px] rounded-[8px] bg-r-neutral-card-2 px-[12px] py-[10px] text-[12px] leading-[16px] text-r-neutral-foot">
         Mobile wallets connect through WalletConnect. Pairing metadata uses this
-        fork's operator-owned Reown project, never Rabby's project identity.
+        fork's operator-owned Reown project, never the upstream project's
+        identity.
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto pb-[20px]">

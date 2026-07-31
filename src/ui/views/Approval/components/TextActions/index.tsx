@@ -48,7 +48,7 @@ export const MessageWrapper = styled.div`
 
     .title-text {
       font-size: 14px;
-      color: var(--r-blue-default, #7084ff);
+      color: var(--r-blue-default, #0372ff);
       text-align: center;
       font-weight: 500;
       padding: 0 8px;
@@ -89,7 +89,7 @@ export const MessageWrapper = styled.div`
     /* font-family: 'Roboto Mono'; */
   }
   .message-highlight {
-    color: var(--r-blue-default, #7084ff);
+    color: var(--r-blue-default, #0372ff);
     font-weight: 500;
   }
   &.no-action {

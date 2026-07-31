@@ -29,7 +29,9 @@ export const ImportMyMetaMaskAccount: React.FC<{
         target="_blank"
         onClick={(e) => {
           e.preventDefault();
-          openInTab('https://rabby.io/metamask-export');
+          openInTab(
+            'https://github.com/CWinthorpe/hippo-wallet/blob/feature/privacy-rpc-walletconnect/docs/import-metamask.md'
+          );
         }}
         className="hidden p-6 bg-r-blue-light-1 text-r-blue-default text-12 font-medium relative top-8 rounded-[2px]"
       >
@@ -105,7 +107,9 @@ export const ImportMyMetaMaskAccount: React.FC<{
                 'rounded-[6px] bg-r-neutral-card-2'
               )}
               onClick={() => {
-                openInTab('https://rabby.io/metamask-export');
+                openInTab(
+                  'https://github.com/CWinthorpe/hippo-wallet/blob/feature/privacy-rpc-walletconnect/docs/import-metamask.md'
+                );
               }}
             >
               View export tutorial

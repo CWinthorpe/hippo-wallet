@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Color thresholds for the margin/account ratio gauge. Three equal zones —
-// >=66.7% danger, >=33.3% warning, else healthy. (Rabby's 3-zone display; the
+// >=66.7% danger, >=33.3% warning, else healthy. (Hippo's 3-zone display; the
 // numeric ratio value/% itself matches the Hyperliquid frontend.)
 const RATIO_DANGER = 2 / 3;
 const RATIO_WARNING = 1 / 3;

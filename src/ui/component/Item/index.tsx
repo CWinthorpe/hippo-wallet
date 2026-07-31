@@ -20,7 +20,7 @@ const ItemWrapper = styled.div<{
   py: number | string;
   // default var(--r-neutral-card-1, #fff);
   bgColor: string;
-  // default var(--r-blue-light-1, #eef1ff);
+  // default var(--r-blue-light-1, #EAF2FF);
   hoverBgColor: string;
   disabled?: boolean;
 }>`
@@ -43,7 +43,7 @@ const ItemWrapper = styled.div<{
       ? css`
           &:hover {
             background-color: ${p.hoverBgColor};
-            border-color: var(--r-blue-default, #7084ff);
+            border-color: var(--r-blue-default, #0372ff);
           }
         `
       : ''}
@@ -61,7 +61,7 @@ interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   py?: number | string;
   //default white;
   bgColor?: string;
-  //default var(--r-blue-light-1, #eef1ff);
+  //default var(--r-blue-light-1, #EAF2FF);
   hoverBgColor?: string;
   className?: string;
 
@@ -84,7 +84,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
     px = 16,
     py = 15,
     bgColor = 'var(--r-neutral-card-1, #fff)',
-    hoverBgColor = 'var(--r-blue-light-2, #eef1ff)',
+    hoverBgColor = 'var(--r-blue-light-2, #EAF2FF)',
     className = '',
     leftIconClassName = '',
     rightIconClassName = '',
@@ -124,7 +124,7 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
 const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
   position: relative;
   height: 56px;
-  background: var(--r-blue-default, #7084ff);
+  background: var(--r-blue-default, #0372ff);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -48,7 +48,7 @@ const ChainGlobalStyle = createGlobalStyle`
         border-color: var(--r-blue-default);
         color: var(--r-blue-default);
         &:hover {
-          background: var(--r-blue-light1, #eef1ff) !important;
+          background: var(--r-blue-light1, #EAF2FF) !important;
         }
       }
     }
@@ -109,7 +109,7 @@ const ChainWrapper = styled.div`
 
     &:hover {
       &::before {
-        border: 1px solid var(--r-blue-default, #7084ff);
+        border: 1px solid var(--r-blue-default, #0372ff);
       }
     }
 
@@ -119,7 +119,7 @@ const ChainWrapper = styled.div`
     }
   }
   &:hover {
-    background: var(--r-blue-light2, #eef1ff);
+    background: var(--r-blue-light2, #eaf2ff);
   }
   & > {
     .down {

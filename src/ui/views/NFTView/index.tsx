@@ -31,11 +31,11 @@ const TabsStyled = styled(Tabs)`
 
     &.ant-tabs-tab-active {
       background: var(--r-neutral-card-1, #fff);
-      color: var(--r-blue-default, #7084ff);
+      color: var(--r-blue-default, #0372ff);
     }
 
     &:hover {
-      color: var(--r-blue-default, #7084ff);
+      color: var(--r-blue-default, #0372ff);
     }
   }
 

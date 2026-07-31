@@ -23,7 +23,7 @@ const StyledInput = styled(Input)`
   }
   &:hover,
   &.ant-input-affix-wrapper-focused {
-    border: 1px solid var(--r-blue-default, #7084ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
   }
 `;
 

@@ -17,7 +17,7 @@ function execOrThrow(command) {
   const result = shell.exec(command);
 
   if (result.code !== 0) {
-    throw new Error(`[Rabby] Command failed: ${command}`);
+    throw new Error(`[Hippo] Command failed: ${command}`);
   }
 }
 
@@ -66,7 +66,7 @@ function seedSourceMapDebugIds(distDir) {
     seededCount += 1;
   });
 
-  console.log(`[Rabby] Seeded ${seededCount} sourcemap debug ids`);
+  console.log(`[Hippo] Seeded ${seededCount} sourcemap debug ids`);
 }
 
 function moveSourceMapsToTmp(distDir, targetDir) {
@@ -78,7 +78,7 @@ function moveSourceMapsToTmp(distDir, targetDir) {
     .filter((filePath) => filePath.endsWith('.map'));
 
   if (sourceMaps.length === 0) {
-    console.error(`[Rabby] No sourcemaps found in ${distDir}`);
+    console.error(`[Hippo] No sourcemaps found in ${distDir}`);
     return;
   }
 
@@ -91,7 +91,7 @@ function moveSourceMapsToTmp(distDir, targetDir) {
   });
 
   console.log(
-    `[Rabby] Moved ${sourceMaps.length} sourcemaps to ${path.relative(
+    `[Hippo] Moved ${sourceMaps.length} sourcemaps to ${path.relative(
       PROJECT_ROOT,
       targetDir
     )}`
@@ -118,7 +118,7 @@ async function getBundleOptions() {
 
   if (isYesMode) {
     console.log(
-      `[Rabby] Running in --yes mode: version=${oldVersion}, MV3=y, debug=n, release=n`
+      `[Hippo] Running in --yes mode: version=${oldVersion}, MV3=y, debug=n, release=n`
     );
     return {
       version: oldVersion,
@@ -131,20 +131,20 @@ async function getBundleOptions() {
   const { version } = await prompt({
     type: 'input',
     name: 'version',
-    message: '[Rabby] Please input the release version:',
+    message: '[Hippo] Please input the release version:',
     initial: plus1Version,
   });
 
   const isMV3 = await new BooleanPrompt({
-    message: '[Rabby] Do you want to release to MV3? (y/N)',
+    message: '[Hippo] Do you want to release to MV3? (y/N)',
   }).run();
 
   const isDebug = await new BooleanPrompt({
-    message: '[Rabby] Do you want to build a debug version? (y/N)',
+    message: '[Hippo] Do you want to build a debug version? (y/N)',
   }).run();
 
   const isRelease = await new BooleanPrompt({
-    message: '[Rabby] Do you want to release? (y/N)',
+    message: '[Hippo] Do you want to release? (y/N)',
   }).run();
 
   return {
@@ -193,7 +193,7 @@ async function packed([version, isDebug, , isMV3]) {
   import('./zip.mjs').then((re) => {
     re.createZipTask(
       isMV3 ? 'dist/**' : 'dist-mv2/**',
-      `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`
+      `Hippo_Wallet_v${version}${isDebug ? '_debug' : ''}.zip`
     );
   });
 }

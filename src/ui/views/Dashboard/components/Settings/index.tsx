@@ -821,7 +821,9 @@ const SettingsInner = ({
         ),
         okText: t('page.dashboard.settings.updateVersion.okText'),
         onOk() {
-          openInTab('https://rabby.io/update-extension');
+          openInTab(
+            'https://github.com/CWinthorpe/hippo-wallet/releases/latest'
+          );
         },
       });
     } else {
@@ -1405,7 +1407,7 @@ const SettingsInner = ({
             });
 
             reportSettings('feedback');
-            openInTab('https://support.rabby.io/en/');
+            openInTab('https://github.com/CWinthorpe/hippo-wallet/issues');
           },
           rightIcon: (
             <ThemeIcon
@@ -1646,9 +1648,9 @@ const SettingsInner = ({
             <img
               className="inline-block cursor-pointer"
               src={LogoRabby}
-              alt="https://rabby.io"
+              alt="Hippo Wallet project"
               onClick={() => {
-                openInTab('https://rabby.io', false);
+                openInTab('https://github.com/CWinthorpe/hippo-wallet', false);
               }}
             />
           </div>

@@ -18,7 +18,7 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   .ant-slider-track,
   &:hover .ant-slider-track {
     height: 2px;
-    background: var(--r-blue-default, #7084ff);
+    background: var(--r-blue-default, #0372ff);
   }
 
   &:hover > .ant-slider-handle {
@@ -47,9 +47,9 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
       border-radius: 50%;
       width: 12px;
       height: 12px;
-      background-color: var(--rb-brand-default, #7084ff);
+      background-color: var(--rb-brand-default, #0372ff);
       border: 1.3px solid var(--r-neutral-body, #d3d8e0);
-      box-shadow: 0px 2px 4px rgba(112, 132, 255, 0.4);
+      box-shadow: 0px 2px 4px rgba(3, 114, 255, 0.4);
     }
 
     &:hover {
@@ -72,7 +72,7 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   .ant-slider-dot-active,
   &:hover .ant-slider-dot-active {
     border-color: var(--r-neutral-body, #d3d8e0);
-    background-color: var(--rb-brand-default, #7084ff);
+    background-color: var(--rb-brand-default, #0372ff);
   }
 `;
 

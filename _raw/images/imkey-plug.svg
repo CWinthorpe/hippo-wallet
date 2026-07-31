@@ -26,14 +26,14 @@
 </linearGradient>
 <linearGradient id="paint1_linear_89869_80223" x1="245.226" y1="38.9814" x2="230.091" y2="23.8101" gradientUnits="userSpaceOnUse">
 <stop stop-color="#3B22A0"/>
-<stop offset="1" stop-color="#5156D8" stop-opacity="0"/>
+<stop offset="1" stop-color="#0372FF" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="paint2_linear_89869_80223" x1="237.411" y1="47.4679" x2="222.873" y2="39.1094" gradientUnits="userSpaceOnUse">
 <stop stop-color="#3B1E8F"/>
 <stop offset="1" stop-color="#6A6FFB" stop-opacity="0"/>
 </linearGradient>
 <linearGradient id="paint3_linear_89869_80223" x1="229.035" y1="39.2243" x2="238.862" y2="51.7101" gradientUnits="userSpaceOnUse">
-<stop stop-color="#8898FF"/>
+<stop stop-color="#0372FF"/>
 <stop offset="0.983895" stop-color="#5F47F1"/>
 </linearGradient>
 <clipPath id="clip0_89869_80223">

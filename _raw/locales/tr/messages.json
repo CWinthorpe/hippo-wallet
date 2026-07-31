@@ -59,7 +59,7 @@
       "gasPriceTitle": "Gas fiyatı (Gwei)",
       "maxPriorityFee": "Maksimum öncelik ücreti (Gwei)",
       "eip1559Desc1": "EIP-1559'u destekleyen ağlarda öncelik ücreti, işleminizi gerçekleştirmeleri için madencilere verilen bahşiştir. Bu ücreti düşürmek toplam gas maliyetini azaltabilir, ancak işlem daha uzun sürebilir.",
-      "eip1559Desc2": "Rabby'de öncelik ücreti (bahşiş) = maksimum ücret − temel ücret. Maksimum öncelik ücretini ayarladıktan sonra temel ücret bu tutardan düşülür ve kalan tutar madencilere bahşiş olarak verilir.",
+      "eip1559Desc2": "Hippo'de öncelik ücreti (bahşiş) = maksimum ücret − temel ücret. Maksimum öncelik ücretini ayarladıktan sonra temel ücret bu tutardan düşülür ve kalan tutar madencilere bahşiş olarak verilir.",
       "hardwareSupport1559Alert": "Donanım cüzdanı yazılımının EIP 1559'u destekleyen bir sürüme yükseltildiğinden emin olun",
       "gasLimitTitle": "Gas limiti",
       "recommendGasLimitTip": "Tahmini {{est}}. Mevcut {{current}}x, önerilen ",
@@ -132,7 +132,7 @@
         "trustValueLessThan": "Güven değeri ≤ {{value}}",
         "deployTimeLessThan": "Yayınlama süresi < {{value}} gün",
         "amountPopupTitle": "Miktar",
-        "flagByRabby": "Rabby tarafından işaretlendi",
+        "flagByRabby": "Hippo tarafından işaretlendi",
         "contractTrustValueTip": "Güven değeri, bu sözleşmenin harcadığı toplam varlık değerini ifade eder. Düşük güven değeri, risk veya 180 günlük hareketsizlik anlamına gelir.",
         "amount": "Onay Tutarı:",
         "exceed": "Mevcut bakiyenizi aşıyor"
@@ -197,8 +197,8 @@
       "neverInteracted": "Daha önce hiç etkileşimde bulunulmadı",
       "transacted": "Daha önce işlem yapıldı",
       "neverTransacted": "Daha önce hiç işlem yapılmadı",
-      "fakeTokenAlert": "Bu, Rabby tarafından dolandırıcı olarak işaretlenmiş bir tokendir",
-      "scamTokenAlert": "Bu, Rabby'nin tespitine göre potansiyel olarak düşük kaliteli ve dolandırıcı bir tokendir",
+      "fakeTokenAlert": "Bu, Hippo tarafından dolandırıcı olarak işaretlenmiş bir tokendir",
+      "scamTokenAlert": "Bu, Hippo'nin tespitine göre potansiyel olarak düşük kaliteli ve dolandırıcı bir tokendir",
       "trusted": "Güvenilir",
       "blocked": "Engellendi",
       "noMark": "İşaret yok",
@@ -207,7 +207,7 @@
       "signTransactionOnChain": "{{chain}} ağındaki işlemi imzala",
       "viewRaw": "Hamı Görüntüle",
       "unknownActionType": "Bilinmeyen işlem türü",
-      "sigCantDecode": "Bu imza Rabby tarafından çözülemez",
+      "sigCantDecode": "Bu imza Hippo tarafından çözülemez",
       "nftCollection": "NFT Koleksiyonu",
       "floorPrice": "Taban fiyat",
       "contractAddress": "Kontrat adresi",
@@ -237,7 +237,7 @@
       "customRPCErrorModal": {
         "title": "Özel RPC Hatası",
         "button": "Özel RPC'yi Devre Dışı Bırak",
-        "content": "Özel RPC'niz şu anda kullanılamıyor. Onu devre dışı bırakabilir ve Rabby'nin resmi RPC'sini kullanarak imzalamaya devam edebilirsiniz."
+        "content": "Özel RPC'niz şu anda kullanılamıyor. Onu devre dışı bırakabilir ve Hippo'nin resmi RPC'sini kullanarak imzalamaya devam edebilirsiniz."
       },
       "transferOwner": {
         "transferTo": "Şuraya aktar",
@@ -335,7 +335,7 @@
       "gasAccountForGas": "Gas ödemesi yapmak için GasAccount'ımdaki USD'yi kullan",
       "chain": "Zincir",
       "importedAddress": "İthal edilen adres",
-      "decodedTooltip": "Bu imza Rabby Wallet tarafından çözüldü",
+      "decodedTooltip": "Bu imza Hippo Wallet tarafından çözüldü",
       "address": "Adres",
       "typedDataMessage": "Imzalı Tip Verileri",
       "amount": "Miktar",
@@ -355,8 +355,8 @@
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
-          "title": "Rabby'nin Safe Servisi'ne Geç",
-          "content": "Safe API kullanılamıyor. Safe'inizin işlevselliğini sürdürmek için Rabby tarafından dağıtılan Safe hizmetine geçin. <strong>Tüm Safe imzalayıcılarının işlemleri yetkilendirmek için Rabby Wallet kullanması gerekiyor.</strong>"
+          "title": "Hippo'nin Safe Servisi'ne Geç",
+          "content": "Safe API kullanılamıyor. Safe'inizin işlevselliğini sürdürmek için Hippo tarafından dağıtılan Safe hizmetine geçin. <strong>Tüm Safe imzalayıcılarının işlemleri yetkilendirmek için Hippo Wallet kullanması gerekiyor.</strong>"
         }
       },
       "errorRetry": {
@@ -403,7 +403,7 @@
         "connected": "Bağlandı ve imzalamaya hazır",
         "howToSwitch": "Nasıl değiştirilir",
         "wrongAddressAlert": "Mobil cüzdanınızda farklı bir adrese geçtiniz. Lütfen mobil cüzdanınızda doğru adrese geçin",
-        "connectBeforeSign": "{{0}} Rabby'ye bağlı değil, imzalamadan önce lütfen bağlanın",
+        "connectBeforeSign": "{{0}} Hippo'ye bağlı değil, imzalamadan önce lütfen bağlanın",
         "chainSwitched": "Mobil cüzdanınızda farklı bir zincire geçtiniz. Lütfen mobil cüzdanınızda {{0}}'e geçin",
         "latency": "Gecikme",
         "requestSuccessToast": "Talep başarıyla gönderildi.",
@@ -463,7 +463,7 @@
       "mainnet": "Ana ağ",
       "gasless": {
         "watchUnavailableTip": "Sadece izleme adresi Free Gas için desteklenmez.",
-        "rabbyPayGas": "Rabby, gerekli gaz ücretini karşılayacak – sadece imzalayın",
+        "rabbyPayGas": "Hippo, gerekli gaz ücretini karşılayacak – sadece imzalayın",
         "GetFreeGasToSign": "Free Gas al",
         "notEnough": "Gas bakiyesi yeterli değil",
         "customRpcUnavailableTip": "Özel RPC'ler Free Gas için desteklenmemektedir.",
@@ -557,7 +557,7 @@
         "label": "İşlemler",
         "empty": {
           "title": "Henüz imzalanmış işlem yok",
-          "desc": "Rabby aracılığıyla imzalanan tüm işlemler burada listelenecektir."
+          "desc": "Hippo aracılığıyla imzalanan tüm işlemler burada listelenecektir."
         },
         "common": {
           "unlimited": "sınırsız",
@@ -655,7 +655,7 @@
         "label": "Metin",
         "empty": {
           "title": "Henüz imzalanmış metin yok",
-          "desc": "Rabby aracılığıyla imzalanan tüm metinler burada listelenecektir."
+          "desc": "Hippo aracılığıyla imzalanan tüm metinler burada listelenecektir."
         }
       }
     },
@@ -946,14 +946,14 @@
       "topUpChain": "Yükleme Zinciri",
       "Amount": "Miktar",
       "Continue": "Devam",
-      "InsufficientBalance": "Rabby'nin kontrat adresinde bu zincir için yeterli bakiye yok. Lütfen daha sonra tekrar deneyin.",
+      "InsufficientBalance": "Hippo'nin kontrat adresinde bu zincir için yeterli bakiye yok. Lütfen daha sonra tekrar deneyin.",
       "hightGasFees": "Bu yükleme miktarı çok küçük, hedef ağ yüksek gaz ücretleri gerektiriyor.",
       "No_Tokens": "Token Yok",
       "InsufficientBalanceTips": "Yetersiz bakiye",
       "payment": "Gas Top Up Ödemesi",
       "Loading_Tokens": "Tokenler Yükleniyor...",
       "Including-service-fee": "{{fee}} dahil hizmet ücreti",
-      "service-fee-tip": "Gas Top Up hizmeti için Rabby, token değişimindeki kaybı ve yükleme için gas ücretini karşılamak zorundadır. Bu nedenle %20 hizmet ücreti alınır.",
+      "service-fee-tip": "Gas Top Up hizmeti için Hippo, token değişimindeki kaybı ve yükleme için gas ücretini karşılamak zorundadır. Bu nedenle %20 hizmet ücreti alınır.",
       "Confirm": "Onayla",
       "Deposit-tip": "USDC/USDT ile yatırın",
       "Value": "Değer",
@@ -988,7 +988,7 @@
       "amount-in": "Girdi miktarı {{symbol}}",
       "unlimited-allowance": "Sınırsız harcama limiti",
       "insufficient-balance": "Yetersiz bakiye",
-      "rabby-fee": "Rabby ücreti",
+      "rabby-fee": "Hippo ücreti",
       "minimum-received": "Minimum alınacak",
       "there-is-no-fee-and-slippage-for-this-trade": "Bu işlemde fiyat kayması yoktur",
       "approve-tips": "1.Onayla → 2.Takas",
@@ -1000,7 +1000,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "Bu takas platformu sizin için ticarete açık değil.",
       "enable-it": "Etkinleştir",
       "this-token-pair-is-not-supported": "Bu token çifti desteklenmiyor",
-      "QuoteLessWarning": "Alınacak miktar Rabby işlem simülasyonundan tahmin edilir. Dex tarafından sağlanan teklif {{receive}}. Beklenen tekliften {{diff}} daha az alacaksınız.",
+      "QuoteLessWarning": "Alınacak miktar Hippo işlem simülasyonundan tahmin edilir. Dex tarafından sağlanan teklif {{receive}}. Beklenen tekliften {{diff}} daha az alacaksınız.",
       "by-transaction-simulation-the-quote-is-valid": "İşlem simülasyonuna göre teklif geçerli",
       "wrap-contract": "Sarma sözleşmesi",
       "directlySwap": "{{symbol}} tokenlerini akıllı kontratla doğrudan Wrap yap",
@@ -1028,17 +1028,17 @@
       "i-understand-and-accept-it": "Anlıyorum ve kabul ediyorum",
       "confirm": "Onayla",
       "tradingSettingTip1": "1. Etkinleştirildiğinde, doğrudan borsanın sözleşmesiyle etkileşimde bulunacaksınız",
-      "tradingSettingTip2": "2. Rabby, borsaların sözleşmesinden kaynaklanan risklerden sorumlu değildir",
+      "tradingSettingTip2": "2. Hippo, borsaların sözleşmesinden kaynaklanan risklerden sorumlu değildir",
       "gas-fee": "Gas Ücreti: {{gasUsed}}",
       "estimate": "Tahmin:",
       "actual": "Gerçek:",
       "rabbyFee": {
         "rate": "Ücret oranı",
-        "title": "Rabby ücreti",
+        "title": "Hippo ücreti",
         "wallet": "Cüzdan",
-        "swapDesc": "Rabby Wallet, en iyi aggregatorlardan mümkün olan en iyi oranı bulur ve tekliflerinin güvenilirliğini doğrular. Rabby %0,25 ücret alır (Wrap için %0); bu ücret teklife otomatik olarak dahildir.",
+        "swapDesc": "Hippo Wallet, en iyi aggregatorlardan mümkün olan en iyi oranı bulur ve tekliflerinin güvenilirliğini doğrular. Hippo %0,25 ücret alır (Wrap için %0); bu ücret teklife otomatik olarak dahildir.",
         "button": "Anladım",
-        "bridgeDesc": "Rabby Wallet, en iyi toplayıcılardan en iyi mümkün olan oranı her zaman bulacak ve tekliflerinin güvenilirliğini doğrulayacaktır. Rabby, otomatik olarak teklife dahil edilen %0.25 ücret alır."
+        "bridgeDesc": "Hippo Wallet, en iyi toplayıcılardan en iyi mümkün olan oranı her zaman bulacak ve tekliflerinin güvenilirliğini doğrulayacaktır. Hippo, otomatik olarak teklife dahil edilen %0.25 ücret alır."
       },
       "lowCreditModal": {
         "title": "Bu tokenin düşük bir kredi değeri var",
@@ -1058,10 +1058,10 @@
       "sort-with-gas": "Gaz ile sırala",
       "usd-after-fees": "≈ {{usd}}",
       "preferMEV": "MEV Korumalı Tercih Et",
-      "no-fee-for-wrap": "Wrap için Rabby ücreti yok",
+      "no-fee-for-wrap": "Wrap için Hippo ücreti yok",
       "process-with-two-step-approve": "İki adımlı onayla devam et",
       "loss-tips": "{{usd}} kaybediyorsunuz. Küçük bir pazarda daha küçük bir miktar deneyin.",
-      "no-fees-for-wrap": "Wrap için Rabby ücreti yok",
+      "no-fees-for-wrap": "Wrap için Hippo ücreti yok",
       "fetch-best-quote": "En iyi teklifi getiriliyor",
       "two-step-approve": "2 işlemi imzalayarak izni değiştirin",
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
@@ -1085,7 +1085,7 @@
       "whitelisted-address": "Beyaz Listeye alınmış adres",
       "addressTypeTip": "{{type}} tarafından içe aktarıldı",
       "delete-desc": "Silmeden önce, varlıklarınızı nasıl koruyacağınızı anlamak için şu noktaları göz önünde bulundurun.",
-      "delete-checklist-1": "Bu adresi silersem adresin özel anahtarının ve kurtarma ifadesinin de silineceğini, Rabby'nin bunları kurtaramayacağını anlıyorum.",
+      "delete-checklist-1": "Bu adresi silersem adresin özel anahtarının ve kurtarma ifadesinin de silineceğini, Hippo'nin bunları kurtaramayacağını anlıyorum.",
       "delete-checklist-2": "Özel anahtarı veya kurtarma ifadesini yedeklediğimi onaylıyorum ve şimdi silmeye hazırım.",
       "confirm": "Onayla",
       "cancel": "İptal",
@@ -1139,7 +1139,7 @@
           "more": "Daha Fazla",
           "manageAddress": "Adresi Yönet",
           "nft": "NFT",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "ecology": "Ekosistem",
           "bridge": "Köprü",
           "mobile": "Mobil senkronizasyon",
@@ -1159,9 +1159,9 @@
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
         "refreshTheWebPageToTakeEffect": "Etkili olması için web sayfasını yenileyin",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabby kullanımda ve Metamask yasaklandı",
+        "rabbyIsInUseAndMetamaskIsBanned": "Hippo kullanımda ve Metamask yasaklandı",
         "flip": "Çevir",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMask kullanımda ve Rabby yasaklandı",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask kullanımda ve Hippo yasaklandı",
         "transactionNeedsToSign": "işlem imzalanmalı",
         "transactionsNeedToSign": "işlemler imzalanmalı",
         "view": "Görüntüle",
@@ -1187,7 +1187,7 @@
         "metamaskTooltip": "Bu dApp ile MetaMask'ı kullanmayı tercih ediyorsunuz. Bu ayarı Ayarlar > MetaMask Tercih Edilen Dapps'ten istediğiniz zaman güncelleyin",
         "connected": "Bağlandı",
         "notConnected": "Bağlı değil",
-        "connectedDapp": "Rabby, şu anki Dapp'a bağlı değil. Bağlanmak için Dapp'ın web sayfasında bağlan butonunu bulup tıklayın.",
+        "connectedDapp": "Hippo, şu anki Dapp'a bağlı değil. Bağlanmak için Dapp'ın web sayfasında bağlan butonunu bulup tıklayın.",
         "noDappFound": "Dapp bulunamadı",
         "disconnectAll": "Tüm Bağlantıları Kes",
         "disconnectRecentlyUsed": {
@@ -1204,17 +1204,17 @@
         "noRecentlyConnectedDapps": "Son bağlanılan Dapp yok",
         "noConnectedDapps": "Bağlı Dapp yok",
         "dapps": "Dapps",
-        "metamaskModeTooltip": "Bu Dapp'te Rabby bağlanamıyor mu? <1>MetaMask Mode</1>'nu etkinleştirmeyi deneyin.",
-        "metamaskModeTooltipNew": "Rabby Wallet, Dapp'ta \"MetaMask\" seçtiğinizde bağlanacaktır. Bunu Daha Fazla > MetaMask olarak Gizlenerek Rabby Bağlan'da yönetebilirsiniz"
+        "metamaskModeTooltip": "Bu Dapp'te Hippo bağlanamıyor mu? <1>MetaMask Mode</1>'nu etkinleştirmeyi deneyin.",
+        "metamaskModeTooltipNew": "Hippo Wallet, Dapp'ta \"MetaMask\" seçtiğinizde bağlanacaktır. Bunu Daha Fazla > MetaMask olarak Gizlenerek Hippo Bağlan'da yönetebilirsiniz"
       },
       "feedback": {
         "directMessage": {
           "content": "Doğrudan Mesaj",
-          "description": "DeBank'ta Rabby Wallet'ın resmî ekibiyle sohbet edin"
+          "description": "DeBank'ta Hippo Wallet'ın resmî ekibiyle sohbet edin"
         },
         "proposal": {
           "content": "Öneri",
-          "description": "Rabby Wallet için DeBank'ta bir öneri sunun"
+          "description": "Hippo Wallet için DeBank'ta bir öneri sunun"
         },
         "title": "Geri Bildirim"
       },
@@ -1240,21 +1240,21 @@
       },
       "rabbyBadge": {
         "imageLabel": "rabby rozeti",
-        "title": "Şu adres için Rabby Rozetini al",
+        "title": "Şu adres için Hippo Rozetini al",
         "enterClaimCode": "Talep kodunu girin",
-        "swapTip": "Önce Rabby Cüzdanı ile tanınmış bir dex'te takas yapmanız gerekiyor.",
+        "swapTip": "Önce Hippo Cüzdanı ile tanınmış bir dex'te takas yapmanız gerekiyor.",
         "goToSwap": "Takasa Git",
         "claim": "Talep Et",
         "viewYourClaimCode": "Talep kodunuzu görüntüleyin",
         "noCode": "Bu adres için talep kodunu aktive etmediniz",
         "learnMoreOnDebank": "DeBank'ta daha fazla bilgi edinin",
-        "rabbyValuedUserNo": "Rabby değerli kullanıcı No.{{num}}",
+        "rabbyValuedUserNo": "Hippo değerli kullanıcı No.{{num}}",
         "claimSuccess": "Talep Başarılı",
         "viewOnDebank": "DeBank'ta Görüntüle",
         "learnMore": "Daha Fazla Bilgi Edinin",
         "freeGasTitle": "Free Gas Badge al",
         "freeGasNoCode": "Lütfen aşağıdaki düğmeye tıklayarak DeBank'i ziyaret edin ve ilk önce mevcut adresinizi kullanarak talep kodunu alın.",
-        "rabbyFreeGasUserNo": "Rabby Free Gas Kullanıcısı No.{{num}}",
+        "rabbyFreeGasUserNo": "Hippo Free Gas Kullanıcısı No.{{num}}",
         "freeGasTip": "Free Gas kullanarak bir işlem imzalayın. Gas'ınız yetersiz olduğunda 'Free Gas' düğmesi otomatik olarak görünür."
       },
       "contacts": {
@@ -1289,16 +1289,16 @@
         "clearPendingTip1": "Bu eylem, bekleyen işlemi arayüzünüzden kaldırarak, ağda uzun bekleme sürelerinden kaynaklanan sorunları çözmenize yardımcı olur.",
         "clearPendingTip2": "Bu işlem hesap bakiyelerinizi etkilemez ve kurtarma ifadenizi yeniden girmenizi gerektirmez. Tüm varlıklarınız ve hesap bilgileriniz güvende kalır.",
         "autoLockTime": "Otomatik kilitlenme süresi",
-        "claimRabbyBadge": "Rabby Rozetini Talep Edin!",
+        "claimRabbyBadge": "Hippo Rozetini Talep Edin!",
         "cancel": "İptal",
         "enableWhitelist": "Beyaz Listeyi Etkinleştir",
         "disableWhitelist": "Beyaz Listeyi Devre Dışı Bırak",
-        "enableWhitelistTip": "Etkinleştirildiğinde, Rabby kullanarak sadece beyaz listedeki adreslere varlık gönderebilirsiniz.",
+        "enableWhitelistTip": "Etkinleştirildiğinde, Hippo kullanarak sadece beyaz listedeki adreslere varlık gönderebilirsiniz.",
         "disableWhitelistTip": "Devre dışı bırakıldığında herhangi bir adrese varlık gönderebilirsiniz",
         "warning": "Uyarı",
         "clearWatchAddressContent": "Tüm İzleme Modu adreslerini silmek istediğinizden emin misiniz?",
         "updateVersion": {
-          "content": "Rabby Cüzdanı için yeni bir güncelleme mevcut. Manuel olarak nasıl güncelleneceğini kontrol etmek için tıklayın.",
+          "content": "Hippo Cüzdanı için yeni bir güncelleme mevcut. Manuel olarak nasıl güncelleneceğini kontrol etmek için tıklayın.",
           "okText": "Eğiticiye Bak",
           "successTip": "En güncel sürümü kullanıyorsunuz",
           "title": "Güncelleme Mevcut"
@@ -1311,7 +1311,7 @@
           "connectedDapp": "Bağlı Dapp'ler",
           "gasTopUp": "Gas yükleme",
           "searchDapps": "Dapp'leri Ara",
-          "rabbyPoints": "Rabby Puanları",
+          "rabbyPoints": "Hippo Puanları",
           "ecosystem": "Ekosistem"
         },
         "settings": {
@@ -1324,7 +1324,7 @@
           "customTestnet": "Özel Ağ Ekle",
           "themeMode": "Tema Modu",
           "toggleThemeMode": "Tema Modu",
-          "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
+          "metamaskMode": "MetaMask gibi Gizlenerek Hippo'yi Bağla",
           "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin",
           "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
           "biometricUnlock": "Biyometriklerle Kilidi Açma",
@@ -1350,7 +1350,7 @@
           "desc": "Etkinleştirildikten sonra, her bir Dapp'e bağımsız olarak hangi adresi bağlayacağınızı seçebilirsiniz. Ana adresinizi değiştirmek, her Dapp'e bağlı adresi etkilemez."
         },
         "rateModalTriggerOnHome": {
-          "description": "Rabby Wallet'ı nasıl değerlendiriyorsunuz?"
+          "description": "Hippo Wallet'ı nasıl değerlendiriyorsunuz?"
         },
         "rateModal": {
           "submitFeedbackButton": "Gönder",
@@ -1358,8 +1358,8 @@
           "feedbackDesc": "Geri bildiriminiz var mı? Biz dinliyoruz.",
           "rateOnChromeStoreButton": "Chrome Web Store'da Derecelendir",
           "thxTitle": "Teşekkür ederim!",
-          "feedbackPlaceholder": "Rabby geri bildiriminizi değerlendirir!",
-          "thxDesc": "Eğer Rabby'yi beğendiyseniz, Chrome Mağazası'na yapacağınız hızlı bir değerlendirme çok şey ifade eder."
+          "feedbackPlaceholder": "Hippo geri bildiriminizi değerlendirir!",
+          "thxDesc": "Eğer Hippo'yi beğendiyseniz, Chrome Mağazası'na yapacağınız hızlı bir değerlendirme çok şey ifade eder."
         },
         "PwdForNonWhitelistedTx": {
           "wrongPassword": "Yanlış şifre",
@@ -1382,8 +1382,8 @@
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
         "blocked": "Engellendi",
-        "selectedCustom": "Bu token Rabby tarafından listelenmemiş. Özel olarak token listesine eklediniz.",
-        "notSelectedCustom": "Bu token Rabby tarafından listelenmemiş. Aktif ederseniz token listesine eklenecek.",
+        "selectedCustom": "Bu token Hippo tarafından listelenmemiş. Özel olarak token listesine eklediniz.",
+        "notSelectedCustom": "Bu token Hippo tarafından listelenmemiş. Aktif ederseniz token listesine eklenecek.",
         "customized": "Özelleştirilmiş",
         "scamTx": "Sahte işlem",
         "txFailed": "Başarısız",
@@ -1416,7 +1416,7 @@
         "maybeScamTips": "Bu düşük kaliteli bir token ve dolandırıcılık olabilir.",
         "BridgeIssue": "Üçüncü taraf tarafından köprülenmiş token",
         "SupportedExchanges": "Desteklenen Borsalar",
-        "customizedHasAddedTips": "Token Rabby tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
+        "customizedHasAddedTips": "Token Hippo tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
         "IssuerWebsite": "Yayımcının Web Sitesi",
         "blockedListTitle": "blokajlı token",
         "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
@@ -1508,7 +1508,7 @@
         "side": "YAN TARAF",
         "price": "FİYAT",
         "searchTokenPlaceholder": "Token Ara",
-        "openInTab": "Rabby Sekmesinde Açın",
+        "openInTab": "Hippo Sekmesinde Açın",
         "openProMode": "Pro Modu Açın",
         "openInTabV2": "Sekmede Aç",
         "addAssets": "Varlık ekle"
@@ -1561,7 +1561,7 @@
         "enableDesc": "Dapp yalnızca MetaMask ile çalışıyorsa etkinleştirin",
         "footerText": "Daha fazla Dapp eklemek için Daha Fazla > MetaMask Mode altında MetaMask Mode",
         "toastSuccess": "Etkinleştirildi. Yeniden bağlanmak için sayfayı yenileyin.",
-        "desc": "Dapp'te Rabby'yi bağlayamıyorsanız, MetaMask Modenu etkinleştirin ve MetaMask seçeneğini seçerek bağlanın."
+        "desc": "Dapp'te Hippo'yi bağlayamıyorsanız, MetaMask Modenu etkinleştirin ve MetaMask seçeneğini seçerek bağlanın."
       },
       "offlineChain": {
         "chain": "{{chain}} yakında entegre edilmeyecek.",
@@ -1572,8 +1572,8 @@
         "title": "Dapp bağlantısı için burada adres değiştirin."
       },
       "rabbyPointsPopup": {
-        "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
-        "title": "Rabby Puanları",
+        "desc": "Hippo Mobile'de puanlarınızı kontrol edin.",
+        "title": "Hippo Puanları",
         "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
       },
       "noData": "Eşleşen para birimi yok",
@@ -1629,11 +1629,11 @@
           "answer": "Varlıklarınızı kontrol etmek için kullanılan 12, 18 veya 24 kelimelik bir dizidir."
         },
         "isItSafeToImportItInRabby": {
-          "question": "Rabby'e aktarmak güvenli mi?",
+          "question": "Hippo'e aktarmak güvenli mi?",
           "answer": "Evet, yalnızca tarayıcınızda yerel olarak saklanır ve sadece sizin tarafınızdan erişilebilir."
         },
         "importError": "[CreateMnemonics] beklenmeyen adım {{0}}",
-        "importQuestion4": "Kurtarma ifademi yedeklemeden Rabby'yi kaldırırsam Rabby onu kurtaramaz.",
+        "importQuestion4": "Kurtarma ifademi yedeklemeden Hippo'yi kaldırırsam Hippo onu kurtaramaz.",
         "riskTips": "Başlamadan önce, lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
         "showSeedPhrase": "Kurtarma ifadesini göster",
         "backup": "Kurtarma ifadesini yedekle",
@@ -1661,20 +1661,20 @@
         "slip39SeedPhrasePlaceholder_few": "Kurtarma ifadenizin {{count}}. payını buraya girin",
         "passphrase": "Ek parola",
         "inputInvalidCount_one": "1 girdi kurtarma ifadesi standardına uymuyor. Lütfen kontrol edin.",
-        "importQuestion3": "Kurtarma ifademi yedeklemeden Rabby'yi kaldırırsam Rabby onu kurtaramaz.",
+        "importQuestion3": "Kurtarma ifademi yedeklemeden Hippo'yi kaldırırsam Hippo onu kurtaramaz.",
         "importQuestion1": "Kurtarma ifademi kaybeder veya paylaşırsam varlıklarıma erişimimi kalıcı olarak kaybederim.",
-        "importQuestion2": "Kurtarma ifadem yalnızca cihazımda saklanır. Rabby buna erişemez.",
+        "importQuestion2": "Kurtarma ifadem yalnızca cihazımda saklanır. Hippo buna erişemez.",
         "showMoreOptions": "Daha Fazla Seçenek Göster",
         "inputInvalid": "Geçersiz kelimeler tespit edildi. Lütfen vurgulananları gözden geçirin."
       },
       "metamask": {
         "step1": "MetaMask'tan kurtarma ifadesini veya özel anahtarı dışa aktarın <br /> <1>Eğitimi görüntülemek için tıklayın <1/></1>",
-        "step2": "Kurtarma ifadesini veya özel anahtarı Rabby'de içe aktarın",
+        "step2": "Kurtarma ifadesini veya özel anahtarı Hippo'de içe aktarın",
         "step3": "İçe aktarma tamamlandı ve tüm varlıklarınız <br /> otomatik olarak görünecek",
         "how": "MetaMask Hesabımı Nasıl İçe Aktarırım?",
         "step": "Adım",
         "importSeedPhrase": "Kurtarma ifadesini veya özel anahtarı içe aktar",
-        "importSeedPhraseTips": "Sadece tarayıcıda yerel olarak saklanır. Rabby, özel bilgilerinize asla erişemez.",
+        "importSeedPhraseTips": "Sadece tarayıcıda yerel olarak saklanır. Hippo, özel bilgilerinize asla erişemez.",
         "tips": "İpuçları:",
         "tipsDesc": "Kurtarma ifadeniz veya özel anahtarınız MetaMask'a ya da belirli bir cüzdana ait değildir; yalnızca size aittir."
       },
@@ -1686,7 +1686,7 @@
           "answer": "Varlıklarınızı kontrol etmek için kullanılan harf ve sayılardan oluşan bir dizedir."
         },
         "isItSafeToImportItInRabby": {
-          "question": "Onu Rabby'e aktarmak güvenli mi?",
+          "question": "Onu Hippo'e aktarmak güvenli mi?",
           "answer": "Evet, yalnızca tarayıcınızda yerel olarak saklanır ve sadece sizin tarafınızdan erişilebilir."
         },
         "isItPossibleToImportKeystore": {
@@ -1702,9 +1702,9 @@
       "importedSuccessfully": "Başarıyla İçe Aktarıldı",
       "ledger": {
         "title": "Ledger'a Bağlan",
-        "cameraPermissionTitle": "Rabby'nin kameraya erişimine izin ver",
-        "cameraPermission1": "Tarayıcı açılır penceresinde Rabby'nin kameraya erişimine izin ver",
-        "allowRabbyPermissionsTitle": "Rabby'nin aşağıdaki yetkilere sahip olmasını izin ver:",
+        "cameraPermissionTitle": "Hippo'nin kameraya erişimine izin ver",
+        "cameraPermission1": "Tarayıcı açılır penceresinde Hippo'nin kameraya erişimine izin ver",
+        "allowRabbyPermissionsTitle": "Hippo'nin aşağıdaki yetkilere sahip olmasını izin ver:",
         "ledgerPermission1": "Bir HID cihazına bağlan",
         "ledgerPermissionTip": "Lütfen aşağıda \"İzin Ver\"i tıklayın ve sonraki açılır pencerede Ledger'a erişimi onaylayın.",
         "permissionsAuthorized": "İzinler Onaylandı",
@@ -1758,14 +1758,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "Adres Rabby'den kaldırıldı",
-          "added": "Adres Rabby'ye eklendi",
+          "removed": "Adres Hippo'den kaldırıldı",
+          "added": "Adres Hippo'ye eklendi",
           "connectError": "Bağlantı durdu. Lütfen sayfayı yenileyerek tekrar bağlanmayı deneyin.",
           "disconnected": "Donanım cüzdanına bağlanılamıyor. Lütfen yeniden bağlanmayı deneyin."
         },
         "waiting": "Bekleniyor",
         "clickToGetInfo": "Zincirden bilgi almak için tıklayın",
-        "addToRabby": "Rabby'ye Ekle",
+        "addToRabby": "Hippo'ye Ekle",
         "basicInformation": "Temel bilgiler",
         "addresses": "Adresler",
         "loadingAddress": "{{0}}/{{1}} adres yükleniyor",
@@ -1879,7 +1879,7 @@
         "manageNgraveZero": "NGRAVE ZERO'u Yönet",
         "done": "Tamam",
         "addressesIn": "{{0}} içindeki Adresler",
-        "addressesInRabby": "Rabby'deki Adresler{{0}}",
+        "addressesInRabby": "Hippo'deki Adresler{{0}}",
         "qrCode": {
           "switch": {
             "title": "Yeni bir {{0}} cihazına geçin",
@@ -1890,7 +1890,7 @@
         "importBtn": "İçe Aktar ({{count}})",
         "manageImtokenOffline": "imToken'i Yönetin",
         "manageImKey": "imKey'i Yönet",
-        "nonAddr": "Bu kurtarma ifadesine bağlı bir adres eklenmemiş. İfadeyi Rabby Extension > Adres Yönetimi bölümünden silebilirsiniz."
+        "nonAddr": "Bu kurtarma ifadesine bağlı bir adres eklenmemiş. İfadeyi Hippo Extension > Adres Yönetimi bölümünden silebilirsiniz."
       },
       "importYourKeystore": "KeyStore'unuzu İçe Aktarın",
       "incorrectPassword": "yanlış şifre",
@@ -1917,9 +1917,9 @@
         "deviceIsBusy": "Cihaz meşgul",
         "keystonePermission1": "Bir USB cihazına bağlan",
         "exportAddressJustAllowedOnHomePage": "Adres yalnızca Keystone ana ekranındayken dışa aktarılabilir",
-        "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
+        "allowRabbyPermissionsTitle": "Hippo izinlerini ver:",
         "unknowError": "Bilinmeyen hata, lütfen tekrar deneyin",
-        "deviceRejectedExportAddress": "Rabby ile bağlantıyı onayla",
+        "deviceRejectedExportAddress": "Hippo ile bağlantıyı onayla",
         "deviceIsLockedError": "Şifreyi girerek kilidi açın",
         "noDeviceFoundError": "Tek bir Keystone takın",
         "keystonePermissionTip": "Lütfen aşağıdaki açılır pencerede Keystone erişimini yetkilendirmek için \"İzin Ver\" düğmesine tıklayın ve Keystone 3 Pro'nuzun ana sayfada olduğundan emin olun.",
@@ -1927,7 +1927,7 @@
       },
       "onekey": {
         "onekeyPermission1": "Bir USB cihazına bağlan",
-        "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
+        "allowRabbyPermissionsTitle": "Hippo izinlerini ver:",
         "onekeyPermissionTip": "Aşağıdaki açılır pencerede OneKey erişimine izin vermek için \"İzin Ver\" düğmesine tıklayın. OneKey açılır pencerede görünmüyorsa cihazın bilgisayara düzgün bağlandığını kontrol edin.",
         "whyOneKey": "Neden OneKey?",
         "buyOneKey": "OneKey Satın Al",
@@ -1945,7 +1945,7 @@
       "addMoreAddresses": "Daha Fazla Adres Ekle",
       "bulkImportPrivateKeyInputTab": "Özel Anahtarı Girin",
       "watchAddress": "Sadece İzleme Adresi",
-      "openExtensionToGetStarted": "Rabby uzantısını açarak başlayın",
+      "openExtensionToGetStarted": "Hippo uzantısını açarak başlayın",
       "addressAdded": "Adres Eklendi",
       "addressImported": "Adres İçe Aktarıldı",
       "privateKeyTab": "Özel Anahtar",
@@ -1978,34 +1978,34 @@
         "error": "yanlış şifre"
       },
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan",
       "biometricFailed": "Biyometrik kilit açma başarısız oldu"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
-      "tokenSupported": "Token, Rabby tarafından destekleniyor",
+      "tokenSupported": "Token, Hippo tarafından destekleniyor",
       "tokenCustomized": "Mevcut token zaten özel olarak eklendi",
       "tokenNotFound": "Bu kontrat adresinden token bulunamadı",
-      "title": "Rabby'ye özel token ekleyin",
+      "title": "Hippo'ye özel token ekleyin",
       "balance": "Bakiye",
       "tokenOnMultiChains": "Token adresi birden fazla zincirde bulunuyor. Lütfen bir tanesini seçin",
       "noTokenFoundOnThisChain": "Bu zincirde token bulunamadı",
       "hasAdded": "Bu token eklendi."
     },
     "switchChain": {
-      "title": "Rabby'ye Özel Ağ Ekle",
-      "chainNotSupport": "İstenen zincir Rabby tarafından henüz desteklenmiyor",
+      "title": "Hippo'ye Özel Ağ Ekle",
+      "chainNotSupport": "İstenen zincir Hippo tarafından henüz desteklenmiyor",
       "testnetTip": "Testnet'lere bağlanmadan önce \"Daha Fazla\" altında \"Testnet'leri Etkinleştir\" seçeneğini açın",
       "requestsReceived": "1 istek alındı",
       "unknownChain": "Bilinmeyen zincir",
       "requestsReceivedPlural": "{{count}} istek alındı",
-      "chainNotSupportYet": "İstenen zincir henüz Rabby tarafından desteklenmiyor.",
+      "chainNotSupportYet": "İstenen zincir henüz Hippo tarafından desteklenmiyor.",
       "addChain": "Testnet Ekle",
-      "requestRabbyToSupport": "Rabby'den Destek İsteyin",
+      "requestRabbyToSupport": "Hippo'den Destek İsteyin",
       "chainId": "Zincir Kimliği:",
-      "chainNotSupportAddChain": "İstenen zincir Rabby tarafından henüz entegre edilmedi. Bunu Özel Testnet olarak ekleyebilirsiniz.",
-      "desc": "İstenen ağ henüz Rabby tarafından entegre edilmedi. Manuel olarak özel bir ağ olarak ekleyebilirsiniz."
+      "chainNotSupportAddChain": "İstenen zincir Hippo tarafından henüz entegre edilmedi. Bunu Özel Testnet olarak ekleyebilirsiniz.",
+      "desc": "İstenen ağ henüz Hippo tarafından entegre edilmedi. Manuel olarak özel bir ağ olarak ekleyebilirsiniz."
     },
     "signText": {
       "title": "Metni İmzala",
@@ -2038,10 +2038,10 @@
       "listedBy": "Listeleyen",
       "sitePopularity": "Site Popülerliği",
       "myMark": "Benim İşaretim",
-      "flagByRabby": "Rabby Tarafından İşaretlendi",
+      "flagByRabby": "Hippo Tarafından İşaretlendi",
       "flagByMM": "MetaMask Tarafından İşaretlendi",
       "flagByScamSniffer": "ScamSniffer Tarafından İşaretlendi",
-      "verifiedByRabby": "Rabby Tarafından Doğrulandı",
+      "verifiedByRabby": "Hippo Tarafından Doğrulandı",
       "foundForbiddenRisk": "Yasaklı riskler bulundu. Bağlantı engellendi.",
       "markAsTrustToast": "\"Güvenilir\" olarak işaretle",
       "markAsBlockToast": "\"Engellenmiş\" olarak işaretle",
@@ -2085,7 +2085,7 @@
       "backup-seed-phrase": "Kurtarma ifadesini yedekle",
       "delete-address": "Adresi Sil",
       "delete-desc": "Silmeden önce, varlıklarınızı nasıl koruyacağınızı anlamak için aşağıdaki noktaları göz önünde bulundurun.",
-      "direct-delete-desc": "Bu bir {{renderBrand}} adresidir. Rabby bu adresin özel anahtarını veya kurtarma ifadesini saklamaz; adresi doğrudan silebilirsiniz.",
+      "direct-delete-desc": "Bu bir {{renderBrand}} adresidir. Hippo bu adresin özel anahtarını veya kurtarma ifadesini saklamaz; adresi doğrudan silebilirsiniz.",
       "admins": "Yöneticiler",
       "tx-requires": "Herhangi bir işlem için <2>{{num}}</2> onay gereklidir",
       "edit-memo-title": "Adres notunu düzenle",
@@ -2111,14 +2111,14 @@
         "onlyDeleteAddr": "Yalnızca bu adres kaldırılır. Diğer adresleriniz kullanmaya devam ettiği için kurtarma ifadeniz etkilenmez.",
         "keepSeedPhrase": "Bu kurtarma ifadesine bağlı tek adres budur. Kurtarma ifadesini saklamak ister misiniz?",
         "check2": "Özel anahtarımı veya kurtarma ifademi yedeklediğimi ve bu adresi silmeye hazır olduğumu onaylıyorum.",
-        "check1": "Bu adresi silmenin özel anahtarını ve kurtarma ifadesini de sileceğini anlıyorum. Rabby bunları kurtaramaz.",
+        "check1": "Bu adresi silmenin özel anahtarını ve kurtarma ifadesini de sileceğini anlıyorum. Hippo bunları kurtaramaz.",
         "sub-title": "Bu eylem kalıcıdır. Lütfen varlıklarınızı korumak için aşağıdakileri gözden geçirin:"
       },
       "deletePrivateKey": {
         "title": "Adres ve Özel anahtarı silmek istiyor musunuz?",
         "check2": "Özel anahtarımı veya kurtarma ifademi yedeklediğimi ve bu adresi silmeye hazır olduğumu onaylıyorum.",
         "sub-title": "Bu eylem kalıcıdır. Varlıklarınızı korumak için lütfen aşağıdakileri gözden geçirin:",
-        "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını da sileceğini anlıyorum. Rabby bunları benim için geri getiremez."
+        "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını da sileceğini anlıyorum. Hippo bunları benim için geri getiremez."
       },
       "notBackup": "Yedekleme Yok"
     },
@@ -2134,7 +2134,7 @@
       "closed": "Kapalı",
       "empty": "Özel RPC URL yok",
       "title": "RPC URL'sini Değiştir",
-      "desc": "Değiştirildiğinde, özel RPC Rabby'nin düğümünü değiştirecektir. Rabby'nin düğümünü kullanmaya devam etmek için özel RPC'yi silin.",
+      "desc": "Değiştirildiğinde, özel RPC Hippo'nin düğümünü değiştirecektir. Hippo'nin düğümünü kullanmaya devam etmek için özel RPC'yi silin.",
       "add": "RPC URL'yi Değiştir",
       "EditRPCModal": {
         "invalidRPCUrl": "Geçersiz RPC URL'i",
@@ -2151,9 +2151,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "DeBank Testnet Gas Tokeni İste",
-      "mintedTip": "Rabby Rozeti sahipleri günde bir kez istekte bulunabilir",
-      "notMintedTip": "Sadece Rabby Rozeti sahipleri talep edebilir",
-      "claimBadgeBtn": "Rabby Rozetini Talep Et",
+      "mintedTip": "Hippo Rozeti sahipleri günde bir kez istekte bulunabilir",
+      "notMintedTip": "Sadece Hippo Rozeti sahipleri talep edebilir",
+      "claimBadgeBtn": "Hippo Rozetini Talep Et",
       "time": "Günde bir kez",
       "requested": "Bugün talepte bulundunuz",
       "requestBtn": "İstek"
@@ -2209,7 +2209,7 @@
       "clickToShowQr": "Özel anahtar QR Kodunu göstermek için tıklayın"
     },
     "ethSign": {
-      "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için             Rabby bu yöntemi desteklememektedir."
+      "alert": "'eth_sign' ile imzalama varlık kaybına yol açabilir. Güvenliğiniz için             Hippo bu yöntemi desteklememektedir."
     },
     "createPassword": {
       "title": "Şifre Oluştur",
@@ -2224,7 +2224,7 @@
     "welcome": {
       "step1": {
         "title": "Tüm Dapp'lara Eriş",
-        "desc": "Rabby, MetaMask'ın desteklediği tüm Dapp'lere bağlanır"
+        "desc": "Hippo, MetaMask'ın desteklediği tüm Dapp'lere bağlanır"
       },
       "step2": {
         "title": "Kendi Gözetiminiz Altında",
@@ -2255,7 +2255,7 @@
         "confirmModal": {
           "title": "Bu Toplayıcı ile Ticaret Yapmayı Etkinleştir",
           "tip1": "Etkinleştirildiğinde, bu toplayıcıdan doğrudan sözleşmeyle etkileşime gireceksiniz.",
-          "tip2": "2. Rabby, bu toplayıcının sözleşmesinden kaynaklanan herhangi bir riskten sorumlu değildir.",
+          "tip2": "2. Hippo, bu toplayıcının sözleşmesinden kaynaklanan herhangi bir riskten sorumlu değildir.",
           "i-understand-and-accept-it": "Anladım ve kabul ediyorum"
         },
         "confirm": "Onayla",
@@ -2297,7 +2297,7 @@
       "approve-and-bridge": "Onayla ve köprüle",
       "completedTip": "Zincir üzerinde işlem, kaydı oluşturmak için verileri çözme",
       "bridge-cost": "Köprü maliyeti",
-      "rabby-fee": "Rabby ücreti",
+      "rabby-fee": "Hippo ücreti",
       "est-difference": "Tahmini Fark:",
       "duration": "{{duration}} dk",
       "aggregator-not-enabled": "Bu toplayıcı, sizin tarafınızdan ticaret yapmak için etkinleştirilmedi.",
@@ -2441,10 +2441,10 @@
         "earnTip": "Günde bir kez sınır. Lütfen puanları 00:00 UTC+0'dan sonra kazanın."
       },
       "claimModal": {
-        "rabbyValuedUserBadge": "Rabby Değerli Kullanıcı Rozeti",
+        "rabbyValuedUserBadge": "Hippo Değerli Kullanıcı Rozeti",
         "invalid-code": "geçersiz kod",
         "claim": "Talep",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
         "cantUseOwnCode": "Kendi referral kodunuzu kullanamazsınız.",
         "title": "Başlangıç Puanlarını Talep Edin",
         "addressBalance": "Cüzdan bakiyesi",
@@ -2452,7 +2452,7 @@
         "MetaMaskSwap": "MetaMask Swap",
         "activeStats": "Aktif Durum",
         "season2": "Sezon 2",
-        "rabbyUser": "Rabby Aktif Kullanıcı",
+        "rabbyUser": "Hippo Aktif Kullanıcı",
         "placeholder": "Ekstra puanlar için Tavsiye Kodunu girin (isteğe bağlı)",
         "snapshotTime": "Anlık görüntü zamanı: {{time}}",
         "referral-code": "Referans Kodu"
@@ -2479,11 +2479,11 @@
       "earn-points": "Puan Kazanın",
       "referral-code-copied": "Referans kodu kopyalandı",
       "top-100": "İlk 100",
-      "title": "Rabby Puanları",
+      "title": "Hippo Puanları",
       "share-on": "Paylaş",
       "out-of-x-current-total-points": "Toplam Dağıtılan Puanlardan {{total}}",
-      "secondRoundEnded": "🎉 Rabby Points ikinci turu sona erdi",
-      "firstRoundEnded": "🎉 İlk Rabby Puanı turu sona erdi",
+      "secondRoundEnded": "🎉 Hippo Points ikinci turu sona erdi",
+      "firstRoundEnded": "🎉 İlk Hippo Puanı turu sona erdi",
       "initialPointsClaimEnded": "İlk Puanlar talep süresi sona erdi",
       "code-set-successfully": "Referans kodu başarıyla ayarlandı"
     },
@@ -2502,7 +2502,7 @@
       "AddFromChainList": {
         "tips": {
           "added": "Bu zinciri zaten eklediniz",
-          "supported": "Zincir halihazırda Rabby Wallet tarafından entegre edilmiştir."
+          "supported": "Zincir halihazırda Hippo Wallet tarafından entegre edilmiştir."
         },
         "empty": "Zincir bulunamadı",
         "search": "Özel ağ adı veya ID ara",
@@ -2512,18 +2512,18 @@
         "title": "İşlem Verileri"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "Zincir zaten Rabby tarafından entegre edilmiştir. RPC URL'sini değiştirmek istiyor musunuz?"
+        "desc": "Zincir zaten Hippo tarafından entegre edilmiştir. RPC URL'sini değiştirmek istiyor musunuz?"
       },
       "title": "Özel Ağ",
       "add": "Özel Ağ Ekle",
       "empty": "Özel Ağ Yok",
       "currency": "Para Birimi",
       "id": "ID",
-      "desc": "Rabby, özel ağların güvenliğini doğrulayamaz. Lütfen yalnızca güvenilir ağlar ekleyin."
+      "desc": "Hippo, özel ağların güvenliğini doğrulayamaz. Lütfen yalnızca güvenilir ağlar ekleyin."
     },
     "addChain": {
-      "desc": "Rabby özel ağların güvenliğini doğrulayamaz. Lütfen yalnızca güvenilir ağlar ekleyin.",
-      "title": "Rabby'ye Özel Ağ Ekle"
+      "desc": "Hippo özel ağların güvenliğini doğrulayamaz. Lütfen yalnızca güvenilir ağlar ekleyin.",
+      "title": "Hippo'ye Özel Ağ Ekle"
     },
     "sign": {
       "transactionSpeed": "İşlem Hızı"
@@ -2667,7 +2667,7 @@
         "selectToken": "Yatırılacak tokeni seçin",
         "token": "Token",
         "amount": "Miktar",
-        "desc": "Rabby'nin DeBank L2 Hesabına ekstra ücret ödemeden para yatırın—istediğiniz zaman çekin.",
+        "desc": "Hippo'nin DeBank L2 Hesabına ekstra ücret ödemeden para yatırın—istediğiniz zaman çekin.",
         "title": "Para Yatırma",
         "invalidAmount": "500'ün altında olmalı",
         "paymentAddr": "Ödeme Adresi",
@@ -2745,15 +2745,15 @@
         "title4": "GasAccount güvende mi",
         "title1": "GasAccount nedir",
         "title3": "GasAccount'ın ek ücretleri var mı?",
-        "desc3": "Rabby Wallet ek ücret talep etmez. Sadece işleminiz için gaz ödersiniz ve bu gazı GasAccount'tan adresinize göndermek için küçük bir gaz ücreti ödersiniz.",
+        "desc3": "Hippo Wallet ek ücret talep etmez. Sadece işleminiz için gaz ödersiniz ve bu gazı GasAccount'tan adresinize göndermek için küçük bir gaz ücreti ödersiniz.",
         "desc2": "GasAccount'unuza fon ekleyin ve bunu herhangi bir işlem için kullanın. İmzalama sırasında, gazı yerel token'larla veya GasAccount ile ödeme seçeneğini belirleyin, istediğiniz zaman geçiş yapın.",
-        "desc4": "GasAccount, herhangi bir sözleşme onayı veya izni gerektirmez. Rabby’nin GasAccount adresine para yatırırsınız ve ihtiyaç duyulduğunda Rabby, adresinize gaz gönderir. Tasarımı gereği tamamen güvenlidir.",
+        "desc4": "GasAccount, herhangi bir sözleşme onayı veya izni gerektirmez. Hippo’nin GasAccount adresine para yatırırsınız ve ihtiyaç duyulduğunda Hippo, adresinize gaz gönderir. Tasarımı gereği tamamen güvenlidir.",
         "desc1": "GasAccount, gaz ücretlerini ödemenin yeni bir yoludur. Her bir zincirde yerel token'lar kullanmak yerine, tüm zincirlerdeki tüm adresleriniz için gaz ödemek üzere tek bir hesap kullanabilirsiniz. Basit, isteğe bağlı ve asla gazsız kalmaz."
       },
       "benefitCard": {
         "title": "Tüm zincirlerde Gas Ücretlerini Ödeyin",
         "subtitle": "gasınız bittiğinde",
-        "item1": "Rabby Ücreti Yok",
+        "item1": "Hippo Ücreti Yok",
         "desc1": "gas ödemek için ekstra ücret yok",
         "item2": "Tüm ağları destekler",
         "desc2": "80+ ağda otomatik gas ödemeleri",
@@ -2783,15 +2783,15 @@
       "guide": {
         "importAddress": "Zaten bir adresim var",
         "createNewAddress": "Yeni bir adres oluştur",
-        "title": "Rabby Wallet'e Hoş Geldiniz",
+        "title": "Hippo Wallet'e Hoş Geldiniz",
         "desc": "Ethereum ve EVM için vazgeçilmez cüzdanınız"
       },
       "createNewAddress": {
         "showSeedPhrase": "Kurtarma ifadesini göster",
         "title": "Başlamadan Önce",
-        "tip2": "Kurtarma ifadem yalnızca cihazımda saklanır. Rabby buna erişemez.",
+        "tip2": "Kurtarma ifadem yalnızca cihazımda saklanır. Hippo buna erişemez.",
         "desc": "Lütfen aşağıdaki güvenlik ipuçlarını okuyun ve aklınızda bulundurun.",
-        "tip3": "Kurtarma ifademi yedeklemeden Rabby'yi kaldırırsam Rabby onu kurtaramaz.",
+        "tip3": "Kurtarma ifademi yedeklemeden Hippo'yi kaldırırsam Hippo onu kurtaramaz.",
         "tip1": "Kurtarma ifademi kaybeder veya paylaşırsam varlıklarıma erişimimi kalıcı olarak kaybederim."
       },
       "importList": {
@@ -2831,17 +2831,17 @@
         "start": "Başlayın",
         "create": "Başarıyla Oluşturuldu",
         "openWallet": "Cüzdanı Aç",
-        "desc": "Rabby Wallet Kullanıma Hazır!",
+        "desc": "Hippo Wallet Kullanıma Hazır!",
         "backupSeedPhraseNow": "Kurtarma ifadesini şimdi yedekleyin",
         "backupSeedPhrase": "Kurtarma ifadesini yedekle"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet'i Sabitle",
+        "pin": "Hippo Wallet'i Sabitle",
         "guides": {
           "step1": "Tarayıcı uzantısı simgesine tıklayın",
-          "step2": "Rabby Wallet’i sabitle"
+          "step2": "Hippo Wallet’i sabitle"
         },
-        "desc": "Rabby Cüzdanını Bul ve Sabitle",
+        "desc": "Hippo Cüzdanını Bul ve Sabitle",
         "extensionTip": "Tıkla <1/> ve ardından <3/>",
         "title": "Cüzdanınız hazır!"
       },
@@ -2922,15 +2922,15 @@
     },
     "metamaskModeDapps": {
       "title": "İzin Verilen Dapp'leri Yönet",
-      "desc": "MetaMask Mode aşağıdaki Dapp’ler için etkinleştirildi. MetaMask seçeneğini seçerek Rabby bağlanabilirsiniz."
+      "desc": "MetaMask Mode aşağıdaki Dapp’ler için etkinleştirildi. MetaMask seçeneğini seçerek Hippo bağlanabilirsiniz."
     },
     "forgotPassword": {
       "home": {
         "button": "Sıfırlama İşlemine Başla",
         "buttonNoData": "Şifre Belirle",
         "title": "Şifre Unutuldu",
-        "description": "Rabby Wallet şifrenizi saklamaz ve size geri getirmede yardımcı olamaz. Yeni bir cüzdan kurmak için cüzdanınızı sıfırlayın.",
-        "descriptionNoData": "Rabby Cüzdanı, şifrenizi saklamaz ve onu geri almanıza yardımcı olamaz. Unuttuysanız yeni bir şifre belirleyin."
+        "description": "Hippo Wallet şifrenizi saklamaz ve size geri getirmede yardımcı olamaz. Yeni bir cüzdan kurmak için cüzdanınızı sıfırlayın.",
+        "descriptionNoData": "Hippo Cüzdanı, şifrenizi saklamaz ve onu geri almanıza yardımcı olamaz. Unuttuysanız yeni bir şifre belirleyin."
       },
       "reset": {
         "alert": {
@@ -2946,7 +2946,7 @@
           "safe": "İçe Aktarılan Safe Cüzdanları",
           "watch": "Rehber ve Sadece İzlenen Adresler"
         },
-        "title": "Rabby Wallet'i Sıfırla",
+        "title": "Hippo Wallet'i Sıfırla",
         "button": "Sıfırlamayı Onayla",
         "confirm": "Kutuyu onaylamak ve devam etmek için <1>RESET</1> yazın"
       },
@@ -2955,12 +2955,12 @@
         "button": "Şifre Belirle",
         "descriptionNoData": "Adresinizi ekleyerek başlayın",
         "description": "Yeni bir parola oluşturun ve devam edin",
-        "title": "Rabby Wallet Sıfırlama Tamamlandı"
+        "title": "Hippo Wallet Sıfırlama Tamamlandı"
       },
       "success": {
         "button": "Tamamlandı",
         "title": "Şifre Başarıyla Ayarlandı",
-        "description": "Rabby Wallet kullanmaya hazırsınız."
+        "description": "Hippo Wallet kullanmaya hazırsınız."
       }
     },
     "eip7702": {
@@ -2972,11 +2972,11 @@
         "enabled": "Kılık etkinleştirildi. Yeniden bağlanmak için Dapp'i yenileyin."
       },
       "step2": "Adım 2",
-      "step1Desc": "Rabby'nin mevcut Dapp'te MetaMask gibi görünmesine izin ver",
+      "step1Desc": "Hippo'nin mevcut Dapp'te MetaMask gibi görünmesine izin ver",
       "step1": "Adım 1",
-      "title": "MetaMask gibi görünerek Rabby'yi Bağla",
+      "title": "MetaMask gibi görünerek Hippo'yi Bağla",
       "step2Desc": "MetaMask ile yenileyin ve bağlanın",
-      "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Rabby Wallet bir seçenek olarak gözükmüyor mu?",
+      "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Hippo Wallet bir seçenek olarak gözükmüyor mu?",
       "noDappFound": "Dapp bulunamadı",
       "manage": "İzin Verilen Dapp'leri Yönet"
     },
@@ -2984,11 +2984,11 @@
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
       "clickToShowQr": "Adresi seçmek ve QR kodunu göstermek için tıklayın",
-      "steps1": "1. Rabby Mobil'i indir",
+      "steps1": "1. Hippo Mobil'i indir",
       "description": "Adres verileriniz tamamen çevrimdışı kalır, şifrelenir ve güvenli bir şekilde bir QR kodu aracılığıyla aktarılır.",
-      "steps2": "2. Rabby Mobil ile tarayın",
+      "steps2": "2. Hippo Mobil ile tarayın",
       "steps2Description": "QR kodunuz hassas veriler içerir. Gizli tutun ve asla kimseyle paylaşmayın.",
-      "title": "Rabby Uzantısından Mobil Cihaza Cüzdan Adresini Senkronize Et",
+      "title": "Hippo Uzantısından Mobil Cihaza Cüzdan Adresini Senkronize Et",
       "disableSelectAddress": "{{type}} adresi için senkronizasyon desteklenmiyor",
       "disableSelectAddressWithPassphrase": "Ek parolalı {{type}} adreslerinde senkronizasyon desteklenmez",
       "disableSelectAddressWithSlip39": "SLIP-39 kullanan {{type}} adreslerinin senkronizasyonu desteklenmiyor",
@@ -3047,7 +3047,7 @@
           "risks": {
             "contractAddress": "Kontrat adresi tespit edildi, fonlar kaybolabilir.",
             "dexNoDeposite": "Bu bir CEX yatırma adresi değil; fonlar kaybolabilir",
-            "scamAddress": "Rabby tarafından işaretlenmiş dolandırıcılık adresi",
+            "scamAddress": "Hippo tarafından işaretlenmiş dolandırıcılık adresi",
             "noSend": "Bu adrese son 180 gündür göndermediniz."
           }
         },
@@ -3253,7 +3253,7 @@
           "floor": "Zemin",
           "listedAs": "Listelenen olarak",
           "floorDifference": "Taban farkı",
-          "rabbyFee": "Rabby ücreti (0%)",
+          "rabbyFee": "Hippo ücreti (0%)",
           "proceeds": "Gelirler",
           "listOn": "OpenSea'de listele",
           "creatorFee": "Yaratıcı ücretleri ({{fee}}%)",
@@ -3279,7 +3279,7 @@
           "acceptOffer": "Teklifi Kabul Et",
           "creatorFeeTips": "Yaratıcı kazançları satıcı tarafından ödenecek.",
           "totalEst": "Toplam tahmini gelir",
-          "rabbyFee": "Rabby ücreti (0%)",
+          "rabbyFee": "Hippo ücreti (0%)",
           "floorDifference": "Taban fiyatı farkı",
           "offerPrice": "Teklif Fiyatı",
           "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
@@ -3522,7 +3522,7 @@
         "title": "Hyperliquid ücretlerinden tasarruf edin",
         "activateNow": "Şimdi Etkinleştir",
         "hyperliquidFee": "Hyperliquid işlem ücretleri.",
-        "description": "Rabby’nin kodunu kullanarak etkinleştirin.",
+        "description": "Hippo’nin kodunu kullanarak etkinleştirin.",
         "activatedSuccess": "4% Hyperliquid ücret tasarrufu etkinleştirildi"
       },
       "positions": "Pozisyonlar",
@@ -3540,7 +3540,7 @@
       "closeAll": "Tümünü Kapat",
       "withdraw": "Çek",
       "leverage": "Kaldıraç",
-      "rabbyFeeTipsZero": "Rabby ücreti: 0%",
+      "rabbyFeeTipsZero": "Hippo ücreti: 0%",
       "insufficientBalance": "Yetersiz bakiye",
       "lastUsed": "En son kullanılan",
       "timeAgo": "{{time}} önce",
@@ -3580,7 +3580,7 @@
       "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
       "size": "Pozisyon Büyüklüğü",
       "autoClose": "Otomatik Kapat",
-      "rabbyFeeTipsV2": "Rabby ücreti: 0,02%",
+      "rabbyFeeTipsV2": "Hippo ücreti: 0,02%",
       "stopLossTipsLongLiquidation": "Fiyat, tasfiye fiyatının ({{price}}) altında.",
       "long": "Uzun Pozisyon",
       "stopLoss": "Zarar Durdurma Emri",
@@ -4146,7 +4146,7 @@
         "insufficientBalance": "Yetersiz bakiye",
         "available": "Kullanılabilir",
         "invalidNumber": "Geçersiz sayı",
-        "rabbyFee": "Rabby Ücret",
+        "rabbyFee": "Hippo Ücret",
         "sizeTips": "İşleminizin toplam değeri veya hacmi, marjin ve kaldıraç tarafından belirlenir.",
         "size": "Pozisyon Büyüklüğü",
         "takeProfitWhenPriceBelow": "Fiyat Belirlenen Seviyenin Altına Düştüğünde Kar Al",
@@ -4958,7 +4958,7 @@
     },
     "EcologyNoticeModal": {
       "notRemind": "Bir daha bana hatırlatma",
-      "desc": "Aşağıdaki hizmetler doğrudan üçüncü taraf Ekosistem Ortağı tarafından sağlanacaktır. Rabby Wallet, bu hizmetlerin güvenliğinden sorumlu değildir.",
+      "desc": "Aşağıdaki hizmetler doğrudan üçüncü taraf Ekosistem Ortağı tarafından sağlanacaktır. Hippo Wallet, bu hizmetlerin güvenliğinden sorumlu değildir.",
       "title": "Dikkat"
     },
     "ReserveGasPopup": {
@@ -4970,8 +4970,8 @@
     },
     "OpenExternalWebsiteModal": {
       "button": "Devam Et",
-      "title": "Rabby Wallet'ten Ayrılıyorsunuz",
-      "content": "Harici bir web sitesini ziyaret etmek üzeresiniz. Rabby Wallet, bu sitenin içeriğinden veya güvenliğinden sorumlu değildir."
+      "title": "Hippo Wallet'ten Ayrılıyorsunuz",
+      "content": "Harici bir web sitesini ziyaret etmek üzeresiniz. Hippo Wallet, bu sitenin içeriğinden veya güvenliğinden sorumlu değildir."
     },
     "TokenChart": {
       "holding": "Değer Tutma",
@@ -4998,7 +4998,7 @@
     },
     "ChainItem": {
       "appChain": "{{chain}} Hesabı üzerinde",
-      "hyperliquidCode": "Rabby'nin referans kodu ile Hyperliquid ücretlerinden tasarruf edin."
+      "hyperliquidCode": "Hippo'nin referans kodu ile Hyperliquid ücretlerinden tasarruf edin."
     },
     "RiskTip": {
       "title": "Risk Tespit Edildi"
@@ -5041,13 +5041,13 @@
       "placeholderRequired": "Sorunu açıklayın (gerekli)"
     },
     "feedbackPopup": {
-      "title": "Rabby Destek'ten Yanıt",
+      "title": "Hippo Destek'ten Yanıt",
       "issueReported": "İşte bildirdiğiniz sorun:",
-      "issueReplied": "Rabby Destek yanıtladı:"
+      "issueReplied": "Hippo Destek yanıtladı:"
     }
   },
   "global": {
-    "appName": "Rabby Wallet",
+    "appName": "Hippo Wallet",
     "copied": "Kopyalandı",
     "confirm": "Onayla",
     "next": "İleri",

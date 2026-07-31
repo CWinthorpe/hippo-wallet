@@ -31,7 +31,7 @@ const CATEGORY_ALL_ID = 'all';
 const SearchInput = styled(Input)`
   background-color: var(--r-neutral-card1, #fff) !important;
   &.ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff) !important;
+    border-color: var(--r-blue-default, #0372ff) !important;
   }
   .ant-input {
     background-color: transparent !important;
@@ -43,7 +43,7 @@ const SearchInput = styled(Input)`
     color: var(--r-neutral-foot, #6a7587) !important;
   }
   &:hover {
-    border-color: var(--r-blue-default, #7084ff) !important;
+    border-color: var(--r-blue-default, #0372ff) !important;
   }
   border-color: var(--r-neutral-line, #d3d8e0) !important;
 `;

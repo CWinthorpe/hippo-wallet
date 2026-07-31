@@ -83,7 +83,7 @@ const onMessageSetUpExtensionStreams = (msg) => {
     if (!pm) {
       setupExtensionStreams();
     }
-    return Promise.resolve(`Rabby: handled ${EXTENSION_MESSAGES.READY}`);
+    return Promise.resolve(`Hippo Wallet: handled ${EXTENSION_MESSAGES.READY}`);
   }
   return undefined;
 };

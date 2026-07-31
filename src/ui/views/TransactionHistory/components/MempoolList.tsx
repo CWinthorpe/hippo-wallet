@@ -33,9 +33,9 @@ const Wrapper = styled.div`
     gap: 10px;
 
     border-radius: 2px;
-    background: var(--r-blue-light-1, #eef1ff);
+    background: var(--r-blue-light-1, #eaf2ff);
 
-    color: var(--r-blue-default, #7084ff);
+    color: var(--r-blue-default, #0372ff);
     font-size: 13px;
     font-weight: 500;
     border: 1px solid transparent;
@@ -43,8 +43,8 @@ const Wrapper = styled.div`
 
     &:hover,
     &:active {
-      border: 1px solid var(--r-blue-default, #7084ff);
-      border: 0.5px solid var(--r-blue-default, #7084ff);
+      border: 1px solid var(--r-blue-default, #0372ff);
+      border: 0.5px solid var(--r-blue-default, #0372ff);
       background: var(--r-blue-light-2, #dee3fc);
     }
 

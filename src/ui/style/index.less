@@ -5,25 +5,45 @@
 
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
-    sans-serif;
+  font-family: 'IBM Plex Mono', 'Noto Sans JP', monospace;
 }
 
 [lang='zh-CN'],
 [lang='zh-HK'] {
   html&,
   html& body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
-      'PingFang SC', 'Microsoft Yahei', sans-serif;
+    font-family: 'IBM Plex Mono', 'PingFang SC', 'Microsoft Yahei', monospace;
   }
 }
 
 [lang='ja'] {
   html&,
   html& body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto,
-      'Noto Sans JP', sans-serif;
+    font-family: 'IBM Plex Mono', 'Noto Sans JP', monospace;
   }
+}
+
+button,
+input,
+textarea,
+select,
+.ant-input,
+.ant-select,
+.ant-dropdown,
+.ant-popover,
+.ant-modal-content {
+  font-family: 'IBM Plex Mono', 'Noto Sans JP', monospace;
+}
+
+h1,
+h2,
+h3,
+.page-title,
+.ant-modal-title,
+.ant-drawer-title,
+.ant-btn {
+  font-family: 'Pixel Operator', 'IBM Plex Mono', 'Noto Sans JP', monospace;
+  letter-spacing: 0.02em;
 }
 
 h1,
@@ -55,7 +75,7 @@ button:focus {
 
 .create-new-header {
   position: relative;
-  background: var(--r-blue-default, #7084ff);
+  background: var(--r-blue-default, #0372FF);
   padding: 32px 20px;
 
   .unlock-logo {
@@ -176,7 +196,7 @@ button:focus {
   // background-color: #f5f6fa;
   &__header {
     height: 180px;
-    background: var(--r-blue-default, #4c65ff);
+    background: var(--r-blue-default, #0372FF);
   }
   &__header-inner {
     position: relative;
@@ -265,7 +285,7 @@ button:focus {
     position: absolute;
     padding: 4px;
     border-radius: 6px;
-    background-color: var(--r-blue-light-2, #dbe0ff);
+    background-color: var(--r-blue-light-2, #D6E7FF);
     width: 360px;
     top: calc(100% + 8px);
     left: 50%;
@@ -273,7 +293,7 @@ button:focus {
     cursor: pointer;
     user-select: none;
     &__inner {
-      background-color: var(--r-blue-light-2, #dbe0ff);
+      background-color: var(--r-blue-light-2, #D6E7FF);
       border-radius: 4px;
       height: 40px;
       display: flex;
@@ -357,7 +377,7 @@ button:focus {
   border-width: 1px;
   transition: border 0.2s;
   &:hover {
-    border-color: #b0bdff;
+    border-color: #5DA2FF;
   }
 }
 
@@ -384,7 +404,7 @@ button:focus {
 }
 
 .slogan {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Pixel Operator', 'IBM Plex Mono', monospace;
   font-weight: bold;
   width: 100%;
   margin: 0;
@@ -415,15 +435,15 @@ button:focus {
 
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:hover {
   // background: #f3f5fe !important;
-  background: var(--r-blue-light-2, #eef1ff) !important;
-  color: var(--r-blue-default, #7084ff);
+  background: var(--r-blue-light-2, #EAF2FF) !important;
+  color: var(--r-blue-default, #0372FF);
   box-shadow: none;
   &::before {
     opacity: 0;
   }
 }
 .rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:disabled {
-  color: var(--r-blue-default, #7084ff) !important;
+  color: var(--r-blue-default, #0372FF) !important;
 }
 
 .input-password-popup {

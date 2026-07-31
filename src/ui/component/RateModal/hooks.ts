@@ -254,7 +254,7 @@ export function useRateModal() {
           });
           needFeedbackText &&
             ga4.fireEvent('Rate_SubmitAdvice', {
-              event_category: 'Rate Rabby',
+              event_category: 'Rate Hippo',
             });
         }
       } catch (error) {
@@ -273,7 +273,7 @@ export function useRateModal() {
   );
 
   const openAppRateUrl = useCallback(() => {
-    ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
+    ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Hippo' });
     openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
   }, [rateModalState.userStar]);
 

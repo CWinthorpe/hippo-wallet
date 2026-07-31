@@ -29,7 +29,7 @@ const DASHED_LINE_STYLE = {
   opacity: 0.5,
   height: 0,
   width: '100%',
-  borderBottom: '1px dashed var(--r-blue-default, #7084FF)',
+  borderBottom: '1px dashed var(--r-blue-default, #0372FF)',
 };
 
 function useForceDisableRateGuideOnLaunch(modalShow: boolean) {

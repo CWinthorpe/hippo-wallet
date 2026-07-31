@@ -85,7 +85,7 @@ const Container = styled.section`
   }
 
   .token-list-row:not(.is-disabled):hover {
-    background: rgba(112, 132, 255, 0.04);
+    background: rgba(3, 114, 255, 0.04);
   }
 
   .token-list-row + .token-list-row {

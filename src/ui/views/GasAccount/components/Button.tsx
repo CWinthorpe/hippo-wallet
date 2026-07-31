@@ -38,19 +38,19 @@ export const GasAccountBlueBorderedButton = styled(Button)`
   font-style: normal;
   font-weight: 500;
   background-color: transparent;
-  color: var(--r-blue-default, #7084ff);
-  border: 1px solid var(--r-blue-default, #7084ff);
+  color: var(--r-blue-default, #0372ff);
+  border: 1px solid var(--r-blue-default, #0372ff);
 
   &:focus {
     background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
+    color: var(--r-blue-default, #0372ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
   }
 
   &:hover {
-    background: var(--r-blue-light1, #eef1ff);
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light1, #eaf2ff);
+    color: var(--r-blue-default, #0372ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
   }
 
   &:hover:before {
@@ -66,7 +66,7 @@ export const GasAccountBlueBorderedButton = styled(Button)`
   &.ant-btn[disabled]:focus,
   &.ant-btn[disabled]:active {
     background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
+    color: var(--r-blue-default, #0372ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
   }
 `;

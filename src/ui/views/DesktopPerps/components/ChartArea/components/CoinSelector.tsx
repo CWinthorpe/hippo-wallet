@@ -43,13 +43,13 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
 
   // Update browser tab title with market data
   useEffect(() => {
-    const originalTitle = 'Rabby Wallet';
+    const originalTitle = 'Hippo Wallet';
     const markPx = currentMarketData?.markPx;
 
     if (markPx && isPerpsRoute) {
       const price = splitNumberByStep(Number(markPx));
       const base = formatPerpsCoin(marketMeta?.displayName || coin);
-      document.title = `$${price} | ${base} | Rabby`;
+      document.title = `$${price} | ${base} | Hippo Wallet`;
     } else {
       document.title = originalTitle;
     }

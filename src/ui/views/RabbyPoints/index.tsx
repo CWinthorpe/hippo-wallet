@@ -76,7 +76,7 @@ const Wrapper = styled.div`
     .ant-tabs-tab-btn {
       color: var(--r-neutral-body, #3e495e);
       &:hover {
-        color: var(--r-blue-default, #7084ff);
+        color: var(--r-blue-default, #0372ff);
       }
     }
     .ant-tabs-nav-list {
@@ -89,7 +89,7 @@ const Wrapper = styled.div`
       }
     }
     .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-      color: var(--r-blue-default, #7084ff);
+      color: var(--r-blue-default, #0372ff);
     }
 
     .ant-tabs-nav::before {
@@ -118,13 +118,13 @@ const miniSignRabbyPointVerifyAddress = async (params: {
         id: account?.address,
         invite_code: code,
       })
-    )?.text; //`${account?.address} Claims Rabby Points`;
+    )?.text; //`${account?.address} Claims Hippo Points`;
   } else {
     verifyText = (
       await wallet!.openapi.getRabbySignatureTextV2({
         id: account?.address,
       })
-    )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
+    )?.text; //`Hippo Wallet wants you to sign in with your address:\n${account?.address}`;
   }
 
   const msg = `0x${Buffer.from(

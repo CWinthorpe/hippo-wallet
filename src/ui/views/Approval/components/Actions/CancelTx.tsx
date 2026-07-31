@@ -15,8 +15,8 @@ import {
 const Wrapper = styled.div`
   .container {
     flex: 1;
-    background: var(--r-blue-light-1, #eef1ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light-1, #eaf2ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
     border-radius: 6px;
     padding: 12px;
     // margin-top: 14px;
@@ -27,7 +27,7 @@ const Wrapper = styled.div`
       position: absolute;
       text-align: center;
       z-index: 1;
-      color: var(--r-blue-default, #7084ff);
+      color: var(--r-blue-default, #0372ff);
       font-size: 12px;
       line-height: 12px;
       top: -7px;

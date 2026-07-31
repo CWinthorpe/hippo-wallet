@@ -65,7 +65,7 @@ const Wraper = styled.div`
   }
   .ant-input-affix-wrapper:focus,
   .ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff);
+    border-color: var(--r-blue-default, #0372ff);
   }
 
   .chain-list-item:not(:last-child)::after {

@@ -29,7 +29,7 @@ let callStackCounter = 0;
 
 class LatticeKeyring extends OldLatticeKeyring {
   [x: string]: any;
-  appName = 'Rabby';
+  appName = 'Hippo';
   static type = keyringType;
   type = keyringType;
   pairingCredsRefreshed = false;

@@ -23,10 +23,10 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Rabby",
+    "default_title": "Hippo Wallet",
     "default_popup": "popup.html"
   },
-  "author": "https://rabby.io/",
+  "author": "Hippo Wallet contributors",
   "background": {
     "page": "background.html",
     "persistent": true
@@ -65,5 +65,6 @@
   ],
   "web_accessible_resources": [
     "pageProvider.js"
-  ]
+  ],
+  "homepage_url": "https://github.com/CWinthorpe/hippo-wallet"
 }

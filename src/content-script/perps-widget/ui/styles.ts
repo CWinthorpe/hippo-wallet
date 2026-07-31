@@ -1,5 +1,5 @@
 /**
- * Dark-only by product decision (decoupled from Rabby's theme preference).
+ * Dark-only by product decision (decoupled from Hippo's theme preference).
  * adoptedStyleSheets bypasses the host page's CSP `style-src`.
  */
 
@@ -20,7 +20,7 @@ const STYLES = `
   :host {
     all: initial;
     ${buildHostVars()}
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
     color-scheme: dark;
   }
 

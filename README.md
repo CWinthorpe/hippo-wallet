@@ -1,121 +1,71 @@
-# Rabby Wallet
+# Hippo Wallet
 
-Rabby Wallet is an open-source browser plugin for the DeFi ecosystem, providing users with a better-to-use and more secure multi-chain experience.
+![Hippo Wallet](./src/ui/assets/hippo-wallet-logo.svg)
 
-> **Private fork:** read [the privacy, RPC-routing, and build notes](./docs/private-fork.md) before use. Behavioral telemetry is disabled, but Rabby-operated feature APIs remain.
+Hippo Wallet is a privacy-focused, self-custodial browser wallet for DeFi. It is based on the MIT-licensed Rabby Wallet codebase and carries the required upstream copyright notice in [`LICENSE`](./LICENSE).
+
+## What is different
+
+- Original Hippo Wallet name, icon family, wordmark, and Resupply-inspired visual system.
+- Pixel Operator display typography and IBM Plex Mono interface typography.
+- Behavioral analytics, crash reporting, uninstall metrics, rating telemetry, and persistent installation identifiers disabled by construction.
+- One primary RPC plus ordered replay-safe read fallbacks per chain.
+- One explicitly selected signed-transaction broadcast RPC with no retry, fan-out, or automatic backend fallback.
+- Direct `eth_chainId` validation for every configured RPC endpoint.
+- WalletConnect/Reown configured only from an operator-owned build-time project ID.
+
+Read [`docs/private-fork.md`](./docs/private-fork.md) before using the wallet. It separates removed telemetry from functional API, RPC, asset/security-service, and Reown traffic that remains necessary for wallet features.
 
 ## Install
 
-You can download the latest Rabby [here](https://github.com/RabbyHub/Rabby/releases/latest).
+Download the latest private MV3 release from:
 
-## Guideline for Integrating Rabby Wallet
+<https://github.com/CWinthorpe/hippo-wallet/releases/latest>
 
-To help dapp developers support and integrate Rabby Wallet more easily, we recommend using our integration solution that has almost NO development cost and does not introduce any uncertainty:
+Extract the ZIP, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted folder.
 
-### Problem
+## Build
 
-When a dapp connects to an extension wallet, it usually works in this way:
+Requirements:
 
-1. The extension wallet will integrate an "Ethereum" object into the dapp page while it's loading.
-2. The dapp will look for this "Ethereum" object to determine if an extension wallet is installed.
-3. If the "Ethereum" object is detected, all following interactions between the dapp and the extension wallet are realized by this "Ethereum" object.
-4. If the "Ethereum" object is not detected, the dapp will ask users to download a new extension wallet.
+- Node.js 22+
+- the vendored Yarn 4 release in `.yarn/releases/`
+- an operator-owned Reown project ID for WalletConnect pairing
 
-The problem is that many dapps will wrongly display this detected "Ethereum" object as "MetaMask" and display a "connect to MetaMask" button by default, which brings a lot of confusion to the users since any Web3 wallet can inject this "Ethereum" object.
+```bash
+node .yarn/releases/yarn-4.14.1.cjs install --check-cache
+WALLETCONNECT_PROJECT_ID='<your Reown project id>' \
+  node .yarn/releases/yarn-4.14.1.cjs build:pro
+```
 
-### Solution
+The unpacked MV3 extension is written to `dist/`.
 
-We recommend solving the above problem with simple modifications as follows:
+## Verify
 
-1. On your connection page, display both connection buttons for "MetaMask" and "Rabby Wallet" when the "Ethereum" object is detected. These two buttons basically have the same function. Users can click either of them to interact with the "Ethereum" object and perform the connection operation. These two buttons are only used to display both brands' logos to help users understand their operation path.
-2. If the "Ethereum" object is not detected, then suggest that users download the extension wallet and provide download links for both "MetaMask" and "Rabby Wallet."
+```bash
+node .yarn/releases/yarn-4.14.1.cjs check
+node .yarn/releases/yarn-4.14.1.cjs test --runInBand
+```
 
-This solution does not involve any changes to your actual business logic and is just simple UI adjustments. It does not introduce any uncertainty and is rather low cost.
+Brand assets can be regenerated with:
 
-You can refer to [debank.com](https://debank.com) for the final display effect.
+```bash
+python3 scripts/generate-hippo-brand-assets.py
+```
 
-### Potential Issues
-
-According to the above solution, if a user is using the "Rabby Wallet" and clicks the "connect to MetaMask" button, they will still interact with the "Rabby Wallet" and vice versa, which might be a bit weird.
-
-However, this issue is a very rare scenario and very unlikely to happen because users are not likely to click and interact with an extension wallet they haven't installed. Even if it happens, it's not a real problem from the user's perspective.
-
-Please don't hesitate to reach out if you have any doubts.
-
-## Contribution
-
-### Install Dependency
-
-1. Install Node.js version 22 or later.
-2. Enable Corepack: `corepack enable`
-3. Run `yarn install` to install dependencies.
-
-### Development
-
-Run `yarn build:dev` to develop with file watching and development logging (you can see requests sent by the dapp in the website console in this mode, and notifications will not close when focus is lost).
-
-Run `yarn build:pro` to build a production package, which will be in the `dist` folder.
+That optional asset-generation step requires Pillow and fontTools. The editable indexed source is [`brand/hippo-wallet-icon.aseprite`](./brand/hippo-wallet-icon.aseprite).
 
 ## Architecture
 
-![architecture](./docs/architecture.png)
+The extension retains the upstream background, content-script, page-provider, and shared UI architecture. Internal `rabby` storage keys, package namespaces, compatibility flags, and upstream API identifiers are intentionally retained where changing them would corrupt existing wallet state or break protocol compatibility. They are not the user-facing product identity.
 
-## Extension's Scripts
+## Privacy and functional traffic
 
-Below 4 scripts all live in different contexts!
+See:
 
-### `background.js`
+- [`docs/private-fork.md`](./docs/private-fork.md)
+- [`docs/brand-and-font-notices.md`](./docs/brand-and-font-notices.md)
 
-Handles all async requests and encryption tasks.
+## License
 
-User's keyrings, passwords, and wallet personal preference data are all stored in Chrome local storage.
-
-It has 2 main controllers:
-
-1. `walletController`
-
-   Exposes methods to the background window, so other scripts can access these methods with `runtime.getBackgroundPage`, e.g., `ui.js`.
-
-2. `providerController`
-
-   Handles requests from pages (dapp requests).
-
-### `content-script`
-
-Injected at `document_start`, shares the same DOM with the dapp, and uses `broadcastChannel` to tap `pageProvider`.
-
-The main purpose is to inject `pageProvider.js` and pass messages between `pageProvider.js` and `background.js`.
-
-### `pageProvider.js`
-
-This script is injected into the dapp's context through `content-script`. It mounts `ethereum` to `window`.
-
-When the dapp uses `window.ethereum` to request, it will send a message to `content-script` with `broadcastChannel` and wait for its response.
-
-Then the `content-script` will send a message to `background` with `runtime.connect`.
-
-After `background` receives the message, it will use `providerController` to handle the request and keep the message channel in `sessionService` for later communication.
-
-### `ui`
-
-Used by 3 pages which share the same JS code, but the HTML template is different for each respective purpose.
-
-1. `notification.html`
-
-   Triggered by the dapp to request the user's permission.
-
-2. `index.html`
-
-   Opened in a browser tab for a better user interaction experience.
-
-3. `popup.html`
-
-   Shown when the user clicks the extension icon to the right of the address bar.
-
-## Thanks
-
-Thanks to contributions from the MetaMask team to the browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
-
-## Other Docs
-
-- [How to add a new translation to Rabby](/docs/translation.md)
+The software remains distributed under the MIT License. See [`LICENSE`](./LICENSE). Third-party font notices are documented separately.

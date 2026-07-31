@@ -59,7 +59,7 @@
       "gasPriceTitle": "Precio del gas (Gwei)",
       "maxPriorityFee": "Comisión de prioridad máxima (Gwei)",
       "eip1559Desc1": "En las cadenas compatibles con EIP-1559, la Priority Fee es la propina que reciben los mineros por procesar tu transacción. Si reduces la Priority Fee, puedes ahorrar en el coste final de gas, aunque la transacción puede tardar más en procesarse.",
-      "eip1559Desc2": "En Rabby, Priority Fee (propina) = Max Fee - Base Fee. Después de configurar la Max Priority Fee, se descuenta la Base Fee y el resto se entrega a los mineros como propina.",
+      "eip1559Desc2": "En Hippo, Priority Fee (propina) = Max Fee - Base Fee. Después de configurar la Max Priority Fee, se descuenta la Base Fee y el resto se entrega a los mineros como propina.",
       "hardwareSupport1559Alert": "Asegúrate de que el firmware de tu billetera de hardware se haya actualizado a la versión que admita EIP 1559",
       "gasLimitTitle": "Gas Limit",
       "recommendGasLimitTip": "Est. {{est}}. Actual {{current}}x, recomendado ",
@@ -132,7 +132,7 @@
         "trustValueLessThan": "Valor de confianza ≤ {{value}}",
         "deployTimeLessThan": "Tiempo desplegado < {{value}} días",
         "amountPopupTitle": "Importe a autorizar",
-        "flagByRabby": "Marcado por Rabby",
+        "flagByRabby": "Marcado por Hippo",
         "contractTrustValueTip": "El valor de confianza se refiere al valor total de los activos gastados por este contrato. Un valor bajo indica un riesgo o 180 días de inactividad.",
         "exceed": "Supera tu saldo actual",
         "amount": "Aprobar cantidad:"
@@ -197,8 +197,8 @@
       "neverInteracted": "Nunca interactuado antes",
       "transacted": "Transacción previa",
       "neverTransacted": "Nunca transaccionado antes",
-      "fakeTokenAlert": "Este es un token falso marcado por Rabby",
-      "scamTokenAlert": "Según la detección de Rabby, este token podría ser de baja calidad y fraudulento",
+      "fakeTokenAlert": "Este es un token falso marcado por Hippo",
+      "scamTokenAlert": "Según la detección de Hippo, este token podría ser de baja calidad y fraudulento",
       "trusted": "Confiable",
       "blocked": "Bloqueado",
       "noMark": "Sin marca",
@@ -207,7 +207,7 @@
       "signTransactionOnChain": "Firmar Transacción en {{chain}}",
       "viewRaw": "Ver en crudo",
       "unknownActionType": "Tipo de acción desconocido",
-      "sigCantDecode": "Esta firma no puede ser decodificada por Rabby",
+      "sigCantDecode": "Esta firma no puede ser decodificada por Hippo",
       "nftCollection": "Colección de NFT",
       "floorPrice": "Precio mínimo",
       "contractAddress": "Dirección del contrato",
@@ -234,7 +234,7 @@
       "customRPCErrorModal": {
         "button": "Desactivar RPC personalizado",
         "title": "Error RPC personalizado",
-        "content": "Tu RPC personalizado no está disponible ahora. Puedes desactivarlo y continuar firmando usando el RPC oficial de Rabby."
+        "content": "Tu RPC personalizado no está disponible ahora. Puedes desactivarlo y continuar firmando usando el RPC oficial de Hippo."
       },
       "transferOwner": {
         "title": "Transferir la propiedad de activos",
@@ -336,7 +336,7 @@
       "noDelegatedAddress": "No hay dirección delegada importada",
       "l2GasEstimateTooltip": "La estimación de gas para la cadena L2 no incluye la tarifa de gas de L1. La tarifa real será más alta que la estimación actual.",
       "chain": "Cadena",
-      "decodedTooltip": "Esta firma es decodificada por Rabby Wallet",
+      "decodedTooltip": "Esta firma es decodificada por Hippo Wallet",
       "amount": "Cantidad",
       "protocol": "Protocolo",
       "yes": "Sí",
@@ -354,8 +354,8 @@
       "safeServiceNotAvailable": "El servicio de Safe no está disponible ahora, por favor intenta más tarde.",
       "safeTx": {
         "selfHostConfirm": {
-          "content": "La API de Safe no está disponible. Cambia al servicio de Safe desplegado por Rabby para mantener tu Safe funcional. <strong>Todos los firmantes de Safe deben usar Rabby Wallet para autorizar transacciones.</strong>",
-          "title": "Cambiar al servicio Safe de Rabby",
+          "content": "La API de Safe no está disponible. Cambia al servicio de Safe desplegado por Hippo para mantener tu Safe funcional. <strong>Todos los firmantes de Safe deben usar Hippo Wallet para autorizar transacciones.</strong>",
+          "title": "Cambiar al servicio Safe de Hippo",
           "button": "OK"
         }
       },
@@ -403,7 +403,7 @@
         "connected": "Conectado y listo para firmar.",
         "howToSwitch": "¿Cómo cambiar?",
         "wrongAddressAlert": "Has cambiado a una dirección diferente en la billetera móvil. Por favor, cambia a la dirección correcta en la billetera móvil.",
-        "connectBeforeSign": "{{0}} no está conectado a Rabby, por favor conéctate antes de firmar.",
+        "connectBeforeSign": "{{0}} no está conectado a Hippo, por favor conéctate antes de firmar.",
         "chainSwitched": "Has cambiado a una cadena diferente en la billetera móvil. Por favor, cambia a {{0}} en la billetera móvil.",
         "latency": "Latencia",
         "requestSuccessToast": "Solicitud enviada exitosamente.",
@@ -465,7 +465,7 @@
         "notEnough": "El saldo de gas no es suficiente",
         "GetFreeGasToSign": "Obtener Free Gas",
         "walletConnectUnavailableTip": "La billetera móvil conectada a través de WalletConnect no es compatible con Free Gas.",
-        "rabbyPayGas": "Rabby pagará el gas necesario, solo firma",
+        "rabbyPayGas": "Hippo pagará el gas necesario, solo firma",
         "unavailable": "Tu saldo de Gas no es suficiente",
         "watchUnavailableTip": "La dirección de solo observación no es compatible con Free Gas",
         "customRpcUnavailableTip": "Las RPC personalizadas no son compatibles con Free Gas"
@@ -557,7 +557,7 @@
         "label": "Transacciones",
         "empty": {
           "title": "Aún no hay transacciones firmadas",
-          "desc": "Todas las transacciones firmadas a través de Rabby se listarán aquí."
+          "desc": "Todas las transacciones firmadas a través de Hippo se listarán aquí."
         },
         "common": {
           "unlimited": "ilimitado",
@@ -655,7 +655,7 @@
         "label": "Texto",
         "empty": {
           "title": "Aún no hay textos firmados",
-          "desc": "Todos los textos firmados a través de Rabby se listarán aquí."
+          "desc": "Todos los textos firmados a través de Hippo se listarán aquí."
         }
       }
     },
@@ -946,14 +946,14 @@
       "topUpChain": "Red que recargar",
       "Amount": "Cantidad",
       "Continue": "Continuar",
-      "InsufficientBalance": "No hay suficiente saldo en la dirección del contrato de Rabby para la cadena actual. Por favor, intenta de nuevo más tarde.",
+      "InsufficientBalance": "No hay suficiente saldo en la dirección del contrato de Hippo para la cadena actual. Por favor, intenta de nuevo más tarde.",
       "hightGasFees": "Esta cantidad de recarga es demasiado pequeña porque la red de destino requiere altas tarifas de gas.",
       "No_Tokens": "Sin tokens",
       "InsufficientBalanceTips": "Saldo insuficiente",
       "payment": "Pago de la recarga de gas",
       "Loading_Tokens": "Cargando tokens...",
       "Including-service-fee": "Incluyendo tarifa de servicio de {{fee}}",
-      "service-fee-tip": "Al ofrecer el servicio de recarga de gas, Rabby asume el riesgo de fluctuación del precio de los tokens y la tarifa de gas de la recarga. Por eso se cobra una tarifa de servicio del 20 %.",
+      "service-fee-tip": "Al ofrecer el servicio de recarga de gas, Hippo asume el riesgo de fluctuación del precio de los tokens y la tarifa de gas de la recarga. Por eso se cobra una tarifa de servicio del 20 %.",
       "Confirm": "Confirmar",
       "Deposit-tip": "Depositar con USDC/USDT",
       "Value": "Valor",
@@ -988,7 +988,7 @@
       "amount-in": "Cantidad en {{symbol}}",
       "unlimited-allowance": "Autorización ilimitada",
       "insufficient-balance": "Saldo insuficiente",
-      "rabby-fee": "Tarifa de Rabby",
+      "rabby-fee": "Tarifa de Hippo",
       "minimum-received": "Mínimo recibido",
       "there-is-no-fee-and-slippage-for-this-trade": "Este intercambio no tiene slippage",
       "approve-tips": "1. Aprobar → 2. Intercambiar",
@@ -1000,7 +1000,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "No has habilitado este exchange para operar.",
       "enable-it": "Habilitarlo",
       "this-token-pair-is-not-supported": "Este par de tokens no es compatible",
-      "QuoteLessWarning": "La cantidad recibida se estima a partir de la simulación de transacción de Rabby. La oferta proporcionada por el exchange es {{receive}}. Recibirás {{diff}} menos de la oferta esperada.",
+      "QuoteLessWarning": "La cantidad recibida se estima a partir de la simulación de transacción de Hippo. La oferta proporcionada por el exchange es {{receive}}. Recibirás {{diff}} menos de la oferta esperada.",
       "by-transaction-simulation-the-quote-is-valid": "La simulación de la transacción confirma la cotización",
       "wrap-contract": "Contrato de wrap",
       "directlySwap": "Hacer wrap de tokens {{symbol}} directamente mediante el contrato inteligente",
@@ -1028,17 +1028,17 @@
       "i-understand-and-accept-it": "Entiendo y acepto",
       "confirm": "Confirmar",
       "tradingSettingTip1": "1. Una vez habilitado, interactuarás directamente con el contrato del exchange.",
-      "tradingSettingTip2": "2. Rabby no se hace responsable de los riesgos derivados del contrato de los exchanges.",
+      "tradingSettingTip2": "2. Hippo no se hace responsable de los riesgos derivados del contrato de los exchanges.",
       "gas-fee": "Tarifa de gas: {{gasUsed}}",
       "estimate": "Estimado:",
       "actual": "Real:",
       "rabbyFee": {
-        "title": "Tarifa de Rabby",
-        "swapDesc": "Rabby Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Rabby cobra una comisión del 0,25 % (0 % para Wrap), incluida automáticamente en la cotización.",
+        "title": "Tarifa de Hippo",
+        "swapDesc": "Hippo Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Hippo cobra una comisión del 0,25 % (0 % para Wrap), incluida automáticamente en la cotización.",
         "wallet": "Billetera",
         "button": "Entendido",
         "rate": "Porcentaje de la tarifa",
-        "bridgeDesc": "Rabby Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Rabby cobra una tarifa del 0,25 %, incluida automáticamente en la cotización."
+        "bridgeDesc": "Hippo Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Hippo cobra una tarifa del 0,25 %, incluida automáticamente en la cotización."
       },
       "lowCreditModal": {
         "title": "Este token tiene un bajo valor de crédito",
@@ -1054,10 +1054,10 @@
       "fetch-best-quote": "Obteniendo la mejor cotización",
       "from": "Desde",
       "approve-and-swap": "Aprobar e intercambiar mediante {{name}}",
-      "no-fees-for-wrap": "Sin tarifa de Rabby para Wrap",
+      "no-fees-for-wrap": "Sin tarifa de Hippo para Wrap",
       "hidden-no-quote-rates_other": "{{count}} tipos de cambio no disponibles",
       "no-slippage-for-wrap": "Sin deslizamiento para Wrap",
-      "no-fee-for-wrap": "Sin tarifa de Rabby por Wrap",
+      "no-fee-for-wrap": "Sin tarifa de Hippo por Wrap",
       "two-step-approve-details": "El token USDT requiere 2 transacciones para cambiar el límite de gasto. Primero debes establecerlo en cero y, después, definir el nuevo valor.",
       "sort-with-gas": "Ordenar con gas",
       "loss-tips": "Estás perdiendo {{usd}}. Prueba con una cantidad menor en un mercado pequeño.",
@@ -1085,7 +1085,7 @@
       "whitelisted-address": "Dirección en lista blanca",
       "addressTypeTip": "Importado por {{type}}",
       "delete-desc": "Antes de eliminar, ten en cuenta los siguientes puntos para entender cómo proteger tus activos.",
-      "delete-checklist-1": "Entiendo que, si elimino esta dirección, también se eliminarán su clave privada y frase de recuperación, y Rabby NO podrá recuperarlas.",
+      "delete-checklist-1": "Entiendo que, si elimino esta dirección, también se eliminarán su clave privada y frase de recuperación, y Hippo NO podrá recuperarlas.",
       "delete-checklist-2": "Confirmo que he hecho una copia de seguridad de la clave privada o la frase de recuperación y que ya puedo eliminar la dirección.",
       "confirm": "Confirmar",
       "cancel": "Cancelar",
@@ -1141,7 +1141,7 @@
           "nft": "NFT",
           "ecology": "Ecosistema",
           "bridge": "Bridge",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "mobile": "Sincronización móvil",
           "perps": "Perps",
           "gasAccount": "GasAccount",
@@ -1159,9 +1159,9 @@
         "comingSoon": "Próximamente",
         "soon": "Pronto",
         "refreshTheWebPageToTakeEffect": "Actualiza la página web para que surtan efecto los cambios",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabby está en uso y MetaMask está prohibido",
+        "rabbyIsInUseAndMetamaskIsBanned": "Hippo está en uso y MetaMask está prohibido",
         "flip": "Cambiar",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMask está en uso y Rabby está prohibido",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask está en uso y Hippo está prohibido",
         "transactionNeedsToSign": "se necesita firmar la transacción",
         "transactionsNeedToSign": "se necesitan firmar las transacciones",
         "view": "Ver",
@@ -1187,7 +1187,7 @@
         "metamaskTooltip": "Prefieres usar MetaMask con esta dApp. Puedes cambiarlo en cualquier momento en Configuración > dApps preferidas de MetaMask",
         "connected": "Conectado",
         "notConnected": "No conectado",
-        "connectedDapp": "Rabby no está conectado a la dApp actual. Para conectarte, busca el botón de conexión en la página web de la dApp y haz clic en él.",
+        "connectedDapp": "Hippo no está conectado a la dApp actual. Para conectarte, busca el botón de conexión en la página web de la dApp y haz clic en él.",
         "noDappFound": "No se encontró ninguna dApp",
         "disconnectAll": "Desconectar todo",
         "disconnectRecentlyUsed": {
@@ -1204,17 +1204,17 @@
         "noRecentlyConnectedDapps": "No hay dApps conectadas recientemente",
         "noConnectedDapps": "No hay dApps conectadas",
         "dapps": "dApps",
-        "metamaskModeTooltip": "¿No puedes conectar Rabby en esta dApp? Prueba a habilitar el <1>modo MetaMask</1>",
-        "metamaskModeTooltipNew": "Rabby Wallet se conectará cuando selecciones \"MetaMask\" en la dApp. Puedes gestionarlo en Más > Conectar Rabby como MetaMask"
+        "metamaskModeTooltip": "¿No puedes conectar Hippo en esta dApp? Prueba a habilitar el <1>modo MetaMask</1>",
+        "metamaskModeTooltipNew": "Hippo Wallet se conectará cuando selecciones \"MetaMask\" en la dApp. Puedes gestionarlo en Más > Conectar Hippo como MetaMask"
       },
       "feedback": {
         "directMessage": {
           "content": "Mensaje directo",
-          "description": "Chatea con la cuenta oficial de Rabby Wallet en DeBank"
+          "description": "Chatea con la cuenta oficial de Hippo Wallet en DeBank"
         },
         "proposal": {
           "content": "Propuesta",
-          "description": "Envía una propuesta para Rabby Wallet en DeBank"
+          "description": "Envía una propuesta para Hippo Wallet en DeBank"
         },
         "title": "Comentarios"
       },
@@ -1239,21 +1239,21 @@
         }
       },
       "rabbyBadge": {
-        "imageLabel": "distintivo de Rabby",
-        "title": "Reclama el distintivo de Rabby para",
+        "imageLabel": "distintivo de Hippo",
+        "title": "Reclama el distintivo de Hippo para",
         "enterClaimCode": "Ingresa el código de reclamo",
-        "swapTip": "Primero debes completar un swap con un DEX conocido desde Rabby Wallet.",
+        "swapTip": "Primero debes completar un swap con un DEX conocido desde Hippo Wallet.",
         "goToSwap": "Ir a Swap",
         "claim": "Reclamar",
         "viewYourClaimCode": "Ver tu código de reclamación en DeBank",
         "noCode": "Aún no has activado el código de reclamación para esta dirección",
         "learnMoreOnDebank": "Más información en DeBank",
-        "rabbyValuedUserNo": "Usuario destacado de Rabby n.º {{num}}",
+        "rabbyValuedUserNo": "Usuario destacado de Hippo n.º {{num}}",
         "claimSuccess": "Reclamado correctamente",
         "viewOnDebank": "Ver en DeBank",
         "learnMore": "Aprender más",
         "freeGasTip": "Firma una transacción con Free Gas. El botón 'Free Gas' aparecerá automáticamente cuando no tengas suficiente gas.",
-        "rabbyFreeGasUserNo": "Usuario de Rabby Free Gas n.º {{num}}",
+        "rabbyFreeGasUserNo": "Usuario de Hippo Free Gas n.º {{num}}",
         "freeGasNoCode": "Haz clic en el botón de abajo para visitar DeBank y obtener primero el código de reclamación con tu dirección actual.",
         "freeGasTitle": "Reclamar Free Gas Badge para"
       },
@@ -1289,16 +1289,16 @@
         "clearPendingTip1": "Esta acción elimina la transacción pendiente de tu interfaz, ayudando a resolver problemas causados por largas duraciones de espera en la red.",
         "clearPendingTip2": "No afecta a los saldos de tu cuenta ni requiere volver a introducir tu frase de recuperación. Todos tus activos y datos de cuenta permanecen seguros.",
         "autoLockTime": "Tiempo de bloqueo automático",
-        "claimRabbyBadge": "¡Reclama el Rabby Badge!",
+        "claimRabbyBadge": "¡Reclama el Hippo Badge!",
         "cancel": "Cancelar",
         "enableWhitelist": "Habilitar lista blanca",
         "disableWhitelist": "Deshabilitar lista blanca",
-        "enableWhitelistTip": "Una vez habilitada, solo podrás enviar activos a las direcciones en la lista blanca usando Rabby.",
+        "enableWhitelistTip": "Una vez habilitada, solo podrás enviar activos a las direcciones en la lista blanca usando Hippo.",
         "disableWhitelistTip": "Podrás enviar activos a cualquier dirección una vez deshabilitada",
         "warning": "Advertencia",
         "clearWatchAddressContent": "¿Estás seguro de que deseas eliminar todas las direcciones en modo de observación?",
         "updateVersion": {
-          "content": "Hay una nueva actualización para Rabby Wallet disponible. Haz clic para ver cómo actualizar manualmente.",
+          "content": "Hay una nueva actualización para Hippo Wallet disponible. Haz clic para ver cómo actualizar manualmente.",
           "okText": "Ver tutorial",
           "successTip": "Estás usando la última versión",
           "title": "Actualización disponible"
@@ -1310,7 +1310,7 @@
           "manageAddress": "Administrar direcciones",
           "connectedDapp": "dApps conectadas",
           "searchDapps": "Buscar dApps",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "gasTopUp": "Recargar gas",
           "ecosystem": "Ecosistema"
         },
@@ -1324,7 +1324,7 @@
           "customTestnet": "Agregar red personalizada",
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
-          "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
+          "metamaskMode": "Conectar Hippo disfrazándolo como MetaMask",
           "enableDappAccount": "Cambiar la dirección de cada dApp de forma independiente",
           "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias a direcciones fuera de la lista blanca",
           "biometricUnlock": "Desbloquear con biometría",
@@ -1350,16 +1350,16 @@
           "desc": "Una vez habilitado, puedes elegir de forma independiente qué dirección conectar a cada dApp. Cambiar tu dirección principal no afectará a la dirección conectada a cada dApp."
         },
         "rateModalTriggerOnHome": {
-          "description": "¿Cómo calificarías Rabby Wallet?"
+          "description": "¿Cómo calificarías Hippo Wallet?"
         },
         "rateModal": {
           "feedbackSuccess": "¡Gracias por tus comentarios!",
           "submitFeedbackButton": "Enviar",
-          "feedbackPlaceholder": "¡Rabby valora tus comentarios!",
+          "feedbackPlaceholder": "¡Hippo valora tus comentarios!",
           "rateOnChromeStoreButton": "Valorar en Chrome Web Store",
           "thxTitle": "¡Gracias!",
           "feedbackDesc": "¿Tienes algún comentario? Te escuchamos.",
-          "thxDesc": "Si te gusta Rabby, una rápida valoración en la Chrome Store significaría mucho."
+          "thxDesc": "Si te gusta Hippo, una rápida valoración en la Chrome Store significaría mucho."
         },
         "PwdForNonWhitelistedTx": {
           "titleDisable": "Introduce la contraseña para desactivar",
@@ -1382,8 +1382,8 @@
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
         "blocked": "Bloqueado",
-        "selectedCustom": "El token no está en la lista de Rabby. Lo has añadido a la lista de tokens de forma personalizada.",
-        "notSelectedCustom": "El token no está en la lista de Rabby. Se añadirá a la lista de tokens si lo activas.",
+        "selectedCustom": "El token no está en la lista de Hippo. Lo has añadido a la lista de tokens de forma personalizada.",
+        "notSelectedCustom": "El token no está en la lista de Hippo. Se añadirá a la lista de tokens si lo activas.",
         "customized": "Personalizado",
         "scamTx": "Tx de estafa",
         "txFailed": "Fallido",
@@ -1413,7 +1413,7 @@
         "AddToMyTokenList": "Agregar a mi lista de tokens",
         "ContractAddress": "Dirección del contrato",
         "BridgeIssue": "Token transferido mediante un bridge de terceros",
-        "customizedHasAddedTips": "El token no está listado por Rabby. Lo has añadido a la lista de tokens manualmente.",
+        "customizedHasAddedTips": "El token no está listado por Hippo. Lo has añadido a la lista de tokens manualmente.",
         "BridgeProvider": "Proveedor del bridge",
         "blockedTips": "Los tokens bloqueados no se mostrarán en la lista de tokens.",
         "blockedListTitle": "token bloqueado",
@@ -1508,7 +1508,7 @@
         "price": "PRECIO",
         "side": "LADO",
         "searchTokenPlaceholder": "Buscar token",
-        "openInTab": "Abrir en la pestaña de Rabby",
+        "openInTab": "Abrir en la pestaña de Hippo",
         "openProMode": "Abrir modo Pro",
         "openInTabV2": "Abrir en pestaña",
         "addAssets": "Añadir activos"
@@ -1561,7 +1561,7 @@
         "footerText": "Añade más dApps al modo MetaMask en Más > Modo MetaMask",
         "title": "Modo MetaMask",
         "toastSuccess": "Habilitado. Actualiza la página para reconectar.",
-        "desc": "Si no puedes conectar Rabby a una dApp, habilita el modo MetaMask y conéctate seleccionando la opción MetaMask."
+        "desc": "Si no puedes conectar Hippo a una dApp, habilita el modo MetaMask y conéctate seleccionando la opción MetaMask."
       },
       "offlineChain": {
         "chain": "{{chain}} dejará de estar integrado próximamente.",
@@ -1572,9 +1572,9 @@
         "title": "Cambia aquí la dirección de conexión de la dApp"
       },
       "rabbyPointsPopup": {
-        "title": "Rabby Points",
+        "title": "Hippo Points",
         "downloadIntro": "¿No tienes la aplicación aún? Descárgala ahora.",
-        "desc": "Consulta tus puntos en Rabby Mobile."
+        "desc": "Consulta tus puntos en Hippo Mobile."
       },
       "noData": "No se encontró moneda",
       "ZeroAssets": {
@@ -1629,11 +1629,11 @@
           "answer": "Una frase de 12, 18 o 24 palabras que permite controlar tus activos."
         },
         "isItSafeToImportItInRabby": {
-          "question": "¿Es seguro importarla en Rabby?",
+          "question": "¿Es seguro importarla en Hippo?",
           "answer": "Sí, se almacenará localmente en tu navegador y solo será accesible para ti."
         },
         "importError": "[CreateMnemonics] paso inesperado {{0}}",
-        "importQuestion4": "Si desinstalo Rabby sin hacer una copia de seguridad de la frase de recuperación, Rabby no podrá recuperarla.",
+        "importQuestion4": "Si desinstalo Hippo sin hacer una copia de seguridad de la frase de recuperación, Hippo no podrá recuperarla.",
         "riskTips": "Antes de comenzar, por favor lee y ten en cuenta los siguientes consejos de seguridad.",
         "showSeedPhrase": "Mostrar frase de recuperación",
         "backup": "Hacer copia de seguridad de la frase de recuperación",
@@ -1661,20 +1661,20 @@
         "invalidContent": "Contenido no válido",
         "inputInvalidCount_one": "1 entrada no cumple el formato de una frase de recuperación. Revísala.",
         "inputInvalidCount_other": "{{count}} entradas no cumplen el formato de una frase de recuperación. Revísalas.",
-        "importQuestion2": "Mi frase de recuperación solo se almacena en mi dispositivo. Rabby no puede acceder a ella.",
-        "importQuestion3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase de recuperación, Rabby no podrá recuperarla.",
+        "importQuestion2": "Mi frase de recuperación solo se almacena en mi dispositivo. Hippo no puede acceder a ella.",
+        "importQuestion3": "Si desinstalo Hippo sin hacer una copia de seguridad de mi frase de recuperación, Hippo no podrá recuperarla.",
         "importQuestion1": "Si pierdo o comparto mi frase de recuperación, perderé permanentemente el acceso a mis activos.",
         "showMoreOptions": "Mostrar más opciones",
         "inputInvalid": "Se han detectado palabras no válidas. Revisa las resaltadas."
       },
       "metamask": {
         "step1": " Exporta la frase de recuperación o la clave privada desde MetaMask <br /> <1>Haz clic para ver el tutorial <1/></1>",
-        "step2": "Importa la frase de recuperación o la clave privada en Rabby",
+        "step2": "Importa la frase de recuperación o la clave privada en Hippo",
         "step3": "La importación se ha completado y todos tus activos se mostrarán <br /> automáticamente",
         "how": "¿Cómo importar mi cuenta de MetaMask?",
         "step": "Paso",
         "importSeedPhrase": "Importa la frase de recuperación o la clave privada",
-        "importSeedPhraseTips": "Solo se almacenará localmente en el navegador. Rabby nunca tendrá acceso a tu información privada.",
+        "importSeedPhraseTips": "Solo se almacenará localmente en el navegador. Hippo nunca tendrá acceso a tu información privada.",
         "tips": "Consejos:",
         "tipsDesc": "Tu frase de recuperación/clave privada no pertenece a MetaMask ni a ninguna billetera específica; solo te pertenece a ti."
       },
@@ -1686,7 +1686,7 @@
           "answer": "Una cadena de letras y números utilizada para controlar tus activos."
         },
         "isItSafeToImportItInRabby": {
-          "question": "¿Es seguro importarla en Rabby?",
+          "question": "¿Es seguro importarla en Hippo?",
           "answer": "Sí, se almacenará localmente en tu navegador y solo será accesible para ti."
         },
         "isItPossibleToImportKeystore": {
@@ -1702,9 +1702,9 @@
       "importedSuccessfully": "Importado exitosamente",
       "ledger": {
         "title": "Conectar Ledger",
-        "cameraPermissionTitle": "Permitir que Rabby acceda a la cámara",
-        "cameraPermission1": "Permitir que Rabby acceda a la cámara en la ventana emergente del navegador",
-        "allowRabbyPermissionsTitle": "Permitir permisos a Rabby para:",
+        "cameraPermissionTitle": "Permitir que Hippo acceda a la cámara",
+        "cameraPermission1": "Permitir que Hippo acceda a la cámara en la ventana emergente del navegador",
+        "allowRabbyPermissionsTitle": "Permitir permisos a Hippo para:",
         "ledgerPermission1": "Conectar a un dispositivo HID",
         "ledgerPermissionTip": "Por favor, haz clic en \\\"Permitir\\\" a continuación y autoriza el acceso a tu Ledger en la siguiente ventana emergente.",
         "permissionsAuthorized": "Permisos autorizados",
@@ -1758,14 +1758,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "La dirección ha sido eliminada de Rabby",
-          "added": "La dirección ha sido agregada a Rabby",
+          "removed": "La dirección ha sido eliminada de Hippo",
+          "added": "La dirección ha sido agregada a Hippo",
           "connectError": "La conexión se ha detenido. Por favor, actualiza la página para conectarte nuevamente.",
           "disconnected": "No es posible conectar con la billetera de hardware. Por favor, intenta reconectar."
         },
         "waiting": "Esperando",
         "clickToGetInfo": "Haz clic para obtener la información en cadena",
-        "addToRabby": "Agregar a Rabby",
+        "addToRabby": "Agregar a Hippo",
         "basicInformation": "Información básica",
         "addresses": "Direcciones",
         "loadingAddress": "Cargando {{0}}/{{1}} direcciones",
@@ -1876,7 +1876,7 @@
         "manageNgraveZero": "Administrar NGRAVE ZERO",
         "done": "Hecho",
         "addressesIn": "Direcciones en {{0}}",
-        "addressesInRabby": "Direcciones en Rabby {{0}}",
+        "addressesInRabby": "Direcciones en Hippo {{0}}",
         "qrCode": {
           "switch": {
             "title": "Cambiar a un nuevo dispositivo {{0}}",
@@ -1887,7 +1887,7 @@
         "importBtn": "Importar ({{count}})",
         "manageImtokenOffline": "Administrar imToken",
         "manageImKey": "Administrar imKey",
-        "nonAddr": "No se han añadido direcciones para esta frase de recuperación. Puedes eliminarla en Extensión de Rabby > Administrar direcciones."
+        "nonAddr": "No se han añadido direcciones para esta frase de recuperación. Puedes eliminarla en Extensión de Hippo > Administrar direcciones."
       },
       "importYourKeystore": "Importar tu Keystore",
       "incorrectPassword": "Contraseña incorrecta",
@@ -1908,15 +1908,15 @@
         "deviceIsLockedError": "Introduce la contraseña para desbloquear",
         "keystonePermission1": "Conectar a un dispositivo USB",
         "noDeviceFoundError": "Conectar un solo Keystone",
-        "deviceRejectedExportAddress": "Aprobar la conexión a Rabby",
+        "deviceRejectedExportAddress": "Aprobar la conexión a Hippo",
         "unknowError": "Error desconocido. Inténtalo de nuevo.",
         "exportAddressJustAllowedOnHomePage": "Solo se pueden exportar direcciones desde la pantalla de inicio de Keystone",
-        "allowRabbyPermissionsTitle": "Permitir permisos de Rabby para:",
+        "allowRabbyPermissionsTitle": "Permitir permisos de Hippo para:",
         "keystonePermissionTip": "Haz clic en \"Permitir\" para autorizar el acceso a tu Keystone en la siguiente ventana emergente y asegúrate de que tu Keystone 3 Pro esté en la página de inicio."
       },
       "onekey": {
         "onekeyPermission1": "Conectar a un dispositivo USB",
-        "allowRabbyPermissionsTitle": "Permitir permisos de Rabby para:",
+        "allowRabbyPermissionsTitle": "Permitir permisos de Hippo para:",
         "onekeyPermissionTip": "Haz clic en \"Permitir\" para autorizar el acceso a tu OneKey en la siguiente ventana emergente. Si OneKey no aparece, comprueba que el dispositivo esté conectado correctamente al ordenador.",
         "whyOneKey": "¿Por qué OneKey?",
         "buyOneKey": "Comprar OneKey",
@@ -1961,7 +1961,7 @@
       "addressAddedCount_other": "{{count}} direcciones agregadas",
       "bulkImportPrivateKeySupport": "Soporta hasta 1000 claves privadas compatibles con EVM",
       "addressAddedCount_one": "{{count}} dirección añadida",
-      "openExtensionToGetStarted": "Abre la extensión de Rabby para comenzar."
+      "openExtensionToGetStarted": "Abre la extensión de Hippo para comenzar."
     },
     "unlock": {
       "btn": {
@@ -1974,35 +1974,35 @@
         "placeholder": "Introduce la contraseña para desbloquear",
         "error": "Contraseña incorrecta"
       },
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "btnForgotPassword": "¿Olvidaste la contraseña?",
       "description": "Tu billetera de referencia para Ethereum y EVM",
       "biometricFailed": "Desbloqueo biométrico fallido"
     },
     "addToken": {
       "noTokenFound": "No se encontró ningún token",
-      "tokenSupported": "Rabby ya admite este token",
+      "tokenSupported": "Hippo ya admite este token",
       "tokenCustomized": "El token actual ya ha sido agregado como personalizado",
       "tokenNotFound": "Token no encontrado en esta dirección de contrato",
-      "title": "Agregar token personalizado a Rabby",
+      "title": "Agregar token personalizado a Hippo",
       "balance": "Saldo",
       "tokenOnMultiChains": "La dirección del token existe en varias redes. Elige una",
       "noTokenFoundOnThisChain": "No se encontró ningún token en esta red",
       "hasAdded": "Has añadido este token."
     },
     "switchChain": {
-      "title": "Agregar red personalizada a Rabby",
-      "chainNotSupport": "La cadena solicitada aún no es compatible con Rabby",
+      "title": "Agregar red personalizada a Hippo",
+      "chainNotSupport": "La cadena solicitada aún no es compatible con Hippo",
       "testnetTip": "Activa \"Habilitar testnets\" en \"Más\" antes de conectarte a las testnets",
       "chainId": "ID de cadena:",
       "addChain": "Agregar testnet",
       "requestsReceivedPlural": "{{count}} solicitudes recibidas",
-      "chainNotSupportYet": "La cadena solicitada aún no es compatible con Rabby.",
+      "chainNotSupportYet": "La cadena solicitada aún no es compatible con Hippo.",
       "unknownChain": "Cadena desconocida",
       "requestsReceived": "1 solicitud recibida",
-      "chainNotSupportAddChain": "La cadena solicitada aún no está integrada por Rabby. Puedes añadirla como una Testnet personalizada.",
-      "desc": "La red solicitada aún no está integrada por Rabby. Puedes añadirla manualmente como una red personalizada.",
-      "requestRabbyToSupport": "Solicitar compatibilidad a Rabby"
+      "chainNotSupportAddChain": "La cadena solicitada aún no está integrada por Hippo. Puedes añadirla como una Testnet personalizada.",
+      "desc": "La red solicitada aún no está integrada por Hippo. Puedes añadirla manualmente como una red personalizada.",
+      "requestRabbyToSupport": "Solicitar compatibilidad a Hippo"
     },
     "signText": {
       "title": "Firmar Texto",
@@ -2035,10 +2035,10 @@
       "listedBy": "Listado por",
       "sitePopularity": "Popularidad del sitio",
       "myMark": "Mi marca",
-      "flagByRabby": "Marcado por Rabby",
+      "flagByRabby": "Marcado por Hippo",
       "flagByMM": "Marcado por MetaMask",
       "flagByScamSniffer": "Marcado por ScamSniffer",
-      "verifiedByRabby": "Verificado por Rabby",
+      "verifiedByRabby": "Verificado por Hippo",
       "foundForbiddenRisk": "Se encontraron riesgos prohibidos. La conexión está bloqueada.",
       "markAsTrustToast": "Marcar como \"Confiable\"",
       "markAsBlockToast": "Marcar como \"Bloqueado\"",
@@ -2082,7 +2082,7 @@
       "backup-seed-phrase": "Respaldar frase de recuperación",
       "delete-address": "Eliminar dirección",
       "delete-desc": "Antes de eliminar, ten en cuenta los siguientes puntos para entender cómo proteger tus activos.",
-      "direct-delete-desc": "Esta dirección es una dirección {{renderBrand}}, Rabby no almacena la clave privada ni la frase de recuperación de esta dirección, simplemente puedes eliminarla",
+      "direct-delete-desc": "Esta dirección es una dirección {{renderBrand}}, Hippo no almacena la clave privada ni la frase de recuperación de esta dirección, simplemente puedes eliminarla",
       "admins": "Administradores",
       "tx-requires": "Cualquier transacción requiere <2>{{num}}</2> confirmaciones",
       "edit-memo-title": "Editar nota de dirección",
@@ -2107,7 +2107,7 @@
         "keepSeedPhrase": "Esta es la única dirección vinculada a esta frase de recuperación. ¿Quieres conservar la frase de recuperación?",
         "title": "¿Eliminar la dirección y la frase de recuperación?",
         "check2": "Confirmo que he hecho una copia de seguridad de mi clave privada o frase de recuperación y que estoy listo para eliminar la dirección.",
-        "check1": "Entiendo que al eliminar esta dirección también se eliminan su clave privada y su frase de recuperación. Rabby no puede recuperarlas por mí.",
+        "check1": "Entiendo que al eliminar esta dirección también se eliminan su clave privada y su frase de recuperación. Hippo no puede recuperarlas por mí.",
         "onlyDeleteAddr": "Solo se eliminará esta dirección. Tu frase de recuperación no se verá afectada, ya que tus otras direcciones aún la utilizan.",
         "sub-title": "Esta acción es permanente. Revisa lo siguiente para proteger tus activos:"
       },
@@ -2115,7 +2115,7 @@
         "title": "¿Eliminar dirección y clave privada?",
         "sub-title": "Esta acción es permanente. Revisa lo siguiente para proteger tus activos:",
         "check2": "Confirmo que he hecho una copia de seguridad de mi clave privada o frase de recuperación y que estoy listo para eliminar la dirección.",
-        "check1": "Entiendo que al eliminar esta dirección también se elimina su clave privada. Rabby no puede recuperarla por mí."
+        "check1": "Entiendo que al eliminar esta dirección también se elimina su clave privada. Hippo no puede recuperarla por mí."
       },
       "notBackup": "Sin copia de seguridad"
     },
@@ -2131,7 +2131,7 @@
       "closed": "Cerrado",
       "empty": "No hay URL RPC personalizada",
       "title": "Modificar URL de RPC",
-      "desc": "Una vez modificado, el RPC personalizado reemplazará el nodo de Rabby. Para volver a usar el nodo de Rabby, elimina el RPC personalizado.",
+      "desc": "Una vez modificado, el RPC personalizado reemplazará el nodo de Hippo. Para volver a usar el nodo de Hippo, elimina el RPC personalizado.",
       "add": "Modificar URL de RPC",
       "EditRPCModal": {
         "invalidRPCUrl": "URL de RPC inválido",
@@ -2148,9 +2148,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "Solicitar token de gas de la testnet de DeBank",
-      "mintedTip": "Los titulares de Rabby Badge pueden solicitar un token al día",
-      "notMintedTip": "Disponible solo para titulares de Rabby Badge",
-      "claimBadgeBtn": "Obtener Rabby Badge",
+      "mintedTip": "Los titulares de Hippo Badge pueden solicitar un token al día",
+      "notMintedTip": "Disponible solo para titulares de Hippo Badge",
+      "claimBadgeBtn": "Obtener Hippo Badge",
       "time": "Por día",
       "requested": "Ya has solicitado un token hoy",
       "requestBtn": "Solicitar"
@@ -2206,7 +2206,7 @@
       "clickToShowQr": "Haz clic para mostrar el código QR de la clave privada"
     },
     "ethSign": {
-      "alert": "Firmar con 'eth_sign' puede llevar a la pérdida de activos. Por tu seguridad, Rabby no admite este método."
+      "alert": "Firmar con 'eth_sign' puede llevar a la pérdida de activos. Por tu seguridad, Hippo no admite este método."
     },
     "createPassword": {
       "title": "Crear contraseña",
@@ -2221,7 +2221,7 @@
     "welcome": {
       "step1": {
         "title": "Accede a todas las dApps",
-        "desc": "Rabby se conecta a todas las dApps compatibles con MetaMask"
+        "desc": "Hippo se conecta a todas las dApps compatibles con MetaMask"
       },
       "step2": {
         "title": "Autocustodia",
@@ -2251,7 +2251,7 @@
       "settingModal": {
         "confirmModal": {
           "i-understand-and-accept-it": "Entiendo y lo acepto",
-          "tip2": "2. Rabby no es responsable de ningún riesgo derivado del contrato de este agregador",
+          "tip2": "2. Hippo no es responsable de ningún riesgo derivado del contrato de este agregador",
           "tip1": "1. Una vez habilitado, interactuarás directamente con el contrato de este agregador.",
           "title": "Habilitar operaciones con este agregador"
         },
@@ -2302,7 +2302,7 @@
       "best": "Mejor",
       "slippage-adjusted-refresh-quote": "Slippage ajustado. Actualiza la ruta.",
       "bridge-via-x": "Bridge en {{name}}",
-      "rabby-fee": "Comisión de Rabby",
+      "rabby-fee": "Comisión de Hippo",
       "bridge-cost": "Coste del bridge",
       "approve-x-symbol": "Aprobar {{symbol}}",
       "max-tips": "Este valor se calcula restando el coste de gas del bridge.",
@@ -2440,7 +2440,7 @@
       "claimModal": {
         "claim": "Reclamar",
         "addressBalance": "Saldo de la wallet",
-        "rabbyUser": "Usuario activo de Rabby",
+        "rabbyUser": "Usuario activo de Hippo",
         "MetaMaskSwap": "MetaMask Swap",
         "placeholder": "Introduce un código de invitación para obtener puntos extra (opcional)",
         "title": "Reclamar puntos iniciales",
@@ -2451,8 +2451,8 @@
         "season2": "Temporada 2",
         "cantUseOwnCode": "No puedes usar tu propio código de invitación.",
         "walletBalance": "Saldo de la wallet",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "rabbyValuedUserBadge": "Insignia de usuario valioso de Rabby"
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
+        "rabbyValuedUserBadge": "Insignia de usuario valioso de Hippo"
       },
       "referralCode": {
         "verifyAddressModal": {
@@ -2473,15 +2473,15 @@
         "once-set-this-referral-code-is-permanent-and-cannot-change": "Una vez establecido, este código de invitación es permanente y no se puede cambiar.",
         "set-my-referral-code": "Establecer mi código de invitación"
       },
-      "title": "Rabby Points",
+      "title": "Hippo Points",
       "earn-points": "Ganar puntos",
       "top-100": "Top 100",
       "share-on": "Compartir en",
       "out-of-x-current-total-points": "De un total de {{total}} puntos distribuidos",
       "code-set-successfully": "Código de invitación establecido correctamente",
       "initialPointsClaimEnded": "La reclamación de puntos iniciales ha finalizado",
-      "secondRoundEnded": "🎉 La segunda ronda de Rabby Points ha finalizado",
-      "firstRoundEnded": "🎉 La primera ronda de Rabby Points ha terminado",
+      "secondRoundEnded": "🎉 La segunda ronda de Hippo Points ha finalizado",
+      "firstRoundEnded": "🎉 La primera ronda de Hippo Points ha terminado",
       "referral-code-copied": "Código de invitación copiado"
     },
     "customTestnet": {
@@ -2499,7 +2499,7 @@
       "AddFromChainList": {
         "tips": {
           "added": "Ya has añadido esta red",
-          "supported": "Esta red ya está integrada en Rabby Wallet"
+          "supported": "Esta red ya está integrada en Hippo Wallet"
         },
         "empty": "No se encontraron redes",
         "search": "Buscar nombre o ID de red personalizada",
@@ -2509,18 +2509,18 @@
         "title": "Datos de la transacción"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "La red ya está integrada en Rabby. ¿Quieres modificar su URL RPC?"
+        "desc": "La red ya está integrada en Hippo. ¿Quieres modificar su URL RPC?"
       },
       "title": "Red personalizada",
-      "desc": "Rabby no puede verificar la seguridad de las redes personalizadas. Por favor, añade solo redes de confianza.",
+      "desc": "Hippo no puede verificar la seguridad de las redes personalizadas. Por favor, añade solo redes de confianza.",
       "add": "Agregar red personalizada",
       "empty": "Sin red personalizada",
       "currency": "Moneda",
       "id": "ID"
     },
     "addChain": {
-      "title": "Agregar red personalizada a Rabby",
-      "desc": "Rabby no puede verificar la seguridad de las redes personalizadas. Por favor, añade solo redes de confianza."
+      "title": "Agregar red personalizada a Hippo",
+      "desc": "Hippo no puede verificar la seguridad de las redes personalizadas. Por favor, añade solo redes de confianza."
     },
     "sign": {
       "transactionSpeed": "Velocidad de transacción"
@@ -2665,7 +2665,7 @@
         "selectToken": "Seleccionar el token que quieres depositar",
         "title": "Depositar",
         "invalidAmount": "Debe ser menos de 500",
-        "desc": "Haz un depósito en la cuenta L2 de DeBank de Rabby sin tarifas adicionales: retira en cualquier momento.",
+        "desc": "Haz un depósito en la cuenta L2 de DeBank de Hippo sin tarifas adicionales: retira en cualquier momento.",
         "token": "Token",
         "paymentAddr": "Wallet de pago",
         "gasDepositTitle": "Depósito de gas",
@@ -2741,8 +2741,8 @@
         "title1": "¿Qué es GasAccount?",
         "title4": "¿Es seguro GasAccount?",
         "title3": "¿GasAccount tiene tarifas adicionales?",
-        "desc4": "GasAccount no requiere aprobaciones ni permisos de smart contracts. Depositas en la dirección de GasAccount de Rabby y Rabby envía gas a tu dirección cuando lo necesitas. Es seguro desde su diseño.",
-        "desc3": "Rabby Wallet no cobra comisiones adicionales. Solo pagas el gas de tu transacción y una pequeña cantidad de gas por enviarlo desde GasAccount a tu dirección.",
+        "desc4": "GasAccount no requiere aprobaciones ni permisos de smart contracts. Depositas en la dirección de GasAccount de Hippo y Hippo envía gas a tu dirección cuando lo necesitas. Es seguro desde su diseño.",
+        "desc3": "Hippo Wallet no cobra comisiones adicionales. Solo pagas el gas de tu transacción y una pequeña cantidad de gas por enviarlo desde GasAccount a tu dirección.",
         "desc2": "Añade fondos a tu GasAccount y úsalos en cualquier transacción. Al firmar, puedes elegir entre pagar el gas con tokens nativos o con GasAccount y cambiar de opción cuando quieras.",
         "desc1": "GasAccount es una nueva forma de pagar las comisiones de gas. En lugar de usar tokens nativos en cada red, una sola cuenta cubre el gas de todas tus direcciones en todas las redes. Es sencillo, opcional y evita que te quedes sin gas.",
         "title2": "¿Cómo se usa GasAccount?"
@@ -2750,7 +2750,7 @@
       "benefitCard": {
         "title": "Paga las comisiones de gas en todas las redes",
         "subtitle": "cuando te quedes sin gas",
-        "item1": "Sin tarifa de Rabby",
+        "item1": "Sin tarifa de Hippo",
         "desc1": "Sin tarifas adicionales para pagar gas",
         "item2": "Compatible con todas las redes",
         "desc2": "Pagos automáticos de gas en más de 80 redes",
@@ -2781,15 +2781,15 @@
         "createNewAddress": "Crea una nueva dirección",
         "importAddress": "Ya tengo una dirección",
         "desc": "Tu wallet de referencia para Ethereum y EVM",
-        "title": "Bienvenido a Rabby Wallet"
+        "title": "Bienvenido a Hippo Wallet"
       },
       "createNewAddress": {
         "showSeedPhrase": "Mostrar frase de recuperación",
         "title": "Antes de empezar",
         "desc": "Por favor, lee y ten en cuenta los siguientes consejos de seguridad.",
-        "tip2": "Mi frase de recuperación solo se almacena en mi dispositivo. Rabby no puede acceder a ella.",
+        "tip2": "Mi frase de recuperación solo se almacena en mi dispositivo. Hippo no puede acceder a ella.",
         "tip1": "Si pierdo o comparto mi frase de recuperación, perderé permanentemente el acceso a mis activos.",
-        "tip3": "Si desinstalo Rabby sin hacer una copia de seguridad de mi frase de recuperación, Rabby no podrá recuperarla."
+        "tip3": "Si desinstalo Hippo sin hacer una copia de seguridad de mi frase de recuperación, Hippo no podrá recuperarla."
       },
       "importList": {
         "title": "Seleccionar método de importación "
@@ -2828,19 +2828,19 @@
         "addMoreAddr": "Añadir más direcciones desde esta frase de recuperación",
         "addMoreFrom": "Agregar más direcciones de {{name}}",
         "openWallet": "Abrir wallet",
-        "desc": "¡Rabby Wallet está listo para usar!",
+        "desc": "¡Hippo Wallet está listo para usar!",
         "backupSeedPhraseNow": "Haz ahora una copia de seguridad de la frase de recuperación",
         "backupSeedPhrase": "Hacer copia de seguridad de la frase de recuperación"
       },
       "readyToUse": {
-        "pin": "Fijar Rabby Wallet",
+        "pin": "Fijar Hippo Wallet",
         "guides": {
-          "step2": "Anclar Rabby Wallet",
+          "step2": "Anclar Hippo Wallet",
           "step1": "Haz clic en el ícono de la extensión del navegador."
         },
-        "desc": "Encuentra Rabby Wallet y fíjalo",
+        "desc": "Encuentra Hippo Wallet y fíjalo",
         "extensionTip": "Haz clic en <1/> y luego en <3/>",
-        "title": "¡Tu Rabby Wallet está lista!"
+        "title": "¡Tu Hippo Wallet está lista!"
       },
       "importSeedPhrase": {
         "title": "Importar frase de recuperación",
@@ -2919,15 +2919,15 @@
     },
     "metamaskModeDapps": {
       "title": "Administrar dApps permitidas",
-      "desc": "El modo MetaMask está habilitado para las siguientes dApps. Puedes conectar Rabby seleccionando la opción de MetaMask."
+      "desc": "El modo MetaMask está habilitado para las siguientes dApps. Puedes conectar Hippo seleccionando la opción de MetaMask."
     },
     "forgotPassword": {
       "home": {
         "title": "¿Olvidaste tu contraseña?",
         "buttonNoData": "Establecer contraseña",
-        "descriptionNoData": "Rabby Wallet no almacena tu contraseña y no puede ayudarte a recuperarla. Establece una nueva contraseña si la olvidaste.",
+        "descriptionNoData": "Hippo Wallet no almacena tu contraseña y no puede ayudarte a recuperarla. Establece una nueva contraseña si la olvidaste.",
         "button": "Iniciar proceso de restablecimiento",
-        "description": "Rabby Wallet no almacena tu contraseña ni puede ayudarte a recuperarla. Restablece tu wallet para configurar una nueva."
+        "description": "Hippo Wallet no almacena tu contraseña ni puede ayudarte a recuperarla. Restablece tu wallet para configurar una nueva."
       },
       "reset": {
         "alert": {
@@ -2944,18 +2944,18 @@
           "safe": "Wallets Safe importadas"
         },
         "button": "Confirmar restablecimiento",
-        "title": "Restablecer Rabby Wallet",
+        "title": "Restablecer Hippo Wallet",
         "confirm": "Escribe <1>RESET</1> en el cuadro para confirmar y continuar"
       },
       "tip": {
         "button": "Establecer contraseña",
         "descriptionNoData": "Añade tu dirección para comenzar",
-        "title": "Rabby Wallet se ha restablecido",
+        "title": "Hippo Wallet se ha restablecido",
         "description": "Crea una nueva contraseña para continuar",
         "buttonNoData": "Agregar dirección"
       },
       "success": {
-        "description": "Ya estás listo para usar Rabby Wallet",
+        "description": "Ya estás listo para usar Hippo Wallet",
         "button": "Hecho",
         "title": "Contraseña establecida con éxito"
       }
@@ -2971,19 +2971,19 @@
       "step2Desc": "Actualizar y conectar a través de MetaMask",
       "noDappFound": "No se encontraron dApps",
       "manage": "Administrar dApps permitidas",
-      "title": "Conectar Rabby haciéndolo pasar por MetaMask",
-      "step1Desc": "Permitir que Rabby se haga pasar por MetaMask en la dApp actual",
+      "title": "Conectar Hippo haciéndolo pasar por MetaMask",
+      "step1Desc": "Permitir que Hippo se haga pasar por MetaMask en la dApp actual",
       "step1": "Paso 1",
-      "alert": "¿No puedes conectarte a una dApp porque Rabby Wallet no aparece como opción?",
+      "alert": "¿No puedes conectarte a una dApp porque Hippo Wallet no aparece como opción?",
       "step2": "Paso 2"
     },
     "syncToMobile": {
-      "title": "Sincronizar direcciones de la extensión Rabby con la app móvil",
-      "steps2": "2. Escanea con Rabby Mobile",
+      "title": "Sincronizar direcciones de la extensión Hippo con la app móvil",
+      "steps2": "2. Escanea con Hippo Mobile",
       "downloadGooglePlay": "Google Play",
       "description": "Tus datos de dirección permanecen totalmente fuera de línea, cifrados y se transfieren de manera segura a través de un código QR.",
       "clickToShowQr": "Haz clic para seleccionar direcciones y mostrar el código QR",
-      "steps1": "1. Descarga Rabby Mobile",
+      "steps1": "1. Descarga Hippo Mobile",
       "downloadAppleStore": "App Store",
       "steps2Description": " *Tu código QR contiene datos sensibles. Manténlo privado y nunca lo compartas con nadie.",
       "disableSelectAddress": "La sincronización no es compatible con direcciones {{type}}",
@@ -3043,7 +3043,7 @@
         "riskType": {
           "risks": {
             "contractAddress": "Dirección de contrato detectada, los fondos pueden perderse.",
-            "scamAddress": "Dirección de estafa marcada por Rabby",
+            "scamAddress": "Dirección de estafa marcada por Hippo",
             "dexNoDeposite": "No es una dirección de depósito CEX, los fondos pueden perderse.",
             "noSend": "No has enviado a esta dirección en 180 días."
           }
@@ -3260,7 +3260,7 @@
           "creatorFeeTips": "Las ganancias del creador serán pagadas por el vendedor.",
           "creatorFee": "Comisiones del creador ({{fee}}%)",
           "proceeds": "Ingresos",
-          "rabbyFee": "Comisión de Rabby (0%)",
+          "rabbyFee": "Comisión de Hippo (0%)",
           "cost": "Costo",
           "totalEst": "Ingresos totales estimados",
           "creatorFeeTips1": "El vendedor pagará las regalías del creador. Su pago es obligatorio."
@@ -3272,7 +3272,7 @@
           "quantity": "Cantidad",
           "platform": "Plataforma",
           "offerPrice": "Precio de la oferta",
-          "rabbyFee": "Comisión de Rabby (0%)",
+          "rabbyFee": "Comisión de Hippo (0%)",
           "creatorFeeTips": "Las ganancias del creador serán pagadas por el vendedor.",
           "creatorFee": "Comisiones para creadores ({{fee}}%)",
           "platformFee": " Comisiones de la plataforma OpenSea ({{fee}}%)",
@@ -3519,7 +3519,7 @@
         "activateFailed": "Fallido",
         "title": "Ahorra en las comisiones de Hyperliquid",
         "hyperliquidFee": "Comisiones de trading de Hyperliquid.",
-        "description": "Usa el código de Rabby para habilitar",
+        "description": "Usa el código de Hippo para habilitar",
         "activatedSuccess": "Ahorro del 4% en comisiones Hyperliquid activado"
       },
       "closeAll": "Cerrar todas las posiciones",
@@ -3549,7 +3549,7 @@
       "closeLong": "Cerrar posición larga",
       "stopLossTipsLongLiquidation": "El precio es más bajo que el precio de liquidación ({{price}})",
       "closeShort": "Cerrar posición corta",
-      "rabbyFeeTipsZero": "Tarifa de Rabby: 0%",
+      "rabbyFeeTipsZero": "Tarifa de Hippo: 0%",
       "withdraw": "Retirar fondos",
       "size": "Tamaño",
       "openInterest": "Interés abierto",
@@ -3568,7 +3568,7 @@
       "openShort": "Abrir posición corta",
       "fundingRate": "Tasa de financiación",
       "openLong": "Abrir posición larga",
-      "rabbyFeeTipsV2": "Tarifa de Rabby: 0,02%",
+      "rabbyFeeTipsV2": "Tarifa de Hippo: 0,02%",
       "lastUsed": "Último utilizado",
       "directDeposit": "Depósito directo",
       "permissionTips": "La apertura de posiciones no está disponible en tu región.",
@@ -4152,7 +4152,7 @@
         "minMargin": "El margen mínimo es {{amount}}",
         "maxMargin": "El margen máximo es {{amount}}",
         "leverage": "Apalancamiento",
-        "rabbyFee": "Comisión de Rabby",
+        "rabbyFee": "Comisión de Hippo",
         "stopLossWhenPriceBelow": "Límite de pérdidas cuando el precio esté por debajo de",
         "short": "Corto",
         "takeProfitWhenPriceBelow": "Tomar ganancias cuando el precio esté por debajo",
@@ -4956,7 +4956,7 @@
     "EcologyNoticeModal": {
       "notRemind": "No me lo recuerdes de nuevo",
       "title": "Aviso",
-      "desc": "Los siguientes servicios los proporcionará directamente un socio externo del ecosistema. Rabby Wallet no se responsabiliza de la seguridad de estos servicios."
+      "desc": "Los siguientes servicios los proporcionará directamente un socio externo del ecosistema. Hippo Wallet no se responsabiliza de la seguridad de estos servicios."
     },
     "ReserveGasPopup": {
       "title": "Reservar gas",
@@ -4967,8 +4967,8 @@
     },
     "OpenExternalWebsiteModal": {
       "button": "Continuar",
-      "title": "Estás saliendo de Rabby Wallet",
-      "content": "Estás a punto de visitar un sitio web externo. Rabby Wallet no se responsabiliza de su contenido ni de su seguridad."
+      "title": "Estás saliendo de Hippo Wallet",
+      "content": "Estás a punto de visitar un sitio web externo. Hippo Wallet no se responsabiliza de su contenido ni de su seguridad."
     },
     "TokenChart": {
       "price": "Precio",
@@ -4995,7 +4995,7 @@
     },
     "ChainItem": {
       "appChain": "En la cuenta de {{chain}}",
-      "hyperliquidCode": "Ahorra en las comisiones de Hyperliquid con el código de invitación de Rabby."
+      "hyperliquidCode": "Ahorra en las comisiones de Hyperliquid con el código de invitación de Hippo."
     },
     "RiskTip": {
       "title": "Riesgo detectado"
@@ -5038,13 +5038,13 @@
       "placeholderRequired": "Describir el problema (obligatorio)"
     },
     "feedbackPopup": {
-      "title": "Respuesta del soporte de Rabby",
+      "title": "Respuesta del soporte de Hippo",
       "issueReported": "Aquí está el problema que reportaste:",
-      "issueReplied": "Soporte de Rabby ha respondido:"
+      "issueReplied": "Soporte de Hippo ha respondido:"
     }
   },
   "global": {
-    "appName": "Rabby Wallet",
+    "appName": "Hippo Wallet",
     "copied": "Copiado",
     "confirm": "Confirmar",
     "next": "Siguiente",

@@ -59,7 +59,7 @@
       "gasPriceTitle": "ガス価格 (Gwei)",
       "maxPriorityFee": "最大優先手数料 (Gwei)",
       "eip1559Desc1": "EIP-1559 対応チェーンでは、Priority Fee はトランザクションを処理するマイナーへのチップです。Priority Fee を下げると最終的な gas コストを抑えられますが、処理に時間がかかる場合があります。",
-      "eip1559Desc2": "Rabby では、Priority Fee（チップ）= Max Fee - Base Fee です。Max Priority Fee を設定すると、そこから Base Fee が差し引かれ、残りがマイナーへのチップになります。",
+      "eip1559Desc2": "Hippo では、Priority Fee（チップ）= Max Fee - Base Fee です。Max Priority Fee を設定すると、そこから Base Fee が差し引かれ、残りがマイナーへのチップになります。",
       "hardwareSupport1559Alert": "ハードウェアウォレットのファームウェアがEIP 1559をサポートするバージョンにアップグレードされていることを確認してください",
       "gasLimitTitle": "Gas Limit",
       "recommendGasLimitTip": "推定{{est}}。現在{{current}}倍、お勧めは ",
@@ -132,7 +132,7 @@
         "trustValueLessThan": "信頼値 ≤ {{value}}",
         "deployTimeLessThan": "展開時間 < {{value}} 日",
         "amountPopupTitle": "金額",
-        "flagByRabby": "Rabbyによってフラグが付けられた",
+        "flagByRabby": "Hippoによってフラグが付けられた",
         "contractTrustValueTip": "信頼値は、このコントラクトによって使用された資産の総額を示します。信頼値が低い場合、リスクがあるか、180日間利用されていない可能性があります。",
         "amount": "承認金額：",
         "exceed": "現在の残高を超えています"
@@ -197,8 +197,8 @@
       "neverInteracted": "関与したことがない",
       "transacted": "以前に取引",
       "neverTransacted": "取引したことがない",
-      "fakeTokenAlert": "これはRabbyによってスキャムトークンとしてマークされたものです",
-      "scamTokenAlert": "これはRabbyの検出に基づき、低品質およびスキャムトークンである可能性があります",
+      "fakeTokenAlert": "これはHippoによってスキャムトークンとしてマークされたものです",
+      "scamTokenAlert": "これはHippoの検出に基づき、低品質およびスキャムトークンである可能性があります",
       "trusted": "信頼済み",
       "blocked": "ブロック済み",
       "noMark": "マークなし",
@@ -207,7 +207,7 @@
       "signTransactionOnChain": "{{chain}} トランザクションに署名",
       "viewRaw": "生データを見る",
       "unknownActionType": "不明なアクションタイプ",
-      "sigCantDecode": "この署名はRabbyによってデコードできませんが、それはリスクを意味するわけではありません",
+      "sigCantDecode": "この署名はHippoによってデコードできませんが、それはリスクを意味するわけではありません",
       "nftCollection": "NFTコレクション",
       "floorPrice": "底値",
       "contractAddress": "コントラクトアドレス",
@@ -237,7 +237,7 @@
       "customRPCErrorModal": {
         "title": "カスタム RPC エラー",
         "button": "カスタムRPCを無効にする",
-        "content": "ご使用のカスタムRPCは現在利用できません。これを無効にしてRabbyの公式RPCを使用して署名を続けることができます。"
+        "content": "ご使用のカスタムRPCは現在利用できません。これを無効にしてHippoの公式RPCを使用して署名を続けることができます。"
       },
       "transferOwner": {
         "description": "説明",
@@ -334,7 +334,7 @@
       "gasAccountForGas": "GasAccount の USD を使用してガス代を支払う",
       "nativeTokenForGas": "{{chainName}}でのガス料金の支払いに{{tokenName}}トークンを使用",
       "chain": "チェーン",
-      "decodedTooltip": "この署名は Rabby Wallet によってデコードされます。",
+      "decodedTooltip": "この署名は Hippo Wallet によってデコードされます。",
       "importedAddress": "インポートされたアドレス",
       "l2GasEstimateTooltip": "L2チェーンのガス見積もりにはL1ガス料金は含まれていません。実際の料金は現在の見積もりよりも高くなります。",
       "address": "アドレス",
@@ -355,8 +355,8 @@
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
-          "title": "RabbyのSafeサービスに切り替える",
-          "content": "Safe API は利用できません。Rabby によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Rabby Wallet を使用してトランザクションを承認する必要があります。</strong>"
+          "title": "HippoのSafeサービスに切り替える",
+          "content": "Safe API は利用できません。Hippo によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Hippo Wallet を使用してトランザクションを承認する必要があります。</strong>"
         }
       },
       "errorRetry": {
@@ -403,7 +403,7 @@
         "connected": "接続されており、署名する準備ができています",
         "howToSwitch": "切り替え方",
         "wrongAddressAlert": "モバイルウォレットで異なるアドレスに切り替えました。モバイルウォレットで正しいアドレスに切り替えてください",
-        "connectBeforeSign": "{{0}}はRabbyに接続されていません、署名する前に接続してください",
+        "connectBeforeSign": "{{0}}はHippoに接続されていません、署名する前に接続してください",
         "chainSwitched": "モバイルウォレットで異なるチェーンに切り替えました。{{0}}にモバイルウォレットで切り替えてください",
         "latency": "レイテンシ",
         "requestSuccessToast": "リクエストは正常に送信されました",
@@ -467,7 +467,7 @@
         "unavailable": "Gas 残高が不足しています",
         "walletConnectUnavailableTip": "モバイルウォレットがWalletConnectを通じて接続されている場合、Free Gasはサポートされていません。",
         "notEnough": "Gas残高が足りません",
-        "rabbyPayGas": "Rabbyが必要なガス料金を支払います– 署名するだけ",
+        "rabbyPayGas": "Hippoが必要なガス料金を支払います– 署名するだけ",
         "customRpcUnavailableTip": "カスタムRPCはFree Gasをサポートしていません。"
       },
       "gasAccount": {
@@ -557,7 +557,7 @@
         "label": "トランザクション",
         "empty": {
           "title": "まだ署名されたトランザクションはありません",
-          "desc": "Rabby経由で署名されたすべてのトランザクションがここにリストされます。"
+          "desc": "Hippo経由で署名されたすべてのトランザクションがここにリストされます。"
         },
         "common": {
           "unlimited": "無制限",
@@ -655,7 +655,7 @@
         "label": "テキスト",
         "empty": {
           "title": "まだ署名されたテキストはありません",
-          "desc": "Rabby経由で署名されたすべてのテキストがここにリストされます。"
+          "desc": "Hippo経由で署名されたすべてのテキストがここにリストされます。"
         }
       }
     },
@@ -946,14 +946,14 @@
       "topUpChain": "トップアップチェーン",
       "Amount": "数量",
       "Continue": "続行",
-      "InsufficientBalance": "現在のチェーンのRabbyの契約アドレスには十分な残高がありません。後で再試行してください。",
+      "InsufficientBalance": "現在のチェーンのHippoの契約アドレスには十分な残高がありません。後で再試行してください。",
       "hightGasFees": "このトップアップ金額は小さすぎます。対象ネットワークは高いガス手数料を必要とします。",
       "No_Tokens": "トークンがありません",
       "InsufficientBalanceTips": "残高不足",
       "payment": "Gas Top Up支払い",
       "Loading_Tokens": "トークンを読み込み中...",
       "Including-service-fee": "{{fee}} サービス料金を含む",
-      "service-fee-tip": "Gas Top Upサービスの提供にあたり、Rabbyはトークン価格の変動による損失とトップアップのガス手数料を負担します。そのため、20％のサービス手数料がかかります。",
+      "service-fee-tip": "Gas Top Upサービスの提供にあたり、Hippoはトークン価格の変動による損失とトップアップのガス手数料を負担します。そのため、20％のサービス手数料がかかります。",
       "Confirm": "確認",
       "Deposit-tip": "USDC/USDTで入金",
       "Value": "値",
@@ -988,7 +988,7 @@
       "amount-in": "{{symbol}} での金額",
       "unlimited-allowance": "無制限の許可",
       "insufficient-balance": "残高が不足しています",
-      "rabby-fee": "Rabby 手数料",
+      "rabby-fee": "Hippo 手数料",
       "minimum-received": "最低受取額",
       "there-is-no-fee-and-slippage-for-this-trade": "この取引には手数料とスリッページはありません",
       "approve-tips": "1. 承認 → 2. スワップ",
@@ -1000,7 +1000,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "この取引所では取引できません。",
       "enable-it": "有効にする",
       "this-token-pair-is-not-supported": "トークンペアはサポートされていません",
-      "QuoteLessWarning": "受け取り額は Rabby トランザクションのシミュレーションからの見積もりです。DEXが提供するオファーは {{receive}} です。期待されるオファーより {{diff}} 少なく受け取ります。",
+      "QuoteLessWarning": "受け取り額は Hippo トランザクションのシミュレーションからの見積もりです。DEXが提供するオファーは {{receive}} です。期待されるオファーより {{diff}} 少なく受け取ります。",
       "by-transaction-simulation-the-quote-is-valid": "トランザクションのシミュレーションによると、見積もりは有効です",
       "wrap-contract": "ラップコントラクト",
       "directlySwap": "スマートコントラクトで {{symbol}} トークンを直接 Wrap",
@@ -1028,17 +1028,17 @@
       "i-understand-and-accept-it": "内容を理解し、同意します",
       "confirm": "確認",
       "tradingSettingTip1": "1. 有効にすると、取引所のコントラクトを直接操作します",
-      "tradingSettingTip2": "2. Rabby は取引所の契約から発生するリスクについて責任を負いません",
+      "tradingSettingTip2": "2. Hippo は取引所の契約から発生するリスクについて責任を負いません",
       "gas-fee": "ガス料金: {{gasUsed}}",
       "estimate": "見積もり:",
       "actual": "実際:",
       "rabbyFee": {
         "button": "了解しました",
         "rate": "手数料率",
-        "title": "Rabby 手数料",
+        "title": "Hippo 手数料",
         "wallet": "ウォレット",
-        "bridgeDesc": "Rabby Walletは常にトップアグリゲーターから可能な限り最良のレートを見つけ、それらのオファーの信頼性を検証します。Rabbyは0.25%の手数料を請求し、この手数料は見積もりに自動的に含まれます。",
-        "swapDesc": "Rabby Wallet は常にトップアグリゲーターから最適なレートを見つけ、オファーの信頼性を検証します。Rabby は 0.25% の手数料（Wrap は 0%）を請求し、これは見積もりに自動的に含まれます。"
+        "bridgeDesc": "Hippo Walletは常にトップアグリゲーターから可能な限り最良のレートを見つけ、それらのオファーの信頼性を検証します。Hippoは0.25%の手数料を請求し、この手数料は見積もりに自動的に含まれます。",
+        "swapDesc": "Hippo Wallet は常にトップアグリゲーターから最適なレートを見つけ、オファーの信頼性を検証します。Hippo は 0.25% の手数料（Wrap は 0%）を請求し、これは見積もりに自動的に含まれます。"
       },
       "lowCreditModal": {
         "desc": "低い信用価値は、ハニーポットトークンや非常に低い流動性のような高いリスクを示すことが多いです。",
@@ -1052,13 +1052,13 @@
       "Gas-fee-too-high": "ガス代が高すぎます。",
       "approve-and-swap": "{{name}} で承認してスワップする",
       "no-slippage-for-wrap": "Wrap にスリッページはありません",
-      "no-fee-for-wrap": "Wrap に Rabby 手数料はかかりません",
+      "no-fee-for-wrap": "Wrap に Hippo 手数料はかかりません",
       "preferMEV": "MEV保護を優先",
       "hidden-no-quote-rates_one": "{{count}} 件のレートは利用できません",
       "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
       "process-with-two-step-approve": "2段階承認を進める",
       "usd-after-fees": "≈ {{usd}} ",
-      "no-fees-for-wrap": "Wrap に Rabby 手数料はかかりません",
+      "no-fees-for-wrap": "Wrap に Hippo 手数料はかかりません",
       "Auto": "自動",
       "no-quote-found": "見積もりが見つかりませんでした",
       "fetch-best-quote": "最適な見積もりを取得中",
@@ -1085,7 +1085,7 @@
       "whitelisted-address": "ホワイトリストされたアドレス",
       "addressTypeTip": "{{type}} によってインポート",
       "delete-desc": "削除する前に、資産を保護する方法を理解するために以下のポイントを考慮してください。",
-      "delete-checklist-1": "このアドレスを削除すると、このアドレスの対応するプライベートキーとシードフレーズが削除され、Rabby はそれを回復できなくなります。",
+      "delete-checklist-1": "このアドレスを削除すると、このアドレスの対応するプライベートキーとシードフレーズが削除され、Hippo はそれを回復できなくなります。",
       "delete-checklist-2": "プライベートキーまたはシードフレーズをバックアップし、削除の準備ができていることを確認します。",
       "confirm": "確認",
       "cancel": "キャンセル",
@@ -1140,7 +1140,7 @@
           "manageAddress": "アドレス管理",
           "nft": "NFT",
           "ecology": "エコシステム",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "bridge": "ブリッジ",
           "mobile": "モバイル同期",
           "perps": "Perps",
@@ -1159,9 +1159,9 @@
         "comingSoon": "近日公開",
         "soon": "まもなく",
         "refreshTheWebPageToTakeEffect": "効果を発揮するにはウェブページを更新してください",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabbyが使用中でMetaMaskは禁止されています",
+        "rabbyIsInUseAndMetamaskIsBanned": "Hippoが使用中でMetaMaskは禁止されています",
         "flip": "反転",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMaskが使用中でRabbyは禁止されています",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMaskが使用中でHippoは禁止されています",
         "transactionNeedsToSign": "トランザクションをサインする必要があります",
         "transactionsNeedToSign": "トランザクションをサインする必要があります",
         "view": "表示",
@@ -1187,7 +1187,7 @@
         "metamaskTooltip": "このDappではMetaMaskを使用することを希望しています。設定 > MetaMask優先Dappsでいつでも設定を更新できます",
         "connected": "接続済み",
         "notConnected": "未接続",
-        "connectedDapp": "Rabbyは現在のDappに接続されていません。接続するには、Dappのウェブページで接続ボタンを見つけてクリックしてください。",
+        "connectedDapp": "Hippoは現在のDappに接続されていません。接続するには、Dappのウェブページで接続ボタンを見つけてクリックしてください。",
         "noDappFound": "Dappが見つかりません",
         "disconnectAll": "すべて切断",
         "disconnectRecentlyUsed": {
@@ -1204,17 +1204,17 @@
         "noRecentlyConnectedDapps": "最近接続したDappはありません",
         "dapps": "DApp",
         "noConnectedDapps": "接続されているDappsはありません",
-        "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。",
-        "metamaskModeTooltipNew": "Rabby Walletは、Dappで「MetaMask」を選択すると接続されます。これを管理するには、[その他] > [MetaMaskとして偽装してRabbyを接続]に進んでください。"
+        "metamaskModeTooltip": "このDappでHippoに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。",
+        "metamaskModeTooltipNew": "Hippo Walletは、Dappで「MetaMask」を選択すると接続されます。これを管理するには、[その他] > [MetaMaskとして偽装してHippoを接続]に進んでください。"
       },
       "feedback": {
         "directMessage": {
           "content": "ダイレクトメッセージ",
-          "description": "DeBankのRabby Wallet公式とチャット"
+          "description": "DeBankのHippo Wallet公式とチャット"
         },
         "proposal": {
           "content": "提案",
-          "description": "Rabby Walletに関する提案をDeBankに提出"
+          "description": "Hippo Walletに関する提案をDeBankに提出"
         },
         "title": "フィードバック"
       },
@@ -1239,19 +1239,19 @@
         }
       },
       "rabbyBadge": {
-        "imageLabel": "Rabby バッジ",
-        "title": "Rabbyバッジを受け取る：",
+        "imageLabel": "Hippo バッジ",
+        "title": "Hippoバッジを受け取る：",
         "enterClaimCode": "受取コードを入力",
-        "swapTip": "Rabby Wallet内で注目のDEXでスワップを完了する必要があります。",
+        "swapTip": "Hippo Wallet内で注目のDEXでスワップを完了する必要があります。",
         "goToSwap": "スワップに進む",
         "claim": "受け取る",
         "viewYourClaimCode": "DeBankで受取コードを確認",
         "noCode": "このアドレスでは受取コードが有効になっていません",
         "learnMoreOnDebank": "DeBankで詳細を確認",
-        "rabbyValuedUserNo": "Rabby優良ユーザー No.{{num}}",
+        "rabbyValuedUserNo": "Hippo優良ユーザー No.{{num}}",
         "claimSuccess": "受け取りに成功しました",
         "viewOnDebank": "DeBankで表示",
-        "rabbyFreeGasUserNo": "Rabby Free Gas ユーザー No.{{num}}",
+        "rabbyFreeGasUserNo": "Hippo Free Gas ユーザー No.{{num}}",
         "freeGasTitle": "Free Gasバッジを受け取る：",
         "freeGasNoCode": "下のボタンからDeBankに移動し、現在のアドレスで受取コードを取得してください。",
         "learnMore": "詳細情報",
@@ -1289,16 +1289,16 @@
         "clearPendingTip1": "この操作により、インターフェースから保留中のトランザクションが削除され、ネットワーク上で長時間保留されていることによって引き起こされる問題の解決に役立ちます。",
         "clearPendingTip2": "これは、アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。すべての資産とアカウントの詳細は安全に保たれます。",
         "autoLockTime": "自動ロック時間",
-        "claimRabbyBadge": "Rabbyバッジを受け取る",
+        "claimRabbyBadge": "Hippoバッジを受け取る",
         "cancel": "キャンセル",
         "enableWhitelist": "ホワイトリストを有効にする",
         "disableWhitelist": "ホワイトリストを無効にする",
-        "enableWhitelistTip": "有効にすると、Rabbyを使用してホワイトリスト内のアドレスにのみ資産を送信できます。",
+        "enableWhitelistTip": "有効にすると、Hippoを使用してホワイトリスト内のアドレスにのみ資産を送信できます。",
         "disableWhitelistTip": "無効にすると、どのアドレスにでも資産を送信できます",
         "warning": "警告",
         "clearWatchAddressContent": "閲覧専用アドレスをすべて削除しますか？",
         "updateVersion": {
-          "content": "新しいRabby Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
+          "content": "新しいHippo Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
           "okText": "チュートリアルを見る",
           "successTip": "最新バージョンを使用中です",
           "title": "アップデート利用可能"
@@ -1311,7 +1311,7 @@
           "connectedDapp": "接続されたDapp",
           "gasTopUp": "ガス補充",
           "searchDapps": "Dappsを検索",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "ecosystem": "エコシステム"
         },
         "settings": {
@@ -1324,7 +1324,7 @@
           "themeMode": "テーマモード",
           "toggleThemeMode": "テーマモード",
           "customTestnet": "カスタムネットワークを追加",
-          "metamaskMode": "MetaMaskとして偽装してRabbyを接続",
+          "metamaskMode": "MetaMaskとして偽装してHippoを接続",
           "enableDappAccount": "DAppアドレスを個別に切り替える",
           "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード",
           "biometricUnlock": "生体認証でロック解除",
@@ -1350,7 +1350,7 @@
           "desc": "有効にすると、DAppごとに接続するアドレスを選択できます。メインアドレスを切り替えても、各DAppに接続済みのアドレスには影響しません。"
         },
         "rateModalTriggerOnHome": {
-          "description": "Rabby Walletをどのように評価しますか？"
+          "description": "Hippo Walletをどのように評価しますか？"
         },
         "rateModal": {
           "submitFeedbackButton": "送信",
@@ -1358,8 +1358,8 @@
           "rateOnChromeStoreButton": "Chrome ウェブストアでの評価",
           "feedbackDesc": "フィードバックはありますか？私たちはお聞きしています。",
           "thxTitle": "ありがとう！",
-          "thxDesc": "Rabbyが気に入っていただけたら、Chromeストアでの簡単な評価はとてもありがたいです。",
-          "feedbackPlaceholder": "Rabbyはあなたのフィードバックを大切にしています！"
+          "thxDesc": "Hippoが気に入っていただけたら、Chromeストアでの簡単な評価はとてもありがたいです。",
+          "feedbackPlaceholder": "Hippoはあなたのフィードバックを大切にしています！"
         },
         "PwdForNonWhitelistedTx": {
           "inputPlaceholder": "パスワードを入力して確認してください",
@@ -1382,8 +1382,8 @@
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",
         "blocked": "ブロック済み",
-        "selectedCustom": "このトークンはRabbyにリストされていません。カスタムでトークンリストに追加しました。",
-        "notSelectedCustom": "このトークンはRabbyにリストされていません。オンにするとトークンリストに追加されます。",
+        "selectedCustom": "このトークンはHippoにリストされていません。カスタムでトークンリストに追加しました。",
+        "notSelectedCustom": "このトークンはHippoにリストされていません。オンにするとトークンリストに追加されます。",
         "customized": "カスタマイズ済み",
         "scamTx": "詐欺トランザクション",
         "txFailed": "失敗",
@@ -1406,7 +1406,7 @@
         "NoSupportedExchanges": "サポートされている取引所はありません",
         "NoListedBy": "リスティング情報は利用できません。",
         "OriginalToken": "オリジナルトークン",
-        "customizedHasAddedTips": "トークンはRabbyによってリストされていません。手動でトークンリストに追加しました。",
+        "customizedHasAddedTips": "トークンはHippoによってリストされていません。手動でトークンリストに追加しました。",
         "BridgeProvider": "ブリッジプロバイダー",
         "blockedListTitles": "ブロックされたトークン",
         "BridgeIssue": "第三者によってブリッジされたトークン",
@@ -1508,7 +1508,7 @@
         "side": "方向",
         "price": "価格",
         "searchTokenPlaceholder": "トークンを検索",
-        "openInTab": "Rabbyタブで開く",
+        "openInTab": "Hippoタブで開く",
         "openProMode": "プロモードを開く",
         "openInTabV2": "新しいタブで開く",
         "addAssets": "資産を追加"
@@ -1559,7 +1559,7 @@
       "MetamaskModePopup": {
         "title": "MetaMaskモード",
         "footerText": "その他 > MetaMaskモードから、対象のDAppを追加できます",
-        "desc": "RabbyをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
+        "desc": "HippoをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
         "enableDesc": "MetaMaskでのみ動作するDappの場合は有効にする",
         "toastSuccess": "有効になりました。ページを更新して再接続してください。"
       },
@@ -1572,8 +1572,8 @@
         "title": "こちらでDapp接続のためのアドレスを切り替えます"
       },
       "rabbyPointsPopup": {
-        "title": "Rabbyポイント",
-        "desc": "Rabby Mobileでポイントを確認してください。",
+        "title": "Hippoポイント",
+        "desc": "Hippo Mobileでポイントを確認してください。",
         "downloadIntro": "アプリをまだお持ちではありませんか？今すぐダウンロードしてください。"
       },
       "noData": "一致する通貨がありません",
@@ -1629,11 +1629,11 @@
           "answer": "資産を制御するために使用される12、18、または24の単語フレーズです。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Rabbyでインポートするのは安全ですか?",
+          "question": "Hippoでインポートするのは安全ですか?",
           "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
         "importError": "[CreateMnemonics] 予期しないステップ {{0}}",
-        "importQuestion4": "シードフレーズのバックアップを取らずにRabbyをアンインストールすると、Rabbyはそれを取り戻すことができません。",
+        "importQuestion4": "シードフレーズのバックアップを取らずにHippoをアンインストールすると、Hippoはそれを取り戻すことができません。",
         "riskTips": "始める前に、以下のセキュリティのヒントを読んで心に留めておいてください。",
         "showSeedPhrase": "シードフレーズを表示",
         "backup": "シードフレーズのバックアップ",
@@ -1661,20 +1661,20 @@
         "wordPhraseAndPassphrase": "私のシードフレーズはパスフレーズ付きの <1>{{count}}</1> 語です",
         "wordPhraseAndPassphraseSelected": "私のシードフレーズはパスフレーズ付きの <1>{{count}} 語</1>です",
         "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズのシェアを入力してください",
-        "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
+        "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Hippoはそれにアクセスできません。",
         "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
-        "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。",
+        "importQuestion3": "Hippoをアンインストールしてシードフレーズをバックアップしなかった場合、Hippoでは回復できません。",
         "showMoreOptions": "オプションをさらに表示",
         "inputInvalid": "無効な単語が検出されました。ハイライトされたものを確認してください。"
       },
       "metamask": {
         "step1": " MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
-        "step2": "Rabbyでシードフレーズまたはプライベートキーをインポートします",
+        "step2": "Hippoでシードフレーズまたはプライベートキーをインポートします",
         "step3": "インポートが完了すると、<br />すべてのアセットが自動的に表示されます",
         "how": "MetaMaskアカウントをインポートする方法",
         "step": "ステップ",
         "importSeedPhrase": "シードフレーズまたはプライベートキーをインポート",
-        "importSeedPhraseTips": "これはブラウザー上でローカルにのみ保存されます。Rabbyはあなたのプライベート情報にアクセスしません。",
+        "importSeedPhraseTips": "これはブラウザー上でローカルにのみ保存されます。Hippoはあなたのプライベート情報にアクセスしません。",
         "tips": "ヒント:",
         "tipsDesc": "シードフレーズ/プライベートキーはMetaMaskまたは特定のウォレットに属しているわけではありません。それはあなたにしか属していません。"
       },
@@ -1686,7 +1686,7 @@
           "answer": "資産を制御するために使用される文字列の組み合わせです。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Rabbyでそれをインポートするのは安全ですか？",
+          "question": "Hippoでそれをインポートするのは安全ですか？",
           "answer": "はい、それはブラウザー上でローカルに保存され、あなた以外はアクセスできません。"
         },
         "isItPossibleToImportKeystore": {
@@ -1702,9 +1702,9 @@
       "importedSuccessfully": "インポートしました",
       "ledger": {
         "title": "Ledgerを接続",
-        "cameraPermissionTitle": "Rabbyがカメラにアクセスする許可",
-        "cameraPermission1": "ブラウザーポップアップでRabbyがカメラにアクセスできるように許可します",
-        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可:",
+        "cameraPermissionTitle": "Hippoがカメラにアクセスする許可",
+        "cameraPermission1": "ブラウザーポップアップでHippoがカメラにアクセスできるように許可します",
+        "allowRabbyPermissionsTitle": "Hippoに以下の権限を許可:",
         "ledgerPermission1": "HIDデバイスに接続",
         "ledgerPermissionTip": "以下のポップアップウィンドウでLedgerへのアクセスを許可するために、\\\"許可\\\"をクリックしてください。",
         "permissionsAuthorized": "権限が許可されました",
@@ -1758,14 +1758,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "アドレスがRabbyから削除されました",
-          "added": "アドレスがRabbyに追加されました",
+          "removed": "アドレスがHippoから削除されました",
+          "added": "アドレスがHippoに追加されました",
           "connectError": "接続が停止しました。ページを更新して再接続してください。",
           "disconnected": "ハードウェアウォレットに接続できません。再接続を試してみてください。"
         },
         "waiting": "待機中",
         "clickToGetInfo": "チェーン上の情報を取得するにはクリック",
-        "addToRabby": "Rabbyに追加",
+        "addToRabby": "Hippoに追加",
         "basicInformation": "基本情報",
         "addresses": "アドレス",
         "loadingAddress": "{{0}}/{{1}} アドレスを読み込んでいます",
@@ -1876,7 +1876,7 @@
         "manageNgraveZero": "NGRAVE ZEROを管理",
         "done": "完了",
         "addressesIn": "{{0}}のアドレス",
-        "addressesInRabby": "Rabbyのアドレス{{0}}",
+        "addressesInRabby": "Hippoのアドレス{{0}}",
         "qrCode": {
           "switch": {
             "title": "新しい{{0}}デバイスに切り替え",
@@ -1887,7 +1887,7 @@
         "manageImtokenOffline": "imToken を管理",
         "manageImKey": "imKey を管理",
         "importBtn": "インポート ({{count}})",
-        "nonAddr": "このシードフレーズにはアドレスが追加されていません。このフレーズは、Rabby Extension > アドレスの管理で削除できます。"
+        "nonAddr": "このシードフレーズにはアドレスが追加されていません。このフレーズは、Hippo Extension > アドレスの管理で削除できます。"
       },
       "importYourKeystore": "KeyStoreをインポート",
       "incorrectPassword": "パスワードが正しくありません",
@@ -1914,8 +1914,8 @@
         "keystonePermission1": "USBデバイスに接続",
         "noDeviceFoundError": "Keystone を一つ差し込んでください",
         "title": "Keystoneを接続",
-        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
-        "deviceRejectedExportAddress": "Rabby への接続を承認",
+        "allowRabbyPermissionsTitle": "Hippoに以下の権限を許可する：",
+        "deviceRejectedExportAddress": "Hippo への接続を承認",
         "keystonePermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、Keystone へのアクセスを承認し、Keystone 3 Pro がホームページにあることを確認してください。",
         "exportAddressJustAllowedOnHomePage": "Keystoneのホーム画面でのみアドレスをエクスポートできます。",
         "deviceIsLockedError": "パスワードを入力してロックを解除してください",
@@ -1924,7 +1924,7 @@
       },
       "onekey": {
         "onekeyPermission1": "USBデバイスに接続",
-        "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
+        "allowRabbyPermissionsTitle": "Hippoに以下の権限を許可する：",
         "onekeyPermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、OneKey へのアクセスを承認してください。ポップアップにOneKeyが表示されない場合は、デバイスがコンピューターに正しく接続されているかご確認ください。",
         "whyOneKey": "OneKeyを選ぶ理由？",
         "buyOneKey": "OneKeyを購入",
@@ -1957,7 +1957,7 @@
       "duplicateAddressesSkippedDesc_other": "{{count}} のアドレスは、すでに存在するためスキップされました。",
       "bulkImportPrivateKey": "プライベートキーの一括インポート",
       "bulkImportPrivateKeyExceeded": "{{count}} 个プライベートキーを同時にサポートしています",
-      "openExtensionToGetStarted": "Rabby拡張機能を開いて始めましょう。",
+      "openExtensionToGetStarted": "Hippo拡張機能を開いて始めましょう。",
       "bulkImportPrivateKeyInvalid": "無効なプライベートキーがあります。削除するか、再入力してください。",
       "newAddressAdded": "新しいアドレスが追加されました",
       "bulkImportPrivateKeyPlaceholder": "各プライベートキーは新しい行または特別な文字で区切る必要があります。",
@@ -1974,35 +1974,35 @@
         "placeholder": "アンロックするにはパスワードを入力してください",
         "error": "パスワードが正しくありません"
       },
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "btnForgotPassword": "パスワードをお忘れですか?",
       "description": "EthereumとEVMのための定番ウォレット",
       "biometricFailed": "生体認証の解除に失敗しました"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",
-      "tokenSupported": "トークンはRabbyでサポートされています",
+      "tokenSupported": "トークンはHippoでサポートされています",
       "tokenCustomized": "現在のトークンはカスタマイズされたものに既に追加されています",
       "tokenNotFound": "この契約アドレスからトークンが見つかりません",
-      "title": "Rabbyにカスタムトークンを追加",
+      "title": "Hippoにカスタムトークンを追加",
       "balance": "残高",
       "tokenOnMultiChains": "複数のチェーン上のトークンアドレスです。お好きなものを選んでください",
       "noTokenFoundOnThisChain": "このチェーン上でトークンが見つかりません",
       "hasAdded": "このトークンが追加されました。"
     },
     "switchChain": {
-      "title": "Rabby にカスタムネットワークを追加",
-      "chainNotSupport": "要求されたチェーンはまだRabbyでサポートされていません",
+      "title": "Hippo にカスタムネットワークを追加",
+      "chainNotSupport": "要求されたチェーンはまだHippoでサポートされていません",
       "testnetTip": "テストネットに接続する前に、「詳細設定」の下にある「テストネットを有効にする」をオンにしてください",
       "unknownChain": "不明なチェーン",
       "requestsReceivedPlural": "{{count}} 件のリクエストを受信しました",
       "chainId": "チェーンID：",
       "requestsReceived": "1 リクエストを受信しました",
-      "requestRabbyToSupport": "Rabbyにサポートをリクエスト",
+      "requestRabbyToSupport": "Hippoにサポートをリクエスト",
       "addChain": "テストネットを追加",
-      "chainNotSupportYet": "リクエストされたチェーンはまだRabbyによってサポートされていません",
-      "chainNotSupportAddChain": "要求されたチェーンはまだRabbyに統合されていません。カスタムテストネットとして追加できます。",
-      "desc": "要求されたネットワークはまだRabbyに統合されていません 手動でカスタムネットワークとして追加することができます"
+      "chainNotSupportYet": "リクエストされたチェーンはまだHippoによってサポートされていません",
+      "chainNotSupportAddChain": "要求されたチェーンはまだHippoに統合されていません。カスタムテストネットとして追加できます。",
+      "desc": "要求されたネットワークはまだHippoに統合されていません 手動でカスタムネットワークとして追加することができます"
     },
     "signText": {
       "title": "テキストを署名",
@@ -2035,10 +2035,10 @@
       "listedBy": "掲載元",
       "sitePopularity": "サイトの人気",
       "myMark": "私のマーク",
-      "flagByRabby": "Rabbyによってフラグ付け",
+      "flagByRabby": "Hippoによってフラグ付け",
       "flagByMM": "MetaMaskによってフラグ付け",
       "flagByScamSniffer": "ScamSnifferによってフラグ付け",
-      "verifiedByRabby": "Rabbyによって確認",
+      "verifiedByRabby": "Hippoによって確認",
       "foundForbiddenRisk": "禁止されたリスクが見つかりました。接続はブロックされました。",
       "markAsTrustToast": "\"信頼されている\" としてマーク",
       "markAsBlockToast": "\"ブロックされている\" としてマーク",
@@ -2082,7 +2082,7 @@
       "backup-seed-phrase": "シードフレーズをバックアップ",
       "delete-address": "アドレスを削除",
       "delete-desc": "削除する前に、以下のポイントを考慮して、資産を保護する方法を理解してください。",
-      "direct-delete-desc": "このアドレスは {{renderBrand}} アドレスであり、Rabbyはこのアドレスのプライベートキーやシードフレーズを保存していません。削除するだけです。",
+      "direct-delete-desc": "このアドレスは {{renderBrand}} アドレスであり、Hippoはこのアドレスのプライベートキーやシードフレーズを保存していません。削除するだけです。",
       "admins": "管理者",
       "tx-requires": "トランザクションには <2>{{num}}</2> 回の確認が必要です",
       "edit-memo-title": "アドレスのメモを編集",
@@ -2106,7 +2106,7 @@
         "option1": "アドレスを削除、シードフレーズを保持",
         "check2": "プライベートキーまたはシードフレーズをバックアップ済みで、このアドレスを削除する準備ができていることを確認します。",
         "title": "アドレスとシードフレーズを削除しますか？",
-        "check1": "このアドレスを削除すると、そのプライベートキーとシードフレーズも削除されることを理解しています。Rabbyはそれらを回復することはできません。",
+        "check1": "このアドレスを削除すると、そのプライベートキーとシードフレーズも削除されることを理解しています。Hippoはそれらを回復することはできません。",
         "remainSeedPhrase": "あなたのシードフレーズはデバイスに残ります。",
         "onlyDeleteAddr": "このアドレスのみが削除されます。シードフレーズには影響がなく、他のアドレスは引き続きそれを使用しています。",
         "keepSeedPhrase": "これはこのシードフレーズにリンクされた唯一のアドレスです。シードフレーズを保存しますか？"
@@ -2115,7 +2115,7 @@
         "sub-title": "このアクションは永久的です。資産を保護するために、以下を確認してください：",
         "check2": "プライベートキーまたはシードフレーズをバックアップ済みで、このアドレスを削除する準備ができていることを確認します。",
         "title": "アドレスと秘密鍵を削除しますか？",
-        "check1": "このアドレスを削除すると、そのプライベートキーも削除されることを理解しています。Rabbyはそれらを回復することはできません。"
+        "check1": "このアドレスを削除すると、そのプライベートキーも削除されることを理解しています。Hippoはそれらを回復することはできません。"
       },
       "notBackup": "バックアップなし"
     },
@@ -2131,7 +2131,7 @@
       "closed": "クローズ",
       "empty": "カスタムRPC URLなし",
       "title": "RPC URLを修正",
-      "desc": "変更後、カスタムRPCはRabbyのノードを置き換えます。Rabbyのノードを使い続けるには、カスタムRPCを削除してください。",
+      "desc": "変更後、カスタムRPCはHippoのノードを置き換えます。Hippoのノードを使い続けるには、カスタムRPCを削除してください。",
       "add": "RPC URL を修正",
       "EditRPCModal": {
         "invalidRPCUrl": "無効なRPC URL",
@@ -2148,9 +2148,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "DeBankテストネットガストークンのリクエスト",
-      "mintedTip": "Rabbyバッジの所有者は1日に1回リクエストできます",
-      "notMintedTip": "リクエストはRabbyバッジの所有者のみ利用可能です",
-      "claimBadgeBtn": "Rabbyバッジを受け取る",
+      "mintedTip": "Hippoバッジの所有者は1日に1回リクエストできます",
+      "notMintedTip": "リクエストはHippoバッジの所有者のみ利用可能です",
+      "claimBadgeBtn": "Hippoバッジを受け取る",
       "time": "1日あたり",
       "requested": "本日リクエストしました",
       "requestBtn": "リクエスト"
@@ -2206,7 +2206,7 @@
       "clickToShowQr": "プライベートキーQRコードを表示するにはクリック"
     },
     "ethSign": {
-      "alert": "'eth_sign' で署名することは資産の損失につながる可能性があります。安全のため、Rabbyはこの方法をサポートしていません。"
+      "alert": "'eth_sign' で署名することは資産の損失につながる可能性があります。安全のため、Hippoはこの方法をサポートしていません。"
     },
     "createPassword": {
       "title": "パスワードを設定",
@@ -2221,7 +2221,7 @@
     "welcome": {
       "step1": {
         "title": "すべてのDappsにアクセス",
-        "desc": "RabbyはMetaMaskがサポートするすべてのDappsに接続します"
+        "desc": "HippoはMetaMaskがサポートするすべてのDappsに接続します"
       },
       "step2": {
         "title": "セルフカストディ",
@@ -2252,7 +2252,7 @@
         "confirmModal": {
           "i-understand-and-accept-it": "内容を理解し、同意します",
           "tip1": "有効にすると、このアグリゲーターから直接コントラクトとやり取りします。",
-          "tip2": "2. Rabby は、このアグリゲーターのコントラクトから生じるいかなるリスクに対しても責任を負いません。",
+          "tip2": "2. Hippo は、このアグリゲーターのコントラクトから生じるいかなるリスクに対しても責任を負いません。",
           "title": "このアグリゲーターを使用して取引を有効にする"
         },
         "SupportedBridge": "サポートされているBridge:",
@@ -2288,7 +2288,7 @@
       "tokenPairPlaceholder": "トークンペアを選択",
       "slippage-adjusted-refresh-quote": "スリッページが調整されました。ルートをリフレッシュしてください。",
       "bridge-cost": "ブリッジコスト",
-      "rabby-fee": "Rabby 手数料",
+      "rabby-fee": "Hippo 手数料",
       "approve-and-bridge": "承認してブリッジする",
       "insufficient-balance": "残高不足",
       "bridge-via-x": "{{name}}でブリッジ",
@@ -2440,14 +2440,14 @@
       "claimModal": {
         "addressBalance": "ウォレット残高",
         "claim": "受け取る",
-        "rabbyUser": "Rabby アクティブユーザー",
+        "rabbyUser": "Hippo アクティブユーザー",
         "placeholder": "リファラルコードを入力して追加ポイントを獲得 (オプション)",
         "MetaMaskSwap": "MetaMask Swap",
         "snapshotTime": "スナップショット時間: {{time}}",
         "title": "初期ポイントを申請する",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
         "season2": "シーズン2",
-        "rabbyValuedUserBadge": "Rabby優良ユーザーバッジ",
+        "rabbyValuedUserBadge": "Hippo優良ユーザーバッジ",
         "walletBalance": "ウォレット残高",
         "cantUseOwnCode": "自分の紹介コードを使用することはできません。",
         "referral-code": "紹介コード",
@@ -2474,14 +2474,14 @@
         "max-15-characters-use-numbers-and-letters-only": "最大 15 文字、数字と文字のみを使用してください。"
       },
       "top-100": "トップ 100",
-      "title": "Rabby Points",
+      "title": "Hippo Points",
       "share-on": "シェアする",
       "out-of-x-current-total-points": "{{total}} 点数の合計中",
       "earn-points": "ポイントを獲得",
       "referral-code-copied": "紹介コードをコピーしました。",
       "initialPointsClaimEnded": "初期ポイントの受取期間は終了しました",
-      "firstRoundEnded": "🎉 第1回のRabby Pointsは終了しました",
-      "secondRoundEnded": "🎉 Rabby Points の第2ラウンドが終了しました",
+      "firstRoundEnded": "🎉 第1回のHippo Pointsは終了しました",
+      "secondRoundEnded": "🎉 Hippo Points の第2ラウンドが終了しました",
       "code-set-successfully": "リファーラルコードが正常に設定されました"
     },
     "customTestnet": {
@@ -2499,7 +2499,7 @@
       "AddFromChainList": {
         "tips": {
           "added": "このチェーンはすでに追加されています。",
-          "supported": "Rabby Walletによってすでに統合されているチェーン"
+          "supported": "Hippo Walletによってすでに統合されているチェーン"
         },
         "search": "カスタムネットワーク名またはIDを検索",
         "empty": "チェーンが見つかりませんでした",
@@ -2509,18 +2509,18 @@
         "title": "取引データ"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "このチェーンはすでにRabbyによって統合されています。RPC URLを変更する必要がありますか？"
+        "desc": "このチェーンはすでにHippoによって統合されています。RPC URLを変更する必要がありますか？"
       },
       "add": "カスタムネットワークを追加",
       "title": "カスタムネットワーク",
       "currency": "通貨",
       "id": "ID",
       "empty": "カスタムネットワークなし",
-      "desc": "Rabby はカスタムネットワークの安全性を検証できません。信頼できるネットワークのみを追加してください。"
+      "desc": "Hippo はカスタムネットワークの安全性を検証できません。信頼できるネットワークのみを追加してください。"
     },
     "addChain": {
-      "title": "Rabby にカスタムネットワークを追加",
-      "desc": "Rabbyはカスタムネットワークのセキュリティを確認できません。信頼できるネットワークのみを追加してください。"
+      "title": "Hippo にカスタムネットワークを追加",
+      "desc": "Hippoはカスタムネットワークのセキュリティを確認できません。信頼できるネットワークのみを追加してください。"
     },
     "sign": {
       "transactionSpeed": "トランザクションスピード"
@@ -2664,7 +2664,7 @@
         "amount": "金額",
         "title": "入金",
         "invalidAmount": "500未満である必要があります",
-        "desc": "RabbyのDeBank L2アカウントに手数料なしで入金し、いつでも引き出し可能。",
+        "desc": "HippoのDeBank L2アカウントに手数料なしで入金し、いつでも引き出し可能。",
         "selectToken": "トークンを選択して入金",
         "token": "トークン",
         "paymentAddr": "支払いアドレス",
@@ -2742,15 +2742,15 @@
         "title2": "Gas Accountの使い方",
         "title1": "GasAccountとは何ですか",
         "title4": "GasAccountは安全ですか",
-        "desc3": "Rabby Walletは追加料金を請求しません。あなたはトランザクションのガス代と、そのガスをGasAccountからあなたのアドレスに送るための少額のガス代のみを支払います。",
-        "desc4": "GasAccountは、契約の承認や権限を必要としません。あなたはRabbyのGasAccountアドレスに入金し、必要な時にRabbyがあなたのアドレスにガスを送ります。設計上、完全に安全です。",
+        "desc3": "Hippo Walletは追加料金を請求しません。あなたはトランザクションのガス代と、そのガスをGasAccountからあなたのアドレスに送るための少額のガス代のみを支払います。",
+        "desc4": "GasAccountは、契約の承認や権限を必要としません。あなたはHippoのGasAccountアドレスに入金し、必要な時にHippoがあなたのアドレスにガスを送ります。設計上、完全に安全です。",
         "desc2": "GasAccountに資金を追加し、任意の取引に使用してください。署名する際、ネイティブトークンまたはGasAccountでガスを支払うオプションを選択し、いつでも切り替えてください。",
         "desc1": "GasAccountはガス料金を支払う新しい方法です。各チェーンのネイティブトークンを使用する代わりに、1つのアカウントを使用してすべてのチェーンのすべてのアドレスのガスをカバーできます。シンプルでオプションの機能で、ガス切れになることもありません。"
       },
       "benefitCard": {
         "title": "すべてのチェーンでガス料金を支払う",
         "subtitle": "ガスがなくなったとき",
-        "item1": "Rabbyの手数料なし",
+        "item1": "Hippoの手数料なし",
         "desc1": "ガス支払いの追加手数料なし",
         "item2": "すべてのネットワークに対応",
         "desc2": "80以上のネットワークでの自動ガス支払い",
@@ -2780,15 +2780,15 @@
       "guide": {
         "createNewAddress": "新しいアドレスを作成",
         "importAddress": "すでにアドレスを持っています。",
-        "title": "Rabby Walletへようこそ",
+        "title": "Hippo Walletへようこそ",
         "desc": "EthereumとEVMのための定番ウォレット"
       },
       "createNewAddress": {
         "showSeedPhrase": "シードフレーズを表示",
         "desc": "次のセキュリティのヒントをお読みいただき、覚えておいてください。",
         "tip1": "シードフレーズを失ったり共有したりすると、資産に恒久的にアクセスできなくなります。",
-        "tip2": "私のシードフレーズは私のデバイスにのみ保存されています。Rabbyはアクセスできません。",
-        "tip3": "Rabbyをアンインストールし、シードフレーズをバックアップしなかった場合、それはRabbyによって復元できません。",
+        "tip2": "私のシードフレーズは私のデバイスにのみ保存されています。Hippoはアクセスできません。",
+        "tip3": "Hippoをアンインストールし、シードフレーズをバックアップしなかった場合、それはHippoによって復元できません。",
         "title": "始める前に"
       },
       "importList": {
@@ -2828,19 +2828,19 @@
         "addMoreFrom": "{{name}} からさらにアドレスを追加",
         "import": "インポートしました",
         "openWallet": "ウォレットを開く",
-        "desc": "Rabbyウォレットは使用準備完了です！",
+        "desc": "Hippoウォレットは使用準備完了です！",
         "backupSeedPhraseNow": "今すぐバックアップシードフレーズを保存してください",
         "backupSeedPhrase": "バックアップシードフレーズ"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet をピン留め",
+        "pin": "Hippo Wallet をピン留め",
         "guides": {
           "step1": "ブラウザー拡張アイコンをクリックしてください",
-          "step2": "Rabby Walletをピン留めする"
+          "step2": "Hippo Walletをピン留めする"
         },
-        "title": "あなたのRabbyウォレットの準備ができました！",
+        "title": "あなたのHippoウォレットの準備ができました！",
         "extensionTip": "クリック<1/>、次に<3/>",
-        "desc": "Rabby Walletを見つけてピン留めしてください。"
+        "desc": "Hippo Walletを見つけてピン留めしてください。"
       },
       "importSeedPhrase": {
         "title": "シードフレーズをインポート",
@@ -2919,15 +2919,15 @@
     },
     "metamaskModeDapps": {
       "title": "許可されたDappsを管理する",
-      "desc": "以下のDappsではMetaMaskモードが有効になっています。MetaMaskオプションを選択してRabbyに接続できます。"
+      "desc": "以下のDappsではMetaMaskモードが有効になっています。MetaMaskオプションを選択してHippoに接続できます。"
     },
     "forgotPassword": {
       "home": {
         "title": "パスワードを忘れた場合",
         "button": "リセットプロセスを開始",
         "buttonNoData": "パスワードを設定",
-        "descriptionNoData": "Rabby Walletはパスワードを保存せず、パスワードを取得するお手伝いはできません。忘れた場合は新しいパスワードを設定してください。",
-        "description": "Rabby Walletはパスワードを保存せず、パスワードの復元をお手伝いすることができません。ウォレットをリセットして新しいウォレットを設定してください。"
+        "descriptionNoData": "Hippo Walletはパスワードを保存せず、パスワードを取得するお手伝いはできません。忘れた場合は新しいパスワードを設定してください。",
+        "description": "Hippo Walletはパスワードを保存せず、パスワードの復元をお手伝いすることができません。ウォレットをリセットして新しいウォレットを設定してください。"
       },
       "reset": {
         "alert": {
@@ -2944,11 +2944,11 @@
           "title": "保持されるデータ："
         },
         "button": "リセットを確認",
-        "title": "Rabby Wallet をリセット",
+        "title": "Hippo Wallet をリセット",
         "confirm": "ボックスに<1>RESET</1>と入力して確認し、続行します。"
       },
       "tip": {
-        "title": "Rabby Wallet リセットが完了しました",
+        "title": "Hippo Wallet リセットが完了しました",
         "description": "新しいパスワードを作成して続行してください",
         "buttonNoData": "アドレスを追加",
         "button": "パスワードを設定",
@@ -2956,7 +2956,7 @@
       },
       "success": {
         "button": "完了",
-        "description": "Rabby Wallet を使用する準備が整いました。",
+        "description": "Hippo Wallet を使用する準備が整いました。",
         "title": "パスワードが正常に設定されました"
       }
     },
@@ -2972,19 +2972,19 @@
       "step2": "ステップ 2",
       "step2Desc": "MetaMaskを介して更新して接続",
       "noDappFound": "Dapp が見つかりません",
-      "step1Desc": "Rabbyに現在のDappでMetaMaskとして偽装を許可する",
+      "step1Desc": "Hippoに現在のDappでMetaMaskとして偽装を許可する",
       "manage": "許可されたDappsを管理",
-      "title": "MetaMaskとして偽装してRabbyを接続する",
-      "alert": "Dappに接続できません。Rabby Walletがオプションとして表示されていないためですか？"
+      "title": "MetaMaskとして偽装してHippoを接続する",
+      "alert": "Dappに接続できません。Hippo Walletがオプションとして表示されていないためですか？"
     },
     "syncToMobile": {
       "downloadGooglePlay": "Google Play",
       "steps2Description": " あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
       "downloadAppleStore": "App Store",
-      "steps1": "Rabby Mobile をダウンロードする",
+      "steps1": "Hippo Mobile をダウンロードする",
       "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
-      "steps2": "2. Rabby Mobileでスキャン",
-      "title": "Rabby Extensionからモバイルへウォレットアドレスを同期",
+      "steps2": "2. Hippo Mobileでスキャン",
+      "title": "Hippo Extensionからモバイルへウォレットアドレスを同期",
       "clickToShowQr": "クリックしてアドレスを選択し、QRコードを表示します",
       "disableSelectAddress": "{{type}}アドレスのサポートされていない同期",
       "disableSelectAddressWithPassphrase": "パスフレーズを使用する{{type}}アドレスは同期できません",
@@ -3042,7 +3042,7 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "scamAddress": "Rabby によってフラグされた詐欺アドレス",
+            "scamAddress": "Hippo によってフラグされた詐欺アドレス",
             "contractAddress": "契約アドレスが検出されました、資金が失われる可能性があります",
             "dexNoDeposite": "CEXの入金アドレスではありません。資金が失われる可能性があります。",
             "noSend": "このアドレスには180日間送信していません。"
@@ -3258,7 +3258,7 @@
           "proceeds": "収益",
           "creatorFee": "クリエイター手数料 ({{fee}}%)",
           "floorDifference": "フロア差",
-          "rabbyFee": "Rabby 手数料 (0%)",
+          "rabbyFee": "Hippo 手数料 (0%)",
           "approveAndList": "承認とリスト",
           "platformFee": " Openseaプラットフォーム手数料 ({{fee}}%)",
           "creatorFeeTips": "クリエイターの収益は販売者によって支払われます。",
@@ -3274,7 +3274,7 @@
           "title": "オファーを受け入れる",
           "acceptOffer": "オファーを受け入れる",
           "creatorFee": "クリエイター手数料（{{fee}}%）",
-          "rabbyFee": "Rabby手数料（0%）",
+          "rabbyFee": "Hippo手数料（0%）",
           "totalEst": "合計見込み収益",
           "creatorFeeTips": "クリエイターの収益は売り手から支払われます。",
           "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
@@ -3517,7 +3517,7 @@
       "invitePopup": {
         "activateFailed": "失敗",
         "activateNow": "今すぐ有効化",
-        "description": "Rabby のコードを使用して有効化する",
+        "description": "Hippo のコードを使用して有効化する",
         "title": "Hyperliquidの手数料を節約",
         "activatedSuccess": "4%のHyperliquid手数料節約を有効化しました",
         "hyperliquidFee": "Hyperliquidの無期限契約の取引手数料。"
@@ -3557,7 +3557,7 @@
       "availableToTrade": "取引可能",
       "size": "ポジションサイズ",
       "takeProfitTipsShort": "利確価格は現在価格より低く設定してください。",
-      "rabbyFeeTipsZero": "Rabbyの手数料: 0%",
+      "rabbyFeeTipsZero": "Hippoの手数料: 0%",
       "direction": "取引方向",
       "stopLossWhen": "ストップロス価格を設定",
       "stopLossTipsLongLiquidation": "価格は清算価格より低いです（{{price}}）",
@@ -3606,7 +3606,7 @@
       "completed": "完了",
       "logInPerpsAccount": "Perps アカウントにログイン",
       "marginCross": "クロスマージン",
-      "rabbyFeeTipsV2": "Rabby 手数料: 0.02%",
+      "rabbyFeeTipsV2": "Hippo 手数料: 0.02%",
       "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。",
       "directDepositFast": "迅速、スリッページなし",
       "details": "詳細情報",
@@ -4155,7 +4155,7 @@
         "takeProfitWhenPriceAbove": "価格が上回ったときに利確",
         "stopLossWhenPriceBelow": "価格が下回った場合のストップロス",
         "stopLossWhenPriceAbove": "価格が上回った場合のストップロス",
-        "rabbyFee": "Rabby 手数料",
+        "rabbyFee": "Hippo 手数料",
         "providerFee": "Hyperliquid手数料",
         "maxMargin": "最大証拠金は {{amount}} です",
         "insufficientBalance": "証拠金不足",
@@ -4956,7 +4956,7 @@
     "EcologyNoticeModal": {
       "title": "通知",
       "notRemind": "再び通知しない",
-      "desc": "以下のサービスは、サードパーティーのエコシステムパートナーによって直接提供されます。Rabby Walletはこれらのサービスのセキュリティに対して責任を負いません。"
+      "desc": "以下のサービスは、サードパーティーのエコシステムパートナーによって直接提供されます。Hippo Walletはこれらのサービスのセキュリティに対して責任を負いません。"
     },
     "ReserveGasPopup": {
       "title": "ガスを予約する",
@@ -4966,9 +4966,9 @@
       "fast": "ノーマル"
     },
     "OpenExternalWebsiteModal": {
-      "title": "Rabby Wallet を離れようとしています",
+      "title": "Hippo Wallet を離れようとしています",
       "button": "続行",
-      "content": "外部のウェブサイトを訪れようとしています。Rabby Walletはこのサイトの内容やセキュリティに責任を負いません。"
+      "content": "外部のウェブサイトを訪れようとしています。Hippo Walletはこのサイトの内容やセキュリティに責任を負いません。"
     },
     "TokenChart": {
       "price": "価格",
@@ -4995,7 +4995,7 @@
     },
     "ChainItem": {
       "appChain": "{{chain}}アカウント",
-      "hyperliquidCode": "Rabbyの紹介コードを使ってHyperliquidの手数料を節約しましょう。"
+      "hyperliquidCode": "Hippoの紹介コードを使ってHyperliquidの手数料を節約しましょう。"
     },
     "RiskTip": {
       "title": "リスクが検出されました"
@@ -5038,13 +5038,13 @@
       "placeholderRequired": "問題を説明してください（必須）"
     },
     "feedbackPopup": {
-      "title": "Rabbyサポートからの回答",
+      "title": "Hippoサポートからの回答",
       "issueReported": "報告された問題は以下の通りです：",
-      "issueReplied": "Rabbyサポートから返信がありました："
+      "issueReplied": "Hippoサポートから返信がありました："
     }
   },
   "global": {
-    "appName": "Rabbyウォレット",
+    "appName": "Hippoウォレット",
     "copied": "コピー済み",
     "confirm": "確認",
     "next": "次へ",

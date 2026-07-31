@@ -39,7 +39,7 @@ const Wrapper = styled(Card)`
       margin-bottom: 8px;
     }
     .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-      border-color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-default, #0372ff);
       border-right-width: 1px !important;
       z-index: 1;
     }
@@ -91,8 +91,8 @@ const Wrapper = styled(Card)`
 
       &:hover,
       &.is-checked {
-        border: 1px solid var(--r-blue-default, #7084ff);
-        background: var(--r-blue-light-1, #eef1ff);
+        border: 1px solid var(--r-blue-default, #0372ff);
+        background: var(--r-blue-light-1, #eaf2ff);
       }
 
       img {

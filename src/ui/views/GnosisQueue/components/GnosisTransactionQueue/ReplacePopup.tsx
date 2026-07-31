@@ -44,8 +44,8 @@ const Wrapper = styled.div`
       }
 
       &:hover {
-        border: 1px solid var(--r-blue-default, #7084ff);
-        background: var(--r-blue-light-1, #eef1ff);
+        border: 1px solid var(--r-blue-default, #0372ff);
+        background: var(--r-blue-light-1, #eaf2ff);
       }
 
       &-content {

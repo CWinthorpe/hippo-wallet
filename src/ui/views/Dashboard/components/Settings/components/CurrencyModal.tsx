@@ -160,7 +160,7 @@ const Wrapper = styled.div<{
     line-height: 13px;
     &:active,
     &:focus {
-      border: 1px solid var(--r-blue-default, #4c65ff) !important;
+      border: 1px solid var(--r-blue-default, #0372ff) !important;
     }
 
     .ant-input {
@@ -190,8 +190,8 @@ const Wrapper = styled.div<{
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(134, 151, 255, 0.2);
-      border: 1px solid var(--r-blue-default, #7084ff);
+      background-color: rgba(3, 114, 255, 0.2);
+      border: 1px solid var(--r-blue-default, #0372ff);
     }
   }
 

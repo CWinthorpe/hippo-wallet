@@ -67,7 +67,7 @@ const Container = styled.div`
 
   .custom-input {
     border-radius: 8px;
-    border: 1px solid var(--r-blue-default, #4c65ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
     height: 40px;
     width: 148px;
     background-color: transparent;
@@ -126,8 +126,8 @@ const Container = styled.div`
     }
     &.ant-select-focused {
       .ant-select-selector {
-        border: 1px solid var(--r-blue-default, #4c65ff);
-        background: var(--r-blue-light1, #edf0ff);
+        border: 1px solid var(--r-blue-default, #0372ff);
+        background: var(--r-blue-light1, #eaf2ff);
       }
     }
   }

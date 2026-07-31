@@ -117,7 +117,7 @@ const AdvancedSettings = () => {
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
     {
-      content: t('Set Rabby as default wallet'),
+      content: t('Set Hippo Wallet as default wallet'),
       rightIcon: (
         <Switch
           checked={isDefaultWallet}

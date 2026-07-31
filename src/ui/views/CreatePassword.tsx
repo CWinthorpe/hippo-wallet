@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Form, Spin, Button, Drawer } from 'antd';
-import { openInTab, useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
@@ -74,11 +74,11 @@ const CreatePassword = () => {
   const disable = !agreeTerm || invalidForm;
 
   const gotoTermsOfUse = () => {
-    openInTab('https://rabby.io/docs/terms-of-use');
+    toggleVisible();
   };
 
   const gotoPrivacy = () => {
-    openInTab('https://rabby.io/docs/privacy');
+    toggleVisible();
   };
 
   const drawClassName = useCss({
@@ -269,7 +269,7 @@ const CreatePassword = () => {
         }}
       >
         <header className="text-r-neutral-title1 mb-[20px] text-20 font-medium leading-[20px] text-center">
-          Rabby Term of Use
+          Hippo Wallet Software Notice
         </header>
         <div
           className="overflow-scroll"

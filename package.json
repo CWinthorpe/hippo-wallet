@@ -1,14 +1,14 @@
 {
-  "name": "rabby",
+  "name": "hippo-wallet",
   "version": "0.93.100",
-  "description": "A browser plugin for DeFi users",
+  "description": "Privacy-focused self-custodial browser wallet with deterministic Custom RPC routing",
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
     "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && webpack --progress --env config=dev",
     "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && node build/dev-server.js",
     "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
-    "build:pro:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=pro",
+    "build:pro:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=8192' webpack --progress --env config=pro && node scripts/patch-built-brand.js",
     "build:debug:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=debug",
     "build:dev:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:dev:default",
     "build:pro:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:pro:default",
@@ -27,7 +27,7 @@
     "check": "npm run lint && npm run typecheck",
     "test": "jest",
     "pub": "node build/release.js",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && node scripts/patch-page-provider-brand.js"
   },
   "dependencies": {
     "@aave-dao/aave-address-book": "4.47.14",
@@ -279,5 +279,10 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.14.1",
+  "homepage": "https://github.com/CWinthorpe/hippo-wallet",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CWinthorpe/hippo-wallet.git"
+  }
 }

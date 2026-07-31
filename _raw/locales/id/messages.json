@@ -63,7 +63,7 @@
       "customRPCErrorModal": {
         "title": "Kesalahan RPC Kustom",
         "button": "Nonaktifkan RPC Kustom",
-        "content": "RPC kustom Anda tidak tersedia saat ini. Anda dapat menonaktifkannya dan melanjutkan tanda tangan menggunakan RPC resmi Rabby."
+        "content": "RPC kustom Anda tidak tersedia saat ini. Anda dapat menonaktifkannya dan melanjutkan tanda tangan menggunakan RPC resmi Hippo."
       },
       "swap": {
         "minReceive": "Minimum diterima",
@@ -120,7 +120,7 @@
         "trustValueLessThan": "≤ {{value}}",
         "myBalance": "Saldo saya",
         "approveToken": "Setujui token",
-        "flagByRabby": "Ditandai oleh Rabby",
+        "flagByRabby": "Ditandai oleh Hippo",
         "amount": "Setujui Jumlah:",
         "amountPopupTitle": "Setujui jumlah",
         "exceed": "Melebihi saldo Anda saat ini",
@@ -220,8 +220,8 @@
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
-          "title": "Beralih ke Layanan Safe Rabby",
-          "content": "API Safe tidak tersedia. Alihkan ke layanan Safe yang dikerahkan oleh Rabby untuk menjaga Safe Anda tetap berfungsi. <strong>Semua penandatangan Safe harus menggunakan Rabby Wallet untuk mengotorisasi transaksi.</strong>"
+          "title": "Beralih ke Layanan Safe Hippo",
+          "content": "API Safe tidak tersedia. Alihkan ke layanan Safe yang dikerahkan oleh Hippo untuk menjaga Safe Anda tetap berfungsi. <strong>Semua penandatangan Safe harus menggunakan Hippo Wallet untuk mengotorisasi transaksi.</strong>"
         }
       },
       "SafeNonceSelector": {
@@ -301,7 +301,7 @@
       "eip1559Desc1": "Pada jaringan yang mendukung EIP-1559, Priority Fee adalah tip untuk penambang agar memproses transaksi Anda. Dengan menurunkan Priority Fee, Anda bisa menghemat biaya gas akhir, tetapi transaksi mungkin membutuhkan waktu lebih lama untuk diproses.",
       "enoughSafeSigCollected": "Cukup tanda tangan yang dikumpulkan",
       "moreSafeSigNeeded": "Butuh {{0}} tanda tangan lagi untuk mengonfirmasi",
-      "eip1559Desc2": "Di Rabby, Priority Fee (tip) = Max Fee - Base Fee. Setelah Anda mengatur Max Priority Fee, Base Fee akan dikurangkan terlebih dahulu, lalu sisanya diberikan kepada penambang sebagai tip.",
+      "eip1559Desc2": "Di Hippo, Priority Fee (tip) = Max Fee - Base Fee. Setelah Anda mengatur Max Priority Fee, Base Fee akan dikurangkan terlebih dahulu, lalu sisanya diberikan kepada penambang sebagai tip.",
       "unwrap": "Buka bungkus token",
       "wrapToken": "Bungkus token",
       "transacted": "Transacted sebelum",
@@ -313,16 +313,16 @@
       "interactContract": "Interaksi kontrak",
       "markRemoved": "Mark dihapus",
       "safeServiceNotAvailable": "Layanan Safe sedang tidak tersedia. Coba lagi nanti.",
-      "scamTokenAlert": "Ini kemungkinan adalah token berkualitas rendah dan penipuan berdasarkan deteksi Rabby.",
+      "scamTokenAlert": "Ini kemungkinan adalah token berkualitas rendah dan penipuan berdasarkan deteksi Hippo.",
       "importedAddress": "Alamat yang diimpor",
-      "fakeTokenAlert": "Ini adalah token scam yang ditandai oleh Rabby",
+      "fakeTokenAlert": "Ini adalah token scam yang ditandai oleh Hippo",
       "markAsTrust": "Ditandai sebagai tepercaya",
       "blocked": "Diblokir",
       "signTransactionOnChain": "Tandatangani Transaksi {{chain}}",
       "unknownAction": "Tipe Tanda Tangan Tidak Dikenal",
       "neverTransacted": "Belum pernah bertransaksi sebelumnya",
       "speedUpTooltip": "Transaksi yang dipercepat ini dan transaksi asli, hanya salah satunya yang pada akhirnya akan diselesaikan.",
-      "decodedTooltip": "Tanda tangan ini di-decode oleh Rabby Wallet",
+      "decodedTooltip": "Tanda tangan ini di-decode oleh Hippo Wallet",
       "myMark": "Tanda saya",
       "deployTimeTitle": "Waktu Dideploy",
       "addressNote": "Catatan alamat",
@@ -338,7 +338,7 @@
       "noDelegatedAddress": "Tidak ada alamat delegasi yang diimpor",
       "unknownActionType": "Tipe Aksi Tidak Dikenal",
       "viewRaw": "Lihat Mentah",
-      "sigCantDecode": "Tanda tangan ini tidak dapat didekode oleh Rabby Wallet",
+      "sigCantDecode": "Tanda tangan ini tidak dapat didekode oleh Hippo Wallet",
       "firstOnChain": "Pertama kali aktif on-chain",
       "myMarkWithContract": "Tanda saya di kontrak {{chainName}}",
       "coboSafeNotPermission": "Alamat delegasi ini tidak memiliki izin untuk memulai transaksi ini.",
@@ -389,7 +389,7 @@
         "unavailable": "Saldo Gas Anda tidak cukup",
         "notEnough": "Saldo gas tidak cukup",
         "watchUnavailableTip": "Alamat hanya-pantau tidak dapat menggunakan gas gratis",
-        "rabbyPayGas": "Rabby akan membayar untuk gas yang diperlukan – cukup tandatangani.",
+        "rabbyPayGas": "Hippo akan membayar untuk gas yang diperlukan – cukup tandatangani.",
         "GetFreeGasToSign": "Dapatkan gas gratis",
         "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Free Gas",
         "customRpcUnavailableTip": "Custom RPC tidak didukung untuk Free Gas"
@@ -418,7 +418,7 @@
         "switchToCorrectAddress": "Silakan beralih ke alamat yang benar di dompet seluler",
         "connectedButCantSign": "Terkoneksi tetapi tidak dapat menandatangani.",
         "chainSwitched": "Anda telah beralih ke rantai yang berbeda di dompet seluler. Silakan beralih ke {{0}} di dompet seluler.",
-        "connectBeforeSign": "{{0}} tidak terhubung ke Rabby, silakan sambungkan sebelum menandatangani.",
+        "connectBeforeSign": "{{0}} tidak terhubung ke Hippo, silakan sambungkan sebelum menandatangani.",
         "wrongAddressAlert": "Anda telah beralih ke alamat yang berbeda di dompet seluler. Silakan beralih ke alamat yang benar di dompet seluler.",
         "sendingRequest": "Mengirim permintaan penandatanganan",
         "requestFailedToSend": "Permintaan tanda tangan gagal dikirim",
@@ -555,7 +555,7 @@
       "signedTx": {
         "empty": {
           "title": "Belum ada transaksi yang ditandatangani",
-          "desc": "Semua transaksi yang ditandatangani melalui Rabby akan terdaftar di sini."
+          "desc": "Semua transaksi yang ditandatangani melalui Hippo akan terdaftar di sini."
         },
         "common": {
           "speedUp": "Percepat",
@@ -653,7 +653,7 @@
       "signedText": {
         "empty": {
           "title": "Belum ada teks yang ditandatangani",
-          "desc": "Semua teks yang ditandatangani melalui Rabby akan terdaftar di sini."
+          "desc": "Semua teks yang ditandatangani melalui Hippo akan terdaftar di sini."
         },
         "label": "Teks"
       },
@@ -945,7 +945,7 @@
       "Continue": "Lanjutkan",
       "topUpChain": "Jaringan isi ulang",
       "title": "Isi Gas Instan",
-      "InsufficientBalance": "Tidak ada cukup saldo di alamat kontrak Rabby untuk rantai saat ini. Silakan coba lagi nanti.",
+      "InsufficientBalance": "Tidak ada cukup saldo di alamat kontrak Hippo untuk rantai saat ini. Silakan coba lagi nanti.",
       "description": "Isi ulang gas dengan mengirimkan kami token yang tersedia di rantai lain. Transfer instan segera setelah pembayaran Anda dikonfirmasi, tanpa menunggu untuk menjadi tidak dapat dibatalkan.",
       "hightGasFees": "Jumlah pengisian ulang ini terlalu kecil karena jaringan target memerlukan biaya gas yang tinggi.",
       "InsufficientBalanceTips": "Saldo tidak cukup",
@@ -960,16 +960,16 @@
       "payment": "Pembayaran Gas Top Up",
       "Payment-Token": "Token Pembayaran",
       "Select-payment-token": "Pilih token pembayaran",
-      "service-fee-tip": "Dengan menyediakan layanan untuk Gas Top Up, Rabby harus menanggung kerugian fluktuasi token dan biaya gas untuk top up. Oleh karena itu, biaya layanan sebesar 20% dikenakan."
+      "service-fee-tip": "Dengan menyediakan layanan untuk Gas Top Up, Hippo harus menanggung kerugian fluktuasi token dan biaya gas untuk top up. Oleh karena itu, biaya layanan sebesar 20% dikenakan."
     },
     "swap": {
       "rabbyFee": {
         "button": "Mengerti",
         "wallet": "Dompet",
         "rate": "Tarif biaya",
-        "bridgeDesc": "Rabby Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Rabby mengenakan biaya 0,25% yang otomatis disertakan dalam penawaran harga.",
-        "title": "Biaya Rabby",
-        "swapDesc": "Rabby Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Rabby mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga."
+        "bridgeDesc": "Hippo Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Hippo mengenakan biaya 0,25% yang otomatis disertakan dalam penawaran harga.",
+        "title": "Biaya Hippo",
+        "swapDesc": "Hippo Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Hippo mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga."
       },
       "lowCreditModal": {
         "title": "Token ini memiliki nilai kredit yang rendah",
@@ -999,8 +999,8 @@
       "approve-swap": "Setujui dan Tukar",
       "hidden-no-quote-rates_other": "{{count}} tarif tidak tersedia",
       "unable-to-fetch-the-price": "Tidak dapat mengambil harga",
-      "no-fee-for-wrap": "Tidak ada biaya Rabby untuk membungkus token",
-      "rabby-fee": "Biaya Rabby",
+      "no-fee-for-wrap": "Tidak ada biaya Hippo untuk membungkus token",
+      "rabby-fee": "Biaya Hippo",
       "hidden-no-quote-rates_one": "{{count}} tarif tidak tersedia",
       "security-verification-failed": "Verifikasi keamanan gagal",
       "approve-tips": "1. Setujui → 2. Tukar",
@@ -1038,7 +1038,7 @@
       "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk swap Ethereum guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "est-payment": "Est. Pembayaran:",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Penawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
-      "tradingSettingTip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
+      "tradingSettingTip2": "2. Hippo tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
       "i-understand-and-accept-it": "Saya memahami dan menyetujuinya",
       "directlySwap": "Bungkus token {{symbol}} langsung melalui kontrak pintar",
       "enable-exchanges": "Aktifkan Pertukaran",
@@ -1050,14 +1050,14 @@
       "tradingSettingTips": "{{viewCount}} bursa menawarkan harga dan {{tradeCount}} bursa mengaktifkan perdagangan",
       "rate": "Tarif",
       "recommend-slippage": "Untuk mencegah front-running, kami merekomendasikan slippage sebesar <2>{{ slippage }}</2>%",
-      "QuoteLessWarning": "Jumlah yang diterima diperkirakan dari simulasi transaksi Rabby. Penawaran yang diberikan oleh dex adalah {{receive}}. Anda akan menerima {{diff}} kurang dari penawaran yang diharapkan.",
+      "QuoteLessWarning": "Jumlah yang diterima diperkirakan dari simulasi transaksi Hippo. Penawaran yang diberikan oleh dex adalah {{receive}}. Anda akan menerima {{diff}} kurang dari penawaran yang diharapkan.",
       "usd-after-fees": "≈ {{usd}} ",
       "max": "MAKS",
       "actual": "Aktual:",
       "No-available-quote": "Tidak ada penawaran harga yang tersedia",
       "fetch-best-quote": "Mengambil penawaran harga terbaik",
       "process-with-two-step-approve": "Lanjutkan dengan persetujuan dua langkah",
-      "no-fees-for-wrap": "Tidak ada biaya Rabby untuk membungkus token",
+      "no-fees-for-wrap": "Tidak ada biaya Hippo untuk membungkus token",
       "Auto": "Otomatis",
       "source": "Sumber",
       "no-quote-found": "Penawaran harga tidak ditemukan",
@@ -1083,7 +1083,7 @@
           "title": "Aktifkan Trading dengan Aggregator ini",
           "i-understand-and-accept-it": "Saya memahami dan menyetujuinya",
           "tip1": "1. Setelah diaktifkan, Anda akan berinteraksi langsung dengan kontrak dari agregator ini.",
-          "tip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak agregator ini."
+          "tip2": "2. Hippo tidak bertanggung jawab atas risiko yang timbul dari kontrak agregator ini."
         },
         "title": "Aktifkan agregator bridge untuk trading",
         "SupportedBridge": "Bridge yang Didukung:",
@@ -1130,7 +1130,7 @@
       "completedTip": "Transaksi di on chain, mendekode data untuk menghasilkan catatan",
       "approve-and-bridge": "Setujui dan Jembatani",
       "bridge-via-x": "Bridge di {{name}}",
-      "rabby-fee": "Biaya Rabby",
+      "rabby-fee": "Biaya Hippo",
       "enable-it": "Aktifkan itu",
       "price-impact": "Dampak Harga",
       "est-difference": "Est. Perbedaan:",
@@ -1198,7 +1198,7 @@
       "delete-empty-seed-phrase": "Hapus frasa pemulihan dan alamat 0-nya",
       "delete-checklist-2": "Saya mengonfirmasi bahwa saya telah mencadangkan kunci pribadi atau frasa pemulihan dan siap menghapusnya sekarang.",
       "no-address-under-seed-phrase": "Anda belum mengimpor alamat apa pun dari frasa pemulihan ini.",
-      "delete-checklist-1": "Saya memahami bahwa jika alamat ini dihapus, kunci pribadi dan frasa pemulihannya juga akan dihapus, dan Rabby TIDAK dapat memulihkannya.",
+      "delete-checklist-1": "Saya memahami bahwa jika alamat ini dihapus, kunci pribadi dan frasa pemulihannya juga akan dihapus, dan Hippo TIDAK dapat memulihkannya.",
       "delete-desc": "Sebelum Anda menghapus, ingatlah poin-poin berikut untuk memahami cara melindungi aset Anda.",
       "sort-by-address-type": "Urut berdasarkan jenis alamat",
       "sort-by-address-note": "Urutkan berdasarkan alamat catatan",
@@ -1222,7 +1222,7 @@
         "panel": {
           "swap": "Tukar",
           "nft": "NFT",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "transactions": "Transaksi",
           "receive": "Terima",
           "gasTopUp": "Isi Gas",
@@ -1256,8 +1256,8 @@
         "flip": "Balik",
         "comingSoon": "Segera Hadir",
         "soon": "Segera",
-        "metamaskIsInUseAndRabbyIsBanned": "MetaMask sedang digunakan dan Rabby dilarang",
-        "rabbyIsInUseAndMetamaskIsBanned": "Rabby sedang digunakan dan Metamask dilarang",
+        "metamaskIsInUseAndRabbyIsBanned": "MetaMask sedang digunakan dan Hippo dilarang",
+        "rabbyIsInUseAndMetamaskIsBanned": "Hippo sedang digunakan dan Metamask dilarang",
         "offline": "Jaringan terputus dan tidak ada data yang diperoleh",
         "whatsNew": "Apa yang baru",
         "chainEnd": " rantai",
@@ -1292,22 +1292,22 @@
         "noPinnedDapps": "Tidak ada dapps yang disematkan",
         "title": "Dapps yang Terhubung",
         "metamaskTooltip": "Anda lebih suka menggunakan MetaMask dengan dapp ini. Perbarui pengaturan ini kapan saja di Pengaturan > Dapps Favorit MetaMask",
-        "connectedDapp": "Rabby tidak terhubung ke Dapp saat ini. Untuk terhubung, temukan dan klik tombol sambung di halaman web Dapp.",
+        "connectedDapp": "Hippo tidak terhubung ke Dapp saat ini. Untuk terhubung, temukan dan klik tombol sambung di halaman web Dapp.",
         "noConnectedDapps": "Tidak ada Dapps yang terhubung",
         "dapps": "Dapps",
         "recentlyConnected": "Baru saja terhubung",
-        "metamaskModeTooltipNew": "Rabby Wallet akan terhubung saat Anda memilih \"MetaMask\" di DApp. Kelola pengaturan ini melalui Lainnya > Hubungkan Rabby dengan Menyamar sebagai MetaMask.",
-        "metamaskModeTooltip": "Tidak bisa menghubungkan Rabby di Dapp ini? Coba aktifkan <1>MetaMask Mode</1>",
+        "metamaskModeTooltipNew": "Hippo Wallet akan terhubung saat Anda memilih \"MetaMask\" di DApp. Kelola pengaturan ini melalui Lainnya > Hubungkan Hippo dengan Menyamar sebagai MetaMask.",
+        "metamaskModeTooltip": "Tidak bisa menghubungkan Hippo di Dapp ini? Coba aktifkan <1>MetaMask Mode</1>",
         "noRecentlyConnectedDapps": "Tidak ada Dapps yang baru terhubung"
       },
       "feedback": {
         "directMessage": {
           "content": "Pesan Langsung",
-          "description": "Chat dengan Rabby Wallet Resmi di DeBank"
+          "description": "Chat dengan Hippo Wallet Resmi di DeBank"
         },
         "proposal": {
           "content": "Usulan",
-          "description": "Ajukan proposal untuk Rabby Wallet di DeBank"
+          "description": "Ajukan proposal untuk Hippo Wallet di DeBank"
         },
         "title": "Umpan Balik"
       },
@@ -1334,15 +1334,15 @@
       "rabbyBadge": {
         "learnMore": "Pelajari Lebih Lanjut",
         "enterClaimCode": "Masukkan kode klaim",
-        "imageLabel": "badge Rabby",
-        "title": "Klaim Lencana Rabby untuk",
+        "imageLabel": "badge Hippo",
+        "title": "Klaim Lencana Hippo untuk",
         "claim": "Klaim",
         "goToSwap": "Pergi ke Swap",
         "freeGasTitle": "Klaim Free Gas Badge untuk",
-        "swapTip": "Anda perlu menyelesaikan pertukaran dengan dex terkemuka dalam Rabby Wallet terlebih dahulu.",
+        "swapTip": "Anda perlu menyelesaikan pertukaran dengan dex terkemuka dalam Hippo Wallet terlebih dahulu.",
         "freeGasTip": "Silakan tanda tangani transaksi menggunakan Free Gas. Tombol 'Free Gas' akan muncul secara otomatis ketika gas Anda tidak cukup.",
-        "rabbyFreeGasUserNo": "Rabby Free Gas Pengguna No.{{num}}",
-        "rabbyValuedUserNo": "Pengguna Rabby Terpilih No.{{num}}",
+        "rabbyFreeGasUserNo": "Hippo Free Gas Pengguna No.{{num}}",
+        "rabbyValuedUserNo": "Pengguna Hippo Terpilih No.{{num}}",
         "noCode": "Anda belum mengaktifkan kode klaim untuk alamat ini.",
         "learnMoreOnDebank": "Pelajari lebih lanjut di DeBank",
         "viewOnDebank": "Lihat di DeBank",
@@ -1370,13 +1370,13 @@
           "okText": "Lihat Tutorial",
           "successTip": "Anda menggunakan versi terbaru",
           "title": "Pembaruan Tersedia",
-          "content": "Pembaruan baru untuk Rabby Wallet tersedia. Klik untuk memeriksa cara memperbarui secara manual."
+          "content": "Pembaruan baru untuk Hippo Wallet tersedia. Klik untuk memeriksa cara memperbarui secara manual."
         },
         "features": {
           "searchDapps": "Cari Dapps",
           "lockWallet": "Kunci Dompet",
           "manageAddress": "Kelola Alamat",
-          "rabbyPoints": "Rabby Points",
+          "rabbyPoints": "Hippo Points",
           "gasTopUp": "Isi Gas",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
@@ -1393,7 +1393,7 @@
           "enableTestnets": "Aktifkan Testnets",
           "themeMode": "Mode Tema",
           "customTestnet": "Tambahkan Jaringan Kustom",
-          "metamaskMode": "Sambungkan Rabby dengan Menyamar sebagai MetaMask",
+          "metamaskMode": "Sambungkan Hippo dengan Menyamar sebagai MetaMask",
           "enableDappAccount": "Ganti alamat DApp secara terpisah",
           "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar",
           "biometricUnlock": "Buka dengan Biometrik",
@@ -1423,9 +1423,9 @@
         "clearWatchAddressContent": "Apakah Anda memastikan untuk menghapus semua alamat Mode Nonton?",
         "cancel": "Batalkan",
         "enableWhitelist": "Aktifkan Daftar Putih",
-        "claimRabbyBadge": "Klaim Badge Rabby!",
+        "claimRabbyBadge": "Klaim Badge Hippo!",
         "clearPendingTip1": "Tindakan ini menghapus transaksi yang tertunda dari antarmuka Anda, membantu menyelesaikan masalah yang disebabkan oleh durasi tertunda yang lama di jaringan.",
-        "enableWhitelistTip": "Setelah diaktifkan, Anda hanya dapat mengirim aset ke alamat dalam whitelist menggunakan Rabby.",
+        "enableWhitelistTip": "Setelah diaktifkan, Anda hanya dapat mengirim aset ke alamat dalam whitelist menggunakan Hippo.",
         "clearPendingTip2": "Ini tidak mempengaruhi saldo akun Anda atau memerlukan Anda untuk memasukkan kembali frasa pemulihan Anda. Semua aset dan detail akun tetap aman.",
         "testnetBackendServiceUrl": "URL Layanan Backend Testnet",
         "currentVersion": "Versi Saat Ini",
@@ -1443,16 +1443,16 @@
           "button": "Aktifkan"
         },
         "rateModalTriggerOnHome": {
-          "description": "Bagaimana Anda menilai Rabby Wallet?"
+          "description": "Bagaimana Anda menilai Hippo Wallet?"
         },
         "rateModal": {
           "thxTitle": "Terima kasih!",
           "rateOnChromeStoreButton": "Tingkat di Chrome Web Store",
-          "feedbackPlaceholder": "Rabby sangat menghargai masukan Anda!",
+          "feedbackPlaceholder": "Hippo sangat menghargai masukan Anda!",
           "feedbackSuccess": "Terima kasih atas umpan balik Anda!",
           "submitFeedbackButton": "Kirim",
           "feedbackDesc": "Ada masukan? Kami mendengarkan.",
-          "thxDesc": "Jika Anda menyukai Rabby, peringkat cepat di Chrome Store akan sangat berarti."
+          "thxDesc": "Jika Anda menyukai Hippo, peringkat cepat di Chrome Store akan sangat berarti."
         },
         "PwdForNonWhitelistedTx": {
           "titleEnable": "Aktifkan pemeriksaan kata sandi?",
@@ -1482,13 +1482,13 @@
         "blocked": "Diblokir",
         "send": "Kirim",
         "blockedButton": "token yang diblokir",
-        "selectedCustom": "Token tidak terdaftar oleh Rabby. Anda telah menambahkannya ke dalam daftar token secara manual.",
+        "selectedCustom": "Token tidak terdaftar oleh Hippo. Anda telah menambahkannya ke dalam daftar token secara manual.",
         "blockedTip": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
         "notSupported": "Token di jaringan ini tidak didukung",
         "customizedButton": "token kustom",
         "scamTx": "Tx scam",
         "customizedButtons": "token kustom",
-        "notSelectedCustom": "Token tidak terdaftar oleh Rabby. Itu akan ditambahkan ke daftar token jika Anda menghidupkannya.",
+        "notSelectedCustom": "Token tidak terdaftar oleh Hippo. Itu akan ditambahkan ke daftar token jika Anda menghidupkannya.",
         "blockedListTitle": "token yang diblokir",
         "ListedBy": "Terdaftar oleh",
         "noIssuer": "Tidak ada informasi penerbit yang tersedia",
@@ -1507,7 +1507,7 @@
         "maybeScamTips": "Ini adalah token berkualitas rendah dan mungkin merupakan penipuan",
         "blockedTips": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
         "NoSupportedExchanges": "Tidak ada bursa yang didukung tersedia",
-        "customizedHasAddedTips": "Token tersebut tidak terdaftar di Rabby. Anda telah menambahkannya ke daftar token secara manual.",
+        "customizedHasAddedTips": "Token tersebut tidak terdaftar di Hippo. Anda telah menambahkannya ke daftar token secara manual.",
         "OriginalToken": "Token Asli",
         "Chain": "Rantai",
         "ContractAddress": "Alamat Kontrak",
@@ -1599,7 +1599,7 @@
         "price": "HARGA",
         "side": "SISI",
         "searchTokenPlaceholder": "Cari Token",
-        "openInTab": "Buka di Rabby Tab",
+        "openInTab": "Buka di Hippo Tab",
         "openProMode": "Buka Mode Pro",
         "openInTabV2": "Buka di Tab",
         "addAssets": "Tambahkan aset"
@@ -1650,7 +1650,7 @@
         "title": "Mode MetaMask",
         "enableDesc": "Aktifkan jika Dapp hanya bekerja dengan MetaMask",
         "footerText": "Tambahkan DApp lainnya ke Mode MetaMask melalui Lainnya > Mode MetaMask.",
-        "desc": "Jika Anda tidak dapat menghubungkan Rabby di Dapp, aktifkan Mode MetaMask dan hubungkan dengan memilih opsi MetaMask.",
+        "desc": "Jika Anda tidak dapat menghubungkan Hippo di Dapp, aktifkan Mode MetaMask dan hubungkan dengan memilih opsi MetaMask.",
         "toastSuccess": "Diaktifkan. Segarkan halaman untuk menyambung kembali."
       },
       "offlineChain": {
@@ -1663,8 +1663,8 @@
       },
       "rabbyPointsPopup": {
         "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
-        "desc": "Periksa poin Anda di Rabby Mobile.",
-        "title": "Rabby Points"
+        "desc": "Periksa poin Anda di Hippo Mobile.",
+        "title": "Hippo Points"
       },
       "noData": "Tidak ada mata uang yang cocok",
       "ZeroAssets": {
@@ -1707,7 +1707,7 @@
           "answer": "Frasa 12, 18, atau 24 kata yang digunakan untuk mengontrol aset Anda."
         },
         "isItSafeToImportItInRabby": {
-          "question": "Apakah aman untuk mengimpornya di Rabby?",
+          "question": "Apakah aman untuk mengimpornya di Hippo?",
           "answer": "Ya, itu akan disimpan secara lokal di browser Anda dan hanya dapat diakses oleh Anda."
         },
         "importTips": "Anda dapat menempelkan seluruh frasa pemulihan rahasia Anda di kolom pertama",
@@ -1735,13 +1735,13 @@
         "riskTips": "Sebelum Anda mulai, harap baca dan ingat tips keamanan berikut.",
         "createdSuccessfully": "Dibuat Berhasil",
         "slip39SeedPhrasePlaceholder_few": "Masukkan bagian frasa pemulihan ke-{{count}} di sini",
-        "importQuestion4": "Jika saya menghapus instalasi Rabby tanpa mencadangkan frasa pemulihan, Rabby tidak dapat mengambilnya untuk saya.",
+        "importQuestion4": "Jika saya menghapus instalasi Hippo tanpa mencadangkan frasa pemulihan, Hippo tidak dapat mengambilnya untuk saya.",
         "pastedAndClear": "Ditempelkan dan clipboard dibersihkan",
         "verificationFailed": "Verifikasi gagal",
         "passphrase": "Frasa sandi",
         "inputInvalidCount_other": "{{count}} input tidak sesuai dengan aturan frasa pemulihan. Silakan periksa.",
-        "importQuestion2": "Frasa pemulihan saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
-        "importQuestion3": "Jika saya mencopot pemasangan Rabby tanpa mencadangkan frasa pemulihan saya, itu tidak dapat dipulihkan oleh Rabby.",
+        "importQuestion2": "Frasa pemulihan saya hanya disimpan di perangkat saya. Hippo tidak dapat mengaksesnya.",
+        "importQuestion3": "Jika saya mencopot pemasangan Hippo tanpa mencadangkan frasa pemulihan saya, itu tidak dapat dipulihkan oleh Hippo.",
         "importQuestion1": "Jika saya kehilangan atau membagikan frasa pemulihan saya, saya akan kehilangan akses ke aset saya secara permanen.",
         "showMoreOptions": "Tampilkan Lebih Banyak Opsi",
         "inputInvalid": "Kata yang tidak valid terdeteksi. Harap tinjau yang disorot."
@@ -1751,11 +1751,11 @@
         "step": "Langkah",
         "how": "Bagaimana cara mengimpor Akun MetaMask saya?",
         "importSeedPhrase": "Impor frasa pemulihan atau kunci pribadi",
-        "importSeedPhraseTips": "Itu hanya akan disimpan secara lokal di browser. Rabby tidak akan pernah memiliki akses ke informasi pribadi Anda.",
+        "importSeedPhraseTips": "Itu hanya akan disimpan secara lokal di browser. Hippo tidak akan pernah memiliki akses ke informasi pribadi Anda.",
         "step1": " Ekspor frasa pemulihan atau kunci pribadi dari MetaMask <br /> <1>Klik untuk melihat tutorial <1/></1>",
         "tipsDesc": "Frasa pemulihan/kunci pribadi Anda tidak dimiliki oleh MetaMask atau dompet tertentu; keduanya hanya milik Anda.",
         "step3": "Impor telah selesai dan semua aset Anda akan <br /> muncul secara otomatis",
-        "step2": "Impor frasa pemulihan atau kunci pribadi di Rabby"
+        "step2": "Impor frasa pemulihan atau kunci pribadi di Hippo"
       },
       "privateKey": {
         "whatIsAPrivateKey": {
@@ -1767,7 +1767,7 @@
           "question": "Apakah Anda ingin beralih ke alamat ini?"
         },
         "isItSafeToImportItInRabby": {
-          "question": "Apakah aman untuk mengimpornya di Rabby?",
+          "question": "Apakah aman untuk mengimpornya di Hippo?",
           "answer": "Ya, itu akan disimpan secara lokal di browser Anda dan hanya dapat diakses oleh Anda."
         },
         "isItPossibleToImportKeystore": {
@@ -1785,12 +1785,12 @@
           "ethereum_app_not_installed_error": "Silakan instal aplikasi Ethereum di perangkat Ledger Anda.",
           "ethereum_app_unconfirmed_error": "Anda telah menolak permintaan untuk membuka aplikasi Ethereum."
         },
-        "cameraPermissionTitle": "Biarkan Rabby mengakses kamera",
+        "cameraPermissionTitle": "Biarkan Hippo mengakses kamera",
         "title": "Sambungkan Ledger",
-        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "allowRabbyPermissionsTitle": "Izinkan Hippo untuk:",
         "ledgerPermission1": "Sambungkan ke perangkat HID",
         "permissionsAuthorized": "Izin yang Diberikan",
-        "cameraPermission1": "Izinkan Rabby mengakses kamera di pop-up browser",
+        "cameraPermission1": "Izinkan Hippo mengakses kamera di pop-up browser",
         "ledgerPermissionTip": "Silakan klik \"Izinkan\" di bawah dan berikan akses ke Ledger Anda di jendela pop-up berikutnya.",
         "allow": "Izinkan",
         "nowYouCanReInitiateYourTransaction": "Sekarang Anda dapat memulai kembali transaksi Anda."
@@ -1802,9 +1802,9 @@
       "keystone": {
         "title": "Sambungkan Keystone",
         "unknowError": "Kesalahan tidak diketahui, silakan coba lagi",
-        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "allowRabbyPermissionsTitle": "Izinkan Hippo untuk:",
         "exportAddressJustAllowedOnHomePage": "Alamat hanya dapat diekspor saat Keystone berada di layar utama",
-        "deviceRejectedExportAddress": "Setujui koneksi ke Rabby",
+        "deviceRejectedExportAddress": "Setujui koneksi ke Hippo",
         "keystonePermission1": "Sambungkan ke perangkat USB",
         "deviceIsBusy": "Perangkat sedang sibuk",
         "deviceIsLockedError": "Masukkan kata sandi untuk membuka kunci",
@@ -1813,7 +1813,7 @@
       },
       "onekey": {
         "onekeyPermission1": "Sambungkan ke perangkat USB",
-        "allowRabbyPermissionsTitle": "Izinkan Rabby untuk:",
+        "allowRabbyPermissionsTitle": "Izinkan Hippo untuk:",
         "onekeyPermissionTip": "Silakan klik \"Izinkan\" di bawah untuk memberikan izin akses ke OneKey Anda di jendela pop-up berikut. Jika OneKey tidak muncul di popup, silakan periksa apakah perangkat Anda terhubung dengan benar ke komputer.",
         "whyOneKey": "Mengapa OneKey?",
         "buyOneKey": "Beli OneKey",
@@ -1860,10 +1860,10 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "Alamat dihapus dari Rabby",
+          "removed": "Alamat dihapus dari Hippo",
           "disconnected": "Tidak dapat terhubung ke Hardware wallet. Silakan coba sambungkan kembali.",
           "connectError": "Koneksi telah dihentikan. Silakan segarkan halaman untuk terhubung kembali.",
-          "added": "Alamat ditambahkan ke Rabby"
+          "added": "Alamat ditambahkan ke Hippo"
         },
         "ledger": {
           "hdPathType": {
@@ -1962,7 +1962,7 @@
         "getOnChainInformation": "Dapatkan informasi on-chain",
         "clickToGetInfo": "Klik untuk mendapatkan informasi di on-chain",
         "firstTransactionTime": "Waktu transaksi pertama",
-        "addToRabby": "Tambahkan ke Rabby",
+        "addToRabby": "Tambahkan ke Hippo",
         "balance": "Saldo",
         "waiting": "Menunggu",
         "addresses": "Alamat",
@@ -1985,11 +1985,11 @@
         "customAddressHdPath": "HD path Alamat Kustom",
         "selectIndexTip": "Pilih nomor seri alamat untuk memulai dari:",
         "manageAddressFrom": "Kelola alamat dari {{0}} ke {{1}}",
-        "addressesInRabby": "Alamat di Rabby{{0}}",
+        "addressesInRabby": "Alamat di Hippo{{0}}",
         "manageImtokenOffline": "Kelola imToken",
         "selectHdPath": "Pilih HD path:",
         "importBtn": "Impor ({{count}})",
-        "nonAddr": "Belum ada alamat yang ditambahkan untuk frasa pemulihan ini. Anda dapat menghapus frasa ini di Rabby Extension > Kelola Alamat."
+        "nonAddr": "Belum ada alamat yang ditambahkan untuk frasa pemulihan ini. Anda dapat menghapus frasa ini di Hippo Extension > Kelola Alamat."
       },
       "keystore": {
         "password": {
@@ -2037,7 +2037,7 @@
       "watchAddress": "Alamat Hanya-Pantau",
       "bulkImportPrivateKey": "Impor massal kunci pribadi",
       "duplicateAddressesSkippedDesc_other": "{{count}} alamat dilewati karena sudah ada.",
-      "openExtensionToGetStarted": "Buka ekstensi Rabby untuk memulai",
+      "openExtensionToGetStarted": "Buka ekstensi Hippo untuk memulai",
       "duplicateAddressesSkippedTitle": "Beberapa alamat sudah diimpor",
       "imported": "Diimpor Sebelumnya",
       "addressAddedCount_one": "{{count}} Alamat Ditambahkan",
@@ -2065,15 +2065,15 @@
         "error": "kata sandi tidak benar"
       },
       "btnForgotPassword": "Lupa Kata Sandi?",
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "description": "Dompet andalan Anda untuk Ethereum dan EVM",
       "biometricFailed": "Pembukaan biometrik gagal"
     },
     "addToken": {
       "balance": "Saldo",
       "tokenNotFound": "Token tidak ditemukan dari alamat kontrak ini",
-      "tokenSupported": "Token telah didukung di Rabby",
-      "title": "Tambahkan token khusus ke Rabby",
+      "tokenSupported": "Token telah didukung di Hippo",
+      "title": "Tambahkan token khusus ke Hippo",
       "tokenOnMultiChains": "Alamat token di berbagai rantai. Silakan pilih satu.",
       "tokenCustomized": "Token saat ini telah ditambahkan ke kustomisasi.",
       "noTokenFoundOnThisChain": "Tidak ada token yang ditemukan di rantai ini",
@@ -2081,17 +2081,17 @@
       "noTokenFound": "Tidak ada token yang ditemukan"
     },
     "switchChain": {
-      "title": "Tambahkan Jaringan Kustom ke Rabby",
+      "title": "Tambahkan Jaringan Kustom ke Hippo",
       "requestsReceived": "1 permintaan diterima",
-      "requestRabbyToSupport": "Minta Rabby untuk Mendukung",
+      "requestRabbyToSupport": "Minta Hippo untuk Mendukung",
       "chainId": "ID jaringan:",
       "addChain": "Tambah Testnet",
-      "chainNotSupport": "Rabby belum mendukung rantai yang diminta.",
+      "chainNotSupport": "Hippo belum mendukung rantai yang diminta.",
       "requestsReceivedPlural": "{{count}} permintaan diterima",
       "unknownChain": "Rantai tidak dikenal",
-      "chainNotSupportYet": "Rabby belum mendukung rantai yang diminta.",
-      "desc": "Jaringan yang diminta belum terintegrasi oleh Rabby. Anda dapat menambahkannya sebagai jaringan kustom secara manual.",
-      "chainNotSupportAddChain": "Rantai yang diminta belum diintegrasikan oleh Rabby. Anda dapat menambahkannya sebagai Testnet Kustom.",
+      "chainNotSupportYet": "Hippo belum mendukung rantai yang diminta.",
+      "desc": "Jaringan yang diminta belum terintegrasi oleh Hippo. Anda dapat menambahkannya sebagai jaringan kustom secara manual.",
+      "chainNotSupportAddChain": "Rantai yang diminta belum diintegrasikan oleh Hippo. Anda dapat menambahkannya sebagai Testnet Kustom.",
       "testnetTip": "Aktifkan \"Testnet\" melalui \"Lainnya\" sebelum terhubung ke testnet."
     },
     "signText": {
@@ -2134,7 +2134,7 @@
       "onYourBlacklist": "Dalam daftar hitam Anda",
       "trusted": "Dipercaya",
       "listedBy": "Didaftarkan oleh",
-      "flagByRabby": "Ditandai oleh Rabby",
+      "flagByRabby": "Ditandai oleh Hippo",
       "myMark": "Tanda Saya",
       "selectChainToConnect": "Pilih rantai untuk terhubung ke",
       "flagByMM": "Ditandai oleh MetaMask",
@@ -2151,7 +2151,7 @@
       "popularLevelVeryLow": "Sangat Rendah",
       "popularLevelLow": "Rendah",
       "addedToWhitelist": "Ditambahkan ke daftar putih Anda",
-      "verifiedByRabby": "Diverifikasi oleh Rabby",
+      "verifiedByRabby": "Diverifikasi oleh Hippo",
       "markRemovedToast": "Tanda dihapus",
       "markAsTrustToast": "Tandai sebagai \"Trusted\"",
       "foundForbiddenRisk": "Ditemukan risiko terlarang. Koneksi diblokir.",
@@ -2184,7 +2184,7 @@
       "tx-requires": "Setiap transaksi memerlukan <2>{{num}}</2> konfirmasi",
       "backup-private-key": "Cadangkan Kunci Pribadi",
       "remove-from-whitelist": "Hapus dari Daftar Putih",
-      "direct-delete-desc": "Alamat ini adalah alamat {{renderBrand}}, Rabby tidak menyimpan kunci pribadi atau frasa pemulihan untuk alamat ini, Anda dapat langsung menghapusnya.",
+      "direct-delete-desc": "Alamat ini adalah alamat {{renderBrand}}, Hippo tidak menyimpan kunci pribadi atau frasa pemulihan untuk alamat ini, Anda dapat langsung menghapusnya.",
       "coboSafeErrorModule": "Alamat telah kedaluwarsa, silakan hapus dan impor alamat lagi.",
       "manage-addresses-under-this-seed-phrase": "Kelola alamat di bawah Frasa Pemulihan ini",
       "delete-desc": "Sebelum Anda menghapus, ingatlah poin-poin berikut untuk memahami cara melindungi aset Anda.",
@@ -2198,14 +2198,14 @@
         "option2": "Hapus Alamat dan Frasa Pemulihan",
         "onlyDeleteAddr": "Hanya alamat ini yang akan dihapus. Frasa pemulihan Anda tidak terpengaruh, karena alamat Anda yang lain masih menggunakannya.",
         "check2": "Saya mengonfirmasi bahwa saya telah mencadangkan kunci pribadi atau frasa pemulihan dan siap menghapus alamat ini.",
-        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadi dan Frasa Pemulihannya. Rabby tidak dapat memulihkannya untuk saya.",
+        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadi dan Frasa Pemulihannya. Hippo tidak dapat memulihkannya untuk saya.",
         "keepSeedPhrase": "Ini adalah satu-satunya alamat yang terhubung dengan frasa pemulihan ini. Apakah Anda ingin menyimpan frasa pemulihan tersebut?"
       },
       "deletePrivateKey": {
         "check2": "Saya mengonfirmasi bahwa saya telah mencadangkan kunci pribadi atau frasa pemulihan dan siap menghapus alamat ini.",
         "sub-title": "Tindakan ini bersifat permanen. Harap tinjau hal-hal berikut untuk melindungi aset Anda:",
         "title": "Hapus Alamat dan Kunci Pribadi?",
-        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadinya. Rabby tidak dapat memulihkannya untuk saya."
+        "check1": "Saya mengerti bahwa menghapus alamat ini juga menghapus Kunci Pribadinya. Hippo tidak dapat memulihkannya untuk saya."
       },
       "notBackup": "Tidak Cadangan"
     },
@@ -2234,14 +2234,14 @@
       "title": "Ubah URL RPC",
       "empty": "Tidak ada URL RPC kustom",
       "closed": "Tertutup",
-      "desc": "Setelah dimodifikasi, RPC kustom akan menggantikan node Rabby. Untuk terus menggunakan node Rabby, hapus RPC kustom."
+      "desc": "Setelah dimodifikasi, RPC kustom akan menggantikan node Hippo. Untuk terus menggunakan node Hippo, hapus RPC kustom."
     },
     "requestDebankTestnetGasToken": {
-      "claimBadgeBtn": "Klaim Lencana Rabby",
+      "claimBadgeBtn": "Klaim Lencana Hippo",
       "requestBtn": "Permintaan",
       "title": "Minta Token Gas DeBank Testnet",
-      "mintedTip": "Pemegang Rabby Badge dapat melakukan permintaan sekali sehari",
-      "notMintedTip": "Permintaan hanya tersedia untuk pemegang Rabby Badge",
+      "mintedTip": "Pemegang Hippo Badge dapat melakukan permintaan sekali sehari",
+      "notMintedTip": "Permintaan hanya tersedia untuk pemegang Hippo Badge",
       "requested": "Anda telah meminta hari ini",
       "time": "Per hari"
     },
@@ -2296,7 +2296,7 @@
       "clickToShowQr": "Klik untuk menampilkan QR Code kunci pribadi"
     },
     "ethSign": {
-      "alert": "Menandatangani dengan 'eth_sign' dapat menyebabkan kehilangan aset. Demi keamanan Anda, Rabby tidak mendukung metode ini."
+      "alert": "Menandatangani dengan 'eth_sign' dapat menyebabkan kehilangan aset. Demi keamanan Anda, Hippo tidak mendukung metode ini."
     },
     "createPassword": {
       "passwordRequired": "Silakan masukkan Kata Sandi",
@@ -2311,7 +2311,7 @@
     "welcome": {
       "step1": {
         "title": "Akses Semua Dapps",
-        "desc": "Rabby terhubung ke semua Dapps yang didukung oleh MetaMask"
+        "desc": "Hippo terhubung ke semua Dapps yang didukung oleh MetaMask"
       },
       "step2": {
         "title": "Kustodi Mandiri",
@@ -2437,15 +2437,15 @@
       "claimModal": {
         "activeStats": "Status Aktif",
         "walletBalance": "Saldo Dompet",
-        "rabbyUser": "Rabby Pengguna Aktif",
+        "rabbyUser": "Hippo Pengguna Aktif",
         "addressBalance": "Saldo dompet",
-        "rabbyValuedUserBadge": "Lencana Pengguna Rabby Terpilih",
+        "rabbyValuedUserBadge": "Lencana Pengguna Hippo Terpilih",
         "claim": "Klaim",
         "referral-code": "Kode Rujukan",
         "title": "Klaim Poin Awal",
         "season2": "Musim 2",
         "invalid-code": "kode tidak valid",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
         "placeholder": "Masukkan Kode Rujukan untuk poin tambahan (opsional)",
         "snapshotTime": "Waktu snapshot: {{time}}",
         "MetaMaskSwap": "MetaMask Swap",
@@ -2472,14 +2472,14 @@
       },
       "top-100": "Top 100",
       "referral-code-copied": "Kode referral telah disalin",
-      "title": "Rabby Points",
+      "title": "Hippo Points",
       "earn-points": "Dapatkan Poin",
       "share-on": "Bagikan di",
       "out-of-x-current-total-points": "Dari {{total}} Total Poin yang Diberikan",
       "initialPointsClaimEnded": "Klaim Poin Awal telah berakhir",
       "code-set-successfully": "Kode rujukan berhasil diatur",
-      "secondRoundEnded": "🎉 Putaran kedua Rabby Points telah berakhir",
-      "firstRoundEnded": "🎉 Putaran pertama Rabby Points telah berakhir"
+      "secondRoundEnded": "🎉 Putaran kedua Hippo Points telah berakhir",
+      "firstRoundEnded": "🎉 Putaran pertama Hippo Points telah berakhir"
     },
     "customTestnet": {
       "CustomTestnetForm": {
@@ -2496,7 +2496,7 @@
       "AddFromChainList": {
         "tips": {
           "added": "Anda sudah menambahkan rantai ini",
-          "supported": "Chain sudah diintegrasikan oleh Rabby Wallet"
+          "supported": "Chain sudah diintegrasikan oleh Hippo Wallet"
         },
         "title": "Tambahkan cepat dari Chainlist",
         "search": "Cari nama atau ID jaringan kustom",
@@ -2506,18 +2506,18 @@
         "title": "Data Transaksi"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "Rantai sudah terintegrasi oleh Rabby. Apakah Anda perlu mengubah URL RPC-nya?"
+        "desc": "Rantai sudah terintegrasi oleh Hippo. Apakah Anda perlu mengubah URL RPC-nya?"
       },
       "id": "ID",
       "empty": "Tidak Ada Jaringan Kustom",
       "title": "Jaringan Kustom",
       "add": "Tambahkan Jaringan Kustom",
       "currency": "Mata Uang",
-      "desc": "Rabby tidak dapat memverifikasi keamanan jaringan kustom. Harap tambahkan hanya jaringan yang dipercaya."
+      "desc": "Hippo tidak dapat memverifikasi keamanan jaringan kustom. Harap tambahkan hanya jaringan yang dipercaya."
     },
     "addChain": {
-      "title": "Tambahkan Jaringan Kustom ke Rabby",
-      "desc": "Rabby tidak dapat memverifikasi keamanan jaringan kustom. Harap tambahkan hanya jaringan yang tepercaya."
+      "title": "Tambahkan Jaringan Kustom ke Hippo",
+      "desc": "Hippo tidak dapat memverifikasi keamanan jaringan kustom. Harap tambahkan hanya jaringan yang tepercaya."
     },
     "sign": {
       "transactionSpeed": "Kecepatan Transaksi"
@@ -2665,7 +2665,7 @@
         "title": "Setor",
         "amount": "Jumlah",
         "invalidAmount": "Harus di bawah 500",
-        "desc": "Setor dana ke Akun DeBank L2 Rabby tanpa biaya tambahan—tarik kapan saja.",
+        "desc": "Setor dana ke Akun DeBank L2 Hippo tanpa biaya tambahan—tarik kapan saja.",
         "selectToken": "Pilih Token untuk Setoran",
         "token": "Token",
         "paymentAddr": "Alamat Pembayaran",
@@ -2739,15 +2739,15 @@
         "title4": "Apakah GasAccount aman",
         "title3": "Apakah GasAccount memiliki biaya tambahan",
         "title2": "Cara menggunakan Gas Account",
-        "desc3": "Rabby Wallet tidak mengenakan biaya tambahan. Anda hanya membayar gas untuk transaksi Anda dan sedikit gas untuk mengirim gas tersebut dari GasAccount ke alamat Anda.",
-        "desc4": "GasAccount tidak memerlukan persetujuan atau izin kontrak. Anda menyetor ke alamat GasAccount Rabby, dan Rabby mengirimkan gas ke alamat Anda saat diperlukan. Sepenuhnya aman berdasarkan desain.",
+        "desc3": "Hippo Wallet tidak mengenakan biaya tambahan. Anda hanya membayar gas untuk transaksi Anda dan sedikit gas untuk mengirim gas tersebut dari GasAccount ke alamat Anda.",
+        "desc4": "GasAccount tidak memerlukan persetujuan atau izin kontrak. Anda menyetor ke alamat GasAccount Hippo, dan Hippo mengirimkan gas ke alamat Anda saat diperlukan. Sepenuhnya aman berdasarkan desain.",
         "desc2": "Tambahkan dana ke GasAccount Anda dan gunakan untuk transaksi apa pun. Saat menandatangani, pilih untuk membayar gas dengan token asli atau GasAccount, beralih kapan saja.",
         "desc1": "GasAccount adalah cara baru untuk membayar biaya gas. Alih-alih menggunakan token asli di setiap rantai, Anda dapat menggunakan satu akun untuk menutupi gas untuk semua alamat Anda di semua rantai. Sederhana, opsional, dan tidak pernah kehabisan gas."
       },
       "benefitCard": {
         "title": "Bayar biaya gas di semua jaringan",
         "subtitle": "ketika kehabisan gas",
-        "item1": "Tanpa Biaya Rabby",
+        "item1": "Tanpa Biaya Hippo",
         "desc1": "Tanpa biaya tambahan untuk bayar gas",
         "item2": "Mendukung semua jaringan",
         "desc2": "Pembayaran gas otomatis di 80+ jaringan",
@@ -2776,17 +2776,17 @@
     "newUserImport": {
       "guide": {
         "importAddress": "Saya sudah memiliki alamat",
-        "title": "Selamat datang di Rabby Wallet",
+        "title": "Selamat datang di Hippo Wallet",
         "createNewAddress": "Buat alamat baru",
         "desc": "Dompet andalan Anda untuk Ethereum dan EVM"
       },
       "createNewAddress": {
         "showSeedPhrase": "Tampilkan Frasa Pemulihan",
         "title": "Sebelum Anda Mulai",
-        "tip2": "Frasa pemulihan saya hanya disimpan di perangkat saya. Rabby tidak dapat mengaksesnya.",
+        "tip2": "Frasa pemulihan saya hanya disimpan di perangkat saya. Hippo tidak dapat mengaksesnya.",
         "desc": "Silakan baca dan ingat tips keamanan berikut ini",
         "tip1": "Jika saya kehilangan atau membagikan frase pemulihan saya, saya akan kehilangan akses ke aset saya secara permanen.",
-        "tip3": "Jika saya menghapus Rabby tanpa mencadangkan frasa pemulihan saya, itu tidak dapat dipulihkan oleh Rabby"
+        "tip3": "Jika saya menghapus Hippo tanpa mencadangkan frasa pemulihan saya, itu tidak dapat dipulihkan oleh Hippo"
       },
       "importList": {
         "title": "Pilih Metode Impor "
@@ -2826,17 +2826,17 @@
         "import": "Diimpor Berhasil",
         "backupSeedPhraseNow": "Cadangkan Frasa Pemulihan Sekarang",
         "openWallet": "Buka Dompet",
-        "desc": "Dompet Rabby Siap Digunakan!",
+        "desc": "Dompet Hippo Siap Digunakan!",
         "backupSeedPhrase": "Cadangan Frasa Pemulihan"
       },
       "readyToUse": {
-        "pin": "Sematkan Rabby Wallet",
+        "pin": "Sematkan Hippo Wallet",
         "guides": {
           "step1": "Klik ikon ekstensi browser",
-          "step2": "Sematkan Rabby Wallet"
+          "step2": "Sematkan Hippo Wallet"
         },
-        "desc": "Temukan Rabby Wallet lalu sematkan",
-        "title": "Dompet Rabby Anda Sudah Siap!",
+        "desc": "Temukan Hippo Wallet lalu sematkan",
+        "title": "Dompet Hippo Anda Sudah Siap!",
         "extensionTip": "Klik <1/> dan kemudian <3/>"
       },
       "importSeedPhrase": {
@@ -2916,15 +2916,15 @@
     },
     "metamaskModeDapps": {
       "title": "Kelola Dapps yang Diizinkan",
-      "desc": "Mode MetaMask diaktifkan untuk Dapps berikut. Anda dapat menghubungkan Rabby dengan memilih opsi MetaMask."
+      "desc": "Mode MetaMask diaktifkan untuk Dapps berikut. Anda dapat menghubungkan Hippo dengan memilih opsi MetaMask."
     },
     "forgotPassword": {
       "home": {
         "buttonNoData": "Atur Kata Sandi",
         "button": "Mulai Proses Reset",
         "title": "Lupa Kata Sandi",
-        "description": "Rabby Wallet tidak menyimpan kata sandi Anda dan tidak dapat membantu Anda untuk mengambilnya. Reset dompet Anda untuk mengatur yang baru.",
-        "descriptionNoData": "Rabby Wallet tidak menyimpan kata sandi Anda dan tidak dapat membantu Anda mengembalikannya. Atur kata sandi baru jika Anda lupa."
+        "description": "Hippo Wallet tidak menyimpan kata sandi Anda dan tidak dapat membantu Anda untuk mengambilnya. Reset dompet Anda untuk mengatur yang baru.",
+        "descriptionNoData": "Hippo Wallet tidak menyimpan kata sandi Anda dan tidak dapat membantu Anda mengembalikannya. Atur kata sandi baru jika Anda lupa."
       },
       "reset": {
         "alert": {
@@ -2941,18 +2941,18 @@
           "watch": "Kontak dan Alamat Hanya-Pantau"
         },
         "button": "Konfirmasi Atur Ulang",
-        "title": "Atur Ulang Dompet Rabby",
+        "title": "Atur Ulang Dompet Hippo",
         "confirm": "Ketik <1>RESET</1> di kotak untuk mengonfirmasi dan melanjutkan"
       },
       "tip": {
         "buttonNoData": "Tambahkan Alamat",
-        "title": "Reset Dompet Rabby Selesai",
+        "title": "Reset Dompet Hippo Selesai",
         "button": "Atur Kata Sandi",
         "description": "Buat kata sandi baru untuk melanjutkan",
         "descriptionNoData": "Tambahkan alamat Anda untuk memulai"
       },
       "success": {
-        "description": "Anda sudah siap untuk menggunakan Rabby Wallet",
+        "description": "Anda sudah siap untuk menggunakan Hippo Wallet",
         "button": "Selesai",
         "title": "Kata Sandi Berhasil Disetel"
       }
@@ -2966,12 +2966,12 @@
         "disabled": "Disguise dinonaktifkan. Segarkan Dapp."
       },
       "step2": "Langkah 2",
-      "title": "Sambungkan Rabby dengan Menyamar sebagai MetaMask",
+      "title": "Sambungkan Hippo dengan Menyamar sebagai MetaMask",
       "noDappFound": "Tidak ada Dapp yang ditemukan",
       "step2Desc": "Menyegarkan dan terhubung melalui MetaMask",
       "manage": "Kelola Dapps yang Diizinkan",
-      "alert": "Tidak dapat terhubung ke Dapp karena tidak menampilkan Rabby Wallet sebagai pilihan?",
-      "step1Desc": "Izinkan Rabby menyamar sebagai MetaMask di Dapp saat ini",
+      "alert": "Tidak dapat terhubung ke Dapp karena tidak menampilkan Hippo Wallet sebagai pilihan?",
+      "step1Desc": "Izinkan Hippo menyamar sebagai MetaMask di Dapp saat ini",
       "step1": "Langkah 1"
     },
     "syncToMobile": {
@@ -2979,10 +2979,10 @@
         "title": "Pilih Alamat untuk Disinkronkan"
       },
       "downloadGooglePlay": "Google Play",
-      "steps2": "2. Pindai dengan Rabby Mobile",
-      "title": "Sinkronisasikan Alamat Dompet dari Rabby Extension ke Mobile",
+      "steps2": "2. Pindai dengan Hippo Mobile",
+      "title": "Sinkronisasikan Alamat Dompet dari Hippo Extension ke Mobile",
       "clickToShowQr": "Klik untuk Memilih Alamat dan Tampilkan Kode QR",
-      "steps1": "1. Unduh Rabby Mobile",
+      "steps1": "1. Unduh Hippo Mobile",
       "downloadAppleStore": "App Store",
       "selectedLenAddressesForSync_one": "{{len}} alamat dipilih untuk disinkronkan",
       "disableSelectAddress": "Sinkronisasi tidak didukung untuk alamat {{type}}",
@@ -3041,7 +3041,7 @@
           "risks": {
             "contractAddress": "Alamat kontrak terdeteksi, dana mungkin hilang",
             "dexNoDeposite": "Bukan alamat deposit CEX, dana mungkin hilang",
-            "scamAddress": "Alamat penipuan ditandai oleh Rabby",
+            "scamAddress": "Alamat penipuan ditandai oleh Hippo",
             "noSend": "Anda belum mengirim ke alamat ini dalam 180 hari"
           }
         },
@@ -3260,7 +3260,7 @@
           "cost": "Biaya",
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
-          "rabbyFee": "Biaya Rabby (0%)"
+          "rabbyFee": "Biaya Hippo (0%)"
         },
         "acceptModal": {
           "title": "Terima Tawaran",
@@ -3272,7 +3272,7 @@
           "offer": "Tawarkan",
           "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
           "creatorFeeTips": "Pendapatan kreator akan dibayar oleh penjual.",
-          "rabbyFee": "Biaya Rabby (0%)",
+          "rabbyFee": "Biaya Hippo (0%)",
           "totalEst": "Total hasil estimasi",
           "platform": "Platform",
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
@@ -3515,7 +3515,7 @@
         "activateFailed": "Gagal",
         "activateNow": "Aktifkan Sekarang",
         "hyperliquidFee": "Biaya perdagangan Hyperliquid.",
-        "description": "Gunakan kode Rabby untuk mengaktifkan",
+        "description": "Gunakan kode Hippo untuk mengaktifkan",
         "title": "Hemat biaya Hyperliquid",
         "activatedSuccess": "Penghematan biaya Hyperliquid sebesar 4% telah diaktifkan."
       },
@@ -3552,7 +3552,7 @@
       "deleteAgentModal": "Anda telah mencapai jumlah agen maksimum. Apakah Anda ingin menghapus agen yang ada untuk membuat yang baru?",
       "logInTips": "Masuk dengan alamat Anda dan setor dana untuk mulai memperdagangkan Perps.",
       "price": "Harga",
-      "rabbyFeeTipsV2": "Biaya Rabby: 0,02%",
+      "rabbyFeeTipsV2": "Biaya Hippo: 0,02%",
       "deleteAgentSuccess": "Agen berhasil dihapus.",
       "marginIsolated": "Margin Terisolasi",
       "timeAgo": "{{time}} yang lalu",
@@ -3603,7 +3603,7 @@
       "fundingRate": "Tingkat pendanaan",
       "add": "Tambahkan",
       "leverageRangeMaxError": "Leverage maksimum adalah {{max}}x",
-      "rabbyFeeTipsZero": "Biaya Rabby: 0%",
+      "rabbyFeeTipsZero": "Biaya Hippo: 0%",
       "close": "Tutup posisi",
       "directDepositFast": "Cepat, 0 Slippage",
       "positionValue": "Nilai Posisi",
@@ -4144,7 +4144,7 @@
         "free": "Gratis",
         "insufficientBalance": "Saldo tidak cukup",
         "providerFee": "Biaya Hyperliquid",
-        "rabbyFee": "Biaya Rabby",
+        "rabbyFee": "Biaya Hippo",
         "leverage": "Leverage",
         "stopLossWhenPriceBelow": "Hentikan Kerugian Ketika Harga Di Bawah",
         "maxMargin": "Margin maksimum adalah {{amount}}",
@@ -4953,7 +4953,7 @@
     "EcologyNoticeModal": {
       "title": "Pemberitahuan",
       "notRemind": "Jangan ingatkan saya lagi",
-      "desc": "Layanan berikut akan disediakan secara langsung oleh Mitra Ekosistem pihak ketiga. Rabby Wallet tidak bertanggung jawab atas keamanan layanan ini."
+      "desc": "Layanan berikut akan disediakan secara langsung oleh Mitra Ekosistem pihak ketiga. Hippo Wallet tidak bertanggung jawab atas keamanan layanan ini."
     },
     "ReserveGasPopup": {
       "fast": "Normal",
@@ -4964,8 +4964,8 @@
     },
     "OpenExternalWebsiteModal": {
       "button": "Lanjutkan",
-      "title": "Anda Sedang Meninggalkan Rabby Wallet",
-      "content": "Anda akan mengunjungi situs web eksternal. Rabby Wallet tidak bertanggung jawab atas konten atau keamanan situs ini."
+      "title": "Anda Sedang Meninggalkan Hippo Wallet",
+      "content": "Anda akan mengunjungi situs web eksternal. Hippo Wallet tidak bertanggung jawab atas konten atau keamanan situs ini."
     },
     "TokenChart": {
       "price": "Harga",
@@ -4992,7 +4992,7 @@
     },
     "ChainItem": {
       "appChain": "Di Akun {{chain}}",
-      "hyperliquidCode": "Hemat biaya Hyperliquid dengan kode referensi Rabby."
+      "hyperliquidCode": "Hemat biaya Hyperliquid dengan kode referensi Hippo."
     },
     "RiskTip": {
       "title": "Risiko Terdeteksi"
@@ -5035,13 +5035,13 @@
       "placeholderRequired": "Jelaskan masalah (wajib)"
     },
     "feedbackPopup": {
-      "title": "Respons dari Dukungan Rabby",
+      "title": "Respons dari Dukungan Hippo",
       "issueReported": "Berikut adalah masalah yang Anda laporkan:",
-      "issueReplied": "Dukungan Rabby telah membalas:"
+      "issueReplied": "Dukungan Hippo telah membalas:"
     }
   },
   "global": {
-    "appName": "Rabby Wallet",
+    "appName": "Hippo Wallet",
     "Confirm": "Konfirmasi",
     "editButton": "Sunting",
     "Save": "Simpan",

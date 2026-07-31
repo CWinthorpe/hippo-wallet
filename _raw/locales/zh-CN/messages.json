@@ -24,7 +24,7 @@
     "scamTx": "诈骗交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "观察模式地址",
-    "appName": "Rabby Wallet",
+    "appName": "Hippo Wallet",
     "Deleted": "已删除",
     "Loading": "加载中",
     "Balance": "余额",
@@ -78,11 +78,11 @@
       "feedback": {
         "directMessage": {
           "content": "发送私信",
-          "description": "在 DeBank 上与 Rabby Wallet 官方一对一联系"
+          "description": "在 DeBank 上与 Hippo Wallet 官方一对一联系"
         },
         "proposal": {
           "content": "发起提案",
-          "description": "在 DeBank 上发布对 Rabby Wallet 的提案"
+          "description": "在 DeBank 上发布对 Hippo Wallet 的提案"
         },
         "title": "反馈"
       },
@@ -120,7 +120,7 @@
           "more": "更多",
           "manageAddress": "管理地址",
           "nft": "NFT",
-          "rabbyPoints": "Rabby 积分",
+          "rabbyPoints": "Hippo 积分",
           "ecology": "生态系统",
           "bridge": "跨链",
           "mobile": "同步手机端",
@@ -140,8 +140,8 @@
         "comingSoon": "即将推出",
         "soon": "即将推出",
         "flip": "切换",
-        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，禁用 Rabby",
-        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Rabby，禁用 Metamask",
+        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，禁用 Hippo",
+        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Hippo，禁用 Metamask",
         "refreshTheWebPageToTakeEffect": "刷新网页即可生效",
         "transactionNeedsToSign": "笔交易需要签名",
         "transactionsNeedToSign": "笔交易需要签名",
@@ -168,7 +168,7 @@
         "metamaskTooltip": "你选择在该 Dapp 中优先使用 MetaMask。\n你可以随时在“设置”>“优先使用 MetaMask 的 Dapp”中更新此设置。",
         "notConnected": "未连接",
         "connected": "已连接",
-        "connectedDapp": "Rabby 未连接到当前 Dapp。请在 Dapp 网页上点击连接按钮。",
+        "connectedDapp": "Hippo 未连接到当前 Dapp。请在 Dapp 网页上点击连接按钮。",
         "noDappFound": "未找到 Dapp",
         "disconnectAll": "全部断开",
         "disconnectRecentlyUsed": {
@@ -185,8 +185,8 @@
         "recentlyConnected": "最近连接",
         "noConnectedDapps": "没有已连接的 Dapp",
         "dapps": "Dapp",
-        "metamaskModeTooltip": "无法在此 Dapp 上连接 Rabby？尝试启用 <1>MetaMask Mode</1>。",
-        "metamaskModeTooltipNew": "当你在 Dapp 中选择“MetaMask”时，Rabby Wallet 会自动连接。你可以在“更多” > “伪装成 MetaMask 连接 Rabby”中管理此设置。"
+        "metamaskModeTooltip": "无法在此 Dapp 上连接 Hippo？尝试启用 <1>MetaMask Mode</1>。",
+        "metamaskModeTooltipNew": "当你在 Dapp 中选择“MetaMask”时，Hippo Wallet 会自动连接。你可以在“更多” > “伪装成 MetaMask 连接 Hippo”中管理此设置。"
       },
       "contacts": {
         "noData": "没有数据",
@@ -199,19 +199,19 @@
         "claimSuccess": "领取成功",
         "enterClaimCode": "输入领取码",
         "goToSwap": "完成兑换",
-        "imageLabel": "Rabby 徽章",
+        "imageLabel": "Hippo 徽章",
         "learnMoreOnDebank": "在 DeBank 上了解更多",
         "noCode": "你尚未激活该地址的领取码",
-        "rabbyValuedUserNo": "Rabby 尊享用户 No.{{num}}",
-        "swapTip": "你需要先在 Rabby Wallet 中通过知名 DEX 完成一笔兑换。",
-        "title": "领取 Rabby 徽章",
+        "rabbyValuedUserNo": "Hippo 尊享用户 No.{{num}}",
+        "swapTip": "你需要先在 Hippo Wallet 中通过知名 DEX 完成一笔兑换。",
+        "title": "领取 Hippo 徽章",
         "viewOnDebank": "在 DeBank 上查看",
         "viewYourClaimCode": "在 DeBank 上查看你的领取码",
         "freeGasTitle": "领取 Free Gas 徽章",
         "freeGasTip": "请用 Free Gas 签署一笔交易。当你的 Gas 不足时，“Free Gas”按钮会自动出现。",
         "learnMore": "了解更多",
         "freeGasNoCode": "请先点击下方按钮访问 DeBank，并使用当前地址获取领取码。",
-        "rabbyFreeGasUserNo": "Rabby Free Gas 用户 No.{{num}}"
+        "rabbyFreeGasUserNo": "Hippo Free Gas 用户 No.{{num}}"
       },
       "security": {
         "comingSoon": "更多功能即将推出",
@@ -229,7 +229,7 @@
         "autoLockTime": "自动锁定时间",
         "backendServiceUrl": "后端服务网址",
         "cancel": "取消",
-        "claimRabbyBadge": "领取 Rabby Badge",
+        "claimRabbyBadge": "领取 Hippo Badge",
         "clearPending": "清除本地待处理交易",
         "clearPendingTip1": "此操作会从界面中移除待处理交易，帮助解决交易长时间在网络中待处理的问题。",
         "clearPendingTip2": "此操作不会影响你的账户余额，也不需要重新输入助记词。所有资产和账户信息仍然安全。",
@@ -239,7 +239,7 @@
         "disableWhitelist": "关闭转账白名单",
         "disableWhitelistTip": "关闭后你可以将资产发送到任何地址",
         "enableWhitelist": "启用转账白名单",
-        "enableWhitelistTip": "启用后，你只能使用 Rabby 向白名单中的地址发送资产",
+        "enableWhitelistTip": "启用后，你只能使用 Hippo 向白名单中的地址发送资产",
         "features": {
           "connectedDapp": "已连接的 Dapp",
           "label": "功能",
@@ -248,7 +248,7 @@
           "signatureRecord": "签名记录",
           "searchDapps": "搜索 Dapp",
           "gasTopUp": "Gas 充值",
-          "rabbyPoints": "Rabby 积分",
+          "rabbyPoints": "Hippo 积分",
           "ecosystem": "生态系统"
         },
         "followUs": "关注我们",
@@ -273,7 +273,7 @@
           "toggleThemeMode": "主题模式",
           "themeMode": "主题模式",
           "customTestnet": "添加自定义网络",
-          "metamaskMode": "通过伪装成 MetaMask 连接 Rabby",
+          "metamaskMode": "通过伪装成 MetaMask 连接 Hippo",
           "enableDappAccount": "为每个 Dapp 单独切换地址",
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密码",
           "biometricUnlock": "通过生物识别解锁",
@@ -285,14 +285,14 @@
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "有可用更新",
         "updateVersion": {
-          "content": "检测到 Rabby Wallet 更新版本\n点击查看如何手动更新",
+          "content": "检测到 Hippo Wallet 更新版本\n点击查看如何手动更新",
           "okText": "查看教程",
           "successTip": "你正在使用最新版本",
           "title": "有更新可用"
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "获取 DeBank 测试网 Gas 代币",
-        "claimFreeGasBadge": "领取 Rabby Free Gas 徽章！",
+        "claimFreeGasBadge": "领取 Hippo Free Gas 徽章！",
         "clearPendingWarningTip": "被移除的交易可能仍然会在链上确认，除非它被替换。",
         "supportedChains": "集成链",
         "DappAccount": {
@@ -301,15 +301,15 @@
           "desc": "启用后，你可以为每个 Dapp 单独选择连接地址。切换主地址不会影响各 Dapp 已连接的地址。"
         },
         "rateModalTriggerOnHome": {
-          "description": "你如何评价 Rabby Wallet？"
+          "description": "你如何评价 Hippo Wallet？"
         },
         "rateModal": {
           "feedbackDesc": "有反馈吗？我们在倾听。",
           "feedbackSuccess": "感谢你的反馈！",
           "thxTitle": "谢谢！",
           "rateOnChromeStoreButton": "在 Chrome 网上商店评分",
-          "thxDesc": "如果你喜欢 Rabby，在 Chrome 商店给个快速评分会对我们意义重大。",
-          "feedbackPlaceholder": "Rabby 重视你的反馈！",
+          "thxDesc": "如果你喜欢 Hippo，在 Chrome 商店给个快速评分会对我们意义重大。",
+          "feedbackPlaceholder": "Hippo 重视你的反馈！",
           "submitFeedbackButton": "提交"
         },
         "PwdForNonWhitelistedTx": {
@@ -333,8 +333,8 @@
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
         "blocked": "隐藏",
-        "selectedCustom": "该代币未被 Rabby 收录。\n你已手动添加该代币。",
-        "notSelectedCustom": "该代币未被 Rabby 收录。\n打开开关后，它将被添加到代币列表。",
+        "selectedCustom": "该代币未被 Hippo 收录。\n你已手动添加该代币。",
+        "notSelectedCustom": "该代币未被 Hippo 收录。\n打开开关后，它将被添加到代币列表。",
         "customized": "已添加",
         "scamTx": "诈骗交易",
         "txFailed": "失败",
@@ -361,7 +361,7 @@
         "TokenName": "代币名称",
         "maybeScamTips": "这是一个低质量代币，可能存在诈骗风险。",
         "blockedListTitles": "已隐藏代币",
-        "customizedHasAddedTips": "该代币未被 Rabby 收录。你已手动将其添加到代币列表中。",
+        "customizedHasAddedTips": "该代币未被 Hippo 收录。你已手动将其添加到代币列表中。",
         "ContractAddress": "合约地址",
         "blockedTips": "已隐藏的代币不会显示在代币列表中",
         "IssuerWebsite": "发行方网站",
@@ -459,7 +459,7 @@
         "side": "方向",
         "price": "价格",
         "searchTokenPlaceholder": "搜索代币",
-        "openInTab": "在 Rabby 标签页中打开",
+        "openInTab": "在 Hippo 标签页中打开",
         "openProMode": "开启专业模式",
         "openInTabV2": "在标签页中打开",
         "noLpTokens": "没有流动性提供者（LP）代币",
@@ -513,7 +513,7 @@
         "title": "MetaMask Mode",
         "toastSuccess": "已启用。刷新页面以重新连接。",
         "enableDesc": "如果该 Dapp 仅支持 MetaMask，请启用",
-        "desc": "如果无法在 Dapp 上连接 Rabby，请启用 MetaMask Mode，并在 Dapp 中选择 MetaMask 进行连接。",
+        "desc": "如果无法在 Dapp 上连接 Hippo，请启用 MetaMask Mode，并在 Dapp 中选择 MetaMask 进行连接。",
         "footerText": "在“更多” > “MetaMask Mode”中添加更多 Dapp"
       },
       "offlineChain": {
@@ -525,8 +525,8 @@
         "title": "在此切换用于连接 Dapp 的地址"
       },
       "rabbyPointsPopup": {
-        "desc": "在 Rabby Mobile 中查看你的积分。",
-        "title": "Rabby 积分",
+        "desc": "在 Hippo Mobile 中查看你的积分。",
+        "title": "Hippo 积分",
         "downloadIntro": "还没有安装 App？立即下载。"
       },
       "noData": "无匹配的货币",
@@ -588,11 +588,11 @@
           "answer": "用于控制你的资产的 12、18 或 24 个单词的短语。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中导入它安全吗？",
+          "question": "在 Hippo 中导入它安全吗？",
           "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "importError": "[CreateMnemonics] 意外步骤 {{0}}",
-        "importQuestion4": "如果我在未备份助记词的情况下卸载 Rabby，Rabby 无法为我找回助记词。",
+        "importQuestion4": "如果我在未备份助记词的情况下卸载 Hippo，Hippo 无法为我找回助记词。",
         "riskTips": "在开始之前，请阅读并牢记以下安全提示",
         "showSeedPhrase": "显示助记词",
         "backup": "备份助记词",
@@ -622,19 +622,19 @@
         "inputInvalidCount_other": "{{count}} 个输入不符合助记词规范，请检查。",
         "passphrase": "密码短语",
         "importQuestion1": "如果我丢失或泄露助记词，将永久失去对资产的访问权限。",
-        "importQuestion3": "如果我在未备份助记词的情况下卸载 Rabby，Rabby 将无法帮我恢复。",
-        "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
+        "importQuestion3": "如果我在未备份助记词的情况下卸载 Hippo，Hippo 将无法帮我恢复。",
+        "importQuestion2": "我的助记词仅存储在我的设备上。Hippo 无法访问它。",
         "showMoreOptions": "显示更多选项",
         "inputInvalid": "检测到无效单词。请检查标记的单词。"
       },
       "metamask": {
         "step1": "从 MetaMask 导出助记词或私钥 <br /> <1>点击查看教程 <1/></1>",
-        "step2": "在 Rabby 中导入助记词或私钥",
+        "step2": "在 Hippo 中导入助记词或私钥",
         "step3": "导入完成，你的所有资产将<br />自动显示",
         "how": "如何导入我的 MetaMask 帐户？",
         "step": "步骤",
         "importSeedPhrase": "导入助记词或私钥",
-        "importSeedPhraseTips": "它只会存储在本地浏览器上。\nRabby 永远无法访问你的私密信息。",
+        "importSeedPhraseTips": "它只会存储在本地浏览器上。\nHippo 永远无法访问你的私密信息。",
         "tipsDesc": "你的私钥和助记词不属于 MetaMask 或任何具体钱包，它只属于你自己。",
         "tips": "提示："
       },
@@ -646,7 +646,7 @@
           "answer": "用于控制你的资产的一串字符。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中导入它安全吗？",
+          "question": "在 Hippo 中导入它安全吗？",
           "answer": "是的，它将存储在你本地的浏览器上，并且只有你可以访问。"
         },
         "isItPossibleToImportKeystore": {
@@ -662,9 +662,9 @@
       "importedSuccessfully": "导入成功",
       "ledger": {
         "title": "连接 Ledger",
-        "cameraPermissionTitle": "允许 Rabby 访问相机",
-        "cameraPermission1": "在浏览器弹出窗口中允许 Rabby 访问摄像头",
-        "allowRabbyPermissionsTitle": "允许 Rabby 获取以下权限：",
+        "cameraPermissionTitle": "允许 Hippo 访问相机",
+        "cameraPermission1": "在浏览器弹出窗口中允许 Hippo 访问摄像头",
+        "allowRabbyPermissionsTitle": "允许 Hippo 获取以下权限：",
         "ledgerPermission1": "连接到 HID 设备",
         "ledgerPermissionTip": "请点击下面的“允许”，并在弹出窗口中授权访问你的 Ledger",
         "permissionsAuthorized": "权限已授权",
@@ -679,19 +679,19 @@
       },
       "keystone": {
         "title": "连接 Keystone",
-        "allowRabbyPermissionsTitle": "允许 Rabby 获取以下权限：",
+        "allowRabbyPermissionsTitle": "允许 Hippo 获取以下权限：",
         "keystonePermission1": "连接至 USB 设备",
         "keystonePermissionTip": "请点击下方“允许”，并在弹出窗口中授权访问你的 Keystone；同时确保你的 Keystone 3 Pro 位于首页。",
         "noDeviceFoundError": "请插入一个 Keystone",
         "deviceIsLockedError": "输入密码以解锁",
-        "deviceRejectedExportAddress": "请在设备上确认连接 Rabby",
+        "deviceRejectedExportAddress": "请在设备上确认连接 Hippo",
         "deviceIsBusy": "设备正忙",
         "exportAddressJustAllowedOnHomePage": "仅在 Keystone 主页上允许导出地址",
         "unknowError": "未知错误，请再试一次"
       },
       "onekey": {
         "onekeyPermission1": "连接至 USB 设备",
-        "allowRabbyPermissionsTitle": "允许 Rabby 获取以下权限：",
+        "allowRabbyPermissionsTitle": "允许 Hippo 获取以下权限：",
         "onekeyPermissionTip": "请点击下方“允许”，并在弹出窗口中授权访问你的 OneKey。如果弹窗中没有出现 OneKey，请检查设备是否已正确连接电脑。",
         "whyOneKey": "为什么用 OneKey？",
         "buyOneKey": "购买 OneKey",
@@ -738,14 +738,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "该地址已从 Rabby 中删除",
-          "added": "地址已添加至 Rabby",
+          "removed": "该地址已从 Hippo 中删除",
+          "added": "地址已添加至 Hippo",
           "connectError": "连接已停止\n请刷新页面以重新连接",
           "disconnected": "无法连接到硬件钱包\n请尝试重新连接"
         },
         "waiting": "等待中",
         "clickToGetInfo": "点击获取链上信息",
-        "addToRabby": "添加到 Rabby",
+        "addToRabby": "添加到 Hippo",
         "basicInformation": "基本信息",
         "addresses": "地址",
         "loadingAddress": "正在加载 {{0}}/{{1}} 地址",
@@ -857,7 +857,7 @@
         "manageNgraveZero": "管理 NGRAVE ZERO",
         "done": "完成",
         "addressesIn": "{{0}} 中的地址",
-        "addressesInRabby": "Rabby 中的地址{{0}}",
+        "addressesInRabby": "Hippo 中的地址{{0}}",
         "qrCode": {
           "switch": {
             "title": "切换到新的 {{0}} 设备",
@@ -867,7 +867,7 @@
         },
         "manageImKey": "管理 imKey",
         "importBtn": "导入 ({{count}})",
-        "nonAddr": "此助记词尚未添加任何地址。你可以在 Rabby Extension > 管理地址中删除此助记词。"
+        "nonAddr": "此助记词尚未添加任何地址。你可以在 Hippo Extension > 管理地址中删除此助记词。"
       },
       "importYourKeystore": "导入你的 KeyStore",
       "incorrectPassword": "密码错误",
@@ -908,7 +908,7 @@
       "newAddressCreated": "新地址已创建",
       "addMoreAddressesFromThisSeedPhrase": "从这个助记词添加更多地址",
       "newAddressAdded": "新地址已添加",
-      "openExtensionToGetStarted": "打开 Rabby 扩展以开始使用",
+      "openExtensionToGetStarted": "打开 Hippo 扩展以开始使用",
       "bulkImportPrivateKeyInvalid": "一些私钥无效。请删除或重新输入它们。",
       "duplicateAddressesSkippedDesc_other": "{{count}} 个地址被跳过，因为它们已存在。",
       "bulkImportPrivateKey": "批量导入私钥",
@@ -925,7 +925,7 @@
     "activities": {
       "signedText": {
         "empty": {
-          "desc": "所有通过 Rabby 签署的文本都将在此展示",
+          "desc": "所有通过 Hippo 签署的文本都将在此展示",
           "title": "尚未签署文本"
         },
         "label": "签署文本"
@@ -940,7 +940,7 @@
           "unlimited": "无限"
         },
         "empty": {
-          "desc": "所有通过 Rabby 签署的交易都将在此展示",
+          "desc": "所有通过 Hippo 签署的交易都将在此展示",
           "title": "尚未签署交易"
         },
         "explain": {
@@ -1034,11 +1034,11 @@
       "balance": "余额",
       "noTokenFound": "未找到代币",
       "noTokenFoundOnThisChain": "该链上未找到代币",
-      "title": "将自定义代币添加至 Rabby",
+      "title": "将自定义代币添加至 Hippo",
       "tokenCustomized": "当前代币已手动添加",
       "tokenNotFound": "该合约地址上未找到代币",
       "tokenOnMultiChains": "在多条链上找到此代币地址，\n请选择一条链",
-      "tokenSupported": "Rabby 已支持该代币",
+      "tokenSupported": "Hippo 已支持该代币",
       "hasAdded": "你已添加此代币。"
     },
     "approvals": {
@@ -1175,7 +1175,7 @@
       "blocked": "黑名单",
       "connectBtn": "连接",
       "flagByMM": "被 MetaMask 标记为风险网址",
-      "flagByRabby": "被 Rabby 标记为风险网址",
+      "flagByRabby": "被 Hippo 标记为风险网址",
       "flagByScamSniffer": "被 ScamSniffer 标记为风险网址",
       "foundForbiddenRisk": "检测到高危风险，\n无法连接",
       "listedBy": "收录于",
@@ -1199,7 +1199,7 @@
       "sitePopularity": "网站热度",
       "title": "连接 Dapp",
       "trusted": "白名单",
-      "verifiedByRabby": "经 Rabby 验证",
+      "verifiedByRabby": "经 Hippo 验证",
       "SignTestnetPermission": {
         "title": "签名权限"
       },
@@ -1218,7 +1218,7 @@
       "Confirm": "确认",
       "Continue": "继续",
       "Including-service-fee": "包含 {{fee}} 服务费",
-      "InsufficientBalance": "当前链的 Rabby 合约地址余额不足，\n请稍后再试",
+      "InsufficientBalance": "当前链的 Hippo 合约地址余额不足，\n请稍后再试",
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",
       "No_Tokens": "没有代币",
@@ -1230,7 +1230,7 @@
       "description": "可使用其他链上的可用代币为目标链补充 Gas。\n付款确认后即会到账，无需等待交易达到最终性。",
       "hightGasFees": "该充值金额太小，目标网络需要较高的 Gas 费",
       "payment": "Gas 充值付款",
-      "service-fee-tip": "Rabby 提供 Gas 充值服务时，需要承担代币价格波动和充值 Gas 费用。\n因此会收取 20% 的服务费",
+      "service-fee-tip": "Hippo 提供 Gas 充值服务时，需要承担代币价格波动和充值 Gas 费用。\n因此会收取 20% 的服务费",
       "title": "即时 Gas 充值",
       "topUpChain": "充值链"
     },
@@ -1247,7 +1247,7 @@
       "current-address": "当前地址",
       "delete-all-addresses-and-the-seed-phrase": "删除所有地址和助记词",
       "delete-all-addresses-but-keep-the-seed-phrase": "删除所有地址，但保留助记词",
-      "delete-checklist-1": "我明白如果我删除这个地址，对应的私钥及助记词都将被删除，Rabby 无法为我找回",
+      "delete-checklist-1": "我明白如果我删除这个地址，对应的私钥及助记词都将被删除，Hippo 无法为我找回",
       "delete-checklist-2": "我确认我已备份私钥或助记词，现在已准备好进行删除",
       "delete-desc": "删除前，请记住以下几点，以了解如何保护你的资产",
       "delete-empty-seed-phrase": "删除助记词及其 0 个地址",
@@ -1486,7 +1486,7 @@
       "signAndSubmitButton": "签名",
       "walletConnect": {
         "chainSwitched": "你已在手机钱包上切换到其他链\n请在手机钱包中切换到 {{0}}",
-        "connectBeforeSign": "{{0}} 未连接到 Rabby，请在签名前连接",
+        "connectBeforeSign": "{{0}} 未连接到 Hippo，请在签名前连接",
         "connected": "已连接并准备好签名",
         "connectedButCantSign": "已连接但无法签名",
         "howToSwitch": "如何切换",
@@ -1554,7 +1554,7 @@
         "unavailable": "Gas 余额不足",
         "notEnough": "Gas 余额不足",
         "GetFreeGasToSign": "领取 Free Gas",
-        "rabbyPayGas": "Rabby 将支付所需的 Gas 费用——你只需签名即可",
+        "rabbyPayGas": "Hippo 将支付所需的 Gas 费用——你只需签名即可",
         "customRpcUnavailableTip": "自定义 RPC 不支持 Free Gas",
         "walletConnectUnavailableTip": "通过 WalletConnect 连接的移动钱包不支持 Free Gas",
         "watchUnavailableTip": "仅观察地址不支持 Free Gas"
@@ -1632,11 +1632,11 @@
       },
       "deployTimeTitle": "部署时间",
       "eip1559Desc1": "在支持 EIP-1559 的链上，优先费是支付给矿工处理交易的小费。降低优先费可以节省最终 Gas 费用，但交易处理时间可能会变长。",
-      "eip1559Desc2": "在 Rabby 中，优先费（小费）= 费用上限 - 基础费。设置最高优先费后，会先扣除基础费，剩余部分作为小费支付给矿工。",
+      "eip1559Desc2": "在 Hippo 中，优先费（小费）= 费用上限 - 基础费。设置最高优先费后，会先扣除基础费，剩余部分作为小费支付给矿工。",
       "enoughSafeSigCollected": "已收集到足够的签名",
       "failToFetchGasCost": "无法估算 Gas 费",
       "importedAddress": "已导入地址",
-      "fakeTokenAlert": "这是由 Rabby 标记的诈骗代币",
+      "fakeTokenAlert": "这是由 Hippo 标记的诈骗代币",
       "firstOnChain": "首次链上交易",
       "floorPrice": "地板价",
       "gasLimitEmptyAlert": "请输入 Gas Limit",
@@ -1702,7 +1702,7 @@
       },
       "safeAddressNotSupportChain": "{{0}} 链不支持当前 Safe 地址",
       "safeAdminSigned": "已签",
-      "scamTokenAlert": "根据 Rabby 的检测，这可能是低质量或诈骗代币",
+      "scamTokenAlert": "根据 Hippo 的检测，这可能是低质量或诈骗代币",
       "send": {
         "addressBalanceTitle": "地址余额",
         "cexAddress": "中心化交易所地址",
@@ -1725,10 +1725,10 @@
         "nftNotSupport": "不支持 NFT",
         "title": "发送 NFT"
       },
-      "sigCantDecode": "该签名无法被 Rabby 解码",
+      "sigCantDecode": "该签名无法被 Hippo 解码",
       "signTransactionOnChain": "签署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最终只会完成其中一项",
-      "decodedTooltip": "该签名已被 Rabby Wallet 解析",
+      "decodedTooltip": "该签名已被 Hippo Wallet 解析",
       "submitMultisig": {
         "multisigAddress": "多签地址",
         "title": "提交多签交易"
@@ -1758,7 +1758,7 @@
         "contractTrustValueTip": "信任值是指通过该合约花费的资产总价值。信任值较低表示该合约可能存在风险，或已 180 天不活跃。",
         "deployTimeLessThan": "< {{value}} 天",
         "eoaAddress": "EOA",
-        "flagByRabby": "被 Rabby 标记为风险",
+        "flagByRabby": "被 Hippo 标记为风险",
         "myBalance": "我的余额",
         "title": "代币授权",
         "trustValueLessThan": "≤ {{value}}",
@@ -1842,7 +1842,7 @@
       "maxPriorityFeeDisabledAlert": "请先设置 Gas 价格",
       "customRPCErrorModal": {
         "title": "自定义 RPC 错误",
-        "content": "你的自定义 RPC 当前不可用。你可以禁用它，并继续使用 Rabby 的官方 RPC 进行签名。",
+        "content": "你的自定义 RPC 当前不可用。你可以禁用它，并继续使用 Hippo 的官方 RPC 进行签名。",
         "button": "禁用自定义 RPC"
       },
       "revokePermit": {
@@ -1905,9 +1905,9 @@
       "safeServiceNotAvailable": "Safe 服务当前不可用，请稍后再试",
       "safeTx": {
         "selfHostConfirm": {
-          "title": "切换到 Rabby 的 Safe 服务",
+          "title": "切换到 Hippo 的 Safe 服务",
           "button": "OK",
-          "content": "Safe API 暂不可用。切换到由 Rabby 部署的 Safe 服务以保持你的 Safe 功能正常。<strong>所有 Safe 签署者必须使用 Rabby Wallet 授权交易。</strong>"
+          "content": "Safe API 暂不可用。切换到由 Hippo 部署的 Safe 服务以保持你的 Safe 功能正常。<strong>所有 Safe 签署者必须使用 Hippo Wallet 授权交易。</strong>"
         }
       },
       "errorRetry": {
@@ -1980,7 +1980,7 @@
       "Completed": "已完成",
       "InSufficientTip": "余额不足，无法进行交易模拟和 Gas 估算。\n将显示原始报价",
       "Pending": "待完成",
-      "QuoteLessWarning": "接收数量由 Rabby 交易模拟估算。DEX 提供的报价为 {{receive}}，你将比预期报价少收到 {{diff}}。",
+      "QuoteLessWarning": "接收数量由 Hippo 交易模拟估算。DEX 提供的报价为 {{receive}}，你将比预期报价少收到 {{diff}}。",
       "actual-slippage": "实际滑点：",
       "amount-in": "卖出{{symbol}}金额",
       "approve-tips": "1.授权 → 2.兑换",
@@ -2013,7 +2013,7 @@
       "not-supported": "不支持",
       "pendingTip": "交易已提交。\n如果交易长时间处于待处理状态，可尝试在设置中清除待处理交易。",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
-      "rabby-fee": "Rabby 手续费",
+      "rabby-fee": "Hippo 手续费",
       "preferMEV": "优先使用 MEV 保护",
       "preferMEVTip": "为 Ethereum 兑换启用“MEV Guarded”功能，以降低遭受三明治攻击的风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "rate": "汇率",
@@ -2040,7 +2040,7 @@
       "to": "买入",
       "trade": "交易",
       "tradingSettingTip1": "1. 开启后，你将直接与交易所合约进行交互",
-      "tradingSettingTip2": "2. Rabby 不承担因交易所合约产生的任何风险",
+      "tradingSettingTip2": "2. Hippo 不承担因交易所合约产生的任何风险",
       "tradingSettingTips": "共 {{viewCount}} 个交易所提供报价，{{tradeCount}} 个允许直接交易",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "由于滑点较高，交易可能会被抢先交易",
       "unable-to-fetch-the-price": "无法获取价格",
@@ -2054,10 +2054,10 @@
       "rabbyFee": {
         "wallet": "钱包",
         "rate": "费率",
-        "title": "Rabby 手续费",
+        "title": "Hippo 手续费",
         "button": "知道了",
-        "bridgeDesc": "Rabby Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Rabby 收取 0.25% 的费用，该费用会自动包含在报价中。",
-        "swapDesc": "Rabby Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Rabby 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。"
+        "bridgeDesc": "Hippo Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Hippo 收取 0.25% 的费用，该费用会自动包含在报价中。",
+        "swapDesc": "Hippo Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Hippo 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。"
       },
       "lowCreditModal": {
         "title": "该代币的信用价值较低",
@@ -2070,14 +2070,14 @@
       "Gas-fee-too-high": "Gas 费用过高",
       "source": "来源",
       "from": "从",
-      "no-fee-for-wrap": "Wrap 不收取 Rabby 费用",
+      "no-fee-for-wrap": "Wrap 不收取 Hippo 费用",
       "no-quote-found": "未找到报价",
       "process-with-two-step-approve": "分两步授权",
       "approve-and-swap": "授权并通过 {{name}} 兑换",
       "hidden-no-quote-rates_one": "{{count}} 个报价不可用",
       "two-step-approve": "签署 2 笔交易以更改授权额度",
       "loss-tips": "当前报价预计损失 {{usd}}。该市场流动性较低，请尝试更小的金额。",
-      "no-fees-for-wrap": "Wrap 不收取 Rabby 费用",
+      "no-fees-for-wrap": "Wrap 不收取 Hippo 费用",
       "max": "最大值",
       "hidden-no-quote-rates_other": "{{count}} 个报价不可用",
       "No-available-quote": "暂无报价",
@@ -2088,18 +2088,18 @@
       "search-by-token-name-address": "搜索代币名称 / 地址"
     },
     "switchChain": {
-      "chainNotSupport": "Rabby 尚不支持请求的链",
-      "title": "向 Rabby 添加自定义网络",
+      "chainNotSupport": "Hippo 尚不支持请求的链",
+      "title": "向 Hippo 添加自定义网络",
       "testnetTip": "请在\"更多\"中打开“开启测试网”后再发起测试网连接",
-      "chainNotSupportYet": "Rabby 尚未支持请求的链",
+      "chainNotSupportYet": "Hippo 尚未支持请求的链",
       "chainId": "链 ID：",
       "unknownChain": "未知链",
       "requestsReceived": "收到 1 个请求",
       "requestsReceivedPlural": "收到 {{count}} 个请求",
-      "requestRabbyToSupport": "请求 Rabby 提供支持",
-      "chainNotSupportAddChain": "Rabby 尚未集成请求的链。你可以将其添加为自定义测试网络",
+      "requestRabbyToSupport": "请求 Hippo 提供支持",
+      "chainNotSupportAddChain": "Hippo 尚未集成请求的链。你可以将其添加为自定义测试网络",
       "addChain": "添加测试网络",
-      "desc": "请求的网络尚未被 Rabby 集成。你可以手动将其添加为自定义网络"
+      "desc": "请求的网络尚未被 Hippo 集成。你可以手动将其添加为自定义网络"
     },
     "unlock": {
       "btn": {
@@ -2113,7 +2113,7 @@
         "required": "输入密码解锁"
       },
       "btnForgotPassword": "忘记密码？",
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "description": "你首选的以太坊和 EVM 钱包",
       "biometricFailed": "生物识别解锁失败"
     },
@@ -2130,7 +2130,7 @@
       "assets": "资产",
       "delete-address": "删除地址",
       "delete-desc": "在删除之前，请记住以下几点，以了解如何保护你的资产",
-      "direct-delete-desc": "这是 {{renderBrand}} 地址。Rabby 不存储其私钥或助记词，你可以直接将其删除。",
+      "direct-delete-desc": "这是 {{renderBrand}} 地址。Hippo 不存储其私钥或助记词，你可以直接将其删除。",
       "edit-memo-title": "编辑地址备注",
       "hd-path": "HD path",
       "manage-addresses-under-this-seed-phrase": "管理此助记词下的地址",
@@ -2152,26 +2152,26 @@
         "title": "删除地址和助记词吗？",
         "keepSeedPhrase": "这是唯一与这个助记词关联的地址。你想保留这个助记词吗？",
         "onlyDeleteAddr": "仅移除此地址。你的助记词不受影响，因为其他地址仍在使用它。",
-        "check1": "我明白，删除该地址也会删除其私钥和助记词。Rabby 无法帮我恢复。"
+        "check1": "我明白，删除该地址也会删除其私钥和助记词。Hippo 无法帮我恢复。"
       },
       "deletePrivateKey": {
         "title": "删除地址和私钥吗？",
         "check2": "我确认已备份私钥或助记词，并准备删除此地址。",
         "sub-title": "此操作是永久性的。请查看以下内容以保护你的资产：",
-        "check1": "我明白，删除该地址也会删除其私钥。Rabby 无法帮我恢复。"
+        "check1": "我明白，删除该地址也会删除其私钥。Hippo 无法帮我恢复。"
       },
       "notBackup": "未备份"
     },
     "preferMetamaskDapps": {
       "title": "优先使用 MetaMask 连接的 Dapp",
       "howToAddDesc": "在网页空白处点击右键，找到该选项",
-      "desc": "无论当前启用的是 Rabby 还是 MetaMask，以下 Dapp 都会保持连接至 MetaMask",
+      "desc": "无论当前启用的是 Hippo 还是 MetaMask，以下 Dapp 都会保持连接至 MetaMask",
       "howToAdd": "如何添加",
       "empty": "无 Dapp"
     },
     "customRpc": {
       "title": "修改 RPC URL",
-      "desc": "一旦修改，自定义 RPC 将替换 Rabby 的节点。要继续使用 Rabby 的节点，请删除自定义 RPC。",
+      "desc": "一旦修改，自定义 RPC 将替换 Hippo 的节点。要继续使用 Hippo 的节点，请删除自定义 RPC。",
       "add": "修改 RPC URL",
       "empty": "没有自定义 RPC URL",
       "opened": "已打开",
@@ -2191,9 +2191,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "获取 DeBank 测试网 Gas 代币",
-      "mintedTip": "Rabby Badge 持有者每天可以获取一次",
-      "notMintedTip": "仅 Rabby Badge 持有者可以获取",
-      "claimBadgeBtn": "领取 Rabby Badge",
+      "mintedTip": "Hippo Badge 持有者每天可以获取一次",
+      "notMintedTip": "仅 Hippo Badge 持有者可以获取",
+      "claimBadgeBtn": "领取 Hippo Badge",
       "time": "每日额度",
       "requested": "你今日已获取过",
       "requestBtn": "获取"
@@ -2249,7 +2249,7 @@
       "doneButton": "我已备份助记词"
     },
     "ethSign": {
-      "alert": "使用 'eth_sign' 签名可能导致资产损失。为了你的安全，Rabby 不支持此签名方式。"
+      "alert": "使用 'eth_sign' 签名可能导致资产损失。为了你的安全，Hippo 不支持此签名方式。"
     },
     "createPassword": {
       "agree": "我已阅读并同意<1/> <2>服务条款</2>和<4>隐私政策</4>",
@@ -2269,7 +2269,7 @@
       },
       "step1": {
         "title": "访问所有 Dapp",
-        "desc": "Rabby 可连接到 MetaMask 支持的所有 Dapp"
+        "desc": "Hippo 可连接到 MetaMask 支持的所有 Dapp"
       }
     },
     "importQrBase": {
@@ -2382,7 +2382,7 @@
       "totalDapps": "共 <2>{{count}}</2> 个 Dapp"
     },
     "rabbyPoints": {
-      "title": "Rabby 积分",
+      "title": "Hippo 积分",
       "out-of-x-current-total-points": "共分发 {{total}} 积分",
       "share-on": "分享到",
       "referral-code-copied": "已复制推荐码",
@@ -2402,9 +2402,9 @@
         "claim": "领取",
         "addressBalance": "钱包余额",
         "MetaMaskSwap": "MetaMask 兑换",
-        "rabbyUser": "Rabby 活跃用户",
-        "rabbyValuedUserBadge": "Rabby 重要用户徽章",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "rabbyUser": "Hippo 活跃用户",
+        "rabbyValuedUserBadge": "Hippo 重要用户徽章",
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
         "walletBalance": "钱包余额",
         "activeStats": "活跃状态",
         "referral-code": "推荐码",
@@ -2433,12 +2433,12 @@
       },
       "code-set-successfully": "推荐码设置成功",
       "initialPointsClaimEnded": "初始积分领取已结束",
-      "firstRoundEnded": "🎉 第一轮 Rabby 积分已结束",
-      "secondRoundEnded": "🎉 第二轮 Rabby 积分已结束"
+      "firstRoundEnded": "🎉 第一轮 Hippo 积分已结束",
+      "secondRoundEnded": "🎉 第二轮 Hippo 积分已结束"
     },
     "customTestnet": {
       "title": "自定义网络",
-      "desc": "Rabby 无法验证自定义网络的安全性，请仅添加可信网络。",
+      "desc": "Hippo 无法验证自定义网络的安全性，请仅添加可信网络。",
       "add": "添加自定义网络",
       "empty": "没有自定义网络",
       "currency": "货币",
@@ -2460,19 +2460,19 @@
         "empty": "未找到链",
         "tips": {
           "added": "你已经添加了此链",
-          "supported": "该链已由 Rabby Wallet 集成"
+          "supported": "该链已由 Hippo Wallet 集成"
         }
       },
       "signTx": {
         "title": "交易数据"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "该链已由 Rabby 集成。是否需要修改其 RPC URL？"
+        "desc": "该链已由 Hippo 集成。是否需要修改其 RPC URL？"
       }
     },
     "addChain": {
-      "title": "将自定义网络添加到 Rabby",
-      "desc": "Rabby 无法验证自定义网络的安全性，请仅添加可信网络。"
+      "title": "将自定义网络添加到 Hippo",
+      "desc": "Hippo 无法验证自定义网络的安全性，请仅添加可信网络。"
     },
     "sign": {
       "transactionSpeed": "交易速度"
@@ -2482,11 +2482,11 @@
         "buttonNoData": "设置新密码",
         "button": "开始重置流程",
         "title": "忘记密码",
-        "description": "Rabby Wallet 不会存储你的密码，也无法帮你找回。请重置 Rabby Wallet 并重新设置钱包。",
-        "descriptionNoData": "Rabby Wallet 不会存储你的密码，也无法帮你找回。如果忘记密码，请设置新密码。"
+        "description": "Hippo Wallet 不会存储你的密码，也无法帮你找回。请重置 Hippo Wallet 并重新设置钱包。",
+        "descriptionNoData": "Hippo Wallet 不会存储你的密码，也无法帮你找回。如果忘记密码，请设置新密码。"
       },
       "reset": {
-        "title": "重置 Rabby Wallet",
+        "title": "重置 Hippo Wallet",
         "alert": {
           "title": "以下数据将被删除且无法恢复：",
           "seed": "助记词",
@@ -2502,16 +2502,16 @@
         },
         "confirm": "在输入框中输入 <1>RESET</1> 以确认并继续",
         "button": "确认重置",
-        "description": "Rabby 不会保存你的密码，因此密码丢失后无法找回。如果忘记密码，只能重置钱包并重新设置密码。",
-        "descriptionNoData": "Rabby 不会保存你的密码，因此密码丢失后无法找回。如果忘记密码，只能重新设置密码。"
+        "description": "Hippo 不会保存你的密码，因此密码丢失后无法找回。如果忘记密码，只能重置钱包并重新设置密码。",
+        "descriptionNoData": "Hippo 不会保存你的密码，因此密码丢失后无法找回。如果忘记密码，只能重新设置密码。"
       },
       "success": {
         "title": "密码设置成功",
-        "description": "现在可以使用 Rabby Wallet 了",
+        "description": "现在可以使用 Hippo Wallet 了",
         "button": "完成"
       },
       "tip": {
-        "title": "Rabby Wallet 已经重置",
+        "title": "Hippo Wallet 已经重置",
         "button": "设置新密码",
         "buttonNoData": "添加地址",
         "description": "设置新密码以继续",
@@ -2528,7 +2528,7 @@
           "i-understand-and-accept-it": "我理解并接受",
           "tip1": "一旦启用，你将直接从此聚合器与合约交互。",
           "title": "启用此聚合器进行交易",
-          "tip2": "2. Rabby 不对该聚合器的合约相关风险承担任何责任。"
+          "tip2": "2. Hippo 不对该聚合器的合约相关风险承担任何责任。"
         },
         "title": "启用跨链桥聚合器进行交易",
         "SupportedBridge": "支持的跨链桥：",
@@ -2571,7 +2571,7 @@
       "approve-x-symbol": "授权 {{symbol}}",
       "the-following-bridge-route-are-found": "找到以下路线",
       "estimate": "估算：",
-      "rabby-fee": "Rabby 手续费",
+      "rabby-fee": "Hippo 手续费",
       "best": "最佳",
       "best-subtitle": "最佳报价由预估总成本（包括 Gas 费）和到账速度综合决定",
       "via-bridge": "通过 {{bridge}}",
@@ -2736,7 +2736,7 @@
       "benefitCard": {
         "title": "在所有链上支付 Gas 费用",
         "subtitle": "当你的 Gas 不足时",
-        "item1": "无 Rabby 费用",
+        "item1": "无 Hippo 费用",
         "desc1": "使用 Gas 支付功能无需额外费用",
         "item2": "支持所有网络",
         "desc2": "80+ 网络上的自动 Gas 支付",
@@ -2775,7 +2775,7 @@
         "invalidAmount": "必须在 500 以下",
         "minAmountRequired": "最低充值金额为 ${{value}}",
         "token": "代币",
-        "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户充值，随时可提现。",
+        "desc": "无需额外费用即可向 Hippo 的 DeBank L2 账户充值，随时可提现。",
         "amount": "金额",
         "paymentAddr": "支付钱包",
         "paymentAddress": "支付钱包",
@@ -2849,8 +2849,8 @@
         "title3": "GasAccount 有额外费用吗？",
         "title4": "GasAccount 安全吗",
         "title2": "如何使用 GasAccount",
-        "desc4": "GasAccount 无需任何合约授权或权限。你向 Rabby 的 GasAccount 地址充值，Rabby 会在需要时向你的地址发送 Gas。该机制在设计上充分保障安全。",
-        "desc3": "Rabby Wallet 不收取额外费用。你只需支付交易本身的 Gas 费用，以及从 GasAccount 向你的地址发送 Gas 所需的少量 Gas 费用。",
+        "desc4": "GasAccount 无需任何合约授权或权限。你向 Hippo 的 GasAccount 地址充值，Hippo 会在需要时向你的地址发送 Gas。该机制在设计上充分保障安全。",
+        "desc3": "Hippo Wallet 不收取额外费用。你只需支付交易本身的 Gas 费用，以及从 GasAccount 向你的地址发送 Gas 所需的少量 Gas 费用。",
         "desc1": "GasAccount 是一种新的 Gas 费用支付方式。你无需在每条链上分别准备原生代币，只需使用一个账户，即可为所有链上的所有地址支付 Gas。简单、可选，并且不再担心缺少 Gas。",
         "desc2": "将资金充值到 GasAccount 后，即可用于任何交易。签名时可选择使用原生代币或 GasAccount 支付 Gas，并可随时切换。"
       },
@@ -2865,7 +2865,7 @@
     "newUserImport": {
       "guide": {
         "importAddress": "我已经有一个地址",
-        "title": "欢迎使用 Rabby Wallet",
+        "title": "欢迎使用 Hippo Wallet",
         "createNewAddress": "创建一个新地址",
         "desc": "你首选的以太坊和 EVM 钱包"
       },
@@ -2873,9 +2873,9 @@
         "showSeedPhrase": "显示助记词",
         "title": "在开始之前",
         "desc": "请阅读并牢记以下安全提示",
-        "tip2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
+        "tip2": "我的助记词仅存储在我的设备上。Hippo 无法访问它。",
         "tip1": "如果我丢失或泄露助记词，将永久失去对资产的访问权限。",
-        "tip3": "如果我在未备份助记词的情况下卸载 Rabby，Rabby 将无法帮我恢复。"
+        "tip3": "如果我在未备份助记词的情况下卸载 Hippo，Hippo 将无法帮我恢复。"
       },
       "importList": {
         "title": "选择导入方式"
@@ -2914,19 +2914,19 @@
         "create": "创建成功",
         "addMoreFrom": "从 {{name}} 添加更多地址",
         "openWallet": "打开钱包",
-        "desc": "你的 Rabby 钱包已就绪",
+        "desc": "你的 Hippo 钱包已就绪",
         "backupSeedPhraseNow": "立即备份助记词",
         "backupSeedPhrase": "备份助记词"
       },
       "readyToUse": {
-        "pin": "固定 Rabby 钱包",
+        "pin": "固定 Hippo 钱包",
         "guides": {
-          "step2": "固定 Rabby Wallet",
+          "step2": "固定 Hippo Wallet",
           "step1": "点击浏览器扩展图标"
         },
-        "desc": "找到 Rabby Wallet 并将其固定",
+        "desc": "找到 Hippo Wallet 并将其固定",
         "extensionTip": "点击 <1/> 然后 <3/>",
-        "title": "你的 Rabby Wallet 已准备就绪！"
+        "title": "你的 Hippo Wallet 已准备就绪！"
       },
       "importSeedPhrase": {
         "title": "导入助记词",
@@ -3005,7 +3005,7 @@
     },
     "metamaskModeDapps": {
       "title": "管理已授权的 Dapp",
-      "desc": "MetaMask Mode 已为以下 Dapp 启用。你可以通过选择 MetaMask 选项连接 Rabby。"
+      "desc": "MetaMask Mode 已为以下 Dapp 启用。你可以通过选择 MetaMask 选项连接 Hippo。"
     },
     "eip7702": {
       "alert": "EIP-7702 尚未支持"
@@ -3017,22 +3017,22 @@
       },
       "step1": "第 1 步",
       "noDappFound": "未找到 Dapp",
-      "step1Desc": "允许 Rabby 在当前 Dapp 上伪装成 MetaMask",
-      "alert": "无法连接到 Dapp，因为它未显示 Rabby Wallet 作为选项？",
+      "step1Desc": "允许 Hippo 在当前 Dapp 上伪装成 MetaMask",
+      "alert": "无法连接到 Dapp，因为它未显示 Hippo Wallet 作为选项？",
       "step2": "步骤 2",
-      "title": "通过伪装成 MetaMask 来连接 Rabby",
+      "title": "通过伪装成 MetaMask 来连接 Hippo",
       "step2Desc": "刷新并通过 MetaMask 连接",
       "manage": "管理允许的 Dapp"
     },
     "syncToMobile": {
-      "steps2": "2. 使用 Rabby Mobile 扫描",
+      "steps2": "2. 使用 Hippo Mobile 扫描",
       "clickToShowQr": "点击选择地址并显示二维码",
       "description": "你的地址数据始终完全离线、加密，并通过二维码安全传输。",
       "downloadGooglePlay": "Google Play",
       "steps2Description": "你的二维码包含敏感数据。请保管好，绝不要与他人分享。",
-      "steps1": "1. 下载 Rabby Mobile",
+      "steps1": "1. 下载 Hippo Mobile",
       "downloadAppleStore": "App Store",
-      "title": "从 Rabby 扩展同步钱包地址到移动端",
+      "title": "从 Hippo 扩展同步钱包地址到移动端",
       "disableSelectAddress": "不支持同步 {{type}} 地址",
       "disableSelectAddressWithPassphrase": "不支持同步使用密码短语的 {{type}} 地址",
       "disableSelectAddressWithSlip39": "不支持同步使用 SLIP-39 的 {{type}} 地址",
@@ -3091,7 +3091,7 @@
           "risks": {
             "dexNoDeposite": "不是 CEX 充值地址，资金可能会丢失",
             "contractAddress": "检测到合约地址，资金可能会丢失。",
-            "scamAddress": "被 Rabby 标记的诈骗地址",
+            "scamAddress": "被 Hippo 标记的诈骗地址",
             "noSend": "过去 180 天内，你没有向该地址发送过资产。"
           }
         },
@@ -3302,7 +3302,7 @@
           "listedAs": "上架价",
           "creatorFee": "创作者费用 ({{fee}}%)",
           "platformFee": "Opensea 平台费用 ({{fee}}%)",
-          "rabbyFee": "Rabby 费用 (0%)",
+          "rabbyFee": "Hippo 费用 (0%)",
           "editListing": "编辑上架信息",
           "creatorFeeTips": "创作者收益将由卖方支付。",
           "approveAndList": "授权并上架",
@@ -3326,7 +3326,7 @@
           "floorDifference": "地板差异",
           "offer": "报价",
           "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
-          "rabbyFee": "Rabby 费用 (0%)"
+          "rabbyFee": "Hippo 费用 (0%)"
         },
         "empty": "没有 NFT",
         "pending": "待处理",
@@ -3564,7 +3564,7 @@
       "invitePopup": {
         "activateFailed": "失败",
         "title": "降低 Hyperliquid 交易手续费",
-        "description": "使用 Rabby 的代码来启用",
+        "description": "使用 Hippo 的代码来启用",
         "activatedSuccess": "已激活 4% Hyperliquid 手续费优惠",
         "hyperliquidFee": "Hyperliquid 交易手续费。",
         "activateNow": "立即启用"
@@ -3590,7 +3590,7 @@
       "funding": "资金费率",
       "sizeTips": "你的交易总价值或数量由保证金和杠杆决定。",
       "fundingRate": "资金费率",
-      "rabbyFeeTipsV2": "Rabby 手续费：0.02%",
+      "rabbyFeeTipsV2": "Hippo 手续费：0.02%",
       "explorePerps": "探索 Perps",
       "closeAll": "全部平仓",
       "dailyVolume": "24小时成交量",
@@ -3653,7 +3653,7 @@
       "leverageRangeMaxError": "最大杠杆为 {{max}}倍",
       "leverageRangeMinError": "最小杠杆是 {{min}}x",
       "stopLossTipsLongLiquidation": "价格低于强平价（{{price}}）",
-      "rabbyFeeTipsZero": "Rabby 费率：0%",
+      "rabbyFeeTipsZero": "Hippo 费率：0%",
       "reviewOrder": "订单预览",
       "directDepositFast": "快速，零滑点",
       "settings": "设置",
@@ -4205,7 +4205,7 @@
         "stopLossWhenPriceAbove": "当价格高于时止损",
         "minimumOrderSize": "最小下单量为 $10",
         "providerFee": "Hyperliquid 手续费",
-        "rabbyFee": "Rabby 手续费",
+        "rabbyFee": "Hippo 手续费",
         "free": "可用保证金",
         "size": "数量"
       },
@@ -5002,7 +5002,7 @@
     },
     "EcologyNoticeModal": {
       "notRemind": "不再提醒我",
-      "desc": "以下服务将由第三方生态合作伙伴直接提供。Rabby Wallet 不对这些服务的安全性承担责任。",
+      "desc": "以下服务将由第三方生态合作伙伴直接提供。Hippo Wallet 不对这些服务的安全性承担责任。",
       "title": "注意事项"
     },
     "ReserveGasPopup": {
@@ -5014,8 +5014,8 @@
     },
     "OpenExternalWebsiteModal": {
       "button": "继续",
-      "content": "你即将访问一个外部网站。Rabby Wallet 不对该网站的内容或安全性负责。",
-      "title": "你将离开 Rabby 钱包"
+      "content": "你即将访问一个外部网站。Hippo Wallet 不对该网站的内容或安全性负责。",
+      "title": "你将离开 Hippo 钱包"
     },
     "TokenChart": {
       "price": "价格",
@@ -5042,7 +5042,7 @@
     },
     "ChainItem": {
       "appChain": "在 {{chain}} 账户",
-      "hyperliquidCode": "使用 Rabby 的推荐码可节省 Hyperliquid 手续费。"
+      "hyperliquidCode": "使用 Hippo 的推荐码可节省 Hyperliquid 手续费。"
     },
     "RiskTip": {
       "title": "检测到风险"
@@ -5085,9 +5085,9 @@
       "placeholderRequired": "描述问题（必填）"
     },
     "feedbackPopup": {
-      "title": "Rabby Support 的回复",
+      "title": "Hippo Support 的回复",
       "issueReported": "以下是你反馈的问题：",
-      "issueReplied": "Rabby Support 已回复："
+      "issueReplied": "Hippo Support 已回复："
     }
   },
   "background": {

@@ -207,12 +207,12 @@ export const createBiometricUnlockPayload = async (
     publicKey: {
       challenge,
       rp: {
-        name: 'Rabby Wallet',
+        name: 'Hippo Wallet',
       },
       user: {
         id: userId,
-        name: 'Rabby Wallet',
-        displayName: 'Rabby Wallet',
+        name: 'Hippo Wallet',
+        displayName: 'Hippo Wallet',
       },
       pubKeyCredParams: [
         {

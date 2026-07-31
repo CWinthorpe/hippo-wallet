@@ -1,15 +1,11 @@
-import React, { useEffect } from 'react';
-import { Card } from '@/ui/component/NewUserImport';
-import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
+import React from 'react';
+import hippoLogo from '@/ui/assets/unlock/rabby.svg';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import BackgroundSVG from '@/ui/assets/new-user-import/guide-bg.svg';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { LangSelector } from '@/ui/component/LangSelector';
-import { getUiType } from '@/ui/utils';
-import { useUnmount } from 'ahooks';
 
 export const Guide = () => {
   const { t } = useTranslation();
@@ -23,20 +19,6 @@ export const Guide = () => {
     history.push('/new-user/import-wallet-type');
   }, []);
 
-  const { isDarkTheme } = useThemeMode();
-  const UiType = getUiType();
-
-  useEffect(() => {
-    if (UiType.isTab || UiType.isDesktop) {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
-
-  useUnmount(() => {
-    if (isDarkTheme && !document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.add('dark');
-    }
-  });
   return (
     <div className="h-full relative flex items-center justify-center">
       <img
@@ -49,7 +31,7 @@ export const Guide = () => {
       </div>
       <div className="relative z-10">
         <div className="flex flex-col items-center">
-          <img src={rabbyLogo} className="w-[100px] h-[100px]" />
+          <img src={hippoLogo} className="w-[100px] h-[100px]" />
           <div className="my-12 text-24 font-medium text-r-neutral-title1">
             {t('page.newUserImport.guide.title')}
           </div>

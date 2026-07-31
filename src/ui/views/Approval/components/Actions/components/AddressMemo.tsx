@@ -14,7 +14,7 @@ const DIV = styled.div`
   margin-top: 16px;
   .popup-input {
     &:hover {
-      border-color: var(--r-blue-default, #7084ff) !important;
+      border-color: var(--r-blue-default, #0372ff) !important;
     }
   }
 `;
@@ -93,7 +93,7 @@ const AddressMemo = ({ address }: { address: string }) => {
                   'w-[200px]',
                   'text-blue-light',
                   'border-blue-light',
-                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'hover:bg-[#0372FF1A] active:bg-[#0000001A]',
                   'before:content-none'
                 )}
               >

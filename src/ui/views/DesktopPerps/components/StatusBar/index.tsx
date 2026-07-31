@@ -604,7 +604,7 @@ export const StatusBar: React.FC = () => {
   }, [commitTickerSnapshot, tickerMarkets.length, syncTickerLoopWidth]);
 
   const handleOpenTwitter = () => {
-    openInTab('https://twitter.com/Rabby_io');
+    openInTab('https://x.com/ResupplyFi');
   };
 
   const handleOpenDiscord = () => {
@@ -612,7 +612,7 @@ export const StatusBar: React.FC = () => {
   };
 
   const handleOpenDocs = () => {
-    openInTab('https://support.rabby.io/');
+    openInTab('https://github.com/CWinthorpe/hippo-wallet/issues');
   };
 
   const handleToggleSound = () => {

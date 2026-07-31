@@ -64,7 +64,7 @@ const SearchWrapper = styled.div`
     }
 
     &-focused {
-      border: 1px solid var(--r-blue-default, #7084ff);
+      border: 1px solid var(--r-blue-default, #0372ff);
     }
   }
   .ant-input-group-addon {
@@ -88,7 +88,7 @@ const SearchWrapper = styled.div`
 `;
 
 export const DappSearchPage = () => {
-  useTitle('Dapp Search - Rabby Wallet');
+  useTitle('Dapp Search - Hippo Wallet');
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [chain, setChain] = React.useState<CHAINS_ENUM>();
   const chainInfo = useMemo(() => {

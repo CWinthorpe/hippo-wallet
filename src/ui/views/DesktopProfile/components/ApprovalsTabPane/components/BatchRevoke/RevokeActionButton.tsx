@@ -46,7 +46,7 @@ export const RevokeActionButton: React.FC<{
           className={clsx(
             buttonBaseClass,
             'border-blue-light text-blue-light',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]'
+            'hover:bg-[#0372FF1A] active:bg-[#0000001A]'
           )}
           onClick={task.pause}
         >

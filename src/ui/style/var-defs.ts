@@ -1,10 +1,10 @@
 /* eslint-disable */
 /* this file is genetared by make-theme.js automatically, never modify it manually! */
 const LessPalette = {
-  "@primary-color": "#4c65ff",
-  "@primary-text-color": "#4c65ff",
-  "@light-purple": "#826fff",
-  "@primary-linear": "linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%)",
+  "@primary-color": "#0372FF",
+  "@primary-text-color": "#0372FF",
+  "@light-purple": "#26E99A",
+  "@primary-linear": "linear-gradient(97.59deg, #0372FF 0%, #0372FF 99.49%)",
   "@color-green": "#27c193",
   "@color-orange": "#ffb020",
   "@color-red": "#ec5151",

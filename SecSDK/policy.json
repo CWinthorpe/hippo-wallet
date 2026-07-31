@@ -39792,6 +39792,7 @@
       "dispatchEvent": "r",
       "document": "r",
       "ethereum": "rw",
+      "hippo": "rw",
       "location": "r",
       "navigator": "r",
       "process": "r",

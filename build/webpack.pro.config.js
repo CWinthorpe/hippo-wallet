@@ -24,6 +24,10 @@ const config = {
     minimize: true,
     minimizer: [
       new TerserPlugin({
+        // Parallel minification exceeded 14 GiB RSS on ARM64 release builds.
+        // Serialize it so production packaging remains deterministic and does
+        // not depend on the host's OOM killer.
+        parallel: false,
         terserOptions: {
           compress: {
             pure_funcs: ['console.log', 'console.debug', 'console.info'],

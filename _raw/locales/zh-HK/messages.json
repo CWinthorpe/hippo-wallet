@@ -24,7 +24,7 @@
     "scamTx": "詐騙交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "觀察模式地址",
-    "appName": "Rabby Wallet",
+    "appName": "Hippo Wallet",
     "Deleted": "已刪除",
     "Loading": "載入中",
     "Balance": "結餘",
@@ -78,11 +78,11 @@
       "feedback": {
         "directMessage": {
           "content": "發送私信",
-          "description": "在 DeBank 上與 Rabby Wallet 官方一對一聯絡"
+          "description": "在 DeBank 上與 Hippo Wallet 官方一對一聯絡"
         },
         "proposal": {
           "content": "發起提案",
-          "description": "在 DeBank 上發布對 Rabby Wallet 的提案"
+          "description": "在 DeBank 上發布對 Hippo Wallet 的提案"
         },
         "title": "反饋"
       },
@@ -120,7 +120,7 @@
           "more": "更多",
           "manageAddress": "管理地址",
           "nft": "NFT",
-          "rabbyPoints": "Rabby 積分",
+          "rabbyPoints": "Hippo 積分",
           "bridge": "跨鏈",
           "ecology": "生態系統",
           "mobile": "同步手機端",
@@ -140,8 +140,8 @@
         "comingSoon": "即將推出",
         "soon": "即將推出",
         "flip": "切換",
-        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，停用 Rabby",
-        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Rabby，停用 Metamask",
+        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，停用 Hippo",
+        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Hippo，停用 Metamask",
         "refreshTheWebPageToTakeEffect": "重新整理網頁即可生效",
         "transactionNeedsToSign": "筆交易需要簽名",
         "transactionsNeedToSign": "筆交易需要簽名",
@@ -168,7 +168,7 @@
         "metamaskTooltip": "你選擇在該 Dapp 中優先使用 MetaMask。\n你可以隨時在「設定」>「優先使用 MetaMask 的 Dapp」中更新此設定。",
         "notConnected": "未連接",
         "connected": "已連接",
-        "connectedDapp": "Rabby 未連接到目前 Dapp。請在 Dapp 網頁上點擊連接按鈕。",
+        "connectedDapp": "Hippo 未連接到目前 Dapp。請在 Dapp 網頁上點擊連接按鈕。",
         "noDappFound": "未找到 Dapp",
         "disconnectAll": "全部斷開",
         "disconnectRecentlyUsed": {
@@ -185,8 +185,8 @@
         "recentlyConnected": "最近連接",
         "noConnectedDapps": "沒有已連接的 Dapp",
         "dapps": "Dapp",
-        "metamaskModeTooltip": "無法在此 Dapp 連接 Rabby？嘗試啟用 <1>MetaMask Mode</1>",
-        "metamaskModeTooltipNew": "當你在 Dapp 中選擇「MetaMask」時，Rabby Wallet 會自動連接。你可以在「更多」>「偽裝成 MetaMask 連接 Rabby」中管理此設定。"
+        "metamaskModeTooltip": "無法在此 Dapp 連接 Hippo？嘗試啟用 <1>MetaMask Mode</1>",
+        "metamaskModeTooltipNew": "當你在 Dapp 中選擇「MetaMask」時，Hippo Wallet 會自動連接。你可以在「更多」>「偽裝成 MetaMask 連接 Hippo」中管理此設定。"
       },
       "contacts": {
         "noData": "沒有資料",
@@ -199,19 +199,19 @@
         "claimSuccess": "領取成功",
         "enterClaimCode": "輸入領取碼",
         "goToSwap": "完成兌換",
-        "imageLabel": "Rabby 徽章",
+        "imageLabel": "Hippo 徽章",
         "learnMoreOnDebank": "在 DeBank 上了解更多",
         "noCode": "你尚未啟用該地址的領取碼",
-        "rabbyValuedUserNo": "Rabby 尊享用戶 No.{{num}}",
-        "swapTip": "你需要先在 Rabby Wallet 中透過知名 DEX 完成一筆兌換。",
-        "title": "領取 Rabby 徽章",
+        "rabbyValuedUserNo": "Hippo 尊享用戶 No.{{num}}",
+        "swapTip": "你需要先在 Hippo Wallet 中透過知名 DEX 完成一筆兌換。",
+        "title": "領取 Hippo 徽章",
         "viewOnDebank": "在 DeBank 上查看",
         "viewYourClaimCode": "在 DeBank 上查看你的領取碼",
         "freeGasTitle": "領取 Free Gas 徽章",
         "freeGasTip": "請用 Free Gas 簽署一筆交易。當你的 Gas 不足時，「Free Gas」按鈕會自動出現。",
         "learnMore": "了解更多",
         "freeGasNoCode": "請先點擊下方按鈕前往 DeBank，並使用目前地址取得領取碼。",
-        "rabbyFreeGasUserNo": "Rabby Free Gas 用戶 No.{{num}}"
+        "rabbyFreeGasUserNo": "Hippo Free Gas 用戶 No.{{num}}"
       },
       "security": {
         "comingSoon": "更多功能即將推出",
@@ -229,7 +229,7 @@
         "autoLockTime": "自動鎖定時間",
         "backendServiceUrl": "後端服務網址",
         "cancel": "取消",
-        "claimRabbyBadge": "領取 Rabby Badge",
+        "claimRabbyBadge": "領取 Hippo Badge",
         "clearPending": "清除本機待處理交易",
         "clearPendingTip1": "此操作會從介面中移除待處理交易，幫助解決交易長時間在網絡中待處理的問題。",
         "clearPendingTip2": "此操作不會影響你的帳戶結餘，也不需要重新輸入助記詞。所有資產和帳戶資訊仍然安全。",
@@ -239,7 +239,7 @@
         "disableWhitelist": "關閉轉賬白名單",
         "disableWhitelistTip": "關閉後你可以將資產發送到任何地址",
         "enableWhitelist": "啟用轉賬白名單",
-        "enableWhitelistTip": "啟用後，你只能使用 Rabby 向白名單中的地址發送資產",
+        "enableWhitelistTip": "啟用後，你只能使用 Hippo 向白名單中的地址發送資產",
         "features": {
           "connectedDapp": "已連接的 Dapp",
           "label": "功能",
@@ -247,7 +247,7 @@
           "manageAddress": "管理地址",
           "signatureRecord": "簽名記錄",
           "searchDapps": "搜尋 Dapp",
-          "rabbyPoints": "Rabby 積分",
+          "rabbyPoints": "Hippo 積分",
           "gasTopUp": "Gas 充值",
           "ecosystem": "生態系統"
         },
@@ -272,7 +272,7 @@
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
           "customTestnet": "新增自訂網絡",
-          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
+          "metamaskMode": "以偽裝成 MetaMask 的方式連接 Hippo",
           "enableDappAccount": "為每個 Dapp 單獨切換地址",
           "switchPasswordForNonWhitelistedTx": "非白名單轉賬的密碼",
           "biometricUnlock": "使用生物識別解鎖",
@@ -285,14 +285,14 @@
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "有可用更新",
         "updateVersion": {
-          "content": "檢測到 Rabby Wallet 更新版本\n點擊查看如何手動更新",
+          "content": "檢測到 Hippo Wallet 更新版本\n點擊查看如何手動更新",
           "okText": "查看教學",
           "successTip": "你正在使用最新版本",
           "title": "有可用的更新"
         },
         "warning": "警告",
         "requestDeBankTestnetGasToken": "取得 DeBank 測試網 Gas 代幣",
-        "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
+        "claimFreeGasBadge": "申請 Hippo Free Gas 徽章！",
         "clearPendingWarningTip": "已移除的交易可能仍會在鏈上確認，除非將其替換。",
         "supportedChains": "整合鏈",
         "DappAccount": {
@@ -301,13 +301,13 @@
           "desc": "啟用後，你可以為每個 Dapp 單獨選擇連接地址。切換主地址不會影響各 Dapp 已連接的地址。"
         },
         "rateModalTriggerOnHome": {
-          "description": "你如何評價 Rabby Wallet？"
+          "description": "你如何評價 Hippo Wallet？"
         },
         "rateModal": {
           "submitFeedbackButton": "提交",
           "rateOnChromeStoreButton": "在 Chrome Web Store 上評分",
-          "feedbackPlaceholder": "Rabby 重視你的反饋！",
-          "thxDesc": "如果你喜歡 Rabby，在 Chrome 商店留下快速評價對我們來說意義重大。",
+          "feedbackPlaceholder": "Hippo 重視你的反饋！",
+          "thxDesc": "如果你喜歡 Hippo，在 Chrome 商店留下快速評價對我們來說意義重大。",
           "feedbackDesc": "有意見嗎？我們正在聆聽。",
           "thxTitle": "謝謝你！",
           "feedbackSuccess": "感謝你的反饋！"
@@ -333,8 +333,8 @@
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣清單中",
         "blocked": "隱藏",
-        "selectedCustom": "該代幣未被 Rabby 收錄。\n你已手動新增該代幣。",
-        "notSelectedCustom": "該代幣未被 Rabby 收錄。\n開啟開關後，它將加入代幣清單。",
+        "selectedCustom": "該代幣未被 Hippo 收錄。\n你已手動新增該代幣。",
+        "notSelectedCustom": "該代幣未被 Hippo 收錄。\n開啟開關後，它將加入代幣清單。",
         "customized": "已新增",
         "scamTx": "詐騙交易",
         "txFailed": "失敗",
@@ -365,7 +365,7 @@
         "blockedTips": "已隱藏的代幣不會顯示在代幣清單中",
         "NoListedBy": "暫無上架方資訊",
         "BridgeIssue": "由第三方跨鏈橋發行的代幣",
-        "customizedHasAddedTips": "該代幣未被 Rabby 收錄。你已手動將其新增到代幣清單中。",
+        "customizedHasAddedTips": "該代幣未被 Hippo 收錄。你已手動將其新增到代幣清單中。",
         "customizedListTitles": "自訂代幣",
         "blockedListTitle": "已隱藏代幣",
         "maybeScamTips": "這是一個低品質代幣，可能存在詐騙風險。",
@@ -459,7 +459,7 @@
         "side": "方向",
         "price": "價格",
         "searchTokenPlaceholder": "搜尋代幣",
-        "openInTab": "在 Rabby 分頁中打開",
+        "openInTab": "在 Hippo 分頁中打開",
         "openProMode": "開啟專業模式",
         "openInTabV2": "在分頁打開",
         "noLpTokens": "沒有流動性提供者（LP）代幣",
@@ -513,7 +513,7 @@
         "title": "MetaMask Mode",
         "enableDesc": "如果該 Dapp 僅支援 MetaMask，請啟用",
         "footerText": "在「更多」>「MetaMask Mode」中新增更多 Dapp",
-        "desc": "如果無法在 Dapp 上連接 Rabby，請啟用 MetaMask Mode，並在 Dapp 中選擇 MetaMask 進行連接。",
+        "desc": "如果無法在 Dapp 上連接 Hippo，請啟用 MetaMask Mode，並在 Dapp 中選擇 MetaMask 進行連接。",
         "toastSuccess": "已啟用。重新載入頁面以重新連接。"
       },
       "offlineChain": {
@@ -525,8 +525,8 @@
         "title": "在此切換用於連接 Dapp 的地址"
       },
       "rabbyPointsPopup": {
-        "title": "Rabby 積分",
-        "desc": "在 Rabby Mobile 中查看你的積分。",
+        "title": "Hippo 積分",
+        "desc": "在 Hippo Mobile 中查看你的積分。",
         "downloadIntro": "還沒有安裝 App？立即下載。"
       },
       "noData": "沒有匹配的貨幣",
@@ -587,11 +587,11 @@
           "answer": "用於控制你的資產的 12、18 或 24 個單詞的短語。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中匯入它安全嗎？",
+          "question": "在 Hippo 中匯入它安全嗎？",
           "answer": "是的，它將儲存在你本機的瀏覽器上，並且只有你可以存取。"
         },
         "importError": "[CreateMnemonics] 意外步驟 {{0}}",
-        "importQuestion4": "如果我在未備份助記詞的情況下卸載 Rabby，Rabby 無法為我找回助記詞。",
+        "importQuestion4": "如果我在未備份助記詞的情況下卸載 Hippo，Hippo 無法為我找回助記詞。",
         "riskTips": "在開始之前，請閱讀並牢記以下安全提示",
         "showSeedPhrase": "顯示助記詞",
         "backup": "備份助記詞",
@@ -620,20 +620,20 @@
         "inputInvalidCount_one": "1 個輸入不符合助記詞規範，請檢查。",
         "inputInvalidCount_other": "{{count}} 個輸入不符合助記詞規範，請檢查。",
         "passphrase": "密碼短語",
-        "importQuestion2": "我的助記詞只儲存在我的裝置上。Rabby 無法存取它。",
+        "importQuestion2": "我的助記詞只儲存在我的裝置上。Hippo 無法存取它。",
         "importQuestion1": "如果我遺失或洩露助記詞，將永久失去對資產的存取權。",
-        "importQuestion3": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 將無法幫我恢復。",
+        "importQuestion3": "如果我在未備份助記詞的情況下解除安裝 Hippo，Hippo 將無法幫我恢復。",
         "showMoreOptions": "顯示更多選項",
         "inputInvalid": "檢測到無效的單詞。請檢查高亮顯示的單詞。"
       },
       "metamask": {
         "step1": "從 MetaMask 匯出助記詞或私鑰 <br /> <1>點擊查看教學 <1/></1>",
-        "step2": "在 Rabby 中匯入助記詞或私鑰",
+        "step2": "在 Hippo 中匯入助記詞或私鑰",
         "step3": "匯入完成，你的所有資產將<br />自動顯示",
         "how": "如何匯入我的 MetaMask 帳戶？",
         "step": "步驟",
         "importSeedPhrase": "匯入助記詞或私鑰",
-        "importSeedPhraseTips": "它只會儲存在本機瀏覽器上。\nRabby 永遠無法存取你的私密資訊。",
+        "importSeedPhraseTips": "它只會儲存在本機瀏覽器上。\nHippo 永遠無法存取你的私密資訊。",
         "tipsDesc": "你的私鑰和助記詞不屬於 MetaMask 或任何具體錢包，它只屬於你自己。",
         "tips": "提示："
       },
@@ -645,7 +645,7 @@
           "answer": "用於控制你的資產的一串字元。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中匯入它安全嗎？",
+          "question": "在 Hippo 中匯入它安全嗎？",
           "answer": "是的，它將儲存在你本機的瀏覽器上，並且只有你可以存取。"
         },
         "isItPossibleToImportKeystore": {
@@ -661,9 +661,9 @@
       "importedSuccessfully": "匯入成功",
       "ledger": {
         "title": "連接 Ledger",
-        "cameraPermissionTitle": "允許 Rabby 存取相機",
-        "cameraPermission1": "在瀏覽器彈出視窗中允許 Rabby 存取相機",
-        "allowRabbyPermissionsTitle": "允許 Rabby 取得以下權限：",
+        "cameraPermissionTitle": "允許 Hippo 存取相機",
+        "cameraPermission1": "在瀏覽器彈出視窗中允許 Hippo 存取相機",
+        "allowRabbyPermissionsTitle": "允許 Hippo 取得以下權限：",
         "ledgerPermission1": "連接到 HID 裝置",
         "ledgerPermissionTip": "請點擊下方的「允許」，並在彈出視窗中授權存取你的 Ledger",
         "permissionsAuthorized": "權限已授權",
@@ -678,19 +678,19 @@
       },
       "keystone": {
         "title": "連接 Keystone",
-        "allowRabbyPermissionsTitle": "允許 Rabby 取得以下權限：",
+        "allowRabbyPermissionsTitle": "允許 Hippo 取得以下權限：",
         "keystonePermission1": "連接至 USB 裝置",
         "keystonePermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 Keystone；同時確保你的 Keystone 3 Pro 位於首頁。",
         "noDeviceFoundError": "請插入一個 Keystone",
         "deviceIsLockedError": "輸入密碼以解鎖",
-        "deviceRejectedExportAddress": "請在裝置上確認連接 Rabby",
+        "deviceRejectedExportAddress": "請在裝置上確認連接 Hippo",
         "deviceIsBusy": "裝置正忙",
         "exportAddressJustAllowedOnHomePage": "僅在 Keystone 主頁上允許導出地址",
         "unknowError": "未知錯誤，請再試一次"
       },
       "onekey": {
         "onekeyPermission1": "連接至 USB 裝置",
-        "allowRabbyPermissionsTitle": "允許 Rabby 存取以下權限：",
+        "allowRabbyPermissionsTitle": "允許 Hippo 存取以下權限：",
         "onekeyPermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 OneKey。如果彈窗中沒有出現 OneKey，請檢查裝置是否已正確連接電腦。",
         "whyOneKey": "為什麼選擇 OneKey？",
         "buyOneKey": "購買 OneKey",
@@ -737,14 +737,14 @@
       },
       "hd": {
         "tooltip": {
-          "removed": "該地址已從 Rabby 中刪除",
-          "added": "地址已新增至 Rabby",
+          "removed": "該地址已從 Hippo 中刪除",
+          "added": "地址已新增至 Hippo",
           "connectError": "連接已停止\n請重新整理頁面以重新連接",
           "disconnected": "無法連接到硬件錢包\n請嘗試重新連接"
         },
         "waiting": "等待中",
         "clickToGetInfo": "點擊取得鏈上資訊",
-        "addToRabby": "新增到 Rabby",
+        "addToRabby": "新增到 Hippo",
         "basicInformation": "基本資訊",
         "addresses": "地址",
         "loadingAddress": "正在載入 {{0}}/{{1}} 地址",
@@ -856,7 +856,7 @@
         "manageNgraveZero": "管理 NGRAVE ZERO",
         "done": "完成",
         "addressesIn": "{{0}} 中的地址",
-        "addressesInRabby": "Rabby 中的地址{{0}}",
+        "addressesInRabby": "Hippo 中的地址{{0}}",
         "qrCode": {
           "switch": {
             "title": "切換到新的 {{0}} 裝置",
@@ -866,7 +866,7 @@
         },
         "manageImKey": "管理 imKey",
         "importBtn": "匯入 ({{count}})",
-        "nonAddr": "此助記詞尚未新增任何地址。你可以在 Rabby Extension > 管理地址中刪除此助記詞。"
+        "nonAddr": "此助記詞尚未新增任何地址。你可以在 Hippo Extension > 管理地址中刪除此助記詞。"
       },
       "importYourKeystore": "匯入你的 KeyStore",
       "incorrectPassword": "密碼錯誤",
@@ -910,7 +910,7 @@
       "bulkImportPrivateKeyInputTab": "輸入私鑰",
       "addressImported": "地址已匯入",
       "privateKeyTab": "私鑰",
-      "openExtensionToGetStarted": "打開 Rabby 擴展以開始使用",
+      "openExtensionToGetStarted": "打開 Hippo 擴展以開始使用",
       "newAddressCreated": "新地址已建立",
       "addressAddedCount_other": "{{count}} 個地址已新增",
       "bulkImportPrivateKeySupport": "支援最多 1000 個 EVM 兼容私鑰",
@@ -925,7 +925,7 @@
     "activities": {
       "signedText": {
         "empty": {
-          "desc": "所有透過 Rabby 簽署的文字都將在此顯示",
+          "desc": "所有透過 Hippo 簽署的文字都將在此顯示",
           "title": "尚未簽署文字"
         },
         "label": "簽署文字"
@@ -940,7 +940,7 @@
           "unlimited": "無限"
         },
         "empty": {
-          "desc": "所有透過 Rabby 簽署的交易都將在此顯示",
+          "desc": "所有透過 Hippo 簽署的交易都將在此顯示",
           "title": "尚未簽署交易"
         },
         "explain": {
@@ -1034,11 +1034,11 @@
       "balance": "結餘",
       "noTokenFound": "未找到代幣",
       "noTokenFoundOnThisChain": "該鏈上未找到代幣",
-      "title": "將自訂代幣新增至 Rabby",
+      "title": "將自訂代幣新增至 Hippo",
       "tokenCustomized": "目前代幣已手動新增",
       "tokenNotFound": "該合約地址上未找到代幣",
       "tokenOnMultiChains": "在多條鏈上找到此代幣地址，\n請選擇一條鏈",
-      "tokenSupported": "Rabby 已支援該代幣",
+      "tokenSupported": "Hippo 已支援該代幣",
       "hasAdded": "你已新增此代幣。"
     },
     "approvals": {
@@ -1175,7 +1175,7 @@
       "blocked": "黑名單",
       "connectBtn": "連接",
       "flagByMM": "被 MetaMask 標記為風險網址",
-      "flagByRabby": "被 Rabby 標記為風險網址",
+      "flagByRabby": "被 Hippo 標記為風險網址",
       "flagByScamSniffer": "被 ScamSniffer 標記為風險網址",
       "foundForbiddenRisk": "檢測到高危風險，\n無法連接",
       "listedBy": "收錄於",
@@ -1199,7 +1199,7 @@
       "sitePopularity": "網站熱度",
       "title": "連接 Dapp",
       "trusted": "白名單",
-      "verifiedByRabby": "經 Rabby 驗證",
+      "verifiedByRabby": "經 Hippo 驗證",
       "SignTestnetPermission": {
         "title": "簽名權限"
       },
@@ -1218,7 +1218,7 @@
       "Confirm": "確認",
       "Continue": "繼續",
       "Including-service-fee": "包含 {{fee}} 服務費",
-      "InsufficientBalance": "目前鏈的 Rabby 合約地址結餘不足，\n請稍後再試",
+      "InsufficientBalance": "目前鏈的 Hippo 合約地址結餘不足，\n請稍後再試",
       "InsufficientBalanceTips": "結餘不足",
       "Loading_Tokens": "正在載入代幣...",
       "No_Tokens": "沒有代幣",
@@ -1230,7 +1230,7 @@
       "description": "可使用其他鏈上的可用代幣為目標鏈補充 Gas。\n付款確認後即會到賬，無需等待交易達到最終性。",
       "hightGasFees": "該充值金額太小，目標網絡需要較高的 Gas 費",
       "payment": "Gas 充值付款",
-      "service-fee-tip": "Rabby 提供 Gas 充值服務時，需要承擔代幣價格波動和充值 Gas 費用。\n因此會收取 20% 的服務費",
+      "service-fee-tip": "Hippo 提供 Gas 充值服務時，需要承擔代幣價格波動和充值 Gas 費用。\n因此會收取 20% 的服務費",
       "title": "即時 Gas 充值",
       "topUpChain": "充值鏈"
     },
@@ -1245,7 +1245,7 @@
       "current-address": "目前地址",
       "delete-all-addresses-and-the-seed-phrase": "刪除所有地址和助記詞",
       "delete-all-addresses-but-keep-the-seed-phrase": "刪除所有地址，但保留助記詞",
-      "delete-checklist-1": "我明白如果我刪除這個地址，對應的私鑰及助記詞都將被刪除，Rabby 無法為我找回",
+      "delete-checklist-1": "我明白如果我刪除這個地址，對應的私鑰及助記詞都將被刪除，Hippo 無法為我找回",
       "delete-checklist-2": "我確認我已備份私鑰或助記詞，現在已準備好進行刪除",
       "delete-desc": "刪除前，請記住以下幾點，以了解如何保護你的資產",
       "delete-empty-seed-phrase": "刪除助記詞及其 0 個地址",
@@ -1486,7 +1486,7 @@
       "signAndSubmitButton": "簽名",
       "walletConnect": {
         "chainSwitched": "你已在手機錢包上切換到其他鏈\n請在手機錢包中切換到 {{0}}",
-        "connectBeforeSign": "{{0}} 未連接到 Rabby，請在簽名前連接",
+        "connectBeforeSign": "{{0}} 未連接到 Hippo，請在簽名前連接",
         "connected": "已連接並準備好簽名",
         "connectedButCantSign": "已連接但無法簽名",
         "howToSwitch": "如何切換",
@@ -1554,7 +1554,7 @@
         "unavailable": "Gas 餘額不足",
         "notEnough": "Gas 餘額不足",
         "GetFreeGasToSign": "領取 Free Gas",
-        "rabbyPayGas": "Rabby 將支付所需的 Gas 費用——你只需簽名即可",
+        "rabbyPayGas": "Hippo 將支付所需的 Gas 費用——你只需簽名即可",
         "customRpcUnavailableTip": "自訂 RPC 不支援 Free Gas",
         "walletConnectUnavailableTip": "透過 WalletConnect 連接的手機錢包不支援 Free Gas",
         "watchUnavailableTip": "僅觀察地址不支援 Free Gas"
@@ -1632,11 +1632,11 @@
       },
       "deployTimeTitle": "部署時間",
       "eip1559Desc1": "在支援 EIP-1559 的鏈上，優先費是支付給礦工處理交易的小費。降低優先費可以節省最終 Gas 費用，但交易處理時間可能會變長。",
-      "eip1559Desc2": "在 Rabby 中，優先費（小費）= 費用上限 - 基礎費。設定最高優先費後，會先扣除基礎費，餘額會作為小費支付給礦工。",
+      "eip1559Desc2": "在 Hippo 中，優先費（小費）= 費用上限 - 基礎費。設定最高優先費後，會先扣除基礎費，餘額會作為小費支付給礦工。",
       "enoughSafeSigCollected": "已收集到足夠的簽名",
       "failToFetchGasCost": "無法估算 Gas 費用",
       "importedAddress": "已匯入地址",
-      "fakeTokenAlert": "這是由 Rabby 標記的詐騙代幣",
+      "fakeTokenAlert": "這是由 Hippo 標記的詐騙代幣",
       "firstOnChain": "首次鏈上交易",
       "floorPrice": "地板價",
       "gasLimitEmptyAlert": "請輸入 Gas Limit",
@@ -1702,7 +1702,7 @@
       },
       "safeAddressNotSupportChain": "{{0}} 鏈不支援目前 Safe 地址",
       "safeAdminSigned": "已簽",
-      "scamTokenAlert": "根據 Rabby 的檢測，這可能是低品質或詐騙代幣",
+      "scamTokenAlert": "根據 Hippo 的檢測，這可能是低品質或詐騙代幣",
       "send": {
         "addressBalanceTitle": "地址結餘",
         "cexAddress": "中心化交易所地址",
@@ -1725,10 +1725,10 @@
         "nftNotSupport": "不支援 NFT",
         "title": "發送 NFT"
       },
-      "sigCantDecode": "該簽名無法被 Rabby 解碼",
+      "sigCantDecode": "該簽名無法被 Hippo 解碼",
       "signTransactionOnChain": "簽署 {{chain}} 交易",
       "speedUpTooltip": "本次加速交易和原交易，最終只會完成其中一項",
-      "decodedTooltip": "該簽名已被 Rabby Wallet 解析",
+      "decodedTooltip": "該簽名已被 Hippo Wallet 解析",
       "submitMultisig": {
         "multisigAddress": "多簽地址",
         "title": "提交多簽交易"
@@ -1758,7 +1758,7 @@
         "contractTrustValueTip": "信任值是指透過該合約花費的資產總價值。信任值較低表示該合約可能存在風險，或已 180 天沒有活動。",
         "deployTimeLessThan": "部署時間 < {{value}} 天",
         "eoaAddress": "EOA 地址",
-        "flagByRabby": "被 Rabby 標記為風險",
+        "flagByRabby": "被 Hippo 標記為風險",
         "myBalance": "我的結餘",
         "title": "代幣授權",
         "trustValueLessThan": "信任值≤{{value}}",
@@ -1831,7 +1831,7 @@
       },
       "customRPCErrorModal": {
         "title": "自訂 RPC 錯誤",
-        "content": "你的自訂 RPC 目前不可用。你可以停用它並繼續使用 Rabby 的官方 RPC 簽名。",
+        "content": "你的自訂 RPC 目前不可用。你可以停用它並繼續使用 Hippo 的官方 RPC 簽名。",
         "button": "停用自訂 RPC"
       },
       "revokePermit": {
@@ -1905,9 +1905,9 @@
       "safeServiceNotAvailable": "Safe 服務目前不可用，請稍後再試",
       "safeTx": {
         "selfHostConfirm": {
-          "title": "切換到 Rabby 的 Safe 服務",
+          "title": "切換到 Hippo 的 Safe 服務",
           "button": "OK",
-          "content": "Safe API 無法使用。切換至由 Rabby 部署的 Safe 服務，以保持你的 Safe 功能正常。<strong>所有 Safe 簽署者必須使用 Rabby Wallet 來授權交易。</strong>"
+          "content": "Safe API 無法使用。切換至由 Hippo 部署的 Safe 服務，以保持你的 Safe 功能正常。<strong>所有 Safe 簽署者必須使用 Hippo Wallet 來授權交易。</strong>"
         }
       },
       "errorRetry": {
@@ -1980,7 +1980,7 @@
       "Completed": "已完成",
       "InSufficientTip": "結餘不足，無法進行交易模擬和 Gas 估算。\n將顯示原始報價",
       "Pending": "待完成",
-      "QuoteLessWarning": "接收數量由 Rabby 交易模擬估算。DEX 提供的報價為 {{receive}}，你將比預期報價少收到 {{diff}}。",
+      "QuoteLessWarning": "接收數量由 Hippo 交易模擬估算。DEX 提供的報價為 {{receive}}，你將比預期報價少收到 {{diff}}。",
       "actual-slippage": "實際滑點：",
       "amount-in": "賣出{{symbol}}金額",
       "approve-tips": "1.授權 → 2.兌換",
@@ -2013,7 +2013,7 @@
       "not-supported": "不支援",
       "pendingTip": "交易已提交。\n如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
       "price-expired-refresh-quote": "價格已過期，\n重新整理報價",
-      "rabby-fee": "Rabby 手續費",
+      "rabby-fee": "Hippo 手續費",
       "preferMEV": "優先使用 MEV 保護",
       "preferMEVTip": "為 Ethereum 兌換啟用「MEV Guarded」功能，以降低遭受三明治攻擊的風險。注意：使用自訂 RPC 或 WalletConnect 地址時不支援此功能。",
       "rate": "匯率",
@@ -2039,7 +2039,7 @@
       "to": "買入",
       "trade": "交易",
       "tradingSettingTip1": "1. 開啟後，你將直接與交易所合約互動",
-      "tradingSettingTip2": "2. Rabby 不承擔因交易所合約產生的任何風險",
+      "tradingSettingTip2": "2. Hippo 不承擔因交易所合約產生的任何風險",
       "tradingSettingTips": "共 {{viewCount}} 個交易所提供報價，{{tradeCount}} 個允許直接交易",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "由於滑點較高，交易可能會被搶先交易",
       "unable-to-fetch-the-price": "無法取得價格",
@@ -2054,9 +2054,9 @@
         "rate": "費率",
         "button": "知道了",
         "wallet": "錢包",
-        "title": "Rabby 手續費",
-        "bridgeDesc": "Rabby Wallet 會始終從頂級聚合器中尋找最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 的費用，此費用已自動包含在報價中。",
-        "swapDesc": "Rabby Wallet 會始終從頂級聚合器中找到最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 費用（Wrap 為 0%），該費用已自動包含在報價中。"
+        "title": "Hippo 手續費",
+        "bridgeDesc": "Hippo Wallet 會始終從頂級聚合器中尋找最佳匯率，並驗證其報價的可靠性。Hippo 收取 0.25% 的費用，此費用已自動包含在報價中。",
+        "swapDesc": "Hippo Wallet 會始終從頂級聚合器中找到最佳匯率，並驗證其報價的可靠性。Hippo 收取 0.25% 費用（Wrap 為 0%），該費用已自動包含在報價中。"
       },
       "lowCreditModal": {
         "title": "此代幣的信用值低。",
@@ -2067,7 +2067,7 @@
       "max": "最大值",
       "Gas-fee-too-high": "Gas 費用太高",
       "hidden-no-quote-rates_other": "{{count}} 個報價不可用",
-      "no-fee-for-wrap": "Wrap 不收取 Rabby 費用",
+      "no-fee-for-wrap": "Wrap 不收取 Hippo 費用",
       "approve-and-swap": "授權並透過 {{name}} 兌換",
       "process-with-two-step-approve": "分兩步授權",
       "fetch-best-quote": "正在取得最佳報價",
@@ -2075,7 +2075,7 @@
       "price-impact": "價格影響",
       "Auto": "自動",
       "from": "從",
-      "no-fees-for-wrap": "Wrap 不收取 Rabby 費用",
+      "no-fees-for-wrap": "Wrap 不收取 Hippo 費用",
       "usd-after-fees": "≈ {{usd}}",
       "two-step-approve-details": "USDT 需要 2 筆交易才能更改授權額度。你需要先將授權額度重設為 0，然後再設定新的授權額度。",
       "hidden-no-quote-rates_one": "{{count}} 個報價不可用",
@@ -2088,18 +2088,18 @@
       "best-subtitle": "最佳報價由最低的預估總成本決定，包括匯率及 Gas 費用。"
     },
     "switchChain": {
-      "chainNotSupport": "Rabby 尚不支援請求的鏈",
-      "title": "將自訂網絡新增至 Rabby",
+      "chainNotSupport": "Hippo 尚不支援請求的鏈",
+      "title": "將自訂網絡新增至 Hippo",
       "testnetTip": "請在「更多」中開啟「啟用測試網」後，再連接測試網",
-      "chainNotSupportYet": "Rabby 尚未支援所請求的鏈",
+      "chainNotSupportYet": "Hippo 尚未支援所請求的鏈",
       "chainId": "鏈 ID：",
       "unknownChain": "未知鏈",
       "requestsReceived": "收到 1 個請求",
       "requestsReceivedPlural": "收到 {{count}} 個請求",
-      "requestRabbyToSupport": "請求 Rabby 支援",
-      "chainNotSupportAddChain": "Rabby 尚未整合所請求的鏈，你可以將其新增為自訂測試網絡",
+      "requestRabbyToSupport": "請求 Hippo 支援",
+      "chainNotSupportAddChain": "Hippo 尚未整合所請求的鏈，你可以將其新增為自訂測試網絡",
       "addChain": "新增測試網絡",
-      "desc": "所請求的網絡尚未被 Rabby 整合，你可以手動新增它作為自訂網絡"
+      "desc": "所請求的網絡尚未被 Hippo 整合，你可以手動新增它作為自訂網絡"
     },
     "unlock": {
       "btn": {
@@ -2113,7 +2113,7 @@
         "required": "輸入密碼解鎖"
       },
       "btnForgotPassword": "忘記密碼？",
-      "title": "Rabby Wallet",
+      "title": "Hippo Wallet",
       "description": "你首選的以太坊和 EVM 錢包",
       "biometricFailed": "生物識別解鎖失敗"
     },
@@ -2130,7 +2130,7 @@
       "assets": "資產",
       "delete-address": "刪除地址",
       "delete-desc": "在刪除之前，請記住以下幾點，以了解如何保護你的資產",
-      "direct-delete-desc": "這是 {{renderBrand}} 地址。Rabby 不儲存其私鑰或助記詞，你可以直接將其刪除。",
+      "direct-delete-desc": "這是 {{renderBrand}} 地址。Hippo 不儲存其私鑰或助記詞，你可以直接將其刪除。",
       "edit-memo-title": "編輯地址備註",
       "hd-path": "HD path",
       "manage-addresses-under-this-seed-phrase": "管理此助記詞下的地址",
@@ -2149,7 +2149,7 @@
         "remainSeedPhrase": "你的助記詞仍儲存在裝置上。",
         "keepSeedPhrase": "這是唯一與此助記詞關聯的地址。你想保留此助記詞嗎？",
         "check2": "我確認已備份私鑰或助記詞，並準備刪除此地址。",
-        "check1": "我明白，刪除此地址也會刪除其私鑰和助記詞。Rabby 無法幫我恢復。",
+        "check1": "我明白，刪除此地址也會刪除其私鑰和助記詞。Hippo 無法幫我恢復。",
         "onlyDeleteAddr": "僅移除此地址。你的助記詞不受影響，因為其他地址仍在使用它。",
         "title": "刪除地址和助記詞？",
         "sub-title": "此操作是永久性的。請查看以下內容以保護你的資產："
@@ -2157,7 +2157,7 @@
       "deletePrivateKey": {
         "title": "刪除地址和私鑰？",
         "sub-title": "此操作是永久性的。請檢查以下內容以保護你的資產：",
-        "check1": "我明白，刪除此地址也會刪除其私鑰。Rabby 無法幫我恢復。",
+        "check1": "我明白，刪除此地址也會刪除其私鑰。Hippo 無法幫我恢復。",
         "check2": "我確認已備份私鑰或助記詞，並準備刪除此地址。"
       },
       "notBackup": "未備份"
@@ -2165,13 +2165,13 @@
     "preferMetamaskDapps": {
       "title": "優先使用 MetaMask 連接的 Dapp",
       "howToAddDesc": "在網頁空白處點擊右鍵，找到該選項",
-      "desc": "無論目前啟用的是 Rabby 還是 MetaMask，以下 Dapp 都會保持連接至 MetaMask",
+      "desc": "無論目前啟用的是 Hippo 還是 MetaMask，以下 Dapp 都會保持連接至 MetaMask",
       "howToAdd": "如何新增",
       "empty": "無 Dapp"
     },
     "customRpc": {
       "title": "修改 RPC URL",
-      "desc": "修改後，自訂 RPC 將取代 Rabby 的節點。若要繼續使用 Rabby 的節點，請刪除自訂 RPC。",
+      "desc": "修改後，自訂 RPC 將取代 Hippo 的節點。若要繼續使用 Hippo 的節點，請刪除自訂 RPC。",
       "add": "修改 RPC URL",
       "empty": "無自訂 RPC URL",
       "opened": "已打開",
@@ -2191,9 +2191,9 @@
     },
     "requestDebankTestnetGasToken": {
       "title": "取得 DeBank 測試網 Gas 代幣",
-      "mintedTip": "Rabby Badge 持有者每天可以取得一次",
-      "notMintedTip": "僅 Rabby Badge 持有者可以取得",
-      "claimBadgeBtn": "領取 Rabby Badge",
+      "mintedTip": "Hippo Badge 持有者每天可以取得一次",
+      "notMintedTip": "僅 Hippo Badge 持有者可以取得",
+      "claimBadgeBtn": "領取 Hippo Badge",
       "time": "每日額度",
       "requested": "你今日已取得過",
       "requestBtn": "取得"
@@ -2249,7 +2249,7 @@
       "doneButton": "我已備份助記詞"
     },
     "ethSign": {
-      "alert": "使用 'eth_sign' 簽名可能導致資產損失。為了你的安全，Rabby 不支援此簽名方式。"
+      "alert": "使用 'eth_sign' 簽名可能導致資產損失。為了你的安全，Hippo 不支援此簽名方式。"
     },
     "createPassword": {
       "agree": "我已閱讀並同意<1/> <2>服務條款</2>和<4>私隱政策</4>",
@@ -2269,7 +2269,7 @@
       },
       "step1": {
         "title": "存取所有 Dapp",
-        "desc": "Rabby 可連接到所有 MetaMask 支援的 Dapp"
+        "desc": "Hippo 可連接到所有 MetaMask 支援的 Dapp"
       }
     },
     "importQrBase": {
@@ -2382,7 +2382,7 @@
       "totalDapps": "共 <2>{{count}}</2> 個 Dapp"
     },
     "rabbyPoints": {
-      "title": "Rabby 積分",
+      "title": "Hippo 積分",
       "out-of-x-current-total-points": "共分發 {{total}} 積分",
       "share-on": "分享至",
       "referral-code-copied": "推薦碼已複製",
@@ -2402,9 +2402,9 @@
         "claim": "領取",
         "addressBalance": "錢包餘額",
         "MetaMaskSwap": "MetaMask 兌換",
-        "rabbyUser": "Rabby 活躍用戶",
-        "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
+        "rabbyUser": "Hippo 活躍用戶",
+        "rabbyValuedUserBadge": "Hippo 重要用戶徽章",
+        "rabbyDesktopGenesisNft": "Hippo Desktop Genesis NFT",
         "walletBalance": "錢包餘額",
         "activeStats": "活躍狀態",
         "referral-code": "推薦碼",
@@ -2433,12 +2433,12 @@
       },
       "code-set-successfully": "推薦碼設定成功",
       "initialPointsClaimEnded": "初始積分領取已結束",
-      "firstRoundEnded": "🎉 Rabby Points 第一輪已結束",
-      "secondRoundEnded": "🎉 Rabby Points 第二輪已結束"
+      "firstRoundEnded": "🎉 Hippo Points 第一輪已結束",
+      "secondRoundEnded": "🎉 Hippo Points 第二輪已結束"
     },
     "customTestnet": {
       "title": "自訂網絡",
-      "desc": "Rabby 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。",
+      "desc": "Hippo 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。",
       "add": "新增自訂網絡",
       "empty": "沒有自訂網絡",
       "currency": "貨幣",
@@ -2460,19 +2460,19 @@
         "empty": "未找到鏈",
         "tips": {
           "added": "你已新增此鏈",
-          "supported": "Rabby 錢包已整合該鏈"
+          "supported": "Hippo 錢包已整合該鏈"
         }
       },
       "signTx": {
         "title": "交易資料"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "該鏈已被 Rabby 整合。你是否需要修改其 RPC URL？"
+        "desc": "該鏈已被 Hippo 整合。你是否需要修改其 RPC URL？"
       }
     },
     "addChain": {
-      "title": "將自訂網絡新增至 Rabby",
-      "desc": "Rabby 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。"
+      "title": "將自訂網絡新增至 Hippo",
+      "desc": "Hippo 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。"
     },
     "sign": {
       "transactionSpeed": "交易速度"
@@ -2485,7 +2485,7 @@
       "settingModal": {
         "confirmModal": {
           "i-understand-and-accept-it": "我理解並接受",
-          "tip2": "2. Rabby 不對該聚合器合約引起的任何風險承擔責任。",
+          "tip2": "2. Hippo 不對該聚合器合約引起的任何風險承擔責任。",
           "title": "啟用此聚合器進行交易",
           "tip1": "啟用後，你將直接從此聚合器與合約互動。"
         },
@@ -2536,7 +2536,7 @@
       "enable-it": "啟用它",
       "best": "最佳",
       "price-impact": "價格影響",
-      "rabby-fee": "Rabby 手續費",
+      "rabby-fee": "Hippo 手續費",
       "est-payment": "預計付款：",
       "max-tips": "此數值是透過扣除跨鏈的 Gas 費用計算得出。",
       "via-bridge": "透過 {{bridge}}",
@@ -2710,7 +2710,7 @@
         "amount": "金額",
         "title": "充值",
         "invalidAmount": "必須少於 500",
-        "desc": "無需額外費用即可向 Rabby 的 DeBank L2 帳戶充值，並可隨時提取。",
+        "desc": "無需額外費用即可向 Hippo 的 DeBank L2 帳戶充值，並可隨時提取。",
         "selectToken": "選擇代幣以存入",
         "paymentAddr": "支付錢包",
         "depositSuccess": "充值成功",
@@ -2787,15 +2787,15 @@
         "title4": "GasAccount 安全嗎",
         "title1": "什麼是 GasAccount",
         "title2": "如何使用 GasAccount",
-        "desc3": "Rabby Wallet 不收取額外費用。你只需支付交易本身的 Gas 費用，以及從 GasAccount 向你的地址發送 Gas 所需的少量 Gas 費用。",
+        "desc3": "Hippo Wallet 不收取額外費用。你只需支付交易本身的 Gas 費用，以及從 GasAccount 向你的地址發送 Gas 所需的少量 Gas 費用。",
         "desc2": "將資金充值到 GasAccount 後，即可用於任何交易。簽名時可選擇使用原生代幣或 GasAccount 支付 Gas，並可隨時切換。",
         "desc1": "GasAccount 是一種新的 Gas 費用支付方式。你無需在每條鏈上分別準備原生代幣，只需使用一個帳戶，即可為所有鏈上的所有地址支付 Gas。簡單、可選，並且不再擔心缺少 Gas。",
-        "desc4": "GasAccount 無需任何合約授權或權限。你向 Rabby 的 GasAccount 地址充值，Rabby 會在需要時向你的地址發送 Gas。此機制在設計上充分保障安全。"
+        "desc4": "GasAccount 無需任何合約授權或權限。你向 Hippo 的 GasAccount 地址充值，Hippo 會在需要時向你的地址發送 Gas。此機制在設計上充分保障安全。"
       },
       "benefitCard": {
         "title": "在所有鏈上支付 Gas 費用",
         "subtitle": "當你的 Gas 不足時",
-        "item1": "無 Rabby 費用",
+        "item1": "無 Hippo 費用",
         "desc1": "使用 Gas 支付功能無需額外費用",
         "item2": "支援所有網絡",
         "desc2": "在 80+ 網絡上自動支付 Gas",
@@ -2823,7 +2823,7 @@
     },
     "newUserImport": {
       "guide": {
-        "title": "歡迎來到 Rabby 錢包",
+        "title": "歡迎來到 Hippo 錢包",
         "importAddress": "我已經有一個地址",
         "createNewAddress": "建立新地址",
         "desc": "你首選的以太坊和 EVM 錢包"
@@ -2832,8 +2832,8 @@
         "showSeedPhrase": "顯示助記詞",
         "desc": "請閱讀並記住以下安全提示",
         "title": "在開始之前",
-        "tip2": "我的助記詞只儲存在我的裝置上。Rabby 無法存取它。",
-        "tip3": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 將無法幫我恢復。",
+        "tip2": "我的助記詞只儲存在我的裝置上。Hippo 無法存取它。",
+        "tip3": "如果我在未備份助記詞的情況下解除安裝 Hippo，Hippo 將無法幫我恢復。",
         "tip1": "如果我遺失或洩露助記詞，將永久失去對資產的存取權。"
       },
       "importList": {
@@ -2874,18 +2874,18 @@
         "addMoreAddr": "從此助記詞新增更多地址",
         "openWallet": "開啟錢包",
         "backupSeedPhraseNow": "立即備份助記詞",
-        "desc": "你的 Rabby 錢包已準備就緒！",
+        "desc": "你的 Hippo 錢包已準備就緒！",
         "backupSeedPhrase": "備份助記詞"
       },
       "readyToUse": {
-        "pin": "將 Rabby 錢包釘選",
+        "pin": "將 Hippo 錢包釘選",
         "guides": {
-          "step2": "將 Rabby Wallet 釘選至頂部",
+          "step2": "將 Hippo Wallet 釘選至頂部",
           "step1": "點擊瀏覽器擴展圖標"
         },
         "extensionTip": "點擊 <1/>，然後點擊 <3/>",
-        "desc": "尋找 Rabby Wallet 並將其固定",
-        "title": "你的 Rabby Wallet 已準備好！"
+        "desc": "尋找 Hippo Wallet 並將其固定",
+        "title": "你的 Hippo Wallet 已準備好！"
       },
       "importSeedPhrase": {
         "title": "匯入助記詞",
@@ -2964,14 +2964,14 @@
     },
     "metamaskModeDapps": {
       "title": "管理已授權的 Dapp",
-      "desc": "MetaMask Mode 已為以下 Dapp 啟用。你可以透過選擇 MetaMask 選項連接 Rabby。"
+      "desc": "MetaMask Mode 已為以下 Dapp 啟用。你可以透過選擇 MetaMask 選項連接 Hippo。"
     },
     "forgotPassword": {
       "home": {
         "title": "忘記密碼",
         "button": "開始重設流程",
-        "description": "Rabby Wallet 不會儲存你的密碼，也無法協助你找回。請重設 Rabby Wallet 並重新設定錢包。",
-        "descriptionNoData": "Rabby Wallet 不會儲存你的密碼，也無法協助你找回。如果忘記密碼，請設定新密碼。",
+        "description": "Hippo Wallet 不會儲存你的密碼，也無法協助你找回。請重設 Hippo Wallet 並重新設定錢包。",
+        "descriptionNoData": "Hippo Wallet 不會儲存你的密碼，也無法協助你找回。如果忘記密碼，請設定新密碼。",
         "buttonNoData": "設定密碼"
       },
       "reset": {
@@ -2988,22 +2988,22 @@
           "title": "以下資料將被保留：",
           "safe": "已匯入的 Safe 錢包"
         },
-        "title": "重設 Rabby Wallet",
+        "title": "重設 Hippo Wallet",
         "button": "確認重設",
         "confirm": "在輸入框中輸入 <1>RESET</1> 以確認並繼續",
-        "description": "Rabby 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重設錢包並重新設定密碼。",
-        "descriptionNoData": "Rabby 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重新設定密碼。"
+        "description": "Hippo 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重設錢包並重新設定密碼。",
+        "descriptionNoData": "Hippo 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重新設定密碼。"
       },
       "tip": {
         "buttonNoData": "新增地址",
-        "title": "Rabby Wallet 重設完成",
+        "title": "Hippo Wallet 重設完成",
         "descriptionNoData": "新增你的地址以開始",
         "button": "設定密碼",
         "description": "設定新密碼以繼續"
       },
       "success": {
         "title": "密碼設定成功",
-        "description": "你已準備好使用 Rabby Wallet",
+        "description": "你已準備好使用 Hippo Wallet",
         "button": "完成"
       }
     },
@@ -3017,22 +3017,22 @@
       },
       "step1": "步驟 1",
       "noDappFound": "未找到 Dapp",
-      "title": "透過偽裝成 MetaMask 連接 Rabby",
-      "step1Desc": "允許 Rabby 在目前 Dapp 上偽裝成 MetaMask",
+      "title": "透過偽裝成 MetaMask 連接 Hippo",
+      "step1Desc": "允許 Hippo 在目前 Dapp 上偽裝成 MetaMask",
       "step2Desc": "重新整理並透過 MetaMask 連接",
       "step2": "步驟 2",
       "manage": "管理允許的 Dapp",
-      "alert": "無法連接到 Dapp，因為它沒有顯示 Rabby Wallet 作為選項？"
+      "alert": "無法連接到 Dapp，因為它沒有顯示 Hippo Wallet 作為選項？"
     },
     "syncToMobile": {
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
       "description": "你的地址資料全程保持離線，經加密後透過 QR 碼安全傳輸。",
-      "title": "從 Rabby 擴展同步錢包地址至手機",
+      "title": "從 Hippo 擴展同步錢包地址至手機",
       "steps2Description": "你的 QR 碼包含敏感資料。請妥善保管，切勿與任何人分享。",
       "clickToShowQr": "點擊選擇地址並顯示 QR 碼",
-      "steps1": "1. 下載 Rabby Mobile",
-      "steps2": "2. 使用 Rabby Mobile 掃描",
+      "steps1": "1. 下載 Hippo Mobile",
+      "steps2": "2. 使用 Hippo Mobile 掃描",
       "disableSelectAddress": "不支援同步 {{type}} 地址",
       "disableSelectAddressWithPassphrase": "不支援同步使用密碼短語的 {{type}} 地址",
       "disableSelectAddressWithSlip39": "不支援同步使用 SLIP-39 的 {{type}} 地址",
@@ -3089,7 +3089,7 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "scamAddress": "Rabby 標記的詐騙地址",
+            "scamAddress": "Hippo 標記的詐騙地址",
             "dexNoDeposite": "並非 CEX 充值地址，資金可能會丟失",
             "contractAddress": "檢測到合約地址，資金可能會丟失",
             "noSend": "你在180 天內未向此地址發送過交易"
@@ -3298,7 +3298,7 @@
           "quantity": "數量",
           "listOn": "在 OpenSea 上列出",
           "createListing": "建立上架資訊",
-          "rabbyFee": "Rabby 費用 (0%)",
+          "rabbyFee": "Hippo 費用 (0%)",
           "approveAndList": "授權並上架",
           "topOffer": "最高報價",
           "creatorFee": "創作者手續費 ({{fee}}%)",
@@ -3315,7 +3315,7 @@
         "acceptModal": {
           "floorDifference": "底價差異",
           "quantity": "數量",
-          "rabbyFee": "Rabby 費用 (0%)",
+          "rabbyFee": "Hippo 費用 (0%)",
           "acceptOffer": "接受報價",
           "offerPrice": "報價",
           "totalEst": "總估計收益",
@@ -3567,7 +3567,7 @@
         "activatedSuccess": "已啟用 4% Hyperliquid 手續費優惠",
         "title": "在 Hyperliquid 的費用上節省開支",
         "hyperliquidFee": "Hyperliquid 交易手續費。",
-        "description": "使用 Rabby 的代碼啟用"
+        "description": "使用 Hippo 的代碼啟用"
       },
       "title": "Perps",
       "permissionTips": "在你所在的地區不支援開倉。",
@@ -3593,7 +3593,7 @@
       "short": "做空",
       "takeProfitWhen": "設定止賺價格",
       "deleteAgentSuccess": "代理已成功刪除",
-      "rabbyFeeTipsV2": "Rabby 手續費：0.02%",
+      "rabbyFeeTipsV2": "Hippo 手續費：0.02%",
       "closeAll": "全部平倉",
       "price": "價格",
       "close": "平倉",
@@ -3638,7 +3638,7 @@
       "sizeTips": "你的交易的總價值或數量，由保證金與槓桿決定。",
       "learnAboutPerps": "了解 Perps",
       "isolated": "逐倉",
-      "rabbyFeeTipsZero": "Rabby 手續費：0%",
+      "rabbyFeeTipsZero": "Hippo 手續費：0%",
       "marginCross": "保證金（全倉）",
       "cross": "全倉",
       "availableBalance": "可用餘額：{{balance}}",
@@ -3761,7 +3761,7 @@
         "openInterest": "未平倉量",
         "openInterestTips": "雙向未平倉量：本永續合約的多頭與空頭倉位之和。",
         "oracleTips": "由驗證節點報告的外部價格中位數，用於計算資金費率。",
-      "markTips": "用於保證金管理、計算未實現盈虧及強平，以及觸發止賺/止蝕訂單。",
+        "markTips": "用於保證金管理、計算未實現盈虧及強平，以及觸發止賺/止蝕訂單。",
         "symbol": "合約符號",
         "fundingTips": "多頭對空頭的每小時資金費率（若為負，則空頭支付多頭）。資金費率不收取任何費用，這是用戶之間的點對點轉移，旨在將價格推向現貨價格。詳情請參閱說明檔案。",
         "categoryAll": "全部"
@@ -4202,7 +4202,7 @@
         "providerFee": "Hyperliquid 手續費",
         "maximumOrderSize": "最大下單量為 {{amount}}",
         "size": "手數",
-        "rabbyFee": "Rabby 手續費",
+        "rabbyFee": "Hippo 手續費",
         "free": "可用保證金",
         "takeProfitWhenPriceBelow": "當價格低於時止賺",
         "leverage": "槓桿倍率",
@@ -5003,7 +5003,7 @@
     "EcologyNoticeModal": {
       "title": "注意事項",
       "notRemind": "不要再提醒我",
-      "desc": "以下服務將由第三方生態合作夥伴直接提供。Rabby Wallet 不承擔這些服務的安全性責任。"
+      "desc": "以下服務將由第三方生態合作夥伴直接提供。Hippo Wallet 不承擔這些服務的安全性責任。"
     },
     "ReserveGasPopup": {
       "fast": "正常",
@@ -5014,8 +5014,8 @@
     },
     "OpenExternalWebsiteModal": {
       "button": "繼續",
-      "content": "你即將前往外部網站。Rabby Wallet 不對該網站的內容或安全性負責。",
-      "title": "你即將離開 Rabby Wallet"
+      "content": "你即將前往外部網站。Hippo Wallet 不對該網站的內容或安全性負責。",
+      "title": "你即將離開 Hippo Wallet"
     },
     "TokenChart": {
       "holding": "持有價值",
@@ -5042,7 +5042,7 @@
     },
     "ChainItem": {
       "appChain": "在 {{chain}} 帳戶",
-      "hyperliquidCode": "使用 Rabby 的推薦碼可節省 Hyperliquid 手續費。"
+      "hyperliquidCode": "使用 Hippo 的推薦碼可節省 Hyperliquid 手續費。"
     },
     "RiskTip": {
       "title": "偵測到風險"
@@ -5085,9 +5085,9 @@
       "placeholderRequired": "描述問題（必填）"
     },
     "feedbackPopup": {
-      "title": "Rabby 支援團隊的回覆",
+      "title": "Hippo 支援團隊的回覆",
       "issueReported": "以下是你回報的問題：",
-      "issueReplied": "Rabby 支援團隊已回覆："
+      "issueReplied": "Hippo 支援團隊已回覆："
     }
   },
   "background": {

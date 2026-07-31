@@ -122,7 +122,7 @@ const Wrapper = styled.div<{
     }
     &:hover,
     &:focus {
-      border-color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-default, #0372ff);
     }
 
     &.red,
@@ -170,7 +170,7 @@ const Wrapper = styled.div<{
 
       .toSwap {
         cursor: pointer;
-        color: #7084ff;
+        color: #0372ff;
         text-decoration-line: underline;
       }
     }
@@ -185,7 +185,7 @@ const Wrapper = styled.div<{
     font-weight: 500;
     border-radius: 6px;
     &.ant-btn-primary[disabled] {
-      background: rgba(134, 151, 255, 1);
+      background: rgba(3, 114, 255, 1);
       border-color: transparent;
       opacity: 0.4;
     }

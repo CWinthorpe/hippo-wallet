@@ -10,8 +10,8 @@ const StyedBg = styled.div<{
 }>`
   background: ${(props) =>
     props.isDarkTheme
-      ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
-      : 'var(--r-blue-default, #7084ff)'};
+      ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #0372FF)'
+      : 'var(--r-blue-default, #0372FF)'};
   overflow-x: auto;
   min-height: 100vh;
   display: flex;

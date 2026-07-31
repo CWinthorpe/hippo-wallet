@@ -46,7 +46,7 @@ const ItemWrapper = styled.div`
       position: absolute;
       content: '';
       inset: calc(0px - var(--quote--border-width));
-      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
+      border: var(--quote--border-width) solid var(--r-blue-default, #0372ff);
       background: transparent;
       border-radius: 6px;
       z-index: 2;
@@ -55,12 +55,12 @@ const ItemWrapper = styled.div`
   }
 
   &.active:not(.disabled, .inSufficient) {
-    background: var(--r-blue-light-1, #eef1ff);
+    background: var(--r-blue-light-1, #eaf2ff);
     &::after {
       position: absolute;
       content: '';
       inset: calc(0px - var(--quote--border-width));
-      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
+      border: var(--quote--border-width) solid var(--r-blue-default, #0372ff);
       background: transparent;
       border-radius: 6px;
       z-index: 2;
@@ -109,7 +109,7 @@ const ItemWrapper = styled.div`
     font-weight: 500;
     font-size: 13px;
     font-weight: 500;
-    color: var(--r-blue-default, #7084ff);
+    color: var(--r-blue-default, #0372ff);
     &.red {
       color: var(--r-red-default, #e34935);
     }

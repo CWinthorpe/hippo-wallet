@@ -110,7 +110,7 @@ export const PerpsInvitePopup: React.FC<{
             />
             <div className="flex items-center gap-[4px]">
               <img src={IconRabbyWallet} className="w-[14px] h-[14px]" alt="" />
-              Rabby Wallet
+              Hippo Wallet
             </div>
           </div>
           <div className="mt-[20px] text-[13px] leading-[16px] text-r-neutral-foot">

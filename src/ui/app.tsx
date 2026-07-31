@@ -24,13 +24,12 @@ BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 function initAppMeta() {
   const head = document.querySelector('head');
   const icon = document.createElement('link');
-  icon.href =
-    'https://static-assets.debank.com/files/10eaa959-f65a-4488-8b5a-976aa189bcc4.png';
+  icon.href = '/images/icon-128.png';
   icon.rel = 'icon';
   head?.appendChild(icon);
   const name = document.createElement('meta');
   name.name = 'name';
-  name.content = 'Rabby';
+  name.content = 'Hippo Wallet';
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';

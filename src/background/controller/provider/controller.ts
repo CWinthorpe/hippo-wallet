@@ -1383,13 +1383,13 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('SAFE', true)
   web3ClientVersion = () => {
-    return `Rabby/${process.env.release}`;
+    return `Hippo-Wallet/${process.env.release}`;
   };
 
   @Reflect.metadata('APPROVAL', ['ETHSign', () => null, { height: 390 }])
   ethSign = () => {
     throw new Error(
-      "Signing with 'eth_sign' can lead to asset loss. For your safety, Rabby does not support this method."
+      "Signing with 'eth_sign' can lead to asset loss. For your safety, Hippo Wallet does not support this method."
     );
   };
 
@@ -1735,7 +1735,7 @@ class ProviderController extends BaseController {
     });
 
     if (!chain) {
-      throw new Error('This chain is not supported by Rabby yet.');
+      throw new Error('This chain is not supported by Hippo Wallet yet.');
     }
 
     if (approvalRes) {

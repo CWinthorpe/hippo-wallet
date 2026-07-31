@@ -42,18 +42,18 @@ const AddIcon = () => {
       >
         <path
           d="M13.3333 1.59961H2.66664C2.07754 1.59961 1.59998 2.07717 1.59998 2.66628V13.3329C1.59998 13.922 2.07754 14.3996 2.66664 14.3996H13.3333C13.9224 14.3996 14.4 13.922 14.4 13.3329V2.66628C14.4 2.07717 13.9224 1.59961 13.3333 1.59961Z"
-          stroke="#4C65FF"
+          stroke="#0372FF"
           strokeLinecap="round"
         />
         <path
           d="M8 4.80078V11.2008"
-          stroke="#4C65FF"
+          stroke="#0372FF"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M4.79999 8H11.2"
-          stroke="#4C65FF"
+          stroke="#0372FF"
           strokeLinecap="round"
           strokeLinejoin="round"
         />

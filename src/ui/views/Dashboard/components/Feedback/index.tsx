@@ -28,7 +28,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
         <ThemeIcon src={RcIconItemLink} className="icon icon-item-link" />
       ),
       onClick: () => {
-        openInTab('https://support.rabby.io/en/');
+        openInTab('https://github.com/CWinthorpe/hippo-wallet/issues');
       },
     },
     {
@@ -39,7 +39,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
         <ThemeIcon src={RcIconItemLink} className="icon icon-item-link" />
       ),
       onClick: () => {
-        openInTab('https://debank.com/official/Rabby_Wallet/proposals');
+        openInTab('https://github.com/CWinthorpe/hippo-wallet/issues');
       },
     },
   ];

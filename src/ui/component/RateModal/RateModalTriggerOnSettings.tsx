@@ -53,7 +53,7 @@ export default function RateModalTriggerOnSettings({
   useEffect(() => {
     if (!shouldShowRateGuideOnHome) return;
 
-    ga4.fireEvent('Rate_Show', { event_category: 'Rate Rabby' });
+    ga4.fireEvent('Rate_Show', { event_category: 'Rate Hippo' });
   }, [shouldShowRateGuideOnHome]);
 
   const {
@@ -121,7 +121,7 @@ export default function RateModalTriggerOnSettings({
               });
 
               ga4.fireEvent(`Rate_Star_${starToText(userSelectedStar)}`, {
-                event_category: 'Rate Rabby',
+                event_category: 'Rate Hippo',
               });
             }}
           />

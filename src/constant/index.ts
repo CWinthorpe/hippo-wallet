@@ -520,7 +520,7 @@ export const WALLETCONNECT_STATUS_MAP = {
 export const INTERNAL_REQUEST_ORIGIN = location.origin;
 
 export const INTERNAL_REQUEST_SESSION = {
-  name: 'Rabby',
+  name: 'Hippo',
   origin: INTERNAL_REQUEST_ORIGIN,
   icon: RabbyChainLogo,
 };
@@ -1352,8 +1352,8 @@ export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
 export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 
 export const ALIAS_ADDRESS = {
-  [GAS_TOP_UP_ADDRESS]: 'Rabby Gas Top Up',
-  [GAS_TOP_UP_PAY_ADDRESS]: 'Rabby Gas Top Up',
+  [GAS_TOP_UP_ADDRESS]: 'Hippo Gas Top Up',
+  [GAS_TOP_UP_PAY_ADDRESS]: 'Hippo Gas Top Up',
   [FREE_GAS_ADDRESS]: 'Free Gas',
 };
 

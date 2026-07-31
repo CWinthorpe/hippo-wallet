@@ -80,7 +80,7 @@ export const Footer = styled.div`
   .ant-btn-primary[disabled]:hover,
   .ant-btn-primary[disabled]:focus,
   .ant-btn-primary[disabled]:active {
-    background-color: rgba(112, 132, 255, 0.4);
+    background-color: rgba(3, 114, 255, 0.4);
     border: none;
     &:before {
       display: none;

@@ -178,7 +178,7 @@ export const PositionsInfo: React.FC = () => {
   useEffect(() => {
     if (existPosition) {
       ga4.fireEvent('Perps_ExistPosition_Web', {
-        event_category: 'Rabby Perps',
+        event_category: 'Hippo Perps',
       });
     }
   }, [existPosition]);

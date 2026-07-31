@@ -29,12 +29,13 @@ import { useAsync, useAsyncFn } from 'react-use';
 import * as animationData from './success.json';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const RABBY_BADGE_URL = 'https://debank.com/official-badge/134';
+const UPSTREAM_BADGE_URL = 'https://debank.com/official-badge/134';
 
-const LearnMore = 'https://x.com/Rabby_io/status/1785529719070368044';
+const LearnMore =
+  'https://github.com/CWinthorpe/hippo-wallet/blob/feature/privacy-rpc-walletconnect/docs/private-fork.md';
 
 const gotoDeBankRabbyBadge = () => {
-  openInTab(RABBY_BADGE_URL);
+  openInTab(UPSTREAM_BADGE_URL);
 };
 
 const Wrapper = styled.div<{
@@ -136,7 +137,7 @@ const Wrapper = styled.div<{
     }
     &:hover,
     &:focus {
-      border-color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-default, #0372ff);
     }
 
     &.red,
@@ -185,7 +186,7 @@ const Wrapper = styled.div<{
 
       .toSwap {
         cursor: pointer;
-        color: var(--r-blue-default, #7084ff);
+        color: var(--r-blue-default, #0372ff);
         text-decoration-line: underline;
       }
     }

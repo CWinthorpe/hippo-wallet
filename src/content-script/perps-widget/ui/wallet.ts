@@ -11,7 +11,9 @@ function controllerCall<T = unknown>(
   params: unknown[] = []
 ): Promise<T> {
   if (!isExtensionContextValid()) {
-    return Promise.reject(new Error('Rabby extension context invalidated'));
+    return Promise.reject(
+      new Error('Hippo Wallet extension context invalidated')
+    );
   }
   // Wrap so a synchronous "context invalidated" throw still surfaces as a
   // rejected promise instead of an uncaught TypeError at the call site.

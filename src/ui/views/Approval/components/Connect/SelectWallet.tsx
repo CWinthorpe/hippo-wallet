@@ -57,7 +57,7 @@ export const SelectWallet: React.FC<Props> = ({
               alt=""
             />
             <div className="truncate text-[18px] leading-[21px] font-medium text-r-neutral-title1">
-              Rabby Wallet
+              Hippo Wallet
             </div>
           </div>
         </div>

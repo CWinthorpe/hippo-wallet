@@ -29,7 +29,7 @@ const Container = styled.div`
 
   .ant-input:focus,
   .ant-input-focused {
-    border-color: var(--r-blue-default, #7084ff);
+    border-color: var(--r-blue-default, #0372ff);
   }
 
   .ant-form-item-has-error .ant-input {

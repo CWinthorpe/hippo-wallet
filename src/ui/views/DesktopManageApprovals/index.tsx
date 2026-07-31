@@ -31,7 +31,7 @@ export const DesktopManageApprovals = () => {
           header={
             <header className="flex items-center justify-between w-full">
               <div className="flex items-center justify-between gap-[12px] pt-[32px] pb-[22px]">
-                <img src={IconRabby} alt="Rabby" className="w-[33px]" />
+                <img src={IconRabby} alt="Hippo" className="w-[33px]" />
                 <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
                   {t('page.manageApprovals.title')}
                 </div>

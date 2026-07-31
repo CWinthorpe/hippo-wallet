@@ -36,7 +36,7 @@ function useIsDarkMode() {
 
 const uiTypes = getUiType();
 
-// The Perps pro page is always dark AND uses the unified Rabby red/green
+// The Perps pro page is always dark AND uses the unified Hippo red/green
 // palette (scoped via the `perps-pro-theme` class toggled in useThemeModeOnMain).
 function isPerpsProPage() {
   return (
@@ -64,27 +64,28 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
     return (
       userSelectedDark &&
-      [
-        '#/mnemonics/create',
-        '#/import/mnemonics',
+      (hashValue?.startsWith('#/new-user/') ||
+        [
+          '#/mnemonics/create',
+          '#/import/mnemonics',
 
-        '#/import/select-address',
+          '#/import/select-address',
 
-        '#/pending-detail',
+          '#/pending-detail',
 
-        '#/import/hardware/ledger-connect',
-        '#/import/hardware/trezor-connect',
-        '#/import/hardware/onekey',
-        '#/import/hardware/keystone',
-        '#/import/hardware/qrcode',
+          '#/import/hardware/ledger-connect',
+          '#/import/hardware/trezor-connect',
+          '#/import/hardware/onekey',
+          '#/import/hardware/keystone',
+          '#/import/hardware/qrcode',
 
-        '#/dapp-search',
-        '#/approval-manage',
+          '#/dapp-search',
+          '#/approval-manage',
 
-        '#/send-token',
-        '#/dex-swap',
-        '#/bridge',
-      ].includes(hashValue)
+          '#/send-token',
+          '#/dex-swap',
+          '#/bridge',
+        ].includes(hashValue))
     );
   }
 

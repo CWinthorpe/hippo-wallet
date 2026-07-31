@@ -91,7 +91,7 @@ export const ToConfirmBtn = (props: {
           style={
             props.loading
               ? {
-                  boxShadow: '0px 8px 16px rgba(134, 151, 255, 0.3)',
+                  boxShadow: '0px 8px 16px rgba(3, 114, 255, 0.3)',
                 }
               : {}
           }
@@ -204,7 +204,7 @@ export const RiskTipsWrapper = ({
                     width="14"
                     height="14"
                     rx="2"
-                    fill="var(--r-blue-default, #4c65ff)"
+                    fill="var(--r-blue-default, #0372FF)"
                   />
                   <path
                     d="M3 7L5.66667 10L11 4"

@@ -13,7 +13,7 @@ const StyledSlider = styled(Slider)`
 
   .ant-slider-track,
   &:hover .ant-slider-track {
-    background: var(--r-blue-default, #7084ff);
+    background: var(--r-blue-default, #0372ff);
   }
 
   &:hover > .ant-slider-handle {
@@ -41,12 +41,12 @@ const StyledSlider = styled(Slider)`
       width: 16px;
       height: 16px;
       background-color: white;
-      filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
+      filter: drop-shadow(0px 2px 4px rgba(3, 114, 255, 0.4));
     }
     &::after {
       width: 12px;
       height: 12px;
-      background-color: var(--r-blue-default, #7084ff);
+      background-color: var(--r-blue-default, #0372ff);
     }
 
     &:hover {

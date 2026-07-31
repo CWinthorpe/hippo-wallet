@@ -448,7 +448,7 @@ const TokenWrapper = styled.div`
   padding: 4px;
   border-radius: 4px;
   &:hover {
-    background: rgba(134, 151, 255, 0.3);
+    background: rgba(3, 114, 255, 0.3);
   }
 `;
 
@@ -459,7 +459,7 @@ const SelectTips = styled.div`
   width: 150px;
   height: 32px;
   color: #fff;
-  background: var(--r-blue-default, #7084ff);
+  background: var(--r-blue-default, #0372ff);
   border-radius: 4px;
   font-weight: 500;
   font-size: 20px;

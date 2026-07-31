@@ -143,7 +143,7 @@ ${
 `;
   fs.writeFileSync(cssvarSrcfile, cssvarSrcContent, 'utf8');
 
-  console.log('[rabby] make-theme css vars version success!');
+  console.log('[hippo] make-theme css vars version success!');
 }
 
 makeVarsInJs: {
@@ -182,5 +182,5 @@ export default LessPalette;
 `
   );
 
-  console.log('[rabby] make-theme js version success!');
+  console.log('[hippo] make-theme js version success!');
 }

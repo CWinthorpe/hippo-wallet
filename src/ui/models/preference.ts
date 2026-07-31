@@ -75,7 +75,7 @@ export const preference = createModel<RootModel>()({
     isShowTestnet: false,
     userDataTrackingOptOut: true,
     addressSortStore: {} as AddressSortStore,
-    themeMode: DARK_MODE_TYPE.system,
+    themeMode: DARK_MODE_TYPE.dark,
     reserveGasOnSendToken: false,
     isHideEcologyNoticeDict: {},
     isEnabledPwdForNonWhitelistedTx: false,

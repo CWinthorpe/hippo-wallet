@@ -12,7 +12,7 @@ export const Ecology = () => {
     <div
       className="bg-r-neutral-bg2 h-full"
       style={{
-        fontFamily: "'Lato', sans-serif",
+        fontFamily: "'IBM Plex Mono', monospace",
       }}
     >
       <EcologyNavBar

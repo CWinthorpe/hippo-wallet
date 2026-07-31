@@ -20,8 +20,8 @@ const Wraper = styled.div`
   border: 1px solid transparent;
   position: relative;
   &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
-    box-shadow: 0px 4px 4px 0px rgba(112, 132, 255, 0.12);
+    border: 1px solid var(--r-blue-default, #0372ff);
+    box-shadow: 0px 4px 4px 0px rgba(3, 114, 255, 0.12);
   }
 `;
 

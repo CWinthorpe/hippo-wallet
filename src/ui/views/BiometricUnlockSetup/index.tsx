@@ -61,7 +61,7 @@ const InputWrap = styled.div`
 
   .biometric-pwd-input:focus,
   .biometric-pwd-input.ant-input-focused {
-    border: 1px solid var(--r-blue-default, #4c65ff) !important;
+    border: 1px solid var(--r-blue-default, #0372ff) !important;
   }
 
   .biometric-pwd-input.error {

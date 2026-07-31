@@ -102,8 +102,8 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
             type="button"
             className={clsx(
               'h-[48px] w-[108px] shrink-0 rounded-[8px]',
-              'border border-solid border-[#4C65FF] bg-transparent p-0',
-              'text-[15px] font-medium leading-[18px] text-[#4C65FF]'
+              'border border-solid border-[#0372FF] bg-transparent p-0',
+              'text-[15px] font-medium leading-[18px] text-[#0372FF]'
             )}
             onClick={onCancel}
           >
@@ -112,7 +112,7 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
           <button
             type="button"
             className={clsx(
-              'h-[48px] flex-1 rounded-[8px] bg-[#4C65FF]',
+              'h-[48px] flex-1 rounded-[8px] bg-[#0372FF]',
               'border-none p-0 text-[15px] font-medium leading-[18px] text-white',
               openLoading && 'cursor-not-allowed opacity-70'
             )}

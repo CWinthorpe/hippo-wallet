@@ -418,7 +418,7 @@ export const ActivityPopup = ({
       height={540}
       closable
       onClose={onClose}
-      style={{ fontFamily: "'Lato', sans-serif" }}
+      style={{ fontFamily: "'IBM Plex Mono', monospace" }}
       bodyStyle={{ paddingBottom: 0 }}
     >
       <div className="flex flex-col h-full">

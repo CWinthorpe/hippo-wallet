@@ -16,14 +16,14 @@
     </linearGradient>
     <linearGradient id="perpsTopBarEarGradient" x1="21.329" y1="17.7432" x2="16.8403" y2="13.2443" gradientUnits="userSpaceOnUse">
       <stop stop-color="#3B22A0"/>
-      <stop offset="1" stop-color="#5156D8" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0372FF" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="perpsTopBarShadowLegGradient" x1="19.0107" y1="20.2575" x2="14.7003" y2="17.7784" gradientUnits="userSpaceOnUse">
       <stop stop-color="#3B1E8F"/>
       <stop offset="1" stop-color="#6A6FFB" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="perpsTopBarLegGradient" x1="16.5267" y1="17.8149" x2="19.4419" y2="21.5189" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#8898FF"/>
+      <stop stop-color="#0372FF"/>
       <stop offset="0.983895" stop-color="#5F47F1"/>
     </linearGradient>
     <clipPath id="perpsTopBarLogoClip">

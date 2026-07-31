@@ -69,7 +69,7 @@ const PasswordInput = styled(Input)`
 
   &.ant-input:focus,
   &.ant-input-focused {
-    border-color: var(--r-blue-default, #4c65ff);
+    border-color: var(--r-blue-default, #0372ff);
     box-shadow: none;
   }
   &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,

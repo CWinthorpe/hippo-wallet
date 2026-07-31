@@ -42,7 +42,7 @@ import { shouldShowDebtSwapEntry } from '../../utils/swapAction';
 
 const HoverButton = styled.button`
   &:hover {
-    box-shadow: 0 4px 8px 0 rgba(76, 101, 255, 0.2);
+    box-shadow: 0 4px 8px 0 rgba(3, 114, 255, 0.2);
   }
 `;
 

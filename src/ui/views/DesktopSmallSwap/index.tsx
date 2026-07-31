@@ -224,7 +224,7 @@ const DesktopSmallSwapContent: React.FC = () => {
         <header className="flex items-end justify-between gap-[24px] mb-[32px] shrink-0">
           <div className="min-w-0">
             <div className="flex items-center gap-[16px]">
-              <img src={IconRabby} alt="Rabby" />
+              <img src={IconRabby} alt="Hippo" />
               <div className="space-y-[8px]">
                 <div className="text-[24px] leading-[29px] font-semibold text-r-neutral-title1">
                   {t('page.desktopSmallSwap.title')}

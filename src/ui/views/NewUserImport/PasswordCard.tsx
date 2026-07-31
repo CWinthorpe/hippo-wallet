@@ -52,7 +52,7 @@ const Container = styled.div`
 
   .ant-input:focus,
   .ant-input-focused {
-    border-color: var(--r-blue-default, #7084ff);
+    border-color: var(--r-blue-default, #0372FF);
   }
 
   .ant-form-item-has-error {
@@ -66,7 +66,7 @@ const Container = styled.div`
     &:hover,
     &-focused,
     &-focused:hover {
-      border: 1px solid var(--r-blue-default, #7084ff);
+      border: 1px solid var(--r-blue-default, #0372ff);
     }
     border-radius: 8px;
     border: 1px solid var(--r-neutral-line, #e0e5ec);
@@ -146,11 +146,17 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   });
 
   const gotoTermsOfUse = useMemoizedFn(() => {
-    openInTab('https://rabby.io/docs/terms-of-use', false);
+    openInTab(
+      'https://github.com/CWinthorpe/hippo-wallet/blob/feature/privacy-rpc-walletconnect/src/constant/term-of-use.md',
+      false
+    );
   });
 
   const gotoPrivacy = useMemoizedFn(() => {
-    openInTab('https://rabby.io/docs/privacy', false);
+    openInTab(
+      'https://github.com/CWinthorpe/hippo-wallet/blob/feature/privacy-rpc-walletconnect/docs/private-fork.md',
+      false
+    );
   });
 
   useHideScreenshotContextMenu();

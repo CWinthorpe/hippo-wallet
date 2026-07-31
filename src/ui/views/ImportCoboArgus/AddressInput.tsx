@@ -30,7 +30,7 @@ export const AddressInput: React.FC<Props> = ({
           {
             'border-rabby-neutral-line': !error,
           },
-          'focus-within: border border-[#7084ff]',
+          'focus-within: border border-[#0372FF]',
           {
             'border-red': error,
           }

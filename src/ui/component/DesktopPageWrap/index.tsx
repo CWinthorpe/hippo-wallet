@@ -28,14 +28,14 @@ export const DesktopPageWrap = styled.div`
     padding-bottom: 13px;
 
     &:hover {
-      color: var(--r-blue-default, #4c65ff);
+      color: var(--r-blue-default, #0372ff);
     }
   }
   .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap {
     padding-left: 20px;
   }
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: var(--r-blue-default, #4c65ff);
+    color: var(--r-blue-default, #0372ff);
     font-weight: 700;
     font-size: 18px;
     text-shadow: none;
@@ -43,7 +43,7 @@ export const DesktopPageWrap = styled.div`
   .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
     height: 4px;
     border-radius: 4px 4px 0 0;
-    background-color: var(--r-blue-default, #4c65ff);
+    background-color: var(--r-blue-default, #0372ff);
   }
   .ant-tabs-top > .ant-tabs-nav {
     margin-bottom: 0;

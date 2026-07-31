@@ -159,7 +159,7 @@ const ApproveAmountModal = ({
             'w-[200px]',
             'text-blue-light',
             'border-blue-light',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'hover:bg-[#0372FF1A] active:bg-[#0000001A]',
             'before:content-none'
           )}
         >

@@ -18,7 +18,7 @@ import { SvgIconCross } from 'ui/assets';
 const SearchInput = styled(Input)`
   background-color: var(--r-neutral-card1, #fff) !important;
   &.ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff) !important;
+    border-color: var(--r-blue-default, #0372ff) !important;
   }
   height: 46px !important;
   border-radius: 6px !important;
@@ -26,7 +26,7 @@ const SearchInput = styled(Input)`
     color: var(--r-neutral-foot, #6a7587) !important;
   }
   &:hover {
-    border-color: var(--r-blue-default, #7084ff) !important;
+    border-color: var(--r-blue-default, #0372ff) !important;
   }
 `;
 

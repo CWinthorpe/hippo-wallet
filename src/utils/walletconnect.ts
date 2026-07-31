@@ -1,5 +1,10 @@
 import { getChainList } from './chain';
 import { ConstructorOptions } from '@rabby-wallet/eth-walletconnect-keyring/type';
+import {
+  HIPPO_WALLET_ICON_DATA_URI,
+  HIPPO_WALLET_NAME,
+  HIPPO_WALLET_REPOSITORY,
+} from '@/constant/hippo-brand';
 
 export const GET_WALLETCONNECT_CONFIG: () => ConstructorOptions = () => {
   const projectId = process.env.WALLETCONNECT_PROJECT_ID?.trim();
@@ -13,10 +18,10 @@ export const GET_WALLETCONNECT_CONFIG: () => ConstructorOptions = () => {
     // 1h
     maxDuration: 3600000,
     clientMeta: {
-      description: 'Private browser wallet',
-      url: 'https://localhost.invalid',
-      icons: [],
-      name: 'Private Wallet',
+      description: 'Privacy-focused self-custodial browser wallet',
+      url: HIPPO_WALLET_REPOSITORY,
+      icons: [HIPPO_WALLET_ICON_DATA_URI],
+      name: HIPPO_WALLET_NAME,
     },
     projectId,
   };

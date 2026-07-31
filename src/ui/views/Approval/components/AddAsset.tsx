@@ -71,7 +71,7 @@ const AddAssetWrapper = styled.div`
   .header {
     padding: 20px;
     text-align: center;
-    background-color: var(--r-blue-default, #7084ff);
+    background-color: var(--r-blue-default, #0372ff);
     color: var(--r-neutral-title2, #fff);
     font-size: 20px;
     font-weight: 500;
@@ -707,7 +707,7 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
           >
             <Button
               type="ghost"
-              className="w-[172px] h-[44px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
+              className="w-[172px] h-[44px] border-blue-light text-blue-light hover:bg-[#0372FF1A] active:bg-[#0000001A] rounded-[8px]"
               onClick={() => rejectApproval('User rejected the request.')}
             >
               {t('global.cancelButton')}

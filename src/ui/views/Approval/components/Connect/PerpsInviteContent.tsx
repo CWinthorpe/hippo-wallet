@@ -275,7 +275,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
                   className="w-[14px] h-[14px]"
                   alt=""
                 />
-                Rabby Wallet
+                Hippo Wallet
               </div>
             </div>
             <div className="mt-[75px] text-[13px] leading-[16px] text-r-neutral-foot">

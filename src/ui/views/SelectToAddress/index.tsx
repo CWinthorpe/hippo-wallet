@@ -41,7 +41,7 @@ import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
 const OuterInput = styled.div`
   border: 1px solid var(--r-neutral-line);
   &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
+    border: 1px solid var(--r-blue-default, #0372ff);
     cursor: text;
   }
 `;

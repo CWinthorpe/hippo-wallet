@@ -24,11 +24,11 @@ const Container = styled.div`
   }
 
   &:not(.is-danger).is-selected {
-    border-color: var(--r-blue-default, #4c65ff);
-    background: var(--r-blue-light1, #edf0ff);
+    border-color: var(--r-blue-default, #0372ff);
+    background: var(--r-blue-light1, #eaf2ff);
   }
   &:not(.is-danger):hover {
-    border-color: var(--r-blue-default, #4c65ff);
+    border-color: var(--r-blue-default, #0372ff);
   }
 `;
 

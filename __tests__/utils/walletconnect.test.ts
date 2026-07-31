@@ -27,8 +27,14 @@ describe('private WalletConnect identity', () => {
     const config = GET_WALLETCONNECT_CONFIG();
 
     expect(config.projectId).toBe('operator-project-id');
-    expect(config.clientMeta.name).toBe('Private Wallet');
+    expect(config.clientMeta.name).toBe('Hippo Wallet');
+    expect(config.clientMeta.url).toBe(
+      'https://github.com/CWinthorpe/hippo-wallet'
+    );
     expect(config.clientMeta.url).not.toContain('rabby.io');
-    expect(config.clientMeta.icons).toEqual([]);
+    expect(config.clientMeta.icons).toHaveLength(1);
+    expect(config.clientMeta.icons[0]).toMatch(
+      /^data:image\/svg\+xml;base64,/
+    );
   });
 });

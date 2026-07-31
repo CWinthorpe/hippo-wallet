@@ -308,7 +308,7 @@ export const ScreenshotContextMenu = () => {
                 <img
                   className="w-full h-[254px] object-contain"
                   src={screenshot}
-                  alt="Rabby popup screenshot"
+                  alt="Hippo Wallet popup screenshot"
                 />
               </div>
             ) : null}
@@ -332,7 +332,7 @@ export const ScreenshotContextMenu = () => {
               type="button"
               className={clsx(
                 'w-1/2 h-[48px] border-[1px] border-r-blue-default text-r-blue-default',
-                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'hover:bg-[#0372FF1A] active:bg-[#0000001A]',
                 'rounded-[8px]',
                 'before:content-none',
                 'z-10',

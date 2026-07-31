@@ -97,7 +97,7 @@ export const HomePerpsPositionList: React.FC<{
                   })}`
                 );
                 ga4.fireEvent('Perps_CardToPerps_Web', {
-                  event_category: 'Rabby Perps',
+                  event_category: 'Hippo Perps',
                 });
               } else {
                 wallet.setPerpsCurrentAccount(currentAccount);
@@ -108,7 +108,7 @@ export const HomePerpsPositionList: React.FC<{
                   })}`
                 );
                 ga4.fireEvent('Perps_CardToPerps', {
-                  event_category: 'Rabby Perps',
+                  event_category: 'Hippo Perps',
                 });
                 window.close();
               }

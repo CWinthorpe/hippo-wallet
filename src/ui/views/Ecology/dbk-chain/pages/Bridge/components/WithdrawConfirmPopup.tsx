@@ -60,7 +60,7 @@ export const WithdrawConfirmPopup = ({
       visible={visible}
       height={560}
       closable
-      style={{ fontFamily: "'Lato', sans-serif" }}
+      style={{ fontFamily: "'IBM Plex Mono', monospace" }}
       bodyStyle={{
         paddingTop: 8,
         paddingBottom: 80,

@@ -8,7 +8,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useRabbyPoints } from '../hooks';
 import { ReactComponent as IconTwitter } from 'ui/assets/rabby-points/twitter-x.svg';
 
-export const shareRabbyPointsTwitter = ({
+export const shareHippoPointsTwitter = ({
   snapshot,
   invitedCode,
 }: {
@@ -18,15 +18,9 @@ export const shareRabbyPointsTwitter = ({
 }) => {
   if (!snapshot) return;
 
-  const text = encodeURIComponent(`Even if you haven't used Rabby before, you can get points now!
+  const text = encodeURIComponent(`Hippo Wallet is a privacy-focused browser wallet with deterministic Custom RPC failover and single-endpoint transaction broadcasting.
 
-Rabby Points Season 2 is here with bigger rewards – 1 Billion points in total! 🎉 @Rabby_io
-
-Check your points before you claim!
-
-Use my referral code ${invitedCode} for an extra bonus!
-
-https://rabby.io/points?code=${invitedCode}
+https://github.com/CWinthorpe/hippo-wallet
 `);
 
   openInTab(`https://twitter.com/intent/tweet?text=${text}`);
@@ -53,7 +47,7 @@ export const CodeAndShare = ({
   }, [invitedCode]);
 
   const share = React.useCallback(() => {
-    shareRabbyPointsTwitter({ snapshot, usedOtherInvitedCode, invitedCode });
+    shareHippoPointsTwitter({ snapshot, usedOtherInvitedCode, invitedCode });
   }, [snapshot, usedOtherInvitedCode, invitedCode]);
 
   if (loading) {

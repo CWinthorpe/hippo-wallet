@@ -152,7 +152,7 @@ const GnosisDrawer = ({
           className={clsx(
             'h-[48px]',
             'border-blue-light text-blue-light',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'hover:bg-[#0372FF1A] active:bg-[#0000001A]',
             'rounded-[8px]',
             'before:content-none'
           )}
