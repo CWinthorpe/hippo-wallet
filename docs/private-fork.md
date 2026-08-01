@@ -2,7 +2,7 @@
 
 Hippo Wallet is a downstream Rabby Wallet build intended for direct inspection and self-hosted use. It operates no Hippo telemetry collector, RPC relay, swap relay or account backend.
 
-This document describes release `0.93.102-hippo.3`.
+This document describes release `0.93.102-hippo.4`.
 
 ## Fail-closed Rabby/DeBank policy
 
@@ -112,20 +112,29 @@ Hippo computes the local transaction hash before submission and compares it with
 
 ## LlamaSwap boundary
 
-Same-chain swap quotes are requested directly from `https://swap-api.defillama.com/dexAggregatorQuote` using the public credential shipped by LlamaSwap's frontend. Hippo currently selects the KyberSwap adapter and sends the chain, token addresses, raw input amount, recipient and requested slippage.
+Same-chain swap quotes are requested directly from `https://swap-api.defillama.com/dexAggregatorQuote` using the public credential shipped by LlamaSwap's frontend. Hippo sends the chain, token addresses, raw input amount, recipient and requested slippage to every supported ordinary transaction adapter in parallel: 1inch, KyberSwap, ParaSwap and Matcha/0x v2 where that adapter supports the selected chain. `0x Gasless` is not queried because gasless, relayed and sponsored submission are removed features.
+
+The UI presents every response that survives validation, identifies the executing aggregator explicitly and initially selects the highest quoted token output. It does not call a Kyber-only route “LlamaSwap” or claim that LlamaSwap itself executes the transaction.
 
 The response is treated as untrusted. Hippo validates:
 
 - Supported chain
 - Input/output token addresses
 - Exact input and quoted output amounts
-- Recipient presence in calldata
-- Allowlisted approval spender and router
-- Transaction target, calldata shape and native value
+- Recipient and minimum output encoded in provider-specific calldata
+- Allowlisted approval spender and transaction target
+- Provider entry point, calldata shape and native value
 - Slippage bounds and calculated minimum output
-- Absence of an extra route cost
+- Absence of an execution fee, plus exact validation of any static provider-attribution value
 
-ERC-20 approvals are exact-amount approvals. Quotes are refreshed before submission and a quote below the prior minimum is rejected. Swap records stay in extension-local storage.
+Provider-specific boundaries:
+
+- **1inch:** fixed Aggregation Router V6 target; decoded swap description must bind the source token, destination token, exact amount, user recipient and minimum return.
+- **KyberSwap:** fixed MetaAggregationRouter target; decoded swap description must bind the tokens, exact amount, user recipient and minimum return, with zero route-fee amounts.
+- **ParaSwap:** fixed Augustus V6.2 target; decoded exact-input data must bind the tokens, amount, beneficiary and minimum return. LlamaSwap's static ParaSwap partner address is accepted only with zero encoded partner fee.
+- **Matcha/0x v2:** the transaction target must equal the current taker-submitted Settler returned by 0x's on-chain deployment registry. The top-level recipient, buy token and minimum output are checked. 0x's ignored `zid & affiliate` metadata must contain the quote's exact 12-byte route identifier and the static affiliate value associated with LlamaSwap's public frontend key; arbitrary affiliate values and all nonzero execution-fee fields are rejected. ERC-20 routes must also carry Permit2 typed data limited to the reviewed token, exact amount, active Settler, current chain and a short deadline; Hippo verifies its EIP-712 hash and recovered signer before appending the signature.
+
+ERC-20 approvals are exact-amount approvals. Quotes are refreshed before submission. A missing provider, changed target or changed approval spender forces another review, and a quote below the prior minimum is rejected. Swap records stay in extension-local storage.
 
 The frontend endpoint is not a stable documented integration contract. Schema changes, credential changes or anti-bot controls can break swaps. Hippo fails closed rather than changing providers silently.
 
@@ -138,7 +147,7 @@ Privacy descriptions are provider claims, not independent attestations:
 - PublicNode states that operational IP data may be retained for up to 24 hours.
 - 0xRPC states that it does not log raw IP addresses.
 - MEV Blocker receives signed raw Ethereum transactions submitted to it.
-- LlamaSwap receives deliberate quote parameters.
+- LlamaSwap's frontend endpoint receives the wallet address, chain, pair, amount, slippage, request metadata and source IP. It relays the quote parameters to the selected aggregators when privacy routing is enabled; those aggregators receive the trade parameters, while DefiLlama remains the network peer. The eventual transaction is public on-chain.
 
 Public endpoints have quotas and may change method support without notice. No paid RPC credential or Hippo server credential is embedded.
 

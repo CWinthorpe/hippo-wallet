@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Input, Select, message } from 'antd';
 import { ethers } from 'ethers';
 import browser from 'webextension-polyfill';
@@ -19,6 +19,8 @@ const SUPPORTED_CHAIN_IDS = [
   'era',
   'base',
   'linea',
+  'sonic',
+  'unichain',
 ];
 
 const DEFAULT_OUTPUT_TOKEN: Record<string, string> = {
@@ -56,7 +58,26 @@ interface Quote {
     value: string;
     gas?: string;
   };
+  permit2?: {
+    hash: string;
+    domain: {
+      name: string;
+      chainId: number;
+      verifyingContract: string;
+    };
+    types: Record<string, Array<{ name: string; type: string }>>;
+    primaryType: string;
+    message: {
+      permitted: { token: string; amount: string };
+      spender: string;
+      nonce: string;
+      deadline: string;
+    };
+  };
   quoteId: string;
+  expiresAt: number;
+  providersCompared: string[];
+  availableProviders: string[];
 }
 
 const normalizeAddressInput = (value: string) => {
@@ -97,12 +118,15 @@ const Swap = () => {
   const [toToken, setToToken] = useState<TokenMetadata>();
   const [amount, setAmount] = useState('');
   const [slippage, setSlippage] = useState('0.5');
+  const [quotes, setQuotes] = useState<Quote[]>([]);
   const [quote, setQuote] = useState<Quote>();
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [allowanceEnough, setAllowanceEnough] = useState(false);
   const [error, setError] = useState('');
+  const quoteGeneration = useRef(0);
+  const allowanceGeneration = useRef(0);
 
   const loadToken = async (address: string) => {
     if (!account) throw new Error('No active account');
@@ -119,22 +143,39 @@ const Swap = () => {
     setToAddress(nextOutput);
     setFromToken(undefined);
     setToToken(undefined);
+    setQuotes([]);
     setQuote(undefined);
     setAllowanceEnough(false);
   }, [chainServerId]);
 
   useEffect(() => {
     if (!account) return;
+    let cancelled = false;
     void loadToken(fromAddress)
-      .then(setFromToken)
-      .catch((e) => setError(e.message));
+      .then((token) => {
+        if (!cancelled) setFromToken(token);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [account?.address, chainServerId, fromAddress]);
 
   useEffect(() => {
     if (!account || !toAddress) return;
+    let cancelled = false;
     void loadToken(toAddress)
-      .then(setToToken)
-      .catch((e) => setError(e.message));
+      .then((token) => {
+        if (!cancelled) setToToken(token);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [account?.address, chainServerId, toAddress]);
 
   const rawAmount = useMemo(() => {
@@ -167,13 +208,23 @@ const Swap = () => {
             slippage,
           }
         : undefined,
-    [account, chainServerId, fromToken, rawAmount, slippage, toToken]
+    [account?.address, chainServerId, fromToken, rawAmount, slippage, toToken]
   );
 
+  useEffect(() => {
+    quoteGeneration.current += 1;
+    allowanceGeneration.current += 1;
+    setAllowanceEnough(false);
+  }, [quoteRequest]);
+
   const refreshAllowance = async (nextQuote: Quote) => {
+    const generation = ++allowanceGeneration.current;
+    setAllowanceEnough(false);
     if (!fromToken || !account) return;
     if (fromToken.address === LLAMASWAP_NATIVE_TOKEN) {
-      setAllowanceEnough(true);
+      if (generation === allowanceGeneration.current) {
+        setAllowanceEnough(true);
+      }
       return;
     }
     const allowance = await wallet.getERC20Allowance(
@@ -181,7 +232,9 @@ const Swap = () => {
       fromToken.address,
       nextQuote.approvalSpender
     );
-    setAllowanceEnough(BigInt(allowance) >= BigInt(nextQuote.amountIn));
+    if (generation === allowanceGeneration.current) {
+      setAllowanceEnough(BigInt(allowance) >= BigInt(nextQuote.amountIn));
+    }
   };
 
   const fetchQuote = async () => {
@@ -191,11 +244,19 @@ const Swap = () => {
     }
     setLoading(true);
     setError('');
+    const generation = quoteGeneration.current;
     try {
-      const nextQuote = (await wallet.getLlamaSwapQuote(quoteRequest)) as Quote;
+      const nextQuotes = (await wallet.getLlamaSwapQuotes(
+        quoteRequest
+      )) as Quote[];
+      if (generation !== quoteGeneration.current) return;
+      if (!nextQuotes.length) throw new Error('No validated routes available.');
+      const nextQuote = nextQuotes[0];
+      setQuotes(nextQuotes);
       setQuote(nextQuote);
       await refreshAllowance(nextQuote);
     } catch (e: any) {
+      setQuotes([]);
       setQuote(undefined);
       setError(e?.message || String(e));
     } finally {
@@ -207,6 +268,7 @@ const Swap = () => {
     if (!account || !chain || !fromToken || !quote) return;
     setApproving(true);
     setError('');
+    const generation = quoteGeneration.current;
     try {
       const iface = new ethers.utils.Interface([
         'function approve(address spender,uint256 amount)',
@@ -231,6 +293,9 @@ const Swap = () => {
       );
       message.info(`Approval submitted: ${hash}`);
       await waitForReceipt(wallet, chain.id, hash);
+      if (generation !== quoteGeneration.current) {
+        throw new Error('Swap inputs changed while approval was pending.');
+      }
       await refreshAllowance(quote);
       message.success('Approval confirmed');
     } catch (e: any) {
@@ -244,9 +309,28 @@ const Swap = () => {
     if (!account || !chain || !quoteRequest || !quote || !toToken) return;
     setSubmitting(true);
     setError('');
+    const generation = quoteGeneration.current;
     try {
-      const fresh = (await wallet.getLlamaSwapQuote(quoteRequest)) as Quote;
+      const freshQuotes = (await wallet.getLlamaSwapQuotes(
+        quoteRequest
+      )) as Quote[];
+      if (generation !== quoteGeneration.current) {
+        throw new Error('Swap inputs changed while refreshing the route.');
+      }
+      const fresh = freshQuotes.find(
+        (candidate) => candidate.provider === quote.provider
+      );
+      if (!fresh) {
+        const replacement = freshQuotes[0];
+        setQuotes(freshQuotes);
+        setQuote(replacement);
+        if (replacement) await refreshAllowance(replacement);
+        throw new Error(
+          'The selected aggregator no longer has a valid route. Review another route.'
+        );
+      }
       if (BigInt(fresh.amountOut) < BigInt(quote.minimumAmountOut)) {
+        setQuotes(freshQuotes);
         setQuote(fresh);
         await refreshAllowance(fresh);
         throw new Error(
@@ -258,11 +342,64 @@ const Swap = () => {
         fresh.fromToken !== quote.fromToken ||
         fresh.toToken !== quote.toToken ||
         fresh.amountIn !== quote.amountIn ||
-        fresh.transaction.from.toLowerCase() !== account.address.toLowerCase()
+        fresh.transaction.from.toLowerCase() !==
+          account.address.toLowerCase() ||
+        fresh.provider !== quote.provider ||
+        fresh.approvalSpender !== quote.approvalSpender ||
+        fresh.transaction.to !== quote.transaction.to
       ) {
+        setQuotes(freshQuotes);
+        setQuote(fresh);
+        await refreshAllowance(fresh);
         throw new Error(
-          'Fresh LlamaSwap quote does not match the reviewed swap.'
+          'The selected route changed. Review the refreshed route before signing.'
         );
+      }
+
+      let transactionData = fresh.transaction.data;
+      if (fresh.permit2) {
+        const signature = await wallet.sendRequest<string>(
+          {
+            method: 'eth_signTypedData_v4',
+            params: [
+              account.address,
+              JSON.stringify({
+                domain: fresh.permit2.domain,
+                types: fresh.permit2.types,
+                primaryType: fresh.permit2.primaryType,
+                message: fresh.permit2.message,
+              }),
+            ],
+          },
+          { account }
+        );
+        const {
+          EIP712Domain: _domain,
+          ...verificationTypes
+        } = fresh.permit2.types;
+        const recovered = ethers.utils.verifyTypedData(
+          fresh.permit2.domain,
+          verificationTypes,
+          fresh.permit2.message,
+          signature
+        );
+        if (recovered.toLowerCase() !== account.address.toLowerCase()) {
+          throw new Error(
+            'Permit2 signature did not recover the active account.'
+          );
+        }
+        const signatureLength = ethers.utils.hexZeroPad(
+          ethers.utils.hexlify(ethers.utils.arrayify(signature).length),
+          32
+        );
+        transactionData = ethers.utils.hexConcat([
+          transactionData,
+          signatureLength,
+          signature,
+        ]);
+      }
+      if (generation !== quoteGeneration.current) {
+        throw new Error('Swap inputs changed before transaction submission.');
       }
       const hash = await wallet.sendRequest<string>(
         {
@@ -270,6 +407,7 @@ const Swap = () => {
           params: [
             {
               ...fresh.transaction,
+              data: transactionData,
               chainId: chain.id,
             },
           ],
@@ -295,6 +433,7 @@ const Swap = () => {
         ].slice(0, 100),
       });
       message.success(`Swap submitted: ${hash}`);
+      setQuotes([]);
       setQuote(undefined);
       setAmount('');
     } catch (e: any) {
@@ -317,7 +456,8 @@ const Swap = () => {
             Same-chain swap
           </div>
           <div className="mt-[4px] text-[12px] text-r-neutral-foot">
-            Quotes: LlamaSwap frontend API · Gas and broadcast: selected RPC
+            Quote comparison: LlamaSwap frontend API · Execution: selected
+            aggregator · Gas and broadcast: selected RPC
           </div>
         </div>
 
@@ -340,6 +480,8 @@ const Swap = () => {
           value={fromAddress}
           onChange={(e) => {
             setFromAddress(e.target.value);
+            setFromToken(undefined);
+            setQuotes([]);
             setQuote(undefined);
           }}
         />
@@ -359,6 +501,7 @@ const Swap = () => {
           inputMode="decimal"
           onChange={(e) => {
             setAmount(e.target.value);
+            setQuotes([]);
             setQuote(undefined);
           }}
           placeholder="0.0"
@@ -372,6 +515,8 @@ const Swap = () => {
           value={toAddress}
           onChange={(e) => {
             setToAddress(e.target.value);
+            setToToken(undefined);
+            setQuotes([]);
             setQuote(undefined);
           }}
         />
@@ -388,6 +533,7 @@ const Swap = () => {
           inputMode="decimal"
           onChange={(e) => {
             setSlippage(e.target.value);
+            setQuotes([]);
             setQuote(undefined);
           }}
         />
@@ -398,6 +544,34 @@ const Swap = () => {
 
         {quote && toToken ? (
           <div className="mb-[12px] rounded-[10px] bg-r-neutral-card-1 p-[12px] text-[13px] text-r-neutral-body">
+            <div className="mb-[10px]">
+              <div className="mb-[4px] text-[12px] text-r-neutral-foot">
+                Validated aggregator route
+              </div>
+              <Select
+                className="w-full"
+                value={quote.provider}
+                onChange={async (provider) => {
+                  const next = quotes.find(
+                    (candidate) => candidate.provider === provider
+                  );
+                  if (!next) return;
+                  setQuote(next);
+                  try {
+                    await refreshAllowance(next);
+                  } catch (e: any) {
+                    setError(e?.message || String(e));
+                  }
+                }}
+                options={quotes.map((candidate) => ({
+                  value: candidate.provider,
+                  label: `${candidate.provider} — ${ethers.utils.formatUnits(
+                    candidate.amountOut,
+                    toToken.decimals
+                  )} ${toToken.symbol}`,
+                }))}
+              />
+            </div>
             <div className="flex justify-between">
               <span>Receive</span>
               <strong className="text-r-neutral-title-1">
@@ -406,7 +580,7 @@ const Swap = () => {
             </div>
             <div className="mt-[6px] flex justify-between">
               <span>Route</span>
-              <span>{quote.provider}</span>
+              <span>{quote.provider} via LlamaSwap</span>
             </div>
             <div className="mt-[6px] flex justify-between">
               <span>Minimum output</span>
@@ -418,12 +592,27 @@ const Swap = () => {
                 {toToken.symbol}
               </span>
             </div>
+            <div className="mt-[6px] flex justify-between">
+              <span>Estimated gas</span>
+              <span>{quote.estimatedGas}</span>
+            </div>
+            <div className="mt-[8px] text-[11px] text-r-neutral-foot">
+              Compared: {quote.providersCompared.join(', ')}. Only routes that
+              pass provider-specific target, calldata, recipient, amount,
+              slippage, value, and fee validation are shown.
+            </div>
+            {quote.permit2 ? (
+              <div className="mt-[8px] text-[11px] text-r-neutral-foot">
+                This Matcha route requires a one-time Permit2 authorization
+                signature after exact token approval.
+              </div>
+            ) : null}
           </div>
         ) : null}
 
         {!quote ? (
           <Button block type="primary" loading={loading} onClick={fetchQuote}>
-            Get validated quote
+            Compare validated routes
           </Button>
         ) : !allowanceEnough ? (
           <Button block type="primary" loading={approving} onClick={approve}>

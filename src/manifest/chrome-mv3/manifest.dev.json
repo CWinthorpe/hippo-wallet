@@ -4,7 +4,7 @@
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
   "version": "0.93.102",
-  "version_name": "0.93.102-hippo.3-dev",
+  "version_name": "0.93.102-hippo.4-dev",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {

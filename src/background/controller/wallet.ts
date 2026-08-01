@@ -500,6 +500,10 @@ export class WalletController extends BaseController {
     request: Parameters<typeof llamaSwapService.getQuote>[0]
   ) => llamaSwapService.getQuote(request);
 
+  getLlamaSwapQuotes = (
+    request: Parameters<typeof llamaSwapService.getQuotes>[0]
+  ) => llamaSwapService.getQuotes(request);
+
   getLlamaSwapTokenMetadata = (
     request: Parameters<typeof llamaSwapService.getTokenMetadata>[0]
   ) => llamaSwapService.getTokenMetadata(request);

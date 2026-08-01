@@ -4,7 +4,7 @@ Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [
 
 ## Current release
 
-- **Version:** `0.93.102-hippo.3`
+- **Version:** `0.93.102-hippo.4`
 - **Target:** Chromium Manifest V3
 - **Repository:** [CWinthorpe/hippo-wallet](https://github.com/CWinthorpe/hippo-wallet)
 
@@ -66,9 +66,11 @@ Hippo computes the transaction hash locally and rejects malformed or mismatched 
 
 ### Direct same-chain swaps
 
-Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo requests same-chain quotes directly from LlamaSwap's production frontend API and currently uses its KyberSwap adapter.
+Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo requests same-chain quotes directly from LlamaSwap's production frontend API. For each supported chain it queries every ordinary transaction adapter exposed by LlamaSwap that Hippo can execute: **1inch, KyberSwap, ParaSwap and Matcha/0x v2** where available. LlamaSwap's separate `0x Gasless` adapter is deliberately excluded because Hippo does not support relayed, sponsored or gasless submission.
 
-Before presenting a quote, Hippo verifies the selected chain, token addresses, input amount, output amount, recipient, approval spender, transaction target, calldata presence, native value, slippage bounds and absence of an added route fee. Approvals are exact-amount approvals rather than unlimited approvals. Submitted swap hashes are stored locally; Hippo does not post trade history to Rabby.
+Hippo shows every route that passes provider-specific validation and defaults to the highest quoted token output; the user can select another validated aggregator. Validation covers the selected chain, token addresses, exact input, quoted and minimum output, recipient, approval spender, transaction target, entry point/calldata, native value and fee fields. 1inch, KyberSwap and ParaSwap use fixed allowlisted routers. Matcha's current Settler target is checked on-chain against 0x's official deployment registry; ERC-20 Matcha routes additionally require an exact-token Permit2 authorization whose typed data is checked locally before signing.
+
+Approvals are exact-amount approvals rather than unlimited approvals. The selected provider is refreshed before submission; provider or target changes require another review. Submitted swap hashes are stored locally, and Hippo does not post trade history to Rabby.
 
 LlamaSwap's frontend endpoint is not a documented third-party wallet API and may change or apply anti-bot controls without notice. The embedded frontend credential is public by design and is not a secret. If validation fails, Hippo refuses the quote rather than guessing.
 
