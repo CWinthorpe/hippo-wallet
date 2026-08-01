@@ -16,6 +16,7 @@ Use the ZIP attached to the [latest GitHub release](https://github.com/CWinthorp
 - GA4, Matomo, Sentry initialization, uninstall reporting, rating prompts, and onboarding opt-in behavior are disabled.
 - Automatic `/v1/engine/action/log` reporting is removed from transaction, message, and typed-data approval flows.
 - The action-log API is also disabled at the API-client boundary and blocked by a Manifest V3 declarative network rule.
+- Rabby's `/v1/chainrpc` and `/v1/wallet/eth_rpc` control-plane paths are disabled at the API-client boundary and blocked by declarative network rules.
 - Persistent per-installation Rabby API identifiers are cleared and cannot be re-enabled by normal runtime mutation.
 - No Hippo-operated relay or telemetry server is used.
 

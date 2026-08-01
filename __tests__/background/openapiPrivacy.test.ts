@@ -52,6 +52,17 @@ describe('private-build functional API identity', () => {
     }
   });
 
+  test('disables the Rabby default RPC control plane on both API clients', async () => {
+    for (const client of [openapiService, testnetOpenapiService]) {
+      await expect(client.getDefaultRPCs()).rejects.toMatchObject({
+        code: 'RABBY_RPC_DISABLED',
+      });
+      await expect(
+        client.ethRpc('eth', { method: 'eth_chainId', params: [] })
+      ).rejects.toMatchObject({ code: 'RABBY_RPC_DISABLED' });
+    }
+  });
+
   test('disables automatic security action logging on both API clients', async () => {
     const body = {
       id: 'log-id',

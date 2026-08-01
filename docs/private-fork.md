@@ -43,6 +43,7 @@ Hippo removes Rabby from ordinary default RPC selection:
 
 - No periodic call to Rabby's `/v1/chainrpc` routing endpoint.
 - No default use of Rabby's `/v1/wallet/eth_rpc` JSON-RPC proxy.
+- Both methods are disabled on the OpenAPI clients and their exact network paths are blocked by MV3 declarative rules.
 - No default `submitTxV2` path for an ordinary locally signed transaction.
 - No silent Rabby fallback when a bundled route is absent.
 

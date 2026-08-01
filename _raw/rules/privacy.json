@@ -38,5 +38,21 @@
     "condition": {
       "urlFilter": "||api.rabby.io/v1/engine/action/log"
     }
+  },
+  {
+    "id": 6,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||api.rabby.io/v1/chainrpc"
+    }
+  },
+  {
+    "id": 7,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||api.rabby.io/v1/wallet/eth_rpc"
+    }
   }
 ]

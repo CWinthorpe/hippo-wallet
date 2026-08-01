@@ -110,10 +110,27 @@ export const testnetOpenapiService = new OpenApiService({
   store: testnetStore,
 });
 
+const disabledRabbyRPCError = () =>
+  Object.assign(
+    new Error('Rabby RPC control plane is disabled; use Hippo RPC routing'),
+    { code: 'RABBY_RPC_DISABLED' }
+  );
+
+const disableRabbyRPCControlPlane = (client: OpenApiService) => {
+  client.getDefaultRPCs = async () => {
+    throw disabledRabbyRPCError();
+  };
+  client.ethRpc = async () => {
+    throw disabledRabbyRPCError();
+  };
+};
+
 const disableActionLogging = (client: OpenApiService) => {
   client.postActionLog = async () => undefined;
 };
 
+disableRabbyRPCControlPlane(service);
+disableRabbyRPCControlPlane(testnetOpenapiService);
 disableActionLogging(service);
 disableActionLogging(testnetOpenapiService);
 

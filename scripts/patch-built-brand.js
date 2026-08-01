@@ -5,7 +5,9 @@ const root = path.resolve(__dirname, '..');
 const dist = path.join(root, 'dist');
 
 if (!fs.existsSync(dist)) {
-  throw new Error('dist/ is missing; build Hippo Wallet before post-processing');
+  throw new Error(
+    'dist/ is missing; build Hippo Wallet before post-processing'
+  );
 }
 
 const replacements = [
@@ -18,6 +20,10 @@ const replacements = [
   ['var(--rb-neutral-line, #e0e5ec)', 'var(--rb-neutral-line, #343b52)'],
 ];
 const textExtensions = new Set(['.js', '.html', '.json', '.css', '.svg']);
+const inlineSourceMapPatterns = [
+  /\/\*#\s*sourceMappingURL=data:application\/json;base64,[A-Za-z0-9+/=]+\s*\*\//g,
+  /\/\/#\s*sourceMappingURL=data:application\/json;base64,[A-Za-z0-9+/=]+(?:\r?\n|$)/g,
+];
 let changedFiles = 0;
 let replacementsApplied = 0;
 
@@ -37,6 +43,11 @@ function visit(directory) {
       const parts = branded.split(legacy);
       replacementsApplied += parts.length - 1;
       branded = parts.join(replacement);
+    }
+    for (const pattern of inlineSourceMapPatterns) {
+      const matches = branded.match(pattern);
+      replacementsApplied += matches?.length || 0;
+      branded = branded.replace(pattern, '');
     }
     if (branded !== source) {
       fs.writeFileSync(absolutePath, branded);
@@ -121,7 +132,10 @@ if (uiBundle.includes(darkRouteStart)) {
   replacementsApplied += 1;
 }
 
-const pageProvider = fs.readFileSync(path.join(dist, 'pageProvider.js'), 'utf8');
+const pageProvider = fs.readFileSync(
+  path.join(dist, 'pageProvider.js'),
+  'utf8'
+);
 if (!pageProvider.includes('Hippo Wallet')) {
   throw new Error('Built page provider does not advertise Hippo Wallet');
 }
@@ -147,7 +161,9 @@ function findLegacy(directory) {
 }
 findLegacy(dist);
 if (remaining.length) {
-  throw new Error(`Legacy user-facing wallet name remains in: ${remaining.join(', ')}`);
+  throw new Error(
+    `Legacy user-facing wallet name remains in: ${remaining.join(', ')}`
+  );
 }
 
 console.log(

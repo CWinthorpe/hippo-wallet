@@ -74,6 +74,8 @@ describe('private-build privacy invariants', () => {
       '||sentry.io^',
       '||rabby.io/uninstalled',
       '||api.rabby.io/v1/engine/action/log',
+      '||api.rabby.io/v1/chainrpc',
+      '||api.rabby.io/v1/wallet/eth_rpc',
     ].forEach((urlFilter) => {
       expect(byFilter.get(urlFilter)?.action.type).toBe('block');
       expect(byFilter.get(urlFilter)?.condition.resourceTypes).toBeUndefined();
