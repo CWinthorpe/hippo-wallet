@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
   "version": "0.93.102",
-  "version_name": "0.93.102-hippo.4",
+  "version_name": "0.93.102-hippo.5",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -34,6 +34,7 @@
   "content_scripts": [
     {
       "all_frames": true,
+      "exclude_matches": ["https://swap-api.defillama.com/*"],
       "js": ["webextension-polyfill.js", "content-script.js"],
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"

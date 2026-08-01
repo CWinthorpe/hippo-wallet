@@ -14,6 +14,12 @@ import {
   ZEROX_LLAMASWAP_AFFILIATE,
   ZEROX_TAKER_SUBMITTED_FEATURE,
 } from '@/constant/llama-swap';
+import {
+  fetchLlamaSwapQuotesFromOrigin,
+  LlamaSwapQuoteTransport,
+  LlamaSwapQuoteTransportRequest,
+  LlamaSwapQuoteTransportResult,
+} from './llamaSwapQuoteTransport';
 
 const LLAMASWAP_QUOTE_ENDPOINT =
   'https://swap-api.defillama.com/dexAggregatorQuote';
@@ -784,6 +790,11 @@ export const validateLlamaSwapQuote = (
 };
 
 export class LlamaSwapService {
+  constructor(
+    private readonly quoteTransport: LlamaSwapQuoteTransport = (requests) =>
+      fetchLlamaSwapQuotesFromOrigin(requests, MAX_RESPONSE_CHARACTERS)
+  ) {}
+
   private requestRPC = async (
     chainServerId: string,
     method: string,
@@ -817,10 +828,10 @@ export class LlamaSwapService {
     );
   };
 
-  private fetchProtocolQuote = async (
+  private buildProtocolQuoteRequest = (
     request: LlamaSwapQuoteRequest,
     protocol: LlamaSwapProtocol
-  ) => {
+  ): LlamaSwapQuoteTransportRequest => {
     const chain = LLAMASWAP_CHAIN_BY_SERVER_ID[request.chainServerId];
     if (!chain) throw new Error('LlamaSwap does not support this chain');
     const from = normalizeTokenAddress(request.fromToken.address);
@@ -833,48 +844,42 @@ export class LlamaSwapService {
       amount: request.amount,
       api_key: LLAMASWAP_PUBLIC_FRONTEND_KEY,
     });
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20_000);
+    return {
+      protocol,
+      url: `${LLAMASWAP_QUOTE_ENDPOINT}?${params}`,
+      body: {
+        userAddress: request.userAddress,
+        slippage: getProtocolSlippage(request.slippage, protocol),
+        isPrivacyEnabled: true,
+        fromToken: {
+          address: from,
+          decimals: request.fromToken.decimals,
+        },
+        toToken: {
+          address: to,
+          decimals: request.toToken.decimals,
+        },
+      },
+    };
+  };
+
+  private parseTransportResult = (
+    protocol: LlamaSwapProtocol,
+    result?: LlamaSwapQuoteTransportResult
+  ) => {
+    if (!result) throw new Error(`${protocol} quote returned no result`);
+    if (result.error)
+      throw new Error(`${protocol} quote failed: ${result.error}`);
+    if (typeof result.text !== 'string') {
+      throw new Error(`${protocol} quote returned no response body`);
+    }
+    if (result.text.length > MAX_RESPONSE_CHARACTERS) {
+      throw new Error(`${protocol} quote response is too large`);
+    }
     try {
-      const response = await fetch(`${LLAMASWAP_QUOTE_ENDPOINT}?${params}`, {
-        method: 'POST',
-        body: JSON.stringify({
-          userAddress: request.userAddress,
-          slippage: getProtocolSlippage(request.slippage, protocol),
-          isPrivacyEnabled: true,
-          fromToken: {
-            address: from,
-            decimals: request.fromToken.decimals,
-          },
-          toToken: {
-            address: to,
-            decimals: request.toToken.decimals,
-          },
-        }),
-        credentials: 'include',
-        signal: controller.signal,
-      });
-      if (!response.ok) {
-        throw new Error(`${protocol} quote failed (${response.status})`);
-      }
-      const declaredLength = Number(response.headers.get('content-length'));
-      if (
-        Number.isFinite(declaredLength) &&
-        declaredLength > MAX_RESPONSE_CHARACTERS
-      ) {
-        throw new Error(`${protocol} quote response is too large`);
-      }
-      const text = await response.text();
-      if (text.length > MAX_RESPONSE_CHARACTERS) {
-        throw new Error(`${protocol} quote response is too large`);
-      }
-      try {
-        return JSON.parse(text);
-      } catch (_error) {
-        throw new Error(`${protocol} quote returned invalid JSON`);
-      }
-    } finally {
-      clearTimeout(timeout);
+      return JSON.parse(result.text);
+    } catch (_error) {
+      throw new Error(`${protocol} quote returned invalid JSON`);
     }
   };
 
@@ -952,15 +957,47 @@ export class LlamaSwapService {
       throw new Error('LlamaSwap does not support this chain');
     }
 
+    const transportRequests = protocols.map((protocol) =>
+      this.buildProtocolQuoteRequest(request, protocol)
+    );
+
     const matchaRouterPromise = protocols.includes('Matcha/0x v2')
       ? this.getCurrentMatchaRouter(request.chainServerId).catch(
           () => undefined
         )
       : Promise.resolve(undefined);
+    let transportResults: LlamaSwapQuoteTransportResult[];
+    try {
+      transportResults = await this.quoteTransport(transportRequests);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `No valid LlamaSwap routes: quote transport failed: ${reason}`
+      );
+    }
+    const resultByProtocol = new Map<
+      LlamaSwapProtocol,
+      LlamaSwapQuoteTransportResult
+    >();
+    transportResults.forEach((result) => {
+      const protocol = protocols.find((item) => item === result.protocol);
+      if (!protocol) return;
+      if (resultByProtocol.has(protocol)) {
+        resultByProtocol.set(protocol, {
+          protocol,
+          origin: result.origin,
+          error: 'duplicate quote-page result',
+        });
+        return;
+      }
+      resultByProtocol.set(protocol, result);
+    });
     const settled = await Promise.allSettled(
       protocols.map(async (protocol) => {
         const [response, matchaRouter] = await Promise.all([
-          this.fetchProtocolQuote(request, protocol),
+          Promise.resolve(
+            this.parseTransportResult(protocol, resultByProtocol.get(protocol))
+          ),
           protocol === 'Matcha/0x v2'
             ? matchaRouterPromise
             : Promise.resolve(undefined),

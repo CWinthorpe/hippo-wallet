@@ -2,7 +2,7 @@
 
 Hippo Wallet is a downstream Rabby Wallet build intended for direct inspection and self-hosted use. It operates no Hippo telemetry collector, RPC relay, swap relay or account backend.
 
-This document describes release `0.93.102-hippo.4`.
+This document describes release `0.93.102-hippo.5`.
 
 ## Fail-closed Rabby/DeBank policy
 
@@ -113,6 +113,8 @@ Hippo computes the local transaction hash before submission and compares it with
 ## LlamaSwap boundary
 
 Same-chain swap quotes are requested directly from `https://swap-api.defillama.com/dexAggregatorQuote` using the public credential shipped by LlamaSwap's frontend. Hippo sends the chain, token addresses, raw input amount, recipient and requested slippage to every supported ordinary transaction adapter in parallel: 1inch, KyberSwap, ParaSwap and Matcha/0x v2 where that adapter supports the selected chain. `0x Gasless` is not queried because gasless, relayed and sponsored submission are removed features.
+
+Cloudflare currently challenges POSTs made directly by an MV3 service worker from a `chrome-extension://` origin. Hippo does not work around that with a Hippo proxy. For each deliberate quote comparison it creates one temporary inactive tab at the exact `https://swap-api.defillama.com/` origin, waits for that page to finish loading, injects the packaged request function into Chrome's **isolated** world, performs the supported-provider requests in parallel, and closes the tab even when loading, injection or transport fails. The API origin is excluded from the ordinary dapp-provider content script. The loaded origin, every request URL, protocol/result pairing, response size and JSON shape are checked locally. The remote page receives no extension API capability; returned route data remains untrusted and passes through the same provider-specific validation below. The temporary tab can be visible in the tab strip for the duration of the request. Its bare API origin can remain in local browser history; Hippo best-effort strips Cloudflare challenge query parameters from the temporary tab's current history entry before closing it without requesting broad browser-history permission.
 
 The UI presents every response that survives validation, identifies the executing aggregator explicitly and initially selects the highest quoted token output. It does not call a Kyber-only route “LlamaSwap” or claim that LlamaSwap itself executes the transaction.
 

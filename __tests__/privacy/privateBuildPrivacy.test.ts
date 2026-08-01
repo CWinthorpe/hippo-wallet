@@ -95,6 +95,22 @@ describe('private-build privacy invariants', () => {
     });
   });
 
+  test('does not inject the dapp provider into the temporary quote-origin tab', () => {
+    [
+      'src/manifest/chrome-mv3/manifest.json',
+      'src/manifest/chrome-mv3/manifest.dev.json',
+    ].forEach((manifestPath) => {
+      const manifest = JSON.parse(read(manifestPath));
+      const pageProviderScript = manifest.content_scripts.find(
+        (entry: { js?: string[] }) =>
+          entry.js?.includes('content-script.js')
+      );
+      expect(pageProviderScript?.exclude_matches).toContain(
+        'https://swap-api.defillama.com/*'
+      );
+    });
+  });
+
   test('cannot emit security action telemetry or use Rabby as the RPC control plane', () => {
     const approvalSources = [
       'src/ui/views/Approval/components/SignTx.tsx',

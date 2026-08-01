@@ -38,6 +38,7 @@ import {
   LlamaSwapService,
   validateLlamaSwapQuote,
 } from '@/background/service/llamaSwap';
+import { LlamaSwapQuoteTransport } from '@/background/service/llamaSwapQuoteTransport';
 
 const recipient = '0x1111111111111111111111111111111111111111';
 const fromToken = '0x2222222222222222222222222222222222222222';
@@ -333,6 +334,39 @@ const response = (payload: unknown, ok = true, status = 200) => ({
   text: async () => JSON.stringify(payload),
 });
 
+const testQuoteTransport: LlamaSwapQuoteTransport = async (requests) =>
+  Promise.all(
+    requests.map(async (request) => {
+      try {
+        const result = await fetch(request.url, {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify(request.body),
+        });
+        if (!result.ok) {
+          return {
+            protocol: request.protocol,
+            origin: 'https://swap-api.defillama.com',
+            error: `quote request failed (${result.status})`,
+          };
+        }
+        return {
+          protocol: request.protocol,
+          origin: 'https://swap-api.defillama.com',
+          text: await result.text(),
+        };
+      } catch (error) {
+        return {
+          protocol: request.protocol,
+          origin: 'https://swap-api.defillama.com',
+          error: String(error),
+        };
+      }
+    })
+  );
+
+const createService = () => new LlamaSwapService(testQuoteTransport);
+
 describe('LlamaSwap multi-aggregator validation', () => {
   const fetchMock = jest.fn();
   const rpcMock = RPCService.requestDefaultRPC as jest.Mock;
@@ -351,7 +385,7 @@ describe('LlamaSwap multi-aggregator validation', () => {
   });
 
   test('queries all ordinary adapters, excludes gasless, validates, and sorts routes', async () => {
-    const quotes = await new LlamaSwapService().getQuotes(nativeRequest);
+    const quotes = await createService().getQuotes(nativeRequest);
 
     expect(quotes.map((quote) => quote.provider)).toEqual([
       'ParaSwap',
@@ -400,7 +434,7 @@ describe('LlamaSwap multi-aggregator validation', () => {
       return response(responseForProtocol(protocol));
     });
 
-    const quotes = await new LlamaSwapService().getQuotes(nativeRequest);
+    const quotes = await createService().getQuotes(nativeRequest);
     expect(quotes.map((quote) => quote.provider)).toEqual([
       'ParaSwap',
       'Matcha/0x v2',
@@ -412,7 +446,7 @@ describe('LlamaSwap multi-aggregator validation', () => {
     const request = { ...nativeRequest, chainServerId: 'era' };
     fetchMock.mockResolvedValue(response(makeOneInchPayload()));
 
-    const quotes = await new LlamaSwapService().getQuotes(request);
+    const quotes = await createService().getQuotes(request);
     expect(quotes).toHaveLength(1);
     expect(quotes[0].provider).toBe('1inch');
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -422,7 +456,7 @@ describe('LlamaSwap multi-aggregator validation', () => {
   test('fails closed when every adapter fails', async () => {
     fetchMock.mockResolvedValue(response({}, false, 403));
     await expect(
-      new LlamaSwapService().getQuotes(nativeRequest)
+      createService().getQuotes(nativeRequest)
     ).rejects.toThrow('No valid LlamaSwap routes');
   });
 

@@ -459,6 +459,11 @@ const Swap = () => {
             Quote comparison: LlamaSwap frontend API · Execution: selected
             aggregator · Gas and broadcast: selected RPC
           </div>
+          <div className="mt-[4px] text-[11px] text-r-neutral-foot">
+            Comparing routes opens one temporary inactive DefiLlama API tab for
+            same-origin requests, then closes it automatically. The API origin
+            may remain in local browser history.
+          </div>
         </div>
 
         <label className="text-[12px] text-r-neutral-foot">Network</label>
