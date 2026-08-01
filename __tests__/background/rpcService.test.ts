@@ -32,6 +32,7 @@ import {
   validateRPCResult,
 } from '@/background/service/rpc';
 import { CHAINS_ENUM } from '@debank/common';
+import openapiService from '@/background/service/openapi';
 import fs from 'fs';
 import path from 'path';
 
@@ -144,7 +145,9 @@ describe('RPC read failover and broadcast routing', () => {
       service.requestCustomRPC(CHAINS_ENUM.ETH, 'eth_sendRawTransaction', [
         '0xsigned',
       ])
-    ).rejects.toThrow('Invalid transaction hash from https://broadcast.example');
+    ).rejects.toThrow(
+      'Invalid transaction hash from https://broadcast.example'
+    );
     expect(service.request).toHaveBeenCalledTimes(1);
   });
 
@@ -212,11 +215,9 @@ describe('RPC read failover and broadcast routing', () => {
       .mockRejectedValue({ response: { status: 503 } }) as any;
 
     await expect(
-      service.defaultRPCSubmitTxWithFallback(
-        'eth',
-        'eth_sendRawTransaction',
-        ['0xsigned']
-      )
+      service.defaultRPCSubmitTxWithFallback('eth', 'eth_sendRawTransaction', [
+        '0xsigned',
+      ])
     ).rejects.toBeDefined();
     expect(service.defaultRPCRequest).toHaveBeenCalledTimes(1);
     expect(service.defaultRPCRequest).toHaveBeenCalledWith(
@@ -278,9 +279,9 @@ describe('RPC read failover and broadcast routing', () => {
         response: { data: { error: { message: 'provider overloaded' } } },
       })
     ).toBe(true);
-    expect(isRetryableRPCError({ code: 3, message: 'execution reverted' })).toBe(
-      false
-    );
+    expect(
+      isRetryableRPCError({ code: 3, message: 'execution reverted' })
+    ).toBe(false);
   });
 
   test('limits automatic failover to stateless reads and estimates', () => {
@@ -325,6 +326,74 @@ describe('RPC read failover and broadcast routing', () => {
     });
   });
 
+  test('uses the bundled privacy provider hierarchy without querying Rabby', async () => {
+    const service = new RPCService();
+    (openapiService.getDefaultRPCs as jest.Mock).mockClear();
+
+    await service.syncDefaultRPC();
+
+    expect(openapiService.getDefaultRPCs).not.toHaveBeenCalled();
+    expect(service.getDefaultRPC('eth')).toEqual({
+      chainId: 'eth',
+      rpcUrl: [
+        'https://public.1rpc.io/eth',
+        'https://eth.drpc.org',
+        'https://ethereum-rpc.publicnode.com',
+        'https://0xrpc.io/eth',
+      ],
+      txPushToRPC: true,
+    });
+    expect(service.getDefaultRPC('metis')).toEqual({
+      chainId: 'metis',
+      rpcUrl: ['https://metis.drpc.org'],
+      txPushToRPC: true,
+    });
+    expect(service.getDefaultRPC('cfx')).toBeUndefined();
+  });
+
+  test('never falls back to the Rabby RPC proxy when a bundled route is missing', async () => {
+    const service = new RPCService();
+    (openapiService.ethRpc as jest.Mock).mockClear();
+
+    await expect(
+      service.requestDefaultRPC({
+        chainServerId: 'cfx',
+        method: 'eth_blockNumber',
+        params: [],
+      })
+    ).rejects.toThrow('Configure a custom RPC');
+    expect(openapiService.ethRpc).not.toHaveBeenCalled();
+  });
+
+  test('recognizes the documented 1RPC quota error as retryable', () => {
+    expect(
+      isRetryableRPCError({
+        code: -32001,
+        message: 'Daily usage quota exceeded',
+      })
+    ).toBe(true);
+  });
+
+  test('keeps custom RPC routing ahead of the bundled default route', () => {
+    const providerSource = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        '../../src/background/controller/provider/controller.ts'
+      ),
+      'utf8'
+    );
+    const customRoute = providerSource.indexOf(
+      'if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM))'
+    );
+    const defaultRoute = providerSource.indexOf(
+      'RPCService.requestDefaultRPC({',
+      customRoute
+    );
+
+    expect(customRoute).toBeGreaterThan(-1);
+    expect(defaultRoute).toBeGreaterThan(customRoute);
+  });
+
   test('direct default-RPC broadcast does not fall back to the wallet backend', () => {
     const providerSource = fs.readFileSync(
       path.resolve(
@@ -333,9 +402,7 @@ describe('RPC read failover and broadcast routing', () => {
       ),
       'utf8'
     );
-    const directBranchStart = providerSource.indexOf(
-      'if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount)'
-    );
+    const directBranchStart = providerSource.indexOf("pushType !== 'mev'");
     const backendOnlyBranchStart = providerSource.indexOf(
       'adoptBE7702Params();',
       directBranchStart

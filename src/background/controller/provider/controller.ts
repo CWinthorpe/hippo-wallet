@@ -1269,7 +1269,13 @@ class ProviderController extends BaseController {
             };
 
             const defaultRPC = RPCService.getDefaultRPC(chainServerId);
-            if (defaultRPC?.txPushToRPC && !isGasLess && !isGasAccount) {
+            if (!isGasLess && !isGasAccount && pushType !== 'mev') {
+              if (!defaultRPC?.txPushToRPC) {
+                throw new Error(
+                  `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
+                );
+              }
+
               const rawTx = isTempoTx
                 ? tempoSerializedRawTx
                 : bytesToHex(

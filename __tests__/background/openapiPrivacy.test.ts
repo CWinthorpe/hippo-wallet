@@ -30,7 +30,9 @@ jest.mock('@rabby-wallet/rabby-api/dist/plugins/web-sign', () => ({
 
 jest.mock('background/utils/fetchAdapter', () => jest.fn());
 
-import '@/background/service/openapi';
+import openapiService, {
+  testnetOpenapiService,
+} from '@/background/service/openapi';
 
 describe('private-build functional API identity', () => {
   test('clears persisted installation identifiers and prevents re-enabling them', async () => {
@@ -48,5 +50,18 @@ describe('private-build functional API identity', () => {
       expect(store.apiKey).toBeNull();
       expect(store.apiTime).toBeNull();
     }
+  });
+
+  test('disables automatic security action logging on both API clients', async () => {
+    const body = {
+      id: 'log-id',
+      type: 'tx' as const,
+      rules: [{ id: 'rule-id', level: 'warning' }],
+    };
+
+    await expect(openapiService.postActionLog(body)).resolves.toBeUndefined();
+    await expect(
+      testnetOpenapiService.postActionLog(body)
+    ).resolves.toBeUndefined();
   });
 });

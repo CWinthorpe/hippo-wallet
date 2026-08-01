@@ -3,8 +3,8 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.93.100",
-  "version_name": "0.93.100-hippo.1-dev",
+  "version": "0.93.101",
+  "version_name": "0.93.101-hippo.2-dev",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -35,15 +35,8 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -51,9 +44,7 @@
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"
       ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": {
@@ -79,17 +70,11 @@
       }
     ]
   },
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": [
-        "pageProvider.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+      "resources": ["pageProvider.js"],
+      "matches": ["<all_urls>"]
     }
   ],
   "externally_connectable": {

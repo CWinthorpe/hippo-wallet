@@ -30,5 +30,13 @@
     "condition": {
       "urlFilter": "||rabby.io/uninstalled"
     }
+  },
+  {
+    "id": 5,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||api.rabby.io/v1/engine/action/log"
+    }
   }
 ]

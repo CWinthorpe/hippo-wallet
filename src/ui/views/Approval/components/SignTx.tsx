@@ -42,7 +42,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
+import { useSize, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -61,10 +61,7 @@ import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
-import {
-  Level,
-  defaultRules,
-} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
@@ -420,7 +417,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const currentAccount = params.isGnosis ? params.account! : $account;
   const renderStartAt = useRef(0);
   const reportedRenderDuration = useRef(false);
-  const securityEngineCtx = useRef<any>(null);
   const logId = useRef('');
   const actionType = useRef('');
   const [isReady, setIsReady] = useState(false);
@@ -1407,7 +1403,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           hasAddress: wallet.hasAddress,
         },
       });
-      securityEngineCtx.current = ctx;
       const result = await executeEngine(ctx);
       setEngineResults(result);
       setActionData(parsed);
@@ -2158,17 +2153,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     dispatch.securityEngine.closeRuleDrawer();
   };
 
-  const { run: reportLogId } = useDebounceFn(
-    (rules) => {
-      wallet.openapi.postActionLog({
-        id: logId.current,
-        type: 'tx',
-        rules,
-      });
-    },
-    { wait: 1000 }
-  );
-
   const checkBlockedAddress = useMemoizedFn(async () => {
     try {
       const isBlockedFromPromise = wallet.openapi.isBlockedAddress(tx.from);
@@ -2628,33 +2612,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   useEffect(() => {
     executeSecurityEngine();
   }, [userData, rules]);
-
-  useEffect(() => {
-    if (logId.current && isReady && securityEngineCtx.current) {
-      try {
-        const keys = Object.keys(securityEngineCtx.current);
-        const key: any = keys[0];
-        const notTriggeredRules = defaultRules.filter((rule) => {
-          return (
-            rule.requires.includes(key) &&
-            !engineResults.some((item) => item.id === rule.id)
-          );
-        });
-        reportLogId([
-          ...notTriggeredRules.map((rule) => ({
-            id: rule.id,
-            level: null,
-          })),
-          ...engineResults.map((result) => ({
-            id: result.id,
-            level: result.level,
-          })),
-        ]);
-      } catch (e) {
-        // IGNORE
-      }
-    }
-  }, [isReady, engineResults]);
 
   useEffect(() => {
     if (scrollRef.current && scrollInfo && scrollRefSize) {

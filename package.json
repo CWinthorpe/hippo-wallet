@@ -1,7 +1,7 @@
 {
   "name": "hippo-wallet",
-  "version": "0.93.100",
-  "description": "Privacy-focused self-custodial browser wallet with deterministic Custom RPC routing",
+  "version": "0.93.101",
+  "description": "Privacy-hardened self-custodial browser wallet with local multi-provider RPC failover",
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",

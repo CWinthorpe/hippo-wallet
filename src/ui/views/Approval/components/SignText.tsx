@@ -9,9 +9,8 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
   ContextActionData,
   Level,
-  defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { useSize, useRequest } from 'ahooks';
 import { Button, Drawer, message, Modal, Skeleton } from 'antd';
 import { Account } from 'background/service/preference';
 import {
@@ -94,9 +93,7 @@ const SignText = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
-  const securityEngineCtx = useRef<any>(null);
   const isUnparsedAction = useRef(false);
-  const logId = useRef('');
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const [
@@ -298,7 +295,6 @@ const SignText = ({
       },
     });
     const ctx = withOriginFallback(baseCtx);
-    securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
   };
@@ -402,7 +398,6 @@ const SignText = ({
     signText: string,
     sender: string
   ) => {
-    logId.current = textActionData.log_id;
     isUnparsedAction.current = textActionData.action === null;
     dispatch.securityEngine.init();
     if (
@@ -432,22 +427,10 @@ const SignText = ({
       },
     });
     const ctx = withOriginFallback(baseCtx);
-    securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
     setIsLoading(false);
   };
-
-  const { run: reportLogId } = useDebounceFn(
-    (rules) => {
-      wallet.openapi.postActionLog({
-        id: logId.current,
-        type: 'text',
-        rules,
-      });
-    },
-    { wait: 1000 }
-  );
 
   useEffect(() => {
     if (!loading) {
@@ -483,33 +466,6 @@ const SignText = ({
   useEffect(() => {
     report('createSignText');
   }, []);
-
-  useEffect(() => {
-    if (logId.current && !isLoading && securityEngineCtx.current) {
-      try {
-        const keys = Object.keys(securityEngineCtx.current);
-        const key: any = keys[0];
-        const notTriggeredRules = defaultRules.filter((rule) => {
-          return (
-            rule.requires.includes(key) &&
-            !engineResults.some((item) => item.id === rule.id)
-          );
-        });
-        reportLogId([
-          ...notTriggeredRules.map((rule) => ({
-            id: rule.id,
-            level: null,
-          })),
-          ...engineResults.map((result) => ({
-            id: result.id,
-            level: result.level,
-          })),
-        ]);
-      } catch (e) {
-        // IGNORE
-      }
-    }
-  }, [isLoading, engineResults]);
 
   const handleDrawerCancel = () => {
     setDrawerVisible(false);

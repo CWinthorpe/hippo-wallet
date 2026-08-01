@@ -24,9 +24,7 @@ const textFilesUnder = (relativeRoot: string, extensions: string[]) => {
 describe('Hippo Wallet branding invariants', () => {
   test('ships Hippo metadata in manifests, locales, and package metadata', () => {
     const packageJson = JSON.parse(read('package.json'));
-    const manifest = JSON.parse(
-      read('src/manifest/chrome-mv3/manifest.json')
-    );
+    const manifest = JSON.parse(read('src/manifest/chrome-mv3/manifest.json'));
     const locale = JSON.parse(read('_raw/_locales/en/messages.json'));
 
     expect(packageJson.name).toBe('hippo-wallet');
@@ -35,7 +33,12 @@ describe('Hippo Wallet branding invariants', () => {
     );
     expect(manifest.author).toBe('Hippo Wallet contributors');
     expect(manifest.action.default_title).toBe('Hippo Wallet');
-    expect(manifest.version_name).toBe('0.93.100-hippo.1');
+    expect(manifest.version).toBe(packageJson.version);
+    expect(manifest.version_name).toMatch(
+      new RegExp(
+        `^${packageJson.version.replace(/\./g, '\\.')}\\-hippo\\.\\d+$`
+      )
+    );
     expect(manifest.homepage_url).toBe(
       'https://github.com/CWinthorpe/hippo-wallet'
     );
@@ -67,24 +70,20 @@ describe('Hippo Wallet branding invariants', () => {
 
   test('uses the exact core brand palette and a dark default theme', () => {
     const theme = read('src/constant/theme-colors.js');
-    const backgroundPreference = read(
-      'src/background/service/preference.ts'
-    );
+    const backgroundPreference = read('src/background/service/preference.ts');
     const mark = read('src/ui/assets/hippo-wallet-mark.svg');
     const onboarding = read('src/ui/views/NewUserImport/Guide.tsx');
     const popup = read('src/ui/popup.html');
 
-    ['#111629', '#0372FF', '#26E99A', '#FFFFFF'].forEach(
-      (color) => expect(mark).toContain(color)
+    ['#111629', '#0372FF', '#26E99A', '#FFFFFF'].forEach((color) =>
+      expect(mark).toContain(color)
     );
     expect(mark).not.toMatch(/linearGradient|radialGradient|filter=/);
     expect(theme).toContain("'blue-default': 'rgba(3, 114, 255, 1)'");
     expect(theme).toContain("'green-default': 'rgba(38, 233, 154, 1)'");
     expect(theme).toContain("'neutral-bg1': 'rgba(17, 22, 41, 1)'");
     expect(theme).toContain("'neutral-card1': 'rgba(38, 44, 64, 1)'");
-    expect(backgroundPreference).toContain(
-      'themeMode: DARK_MODE_TYPE.dark'
-    );
+    expect(backgroundPreference).toContain('themeMode: DARK_MODE_TYPE.dark');
     expect(onboarding).not.toContain("classList.remove('dark')");
     expect(popup).toContain("fill='%23111629'");
     expect(popup).toContain("fill='%23262C40'");
@@ -121,16 +120,10 @@ describe('Hippo Wallet branding invariants', () => {
     const postinstall = JSON.parse(read('package.json')).scripts.postinstall;
 
     expect(pageProvider).toContain('name: "Hippo Wallet"');
-    expect(pageProvider).toContain(
-      'rdns: "finance.resupply.hippo-wallet"'
-    );
+    expect(pageProvider).toContain('rdns: "finance.resupply.hippo-wallet"');
     expect(pageProvider).toContain('this.isHippo = true');
-    expect(pageProvider).toContain(
-      'Object.defineProperty(window, "hippo"'
-    );
-    expect(pageProvider).toContain(
-      'Object.defineProperty(window, "rabby"'
-    );
+    expect(pageProvider).toContain('Object.defineProperty(window, "hippo"');
+    expect(pageProvider).toContain('Object.defineProperty(window, "rabby"');
     expect(postinstall).toContain('patch-page-provider-brand.js');
   });
 

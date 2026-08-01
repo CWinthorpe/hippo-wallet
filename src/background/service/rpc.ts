@@ -2,8 +2,11 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
-import openapiService, { DefaultRPCRes } from './openapi';
-import { CUSTOM_RPC_ENABLED, INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { CUSTOM_RPC_ENABLED } from '@/constant';
+import {
+  BuiltInDefaultRPC,
+  getBuiltInDefaultRPCMap,
+} from '@/constant/default-rpc-providers';
 
 export interface RPCItem {
   /** Primary read/estimate endpoint. */
@@ -15,22 +18,12 @@ export interface RPCItem {
   enable: boolean;
 }
 
-type RPCDefaultItem = DefaultRPCRes['rpcs'][number];
+type RPCDefaultItem = BuiltInDefaultRPC;
 
 export type RPCServiceStore = {
   customRPC: Record<string, RPCItem>;
   defaultRPC?: Record<string, RPCDefaultItem>;
 };
-
-export const BE_SUPPORTED_METHODS: string[] = [
-  'eth_call',
-  'eth_blockNumber',
-  'eth_getBalance',
-  'eth_getCode',
-  'eth_getStorageAt',
-  'eth_getTransactionCount',
-  'eth_chainId',
-];
 
 const READ_FALLBACK_METHODS = new Set([
   'eth_blockNumber',
@@ -91,7 +84,7 @@ const ARRAY_RESULT_METHODS = new Set([
 const INVALID_RPC_RESULT_CODE = 'INVALID_RPC_RESULT';
 
 const RETRYABLE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
-const RETRYABLE_RPC_CODES = new Set([-32603, -32005, -32016]);
+const RETRYABLE_RPC_CODES = new Set([-32603, -32001, -32005, -32016]);
 const RETRYABLE_NETWORK_CODES = new Set([
   'ECONNABORTED',
   'ECONNREFUSED',
@@ -259,12 +252,6 @@ function getUniqueId(): number {
   return idCounter;
 }
 
-// TODO: remove
-const fetchDefaultRpc = async () => {
-  const { data } = await http.get('https://api.rabby.io/v1/chainrpc');
-  return data.rpcs as RPCDefaultItem[];
-};
-
 export class RPCService {
   store: RPCServiceStore = {
     customRPC: {},
@@ -309,36 +296,17 @@ export class RPCService {
     if (changed) {
       this.store.customRPC = { ...this.store.customRPC };
     }
+
+    await this.syncDefaultRPC();
   };
 
   syncDefaultRPC = async () => {
-    try {
-      // TODO: remove after test
-      const data = process.env.DEBUG
-        ? await fetchDefaultRpc()
-        : (await openapiService.getDefaultRPCs())?.rpcs;
-
-      if (data?.length) {
-        const defaultRPC: Record<string, RPCDefaultItem> = data.reduce(
-          (acc, item) => {
-            acc[item.chainId] = item;
-            return acc;
-          },
-          {} as Record<string, RPCDefaultItem>
-        );
-        this.store.defaultRPC = defaultRPC;
-      }
-    } catch (error) {
-      console.error('Failed to fetch default RPC:', error);
-    }
+    this.store.defaultRPC = getBuiltInDefaultRPCMap();
+    this.routingVersion++;
   };
 
   getDefaultRPCByChainServerId = (chainServerId: string) => {
     return this.store.defaultRPC?.[chainServerId];
-  };
-
-  supportedRpcMethodByBE = (method?: string) => {
-    return BE_SUPPORTED_METHODS.some((entry) => entry === method);
   };
 
   defaultRPCRequest = async (
@@ -373,7 +341,9 @@ export class RPCService {
   ): Promise<[any, string]> => {
     const host = this.store.defaultRPC?.[chainServerId]?.rpcUrl?.[0];
     if (!host) {
-      throw new Error(`No available rpc for ${chainServerId}`);
+      throw new Error(
+        `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
+      );
     }
     const result = await this.defaultRPCRequest(host, method, params);
     return [validateRPCResult(method, result, host), host];
@@ -383,7 +353,6 @@ export class RPCService {
     chainServerId,
     method,
     params,
-    origin = INTERNAL_REQUEST_ORIGIN,
   }: {
     chainServerId: string;
     method: string;
@@ -391,28 +360,19 @@ export class RPCService {
     origin?: string;
   }) => {
     const hostList = this.store.defaultRPC?.[chainServerId]?.rpcUrl || [];
-    const isBESupported = this.supportedRpcMethodByBE(method);
 
     if (!hostList.length) {
-      return openapiService.ethRpc(chainServerId, {
-        origin: encodeURIComponent(origin),
-        method,
-        params,
-      });
+      const error = new Error(
+        `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
+      );
+      (error as Error & { code?: string }).code = 'NO_BUILT_IN_RPC';
+      throw error;
     }
 
     if (canUseReadFallback(method)) {
       return callWithFallbackRpcs(hostList, (rpc) =>
         this.defaultRPCRequest(rpc, method, params)
       );
-    }
-
-    if (isBESupported) {
-      return openapiService.ethRpc(chainServerId, {
-        origin: encodeURIComponent(origin),
-        method,
-        params,
-      });
     }
 
     return this.defaultRPCRequest(hostList[0], method, params);

@@ -1,7 +1,7 @@
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
 import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
-import { appIsDev, isManifestV3 } from '@/utils/env';
+import { appIsDev } from '@/utils/env';
 
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -77,7 +77,6 @@ const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
-import { ALARMS_SYNC_DEFAULT_RPC } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
@@ -141,17 +140,6 @@ async function restoreAppState() {
   transactionWatchService.roll();
   transactionBroadcastWatchService.roll();
   walletController.syncMainnetChainList();
-
-  if (isManifestV3) {
-    browser.alarms.create(ALARMS_SYNC_DEFAULT_RPC, {
-      when: Date.now(),
-      periodInMinutes: 60,
-    });
-  } else {
-    setInterval(() => {
-      RPCService.syncDefaultRPC();
-    }, 1 * 60 * 60 * 1000);
-  }
 
   if (!keyringService.isBooted()) {
     userGuideService.init();
@@ -493,14 +481,6 @@ async function onInstall() {
   if (!storeAlreadyExisted) {
     await userGuideService.openUserGuide();
   }
-}
-
-if (isManifestV3) {
-  browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === ALARMS_SYNC_DEFAULT_RPC) {
-      RPCService.syncDefaultRPC();
-    }
-  });
 }
 
 export const logoutGasAccountOnAddressRemoved = async (

@@ -110,4 +110,11 @@ export const testnetOpenapiService = new OpenApiService({
   store: testnetStore,
 });
 
+const disableActionLogging = (client: OpenApiService) => {
+  client.postActionLog = async () => undefined;
+};
+
+disableActionLogging(service);
+disableActionLogging(testnetOpenapiService);
+
 export default service;

@@ -1,0 +1,966 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-08-01",
+  "providerOrder": ["1RPC", "dRPC", "PublicNode", "0xRPC"],
+  "sources": {
+    "1RPC": "https://docs.1rpc.io/using-the-web3-api/networks",
+    "dRPC": "https://drpc.org/chainlist",
+    "PublicNode": "https://chainlist.org/rpcs.json",
+    "0xRPC": "https://chainlist.org/rpcs.json"
+  },
+  "routes": {
+    "eth": {
+      "chainId": 1,
+      "name": "Ethereum",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/eth"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://eth.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://ethereum-rpc.publicnode.com"
+        },
+        {
+          "provider": "0xRPC",
+          "url": "https://0xrpc.io/eth"
+        }
+      ]
+    },
+    "bsc": {
+      "chainId": 56,
+      "name": "BNB Chain",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/bnb"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://bsc.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://bsc-rpc.publicnode.com"
+        }
+      ]
+    },
+    "xdai": {
+      "chainId": 100,
+      "name": "Gnosis Chain",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/gnosis"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://gnosis.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://gnosis-rpc.publicnode.com"
+        }
+      ]
+    },
+    "matic": {
+      "chainId": 137,
+      "name": "Polygon",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/matic"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://polygon.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://polygon-bor-rpc.publicnode.com"
+        }
+      ]
+    },
+    "ftm": {
+      "chainId": 250,
+      "name": "Fantom",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/ftm"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://fantom.drpc.org"
+        }
+      ]
+    },
+    "avax": {
+      "chainId": 43114,
+      "name": "Avalanche",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/avax/c"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://avalanche.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://avalanche-c-chain-rpc.publicnode.com"
+        }
+      ]
+    },
+    "op": {
+      "chainId": 10,
+      "name": "OP",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/op"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://optimism.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://optimism-rpc.publicnode.com"
+        }
+      ]
+    },
+    "arb": {
+      "chainId": 42161,
+      "name": "Arbitrum",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/arb"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://arbitrum.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://arbitrum-one-rpc.publicnode.com"
+        }
+      ]
+    },
+    "celo": {
+      "chainId": 42220,
+      "name": "Celo",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/celo"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://celo.drpc.org"
+        }
+      ]
+    },
+    "movr": {
+      "chainId": 1285,
+      "name": "Moonriver",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://moonriver.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://moonriver-rpc.publicnode.com"
+        }
+      ]
+    },
+    "cro": {
+      "chainId": 25,
+      "name": "Cronos",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/cro"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://cronos.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://cronos-evm-rpc.publicnode.com"
+        }
+      ]
+    },
+    "metis": {
+      "chainId": 1088,
+      "name": "Metis",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://metis.drpc.org"
+        }
+      ]
+    },
+    "mobm": {
+      "chainId": 1284,
+      "name": "Moonbeam",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/glmr"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://moonbeam.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://moonbeam-rpc.publicnode.com"
+        }
+      ]
+    },
+    "fuse": {
+      "chainId": 122,
+      "name": "Fuse",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://fuse.drpc.org"
+        }
+      ]
+    },
+    "klay": {
+      "chainId": 8217,
+      "name": "Kaia",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/klay"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://klaytn.drpc.org"
+        }
+      ]
+    },
+    "iotx": {
+      "chainId": 4689,
+      "name": "IoTeX",
+      "endpoints": []
+    },
+    "rsk": {
+      "chainId": 30,
+      "name": "Rootstock",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://rootstock.drpc.org"
+        }
+      ]
+    },
+    "dfk": {
+      "chainId": 53935,
+      "name": "DFK",
+      "endpoints": []
+    },
+    "tlos": {
+      "chainId": 40,
+      "name": "Telos EVM",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/telos/evm"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://telos.drpc.org"
+        }
+      ]
+    },
+    "nova": {
+      "chainId": 42170,
+      "name": "Arbitrum Nova",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://arbitrum-nova.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://arbitrum-nova-rpc.publicnode.com"
+        }
+      ]
+    },
+    "kava": {
+      "chainId": 2222,
+      "name": "Kava",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://kava.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://kava-evm-rpc.publicnode.com"
+        }
+      ]
+    },
+    "cfx": {
+      "chainId": 1030,
+      "name": "Conflux",
+      "endpoints": []
+    },
+    "era": {
+      "chainId": 324,
+      "name": "zkSync Era",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/zksync2-era"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://zksync.drpc.org"
+        }
+      ]
+    },
+    "ron": {
+      "chainId": 2020,
+      "name": "Ronin",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://ronin.drpc.org"
+        }
+      ]
+    },
+    "core": {
+      "chainId": 1116,
+      "name": "CORE",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/core"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://core.drpc.org"
+        }
+      ]
+    },
+    "wemix": {
+      "chainId": 1111,
+      "name": "WEMIX",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://wemix.drpc.org"
+        }
+      ]
+    },
+    "flr": {
+      "chainId": 14,
+      "name": "Flare",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://flare.drpc.org"
+        }
+      ]
+    },
+    "oas": {
+      "chainId": 248,
+      "name": "Oasys",
+      "endpoints": []
+    },
+    "zora": {
+      "chainId": 7777777,
+      "name": "Zora",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://zora.drpc.org"
+        }
+      ]
+    },
+    "base": {
+      "chainId": 8453,
+      "name": "Base",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/base"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://base.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://base-rpc.publicnode.com"
+        }
+      ]
+    },
+    "linea": {
+      "chainId": 59144,
+      "name": "Linea",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/linea"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://linea.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://linea-rpc.publicnode.com"
+        }
+      ]
+    },
+    "mnt": {
+      "chainId": 5000,
+      "name": "Mantle",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/mantle"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://mantle.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://mantle-rpc.publicnode.com"
+        }
+      ]
+    },
+    "manta": {
+      "chainId": 169,
+      "name": "Manta Pacific",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/manta"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://manta-pacific.drpc.org"
+        }
+      ]
+    },
+    "scrl": {
+      "chainId": 534352,
+      "name": "Scroll",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/scroll"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://scroll.drpc.org"
+        }
+      ]
+    },
+    "opbnb": {
+      "chainId": 204,
+      "name": "opBNB",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/opbnb"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://opbnb.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://opbnb-rpc.publicnode.com"
+        }
+      ]
+    },
+    "mode": {
+      "chainId": 34443,
+      "name": "Mode",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/mode"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://mode.drpc.org"
+        }
+      ]
+    },
+    "zeta": {
+      "chainId": 7000,
+      "name": "ZetaChain",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://zeta-chain.drpc.org"
+        }
+      ]
+    },
+    "merlin": {
+      "chainId": 4200,
+      "name": "Merlin",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://merlin.drpc.org"
+        }
+      ]
+    },
+    "blast": {
+      "chainId": 81457,
+      "name": "Blast",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://blast.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://blast-rpc.publicnode.com"
+        }
+      ]
+    },
+    "frax": {
+      "chainId": 252,
+      "name": "Fraxtal",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://fraxtal.drpc.org"
+        }
+      ]
+    },
+    "xlayer": {
+      "chainId": 196,
+      "name": "X Layer",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://xlayer.drpc.org"
+        }
+      ]
+    },
+    "itze": {
+      "chainId": 13371,
+      "name": "Immutable zkEVM",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://immutable-zkevm.drpc.org"
+        }
+      ]
+    },
+    "btr": {
+      "chainId": 200901,
+      "name": "Bitlayer",
+      "endpoints": []
+    },
+    "b2": {
+      "chainId": 223,
+      "name": "B\u00b2",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://bsquared.drpc.org"
+        }
+      ]
+    },
+    "bob": {
+      "chainId": 60808,
+      "name": "BOB",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://bob.drpc.org"
+        }
+      ]
+    },
+    "reya": {
+      "chainId": 1729,
+      "name": "Reya",
+      "endpoints": []
+    },
+    "bb": {
+      "chainId": 6001,
+      "name": "BounceBit",
+      "endpoints": []
+    },
+    "taiko": {
+      "chainId": 167000,
+      "name": "Taiko",
+      "endpoints": []
+    },
+    "cyber": {
+      "chainId": 7560,
+      "name": "Cyber",
+      "endpoints": []
+    },
+    "sei": {
+      "chainId": 1329,
+      "name": "Sei",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://sei.drpc.org"
+        }
+      ]
+    },
+    "chiliz": {
+      "chainId": 88888,
+      "name": "Chiliz",
+      "endpoints": []
+    },
+    "dbk": {
+      "chainId": 20240603,
+      "name": "DBK Chain",
+      "endpoints": []
+    },
+    "croze": {
+      "chainId": 388,
+      "name": "Cronos zkEVM",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://cronos-zkevm.drpc.org"
+        }
+      ]
+    },
+    "gravity": {
+      "chainId": 1625,
+      "name": "Gravity",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://gravity-alpha.drpc.org"
+        }
+      ]
+    },
+    "lisk": {
+      "chainId": 1135,
+      "name": "Lisk",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://lisk.drpc.org"
+        }
+      ]
+    },
+    "orderly": {
+      "chainId": 291,
+      "name": "Orderly",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://orderly.drpc.org"
+        }
+      ]
+    },
+    "ape": {
+      "chainId": 33139,
+      "name": "ApeChain",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://apechain.drpc.org"
+        }
+      ]
+    },
+    "ethlink": {
+      "chainId": 42793,
+      "name": "Etherlink",
+      "endpoints": []
+    },
+    "zircuit": {
+      "chainId": 48900,
+      "name": "Zircuit",
+      "endpoints": []
+    },
+    "world": {
+      "chainId": 480,
+      "name": "World Chain",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://worldchain.drpc.org"
+        }
+      ]
+    },
+    "morph": {
+      "chainId": 2818,
+      "name": "Morph",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://morph.drpc.org"
+        }
+      ]
+    },
+    "swell": {
+      "chainId": 1923,
+      "name": "SwellChain",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://swell.drpc.org"
+        }
+      ]
+    },
+    "sonic": {
+      "chainId": 146,
+      "name": "Sonic",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/sonic"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://sonic.drpc.org"
+        }
+      ]
+    },
+    "hsk": {
+      "chainId": 177,
+      "name": "HashKey",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://hashkey.drpc.org"
+        }
+      ]
+    },
+    "ink": {
+      "chainId": 57073,
+      "name": "Ink",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://ink.drpc.org"
+        }
+      ]
+    },
+    "sophon": {
+      "chainId": 50104,
+      "name": "Sophon",
+      "endpoints": []
+    },
+    "abs": {
+      "chainId": 2741,
+      "name": "Abstract",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://abstract.drpc.org"
+        }
+      ]
+    },
+    "soneium": {
+      "chainId": 1868,
+      "name": "Soneium",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://soneium.drpc.org"
+        }
+      ]
+    },
+    "bera": {
+      "chainId": 80094,
+      "name": "Berachain",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://berachain.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://berachain-rpc.publicnode.com"
+        }
+      ]
+    },
+    "uni": {
+      "chainId": 130,
+      "name": "Unichain",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/unichain"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://unichain.drpc.org"
+        },
+        {
+          "provider": "PublicNode",
+          "url": "https://unichain-rpc.publicnode.com"
+        }
+      ]
+    },
+    "story": {
+      "chainId": 1514,
+      "name": "Story",
+      "endpoints": []
+    },
+    "lens": {
+      "chainId": 232,
+      "name": "Lens",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://lens.drpc.org"
+        }
+      ]
+    },
+    "hyper": {
+      "chainId": 999,
+      "name": "HyperEVM",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/hyperliquid"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://hyperliquid.drpc.org"
+        }
+      ]
+    },
+    "hemi": {
+      "chainId": 43111,
+      "name": "Hemi",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://hemi.drpc.org"
+        }
+      ]
+    },
+    "plume": {
+      "chainId": 98866,
+      "name": "Plume",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://plume.drpc.org"
+        }
+      ]
+    },
+    "katana": {
+      "chainId": 747474,
+      "name": "Katana",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://katana.drpc.org"
+        }
+      ]
+    },
+    "plasma": {
+      "chainId": 9745,
+      "name": "Plasma",
+      "endpoints": []
+    },
+    "tac": {
+      "chainId": 239,
+      "name": "TAC",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://tac.drpc.org"
+        }
+      ]
+    },
+    "mito": {
+      "chainId": 124816,
+      "name": "Mitosis",
+      "endpoints": []
+    },
+    "monad": {
+      "chainId": 143,
+      "name": "Monad",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://monad-mainnet.drpc.org"
+        }
+      ]
+    },
+    "botanix": {
+      "chainId": 3637,
+      "name": "Botanix",
+      "endpoints": []
+    },
+    "stable": {
+      "chainId": 988,
+      "name": "Stable",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://stable.drpc.org"
+        }
+      ]
+    },
+    "g0": {
+      "chainId": 16661,
+      "name": "0G",
+      "endpoints": [
+        {
+          "provider": "dRPC",
+          "url": "https://0g-mainnet.drpc.org"
+        }
+      ]
+    },
+    "megaeth": {
+      "chainId": 4326,
+      "name": "MegaETH",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/megaeth"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://megaeth.drpc.org"
+        }
+      ]
+    },
+    "citrea": {
+      "chainId": 4114,
+      "name": "Citrea",
+      "endpoints": []
+    },
+    "tempo": {
+      "chainId": 4217,
+      "name": "Tempo",
+      "endpoints": [
+        {
+          "provider": "1RPC",
+          "url": "https://public.1rpc.io/tempo"
+        },
+        {
+          "provider": "dRPC",
+          "url": "https://tempo-mainnet.drpc.org"
+        }
+      ]
+    }
+  }
+}

@@ -9,7 +9,9 @@ describe('private-build privacy invariants', () => {
   test('ships no upstream analytics client or credentials', () => {
     const packageJson = JSON.parse(read('package.json'));
     expect(packageJson.dependencies?.['@debank/festats']).toBeUndefined();
-    expect(packageJson.devDependencies?.['@sentry/webpack-plugin']).toBeUndefined();
+    expect(
+      packageJson.devDependencies?.['@sentry/webpack-plugin']
+    ).toBeUndefined();
     expect(packageJson.scripts?.['upload:sourcemap']).toBeUndefined();
 
     const telemetrySources = [
@@ -52,9 +54,9 @@ describe('private-build privacy invariants', () => {
 
     expect(htmlEntrypoints).not.toContain('vendor/matomo.js');
     expect(fs.existsSync(path.join(root, '_raw/vendor/matomo.js'))).toBe(false);
-    expect(
-      fs.existsSync(path.join(root, '_raw/vendor/matomo.client.js'))
-    ).toBe(false);
+    expect(fs.existsSync(path.join(root, '_raw/vendor/matomo.client.js'))).toBe(
+      false
+    );
   });
 
   test('blocks known upstream tracking hosts for every MV3 resource type', () => {
@@ -71,6 +73,7 @@ describe('private-build privacy invariants', () => {
       '||matomo.debank.com^',
       '||sentry.io^',
       '||rabby.io/uninstalled',
+      '||api.rabby.io/v1/engine/action/log',
     ].forEach((urlFilter) => {
       expect(byFilter.get(urlFilter)?.action.type).toBe('block');
       expect(byFilter.get(urlFilter)?.condition.resourceTypes).toBeUndefined();
@@ -90,6 +93,23 @@ describe('private-build privacy invariants', () => {
     });
   });
 
+  test('cannot emit security action telemetry or use Rabby as the RPC control plane', () => {
+    const approvalSources = [
+      'src/ui/views/Approval/components/SignTx.tsx',
+      'src/ui/views/Approval/components/SignText.tsx',
+      'src/ui/views/Approval/components/SignTypedData.tsx',
+    ]
+      .map(read)
+      .join('\n');
+    expect(approvalSources).not.toContain('.postActionLog(');
+    expect(approvalSources).not.toContain('reportLogId');
+
+    const rpcSource = read('src/background/service/rpc.ts');
+    expect(rpcSource).not.toContain('api.rabby.io/v1/chainrpc');
+    expect(rpcSource).not.toContain('openapiService.getDefaultRPCs');
+    expect(rpcSource).not.toContain('openapiService.ethRpc');
+  });
+
   test('cannot retain an upstream uninstall report or background Sentry client', () => {
     const uninstallService = read('src/background/service/uninstalled.ts');
     expect(uninstallService).toContain("setUninstallURL('')");
@@ -104,6 +124,8 @@ describe('private-build privacy invariants', () => {
 
     const sourceMapBuild = read('build/webpack.sourcemap.config.js');
     expect(sourceMapBuild).not.toMatch(/sentry/i);
+    const releaseBuild = read('build/release.js');
+    expect(releaseBuild).not.toMatch(/sentry/i);
 
     const onboarding = [
       read('src/ui/views/NewUserImport/PasswordCard.tsx'),
