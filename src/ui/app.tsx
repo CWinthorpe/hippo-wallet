@@ -173,9 +173,6 @@ const main = async () => {
   portMessageChannel.connect(getUITypeName());
   await compensateUnlockedOnceFlag();
 
-  store.dispatch.app.initBizStore();
-  store.dispatch.chains.init();
-
   if (getUiType().isPop) {
     wallet.tryOpenOrActiveUserGuide().then((opened) => {
       if (opened) {

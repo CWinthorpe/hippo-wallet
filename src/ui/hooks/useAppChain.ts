@@ -198,7 +198,6 @@ export const useAppChain = (userAddr: string | undefined, visible = true) => {
 };
 
 const id2NameMap = {
-  hyperliquid: 'Hyperliquid',
   polymarket: 'Polymarket',
 };
 export const getAppChainNames = (appChainIds: string[]) => {

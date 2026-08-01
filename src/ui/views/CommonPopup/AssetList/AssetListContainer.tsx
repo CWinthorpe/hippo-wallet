@@ -16,7 +16,7 @@ import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
-import { HomePerpsPositionList } from './HomePerpsPositionList';
+
 import { uniqBy } from 'lodash';
 import omit from 'lodash/omit';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
@@ -230,9 +230,6 @@ export const AssetListContainer: React.FC<Props> = ({
             <TokenListSkeleton />
           ) : (
             <>
-              {visible && !search ? (
-                <HomePerpsPositionList needFetchMarket />
-              ) : null}
               <ProtocolList
                 removeProtocol={removeProtocol}
                 appIds={appIds}

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
-import { Button, DrawerProps } from 'antd';
-import { DEX, EVENTS } from '@/constant';
+import { DrawerProps } from 'antd';
+import { EVENTS } from '@/constant';
 import { SvgIconCross } from '@/ui/assets';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import eventBus from '@/eventBus';

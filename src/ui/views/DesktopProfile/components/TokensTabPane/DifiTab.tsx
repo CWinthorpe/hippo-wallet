@@ -8,7 +8,6 @@ import { TokenListEmpty } from './TokenListEmpty';
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
 import styled from 'styled-components';
 import { TokenListViewSkeleton } from '@/ui/views/CommonPopup/AssetList/TokenListViewSkeleton';
-import { HomePerpsPositionList } from '@/ui/views/CommonPopup/AssetList/HomePerpsPositionList';
 
 const ListContainer = styled.div`
   background-color: var(--rb-neutral-bg-3, #f9f9f9);
@@ -95,7 +94,6 @@ export const DIFITab = ({
           filterWallet
         />
       )}
-      <HomePerpsPositionList needFetchMarket />
       <ProtocolList
         removeProtocol={removeProtocol}
         appIds={appIds}

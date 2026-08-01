@@ -25,7 +25,7 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
+import { DirectSignGasInfo } from '@/ui/component/DirectSignGasInfo';
 import { displayGhoForMintableMarket } from '../../utils/supply';
 import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { getTokenIcon } from '../../utils/tokenIcon';

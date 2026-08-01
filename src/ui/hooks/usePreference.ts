@@ -36,21 +36,7 @@ function useIsDarkMode() {
 
 const uiTypes = getUiType();
 
-// The Perps pro page is always dark AND uses the unified Hippo red/green
-// palette (scoped via the `perps-pro-theme` class toggled in useThemeModeOnMain).
-function isPerpsProPage() {
-  return (
-    uiTypes.isDesktop &&
-    !!window.location.hash?.split('?')[0]?.startsWith('#/desktop/perps')
-  );
-}
-
 function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
-  // The Perps pro page lives must be always dark.
-  if (isPerpsProPage()) {
-    return true;
-  }
-
   const userSelectedDark = themeMode === DARK_MODE_TYPE.dark;
   const useSystemAndOnDark =
     themeMode === DARK_MODE_TYPE.system && isDarkOnSystem;
@@ -84,7 +70,6 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
 
           '#/send-token',
           '#/dex-swap',
-          '#/bridge',
         ].includes(hashValue))
     );
   }
@@ -110,8 +95,7 @@ export function useThemeModeOnMain() {
   useLayoutEffect(() => {
     const isDark = isFinalDarkMode(themeMode, isDarkOnSystem);
     const root = document.documentElement;
-    // Scope the unified Rabby red/green palette to the Perps pro page.
-    root.classList.toggle('perps-pro-theme', isPerpsProPage());
+
     // Skip when the resolved theme already matches the DOM.
     if (isDark === root.classList.contains(darkModeClassName)) {
       return;

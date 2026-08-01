@@ -21,7 +21,6 @@ import {
   EVENTS_IN_BG,
   INTERNAL_REQUEST_ORIGIN,
   IS_FIREFOX,
-  KEYRING_TYPE,
 } from 'consts';
 import { ethErrors } from 'eth-rpc-errors';
 import { isNull, omit, pick } from 'lodash';
@@ -31,49 +30,33 @@ import BigNumber from 'bignumber.js';
 import { providerController, walletController } from './controller';
 import createSubscription from './controller/provider/subscriptionManager';
 import {
-  bridgeService,
   contactBookService,
   currencyService,
-  gasAccountService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
   openapiService,
+  remoteDataPolicyService,
   pageStateCacheService,
   permissionService,
   preferenceService,
-  RabbyPointsService,
   RPCService,
   securityEngineService,
   sessionService,
   signTextHistoryService,
-  swapService,
-  transactionBroadcastWatchService,
   transactionHistoryService,
   transactionWatchService,
   uninstalledService,
   whitelistService,
   OfflineChainsService,
-  perpsService,
   transactionsService,
   feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
-import { GasAccountServiceStore } from './service/gasAccount';
 import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
-import perpsLive from './service/perpsLive';
-import { PERPS_LIVE_PORT_NAME } from '@/utils/message/perpsLive';
 
-/** Controller methods the perps widget content-script may call via runtime.sendMessage */
-const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
-  'getPerpsWidgetEnabled',
-  'getPerpsWidgetBlockedHosts',
-  'getPerpsWidgetBallPosition',
-  'setPerpsWidgetBallPosition',
-  'openInDesktop',
-]);
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
@@ -89,6 +72,9 @@ const { PortMessage } = Message;
 let appStoreLoaded = false;
 
 async function restoreAppState() {
+  // The policy starts in deny-all mode at module load. Hydrate it before any
+  // service is allowed to initialize a Rabby/DeBank-backed request path.
+  await remoteDataPolicyService.init();
   await onInstall();
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
@@ -105,30 +91,23 @@ async function restoreAppState() {
   await preferenceService.init();
   await currencyService.init();
   await transactionWatchService.init();
-  await transactionBroadcastWatchService.init();
+
   await pageStateCacheService.init();
   await transactionHistoryService.init();
   await contactBookService.init();
   await signTextHistoryService.init();
   await whitelistService.init();
-  await swapService.init();
+
   await RPCService.init();
   await securityEngineService.init();
-  await RabbyPointsService.init();
   await HDKeyRingLastAddAddrTimeService.init();
-  await bridgeService.init();
-  await gasAccountService.init();
   await uninstalledService.init();
   await metamaskModeService.init();
   await OfflineChainsService.init();
   await syncChainService.init();
-  await perpsService.init();
   await transactionsService.init();
   await lendingService.init();
   await feedbackService.init();
-
-  // WS is lazy — subscribes only after the first content-script port attaches
-  perpsLive.boot();
 
   await walletController.tryUnlock();
 
@@ -138,7 +117,7 @@ async function restoreAppState() {
 
   syncChainService.roll();
   transactionWatchService.roll();
-  transactionBroadcastWatchService.roll();
+
   walletController.syncMainnetChainList();
 
   if (!keyringService.isBooted()) {
@@ -185,42 +164,9 @@ async function restoreAppState() {
   await sendReadyMessageToTabs();
   subscribeTxCompleted({ preferenceService });
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'getBackgroundReady') {
-      sendResponse({
-        data: {
-          ready: true,
-        },
-      });
-      return;
-    }
-    // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
-    // on async paths — returning a Promise would let Chrome close the channel immediately.
-    if (message?.type === 'controller' && typeof message.method === 'string') {
-      if (!PERPS_WIDGET_RPC_ALLOWLIST.has(message.method)) return;
-      const params = Array.isArray(message.params) ? message.params : [];
-      try {
-        const res = (walletController as any)[message.method](...params);
-        if (res && typeof (res as any).then === 'function') {
-          Promise.resolve(res).then(
-            (value) => sendResponse(value),
-            (err) => {
-              console.warn(
-                '[perps-widget rpc] async error',
-                message.method,
-                err
-              );
-              sendResponse(undefined);
-            }
-          );
-          return true;
-        }
-        sendResponse(res);
-      } catch (err) {
-        console.warn('[perps-widget rpc] sync error', message.method, err);
-        sendResponse(undefined);
-      }
-    }
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.type !== 'getBackgroundReady') return;
+    sendResponse({ data: { ready: true } });
   });
 
   uninstalledService.setUninstalled();
@@ -231,56 +177,15 @@ restoreAppState();
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
     contactBookService.detectWhiteListCex();
-    perpsService.unlockAgentWallets();
   });
-
-  keyringService.on(
-    'removedAccount',
-    async (address: string, type: string, brand?: string) => {
-      await logoutGasAccountOnAddressRemoved(address, type, brand);
-      if (type !== KEYRING_TYPE.WatchAddressKeyring) {
-        const perpsAccount = await perpsService.getCurrentAccount();
-        if (perpsAccount?.address === address && perpsAccount.type === type) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.PERPS.LOG_OUT,
-          });
-          perpsService.setCurrentAccount(null);
-        }
-      }
-    }
-  );
 }
 
-keyringService.on('resetPassword', async () => {
+keyringService.on('resetPassword', () => {
   preferenceService.clearBiometricUnlockStorage();
-  const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-
-  if (
-    gasAccount?.account?.type === KEYRING_TYPE.SimpleKeyring ||
-    gasAccount?.account?.type === KEYRING_TYPE.HdKeyring
-  ) {
-    gasAccountService.setGasAccountSig();
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.GAS_ACCOUNT.LOG_OUT,
-    });
-  }
 });
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  // perpsLive owns this port; bypass the generic page-provider routing below
-  if (port.name === PERPS_LIVE_PORT_NAME) {
-    // Fail-closed: only this extension's own content-scripts (which always run
-    // in a tab) may subscribe to the live perps feed. Guards against a future
-    // externally_connectable entry turning this into an open positions/PnL leak.
-    if (port.sender?.id !== browser.runtime.id || !port.sender?.tab) {
-      port.disconnect();
-      return;
-    }
-    perpsLive.attachPort(port);
-    return;
-  }
-
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
@@ -482,14 +387,3 @@ async function onInstall() {
     await userGuideService.openUserGuide();
   }
 }
-
-export const logoutGasAccountOnAddressRemoved = async (
-  address: string,
-  type: string,
-  brand?: string
-) => {
-  if (type === KEYRING_TYPE.WatchAddressKeyring) {
-    return;
-  }
-  gasAccountService.handleRemovedAccount(address, type, brand);
-};

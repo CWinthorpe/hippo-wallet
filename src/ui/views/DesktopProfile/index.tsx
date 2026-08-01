@@ -404,8 +404,7 @@ export const DesktopProfile: React.FC<{
         }}
       />
       <SwapTokenModal
-        visible={action === 'swap' || action === 'bridge'}
-        action={action as 'swap' | 'bridge'}
+        visible={action === 'swap'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

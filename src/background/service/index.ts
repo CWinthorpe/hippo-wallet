@@ -5,6 +5,8 @@ export { default as preferenceService } from './preference';
 export { default as currencyService } from './currency';
 export { default as sessionService } from './session';
 export { default as openapiService } from './openapi';
+export { default as llamaSwapService } from './llamaSwap';
+export { default as remoteDataPolicyService } from './remoteDataPolicy';
 export { default as transactionWatchService } from './transactionWatcher';
 export { default as pageStateCacheService } from './pageStateCache';
 export { default as transactionHistoryService } from './transactionHistory';
@@ -12,19 +14,17 @@ export { default as transactionsService } from './transactions';
 export { default as contactBookService } from './contactBook';
 export { default as signTextHistoryService } from './signTextHistory';
 export { default as whitelistService } from './whitelist';
-export { default as swapService } from './swap';
+
 export { default as RPCService } from './rpc';
+export { default as rpcGasService } from './rpcGas';
 export { default as i18n } from './i18n';
 export { default as unTriggerTxCounter } from './unTriggerTxCounter';
 export { default as securityEngineService } from './securityEngine';
-export * from './transactionBroadcastWatcher';
-export { default as RabbyPointsService } from './rabbyPoints';
+
 export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAddrTime';
-export { default as bridgeService } from './bridge';
-export { default as gasAccountService } from './gasAccount';
 export { default as uninstalledService } from './uninstalled';
 export { default as OfflineChainsService } from './offlineChain';
-export { default as perpsService } from './perps';
+
 export { default as miscService } from './misc';
 export { default as lendingService } from './lending';
 export { default as feedbackService } from './feedback';

@@ -89,41 +89,6 @@ const isCurrentScreenshotTarget = (pageUrl?: string) => {
   return !pageUrl || window.location.href.startsWith(pageUrl);
 };
 
-const dataUrlToFile = async (dataUrl: string, filename: string) => {
-  const response = await fetch(dataUrl);
-  const blob = await response.blob();
-
-  return new File([blob], filename, { type: blob.type || 'image/png' });
-};
-
-const uploadScreenshot = async (screenshot: string) => {
-  const formData = new FormData();
-  const file = await dataUrlToFile(
-    screenshot,
-    `rabby-screenshot-${Date.now()}.png`
-  );
-
-  formData.append('file', file);
-
-  const response = await fetch('https://api.rabby.io/v1/feedback/app/upload', {
-    body: formData,
-    method: 'POST',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to upload screenshot');
-  }
-
-  const result = await response.json();
-  const imageUrl = result.image_url;
-
-  if (!imageUrl) {
-    throw new Error('Invalid screenshot upload response');
-  }
-
-  return imageUrl;
-};
-
 const getScreenshotFeedbackUserAgentData = async () => {
   const userAgentData = (window.navigator as any).userAgentData;
 
@@ -199,7 +164,10 @@ export const ScreenshotContextMenu = () => {
 
   const { loading: submitting, run: submitFeedback } = useRequest(
     async (params: SubmitScreenshotFeedbackParams) => {
-      const imageUrl = await uploadScreenshot(params.screenshot);
+      const imageUrl = await wallet.uploadRemoteFeedbackImage({
+        dataUrl: params.screenshot,
+        filename: `hippo-screenshot-${Date.now()}.png`,
+      });
 
       return wallet.postUserFeedback({
         content: params.description,

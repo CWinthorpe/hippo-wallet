@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { SvgIconArrowDownTriangle } from 'ui/assets';
 import Modal from './Modal';
 
 import './style.less';
 import { SelectChainListProps } from './components/SelectChainList';
-import { useRabbySelector } from '@/ui/store';
-import { DEX_SUPPORT_CHAINS } from '@/constant/dex-swap';
-import { ReactComponent as SvgIconSwapArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
+
 import { findChainByEnum } from '@/utils/chain';
 
 interface ChainSelectorProps {

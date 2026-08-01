@@ -1,5 +1,8 @@
 import axios from 'axios';
 import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios';
+import remoteDataPolicyService, {
+  isKnownRabbyOrDeBankUrl,
+} from 'background/service/remoteDataPolicy';
 
 type AxiosErrorCtor = typeof import('axios').AxiosError;
 
@@ -21,48 +24,101 @@ type AdapterExtras = {
   responseType?: AxiosRequestConfig['responseType'];
 };
 
-const fetchAdapter: AxiosAdapter = async (config) => {
-  const request = createRequest(config);
-  const executors: Array<Promise<FetchResult>> = [getResponse(request, config)];
+const activeRemoteRequestControllers = new Set<AbortController>();
+
+remoteDataPolicyService.onPolicyChange(() => {
+  activeRemoteRequestControllers.forEach((controller) => controller.abort());
+  activeRemoteRequestControllers.clear();
+});
+
+const runFetchAdapter = async (
+  config: AxiosRequestConfig,
+  forceRemoteDataPolicy: boolean
+) => {
+  const requestUrl = axios.getUri(config);
+  remoteDataPolicyService.assertRequestAllowed(
+    requestUrl,
+    forceRemoteDataPolicy
+  );
+  await remoteDataPolicyService.recordRequestContact(
+    requestUrl,
+    forceRemoteDataPolicy
+  );
+
+  const isRemoteDataRequest =
+    forceRemoteDataPolicy || isKnownRabbyOrDeBankUrl(requestUrl);
+  const controller = isRemoteDataRequest ? new AbortController() : undefined;
+  const originalSignal = config.signal;
+  const abortFromOriginalSignal = () => controller?.abort();
+  if (controller) {
+    activeRemoteRequestControllers.add(controller);
+    if (originalSignal?.aborted) {
+      controller.abort();
+    } else {
+      originalSignal?.addEventListener('abort', abortFromOriginalSignal, {
+        once: true,
+      });
+    }
+  }
+
+  const requestConfig = controller
+    ? { ...config, signal: controller.signal }
+    : config;
+  const request = createRequest(requestConfig);
+  const executors: Array<Promise<FetchResult>> = [
+    getResponse(request, requestConfig),
+  ];
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  if (config.timeout && config.timeout > 0) {
-    executors.push(
-      new Promise<FetchResult>((resolve) => {
-        timeoutId = setTimeout(() => {
-          const message =
-            config.timeoutErrorMessage ??
-            `timeout of ${config.timeout}ms exceeded`;
-          const transitional = config.transitional ?? {};
-          const timeoutCode = transitional.clarifyTimeoutError
-            ? 'ETIMEDOUT'
-            : 'ECONNABORTED';
-          resolve(createError(message, config, timeoutCode, request));
-        }, config.timeout);
-      })
-    );
+  try {
+    if (requestConfig.timeout && requestConfig.timeout > 0) {
+      executors.push(
+        new Promise<FetchResult>((resolve) => {
+          timeoutId = setTimeout(() => {
+            controller?.abort();
+            const message =
+              requestConfig.timeoutErrorMessage ??
+              `timeout of ${requestConfig.timeout}ms exceeded`;
+            const transitional = requestConfig.transitional ?? {};
+            const timeoutCode = transitional.clarifyTimeoutError
+              ? 'ETIMEDOUT'
+              : 'ECONNABORTED';
+            resolve(createError(message, requestConfig, timeoutCode, request));
+          }, requestConfig.timeout);
+        })
+      );
+    }
+
+    const settled = await Promise.race(executors);
+
+    if (settled instanceof Error) {
+      throw settled;
+    }
+
+    const extras = requestConfig as AdapterExtras;
+
+    if (extras.settle) {
+      return await new Promise<AxiosResponse>((resolve, reject) => {
+        extras.settle!(resolve, reject, settled);
+      });
+    }
+
+    return settleResponse(settled);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (controller) {
+      activeRemoteRequestControllers.delete(controller);
+      originalSignal?.removeEventListener('abort', abortFromOriginalSignal);
+    }
   }
-
-  const settled = await Promise.race(executors);
-
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
-
-  if (settled instanceof Error) {
-    throw settled;
-  }
-
-  const extras = config as AdapterExtras;
-
-  if (extras.settle) {
-    return await new Promise<AxiosResponse>((resolve, reject) => {
-      extras.settle!(resolve, reject, settled);
-    });
-  }
-
-  return settleResponse(settled);
 };
+
+const fetchAdapter: AxiosAdapter = (config) => runFetchAdapter(config, false);
+
+export const rabbyOpenapiFetchAdapter: AxiosAdapter = (config) =>
+  runFetchAdapter(config, true);
 
 export default fetchAdapter;
 

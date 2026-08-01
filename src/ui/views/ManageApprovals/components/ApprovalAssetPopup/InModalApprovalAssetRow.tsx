@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
+import { CheckboxV2 } from '@/ui/component/CheckboxV2';
 import type { AssetApprovalItem, AssetApprovalSpender } from '@/utils/approval';
 import { getSpenderApprovalAmount } from '@/utils/approval';
 import { useMemoizedFn } from 'ahooks';

@@ -2,7 +2,7 @@ import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import React from 'react';
 
 import { getTokenSymbol } from '@/ui/utils/token';
-import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
+import { CheckboxV2 } from '@/ui/component/CheckboxV2';
 import { getSpenderApprovalAmount } from '@/utils/approval';
 import { ensureSuffix } from '@/utils/string';
 import { NFTApproval } from '@rabby-wallet/rabby-api/dist/types';

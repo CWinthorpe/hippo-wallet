@@ -43,16 +43,12 @@ export const app = createModel<RootModel>()({
     /**
      * @description call other biz domain's init methods here
      */
-    initBizStore() {
-      dispatch.account.init();
-      dispatch.preference.init();
-      dispatch.currency.init();
-      dispatch.swap.init();
-      dispatch.whitelist.init();
-      dispatch.bridge.init();
-      dispatch.gasAccount.init();
-      dispatch.exchange.init();
-      dispatch.perps.initEventBus();
+    async initBizStore() {
+      await Promise.allSettled([
+        dispatch.account.initLocal(),
+        dispatch.preference.init(),
+        dispatch.whitelist.init(),
+      ]);
     },
   }),
 });

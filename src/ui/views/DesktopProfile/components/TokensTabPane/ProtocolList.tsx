@@ -14,9 +14,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
 import * as PortfolioTemplate from './Protocols/template';
 import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
-import { PERPS_INVITE_URL } from '@/ui/views/Perps/constants';
-import { useRequest } from 'ahooks';
-import { checkPerpsReference } from '@/ui/views/Perps/utils';
+
 import { useSticky } from '@/ui/hooks/useSticky';
 import { useLocation } from 'react-router-dom';
 
@@ -165,20 +163,6 @@ const ProtocolItem = ({
     wallet.openapi,
   ]);
 
-  const { data: isShowPerpsInvite } = useRequest(
-    async () => {
-      return checkPerpsReference({
-        wallet,
-        account: currentAccount,
-        scene: 'protocol',
-      });
-    },
-    {
-      ready: protocol.id === 'hyperliquid',
-      cacheKey: `check-perps-reference-protocol-${currentAccount?.address}`,
-    }
-  );
-
   return (
     <ProtocolItemWrapper className="protocol-item-wrapper" id={protocol.id}>
       <div>
@@ -203,40 +187,18 @@ const ProtocolItem = ({
             className="ml-[10px] flex items-center"
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(
-                protocol.id === 'hyperliquid' && isShowPerpsInvite
-                  ? PERPS_INVITE_URL
-                  : protocol.site_url,
-                false
-              );
+              openInTab(protocol.site_url, false);
             }}
           >
-            {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (
-              <Tooltip
-                overlayClassName="app-chain-tooltip rectangle addressType__tooltip"
-                title={t('component.ChainItem.hyperliquidCode')}
-              >
-                <span
-                  className={`
+            <span
+              className={`
                 name inline-flex items-center text-[20px] leading-[24px] font-semibold 
                 text-r-neutral-title1 hover:text-r-blue-default 
                 border-b-[1px] border-b-solid border-transparent hover:border-b-r-blue-default
               `}
-                >
-                  {protocol.name}
-                </span>
-              </Tooltip>
-            ) : (
-              <span
-                className={`
-                name inline-flex items-center text-[20px] leading-[24px] font-semibold 
-                text-r-neutral-title1 hover:text-r-blue-default 
-                border-b-[1px] border-b-solid border-transparent hover:border-b-r-blue-default
-              `}
-              >
-                {protocol.name}
-              </span>
-            )}
+            >
+              {protocol.name}
+            </span>
 
             {!!isAppChain && (
               <Tooltip

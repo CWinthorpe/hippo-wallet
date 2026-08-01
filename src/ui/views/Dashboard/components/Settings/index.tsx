@@ -27,10 +27,10 @@ import { ReactComponent as RcIconSwitchPwdForNonWhitelistedTx } from 'ui/assets/
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.svg';
-import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
+
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
-import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/panel/perps-float-cc.svg';
+
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -78,7 +78,7 @@ import { getChainList } from '@/utils/chain';
 import { SvgIconCross } from '@/ui/assets';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
-import { EcosystemBanner } from './components/EcosystemBanner';
+
 import { useMemoizedFn } from 'ahooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import { useCurrency } from '@/ui/hooks/useCurrency';
@@ -86,7 +86,6 @@ import {
   cleanupBiometricCredential,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
-import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -624,12 +623,7 @@ const SettingsInner = ({
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
-  const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
-  const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
 
-  const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
-    () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
-  );
   const lockShortcutLabel = useMemo(() => {
     return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
   }, []);
@@ -754,21 +748,6 @@ const SettingsInner = ({
     }
   );
 
-  const handleTogglePerpsWidget = useMemoizedFn(async (checked: boolean) => {
-    setPerpsWidgetBusy(true);
-    try {
-      await wallet.setPerpsWidgetEnabled(checked);
-      setPerpsWidgetEnabled(checked);
-      ga4.fireEvent(`PerpsFloating_${checked ? 'On' : 'Off'}`, {
-        event_category: 'Settings Snapshot',
-      });
-    } catch (error) {
-      message.error((error as Error)?.message || 'Failed to update setting');
-    } finally {
-      setPerpsWidgetBusy(false);
-    }
-  });
-
   const handleClickClearWatchMode = () => {
     confirm({
       className: 'modal-support-darkmode',
@@ -852,13 +831,6 @@ const SettingsInner = ({
   }, []);
 
   useEffect(() => {
-    wallet
-      .getPerpsWidgetEnabled()
-      .then((v) => setPerpsWidgetEnabled(!!v))
-      .catch(() => {});
-  }, [wallet]);
-
-  useEffect(() => {
     if (!visible) return;
     syncCurrencyList();
   }, [visible, syncCurrencyList]);
@@ -934,14 +906,7 @@ const SettingsInner = ({
             reportSettings('Manage Address');
           },
         },
-        {
-          leftIcon: RcIconEcosystemCC,
-          leftIconClassName: 'text-r-neutral-body',
-          content: t('page.dashboard.settings.features.ecosystem'),
-          onClick: () => {
-            setIsShowEcologyModal(true);
-          },
-        },
+
         {
           leftIcon: RcIconRabbyMobileCC,
           leftIconClassName: 'text-r-neutral-body w-24 h-24',
@@ -951,13 +916,7 @@ const SettingsInner = ({
             openInternalPageInTab('sync');
           },
         },
-        // {
-        //   leftIcon: RcIconPoints,
-        //   content: t('page.dashboard.settings.features.rabbyPoints'),
-        //   onClick: () => {
-        //     history.push('/rabby-points');
-        //   },
-        // },
+
         {
           leftIcon: RcIconSettingsSearchDapps,
           content: t('page.dashboard.settings.features.searchDapps'),
@@ -1016,20 +975,7 @@ const SettingsInner = ({
             />
           ),
         },
-        {
-          leftIcon: RcIconPerps,
-          leftIconClassName: 'text-r-neutral-body',
-          className: 'js-setting-perps-widget',
-          content: t('page.dashboard.settings.settings.perpsFloatWidget'),
-          rightIcon: (
-            <Switch
-              checked={perpsWidgetEnabled}
-              disabled={perpsWidgetBusy}
-              loading={perpsWidgetBusy}
-              onChange={handleTogglePerpsWidget}
-            />
-          ),
-        },
+
         {
           leftIcon: RcIconSwitchPwdForNonWhitelistedTx,
           // Password for non-whitelisted transfers
@@ -1056,10 +1002,15 @@ const SettingsInner = ({
         {
           leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
-          content: `${t(
-            'page.dashboard.settings.settings.dataAnalysis'
-          )} (disabled in private build)`,
-          rightIcon: <Switch checked={false} disabled />,
+          content: 'Privacy & Data Sources',
+          description: 'Control every Rabby/DeBank connection',
+          onClick: () => history.push('/settings/privacy-data'),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
         },
         {
           leftIcon: RcIconCustomTestnet,
@@ -1329,15 +1280,7 @@ const SettingsInner = ({
             </>
           ),
         },
-        {
-          leftIcon: RcIconSettingsGitForkCC,
-          content: <span>CreateAgent Wallet</span>,
-          onClick: async () => {
-            const currentAddress =
-              (await wallet.getCurrentAccount())?.address || '';
-            await wallet.createPerpsAgentWallet(currentAddress);
-          },
-        },
+
         {
           leftIcon: RcIconSettingsGitForkCC,
           content: 'Test sendPersonalMessage',
@@ -1358,34 +1301,6 @@ const SettingsInner = ({
             });
             message.success('sendPersonalMessage result: ' + result.txHash);
           },
-        },
-        {
-          leftIcon: RcIconSettingsGitForkCC,
-          content: 'Reset Perps Store',
-          onClick: async () => {
-            await wallet.resetPerpsStore();
-            message.success('Perps Store reset successfully');
-            setTimeout(() => {
-              window.close();
-            }, 1500);
-          },
-        },
-        {
-          leftIcon: RcIconSettingsCodeCC,
-          content: <span>Perps Accounts Include Watch Address</span>,
-          rightIcon: (
-            <Switch
-              checked={perpsIncludeWatchForTest}
-              onChange={(checked) => {
-                if (checked) {
-                  localStorage.setItem(PERPS_TEST_INCLUDE_WATCH_KEY, '1');
-                } else {
-                  localStorage.removeItem(PERPS_TEST_INCLUDE_WATCH_KEY);
-                }
-                setPerpsIncludeWatchForTest(checked);
-              }}
-            />
-          ),
         },
       ] as SettingItem[],
     },
@@ -1591,8 +1506,6 @@ const SettingsInner = ({
     dispatch.openapi.getTestnetHost();
   }, [dispatch.openapi]);
 
-  const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
-
   return (
     <div className="popup-settings">
       <div
@@ -1656,10 +1569,6 @@ const SettingsInner = ({
           </div>
         </footer>
       </div>
-      <EcosystemBanner
-        isVisible={isShowEcology}
-        onClose={() => setIsShowEcologyModal(false)}
-      />
 
       <Contacts
         visible={contactsVisible}

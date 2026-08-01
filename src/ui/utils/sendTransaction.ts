@@ -57,45 +57,6 @@ export enum FailedCode {
 
 type ProgressStatus = 'building' | 'builded' | 'signed' | 'submitted';
 
-const checkEnoughUseGasAccount = async ({
-  gasAccount,
-  wallet,
-  transaction,
-  currentAccountType,
-}: {
-  transaction: Tx;
-  currentAccountType: string;
-  wallet: WalletControllerType;
-  gasAccount?: {
-    sig: string | undefined;
-    accountId: string | undefined;
-  };
-}) => {
-  let gasAccountCanPay: boolean = false;
-
-  // native gas not enough check gasAccount
-  let gasAccountVerfiyPass = true;
-  let gasAccountCost;
-  try {
-    gasAccountCost = await wallet.openapi.checkGasAccountTxs({
-      sig: gasAccount?.sig || '',
-      account_id: gasAccount?.accountId || '',
-      tx_list: [transaction],
-    });
-  } catch (e) {
-    gasAccountVerfiyPass = false;
-  }
-  gasAccountCanPay =
-    gasAccountVerfiyPass &&
-    currentAccountType !== KEYRING_TYPE.WalletConnectKeyring &&
-    currentAccountType !== KEYRING_TYPE.WatchAddressKeyring &&
-    !!gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account;
-
-  return gasAccountCanPay;
-};
-
 /**
  * send transaction without rpcFlow
  * @param tx
@@ -156,11 +117,12 @@ export const sendTransaction = async ({
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
   account?: Account;
 }) => {
-  const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
-    !!gasAccountEnabled &&
-    isTempoChain(chainServerId) &&
-    isTempoBatchSupportedAccountType(account.type);
-  let sig = _sig;
+  if (isGasLess || isGasAccount) {
+    throw new Error(
+      'Gasless, sponsored, and Gas Account transactions are not supported by Hippo Wallet.'
+    );
+  }
+  const shouldUseTempoCallsForGasAccount = (_enabled?: boolean) => false;
   onProgress?.('building');
   const chain = findChain({
     serverId: chainServerId,
@@ -356,7 +318,6 @@ export const sendTransaction = async ({
   };
 
   let failedCode;
-  let canUseGasAccount: boolean = false;
 
   // random simulation failed for test
   if (
@@ -371,42 +332,7 @@ export const sendTransaction = async ({
   ) {
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
-    const gasAccount = await wallet.getGasAccountSig();
-    if (sig !== gasAccount?.sig) {
-      sig = gasAccount?.sig;
-    }
-    //  native gas not enough check gasAccount
-    if (autoUseGasAccount && gasAccount?.sig && gasAccount?.accountId) {
-      const gasAccountCanPay = await checkEnoughUseGasAccount({
-        gasAccount,
-        currentAccountType: currentAccount.type,
-        wallet,
-        transaction: {
-          ...(shouldUseTempoCallsForGasAccount(true)
-            ? (toTempoCallsTx(
-                {
-                  ...transaction,
-                  gas: gasLimit,
-                  gasPrice: intToHex(normalGas.price),
-                },
-                { stripTopLevelData: true }
-              ) as any)
-            : {
-                ...transaction,
-                gas: gasLimit,
-                gasPrice: intToHex(normalGas.price),
-              }),
-        },
-      });
-      if (gasAccountCanPay) {
-        onUseGasAccount?.();
-        canUseGasAccount = true;
-      } else {
-        failedCode = FailedCode.GasNotEnough;
-      }
-    } else {
-      failedCode = FailedCode.GasNotEnough;
-    }
+    failedCode = FailedCode.GasNotEnough;
   } else if (
     !ignoreGasCheck &&
     // eth gas > $20
@@ -442,19 +368,8 @@ export const sendTransaction = async ({
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
 
-  const shouldUseGasAccountMode = autoUseGasAccount
-    ? canUseGasAccount
-    : isGasAccount;
-  const transactionForSubmit = shouldUseTempoCallsForGasAccount(
-    shouldUseGasAccountMode
-  )
-    ? ({
-        ...(toTempoCallsTx(transaction as any, {
-          stripTopLevelData: true,
-        }) as any),
-        feePayer: true,
-      } as any)
-    : transaction;
+  const shouldUseGasAccountMode = false;
+  const transactionForSubmit = transaction;
 
   // fetch action data
   const actionData =
@@ -650,16 +565,18 @@ export const sendTransaction = async ({
         ],
       },
       session: session || INTERNAL_REQUEST_SESSION,
-      approvalRes: {
+      approvalRes: ({
         ...transactionForSubmit,
         signingTxId,
         logId: logId,
         lowGasDeadline,
-        isGasLess,
-        isGasAccount: shouldUseGasAccountMode,
+        isGasLess: false,
+        isGasAccount: false,
         pushType,
-        sig,
-      },
+        sig: undefined,
+      } as unknown) as Parameters<
+        typeof wallet.ethSendTransaction
+      >[0]['approvalRes'],
       pushed: false,
       result: undefined,
       account: account!,
@@ -746,6 +663,11 @@ export const sendTransactionByMiniSignV2 = async ({
   parsedData?: ParsedTransactionActionData;
   requiredData?: ActionRequireData;
 }) => {
+  if (isGasLess || isGasAccount) {
+    throw new Error(
+      'Gasless, sponsored, and Gas Account transactions are not supported by Hippo Wallet.'
+    );
+  }
   const buildTempoTx = (
     rawTx: Tx & Record<string, unknown>,
     opts?: { stripTopLevelData?: boolean; feePayer?: boolean }
@@ -762,10 +684,7 @@ export const sendTransactionByMiniSignV2 = async ({
   const support1559 = chain.eip['1559'];
 
   const currentAccount = _account || (await wallet.getCurrentAccount())!;
-  const shouldUseTempoCallsForGasAccount =
-    !!isGasAccount &&
-    isTempoChain(chainServerId) &&
-    isTempoBatchSupportedAccountType(currentAccount.type);
+  const shouldUseTempoCallsForGasAccount = false;
   const shouldUseTempoTx = shouldUseTempoTransaction({
     tx: tx as Tx & Record<string, unknown>,
     chainServerId,
@@ -1023,10 +942,10 @@ export const sendTransactionByMiniSignV2 = async ({
         ...transactionForSubmit,
         signingTxId,
         lowGasDeadline,
-        isGasLess,
-        isGasAccount,
+        isGasLess: false,
+        isGasAccount: false,
         pushType,
-        sig,
+        sig: undefined,
       },
       pushed: false,
       result: undefined,

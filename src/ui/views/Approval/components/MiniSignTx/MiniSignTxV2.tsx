@@ -356,6 +356,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       if (!isReady || !initdTxs.length || !chain) {
         return Promise.resolve([true, 0, undefined]);
       }
+      if (type === 'gasAccount') {
+        return Promise.resolve([true, 0, undefined]);
+      }
 
       return Promise.all(
         initdTxs.map(async (item) => {
@@ -396,61 +399,39 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           return [true, 0, undefined];
         }
 
-        if (type === 'native') {
-          const checkResult = _txsResult.map((item, index) => {
-            const result = checkGasAndNonce({
-              recommendGasLimitRatio: item.recommendGasLimitRatio,
-              recommendGasLimit: item.gasLimit,
-              recommendNonce: item.tx.nonce,
-              tx: item.tx,
-              gasLimit: item.gasLimit,
-              nonce: item.tx.nonce,
-              isCancel: isCancel,
-              gasExplainResponse: item.gasCost,
-              isSpeedUp: isSpeedUp,
-              isGnosisAccount: false,
-              nativeTokenBalance: balance,
-              gasTokenDecimals: gasToken.decimals || 18,
-              gasTokenId: gasToken.tokenId,
-              tempoPreferredFeeTokenId:
-                ctx?.tempoPreferredFeeTokenId || tempoPreferredFeeTokenId,
-              checkTxValueInBalance,
-            });
-            const txValueRaw = checkTxValueInBalance
-              ? new BigNumber(item.tx.value || 0)
-              : new BigNumber(0);
-            balance = new BigNumber(balance)
-              .minus(txValueRaw)
-              .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
-              .toFixed();
-            return result;
+        const checkResult = _txsResult.map((item, index) => {
+          const result = checkGasAndNonce({
+            recommendGasLimitRatio: item.recommendGasLimitRatio,
+            recommendGasLimit: item.gasLimit,
+            recommendNonce: item.tx.nonce,
+            tx: item.tx,
+            gasLimit: item.gasLimit,
+            nonce: item.tx.nonce,
+            isCancel: isCancel,
+            gasExplainResponse: item.gasCost,
+            isSpeedUp: isSpeedUp,
+            isGnosisAccount: false,
+            nativeTokenBalance: balance,
+            gasTokenDecimals: gasToken.decimals || 18,
+            gasTokenId: gasToken.tokenId,
+            tempoPreferredFeeTokenId:
+              ctx?.tempoPreferredFeeTokenId || tempoPreferredFeeTokenId,
+            checkTxValueInBalance,
           });
-          return [
-            _.flatten(checkResult)?.some((e) => e.code === 3001),
-            0,
-            undefined,
-          ];
-        }
-        return wallet.openapi
-          .checkGasAccountTxs({
-            sig: sig || '',
-            account_id: gasAccountAddress || config!.account.address,
-            tx_list: arr.map((item, index) => {
-              return {
-                ...item.tx,
-                gas: item.gasLimit,
-                gasPrice: intToHex(gas.price),
-              };
-            }),
-          })
-          .then((gasAccountRes) => {
-            return [
-              !gasAccountRes.balance_is_enough,
-              (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
-                (gasAccountRes.gas_account_cost?.gas_cost || 0),
-              gasAccountRes,
-            ];
-          });
+          const txValueRaw = checkTxValueInBalance
+            ? new BigNumber(item.tx.value || 0)
+            : new BigNumber(0);
+          balance = new BigNumber(balance)
+            .minus(txValueRaw)
+            .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
+            .toFixed();
+          return result;
+        });
+        return [
+          _.flatten(checkResult)?.some((e) => e.code === 3001),
+          0,
+          undefined,
+        ];
       });
     }
   );

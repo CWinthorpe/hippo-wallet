@@ -3,7 +3,7 @@ import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { createPersistStore } from 'background/utils';
 export * from '@rabby-wallet/rabby-api/dist/types';
 import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign';
-import fetchAdapter from 'background/utils/fetchAdapter';
+import { rabbyOpenapiFetchAdapter } from 'background/utils/fetchAdapter';
 
 class baseStore {
   store: {
@@ -96,7 +96,7 @@ if (!process.env.DEBUG) {
 
 const service = new OpenApiService({
   plugin: WebSignApiPlugin,
-  adapter: fetchAdapter,
+  adapter: rabbyOpenapiFetchAdapter,
   store: proxyStore,
 });
 
@@ -106,7 +106,7 @@ if (typeof window !== 'undefined') {
 
 export const testnetOpenapiService = new OpenApiService({
   plugin: WebSignApiPlugin,
-  adapter: fetchAdapter,
+  adapter: rabbyOpenapiFetchAdapter,
   store: testnetStore,
 });
 

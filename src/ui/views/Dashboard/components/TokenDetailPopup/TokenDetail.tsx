@@ -29,8 +29,7 @@ import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
-import { DBK_CHAIN_ID } from '@/constant';
+
 import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { transformToHistory } from '@/utils/history';
@@ -171,11 +170,8 @@ const TokenDetail = ({
     location.pathname === '/dex-swap' || (action === 'swap' && isDesktop);
   const isSend =
     location.pathname === '/send-token' || (action === 'send' && isDesktop);
-  const isBridge =
-    location.pathname === '/bridge' || (action === 'bridge' && isDesktop);
   const isInDesktopActionModal =
-    isDesktop &&
-    (action === 'send' || action === 'swap' || action === 'bridge');
+    isDesktop && (action === 'send' || action === 'swap');
 
   const handleInTokenSelect = useGetHandleTokenSelectInTokenDetails();
 
@@ -219,24 +215,6 @@ const TokenDetail = ({
     }
   }, [history, token, isDesktop, desktopPathname]);
 
-  const gotoBridge = useCallback(() => {
-    setVisible(false);
-    onClose?.();
-    if (isBridge && handleInTokenSelect) {
-      handleInTokenSelect(token);
-    } else {
-      if (isDesktop) {
-        history.push(
-          `${desktopPathname}?rbisource=tokendetail&action=bridge&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
-        );
-      } else {
-        history.push(
-          `/bridge?rbisource=tokendetail&fromChainServerId=${token?.chain}&fromTokenId=${token?.id}`
-        );
-      }
-    }
-  }, [history, token, desktopPathname]);
-
   const goToSwap = useCallback(() => {
     setVisible(false);
     onClose?.();
@@ -260,7 +238,7 @@ const TokenDetail = ({
       return null;
     }
 
-    if (isSwap || isSend || isBridge) {
+    if (isSwap || isSend) {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <TooltipWithMagnetArrow
@@ -273,7 +251,7 @@ const TokenDetail = ({
             <Button
               type="primary"
               size="large"
-              onClick={isBridge ? gotoBridge : isSwap ? goToSwap : goToSend}
+              onClick={isSwap ? goToSwap : goToSend}
               disabled={Boolean(tipsFromTokenSelect)}
               className="w-[360px] h-[40px] leading-[18px]"
               style={{
@@ -303,15 +281,7 @@ const TokenDetail = ({
         >
           {t('page.dashboard.tokenDetail.swap')}
         </Button>
-        <Button
-          type="primary"
-          ghost
-          size="large"
-          className="w-[84px] h-[40px] leading-[18px] rabby-btn-ghost"
-          onClick={gotoBridge}
-        >
-          {t('page.dashboard.tokenDetail.bridge')}
-        </Button>
+
         <Button
           type="primary"
           ghost
@@ -339,8 +309,7 @@ const TokenDetail = ({
     goToSwap,
     hideOperationButtons,
     isSwap,
-    isBridge,
-    gotoBridge,
+
     isSend,
     tipsFromTokenSelect,
   ]);
@@ -479,27 +448,7 @@ const TokenDetail = ({
             </div>
           </div>
         </div>
-        {token?.chain === 'dbk' ? (
-          <div className="flex flex-col gap-3 bg-r-neutral-card-1 rounded-[8px]">
-            <div className="flex items-center justify-between gap-8 px-16 py-10 ">
-              <div className="text-r-neutral-title1 text-[13px] font-medium leading-[16px]">
-                {t('page.dashboard.tokenDetail.bridgeToEth')}
-              </div>
-              <DbkButton
-                className="rounded-[6px] font-medium text-[13px] leading-[16px] py-[8px] px-[18px]"
-                onClick={() => {
-                  setVisible(false);
-                  onClose?.();
-                  history.push(
-                    `/ecology/${DBK_CHAIN_ID}/bridge?activeTab=withdraw`
-                  );
-                }}
-              >
-                {t('page.dashboard.tokenDetail.bridge')}
-              </DbkButton>
-            </div>
-          </div>
-        ) : null}
+
         <TokenChainAndContract
           entityLoading={entityLoading}
           token={token}

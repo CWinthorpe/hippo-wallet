@@ -16,7 +16,7 @@ import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
 import { useSelectedMarket } from './hooks/market';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
-import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
+import { ReactComponent as RcIconHippo } from '@/ui/assets/hippo-wallet-mark.svg';
 import { useTranslation } from 'react-i18next';
 
 const Wrap = styled.div`
@@ -50,7 +50,7 @@ const DesktopLendingContent: React.FC = () => {
     <Wrap>
       <div className="flex items-center justify-between mt-20">
         <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
-          <RcIconRabbyCC />
+          <RcIconHippo className="h-24 w-24" />
           <span className="text-[20px] leading-[24px] font-bold">
             {t('component.DesktopNav.lending')}
           </span>

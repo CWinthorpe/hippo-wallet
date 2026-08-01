@@ -12,7 +12,7 @@ import {
   EIP7702_REVOKE_SUPPORTED_CHAINS,
   EIP7702Delegated,
 } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
-import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
+import { CheckboxV2 } from '@/ui/component/CheckboxV2';
 import { EIP7702SupportedChainsPopup } from './EIP7702SupportedChainsPopup';
 import { EmptyState } from './EmptyState';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';

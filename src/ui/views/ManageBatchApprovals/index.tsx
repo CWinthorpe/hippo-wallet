@@ -13,7 +13,7 @@ import {
   AssetApprovalSpender,
 } from '../ManageApprovals/hooks/useManageApprovalsPage';
 import { findIndexRevokeList } from '../ManageApprovals/utils';
-import { PerpsBlueBorderedButton } from '../Perps/components/BlueBorderedButton';
+
 import { ListHeader } from './components/ListHeader';
 import { ListItem } from './components/ListItem';
 import {
@@ -132,14 +132,15 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
             )}
           </div>
           <div className="flex items-center gap-[12px]">
-            <PerpsBlueBorderedButton
+            <Button
+              size="large"
               onClick={() => {
                 modal.destroy();
               }}
               className="w-1/2 flex-1"
             >
               {t('global.Cancel')}
-            </PerpsBlueBorderedButton>
+            </Button>
             <Button
               type="primary"
               onClick={() => {

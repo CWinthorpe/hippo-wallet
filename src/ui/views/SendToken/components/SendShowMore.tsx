@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DirectSignGasInfo } from '../../Bridge/Component/BridgeShowMore';
+import { DirectSignGasInfo } from '@/ui/component/DirectSignGasInfo';
 import { noop } from 'lodash';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 

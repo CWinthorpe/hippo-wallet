@@ -1,7 +1,6 @@
 import { KEYRING_TYPE, ThemeIconType } from '@/constant';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
 import { appIsDev } from '@/utils/env';
 import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -17,7 +16,7 @@ import {
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Badge, Skeleton, Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
   createContext,
@@ -31,43 +30,27 @@ import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { createGlobalStyle } from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
-import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
-import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
 
 import {
   RcIconApprovalsCC,
-  RcIconBridgeCC,
   RcIconDappsCC,
   RcIconManageCC,
   RcIconMobileSyncCC,
-  RcIconPerpsCC,
-  RcIconPointsCC,
   RcIconReceiveCC,
   RcIconSearchCC,
   RcIconSendCC,
   RcIconSettingCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
-  RcIconConvertDustCC,
-  RcIconStakingCC,
 } from 'ui/assets/dashboard/panel';
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
+
 import { useMemoizedFn, useMount, useScroll } from 'ahooks';
 import { isEqual } from 'lodash';
-import {
-  formatUsdValue,
-  openInTab,
-  openInternalPageInTab,
-  splitNumberByStep,
-  useWallet,
-} from 'ui/utils';
-import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
-import { EcologyPopup } from '../EcologyPopup';
-import { RabbyPointsPopup } from '../RabbyPointsPopup';
+import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
+
 import { RecentConnectionsPopup } from '../RecentConnections';
-import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
 
@@ -300,18 +283,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  usePerpsDefaultAccount({
-    isPro: false,
-  });
-  // useCheckBridgePendingItem();
-
   const wallet = useWallet();
-
-  const [badgeModalVisible, setBadgeModalVisible] = useState(false);
-
-  const [isShowEcology, setIsShowEcologyModal] = useState(false);
-
-  const [isShowRabbyPoints, setIsShowRabbyPoints] = useState(false);
 
   const [isShowDappsPopup, setIsShowDappsPopup] = useState(false);
 
@@ -372,72 +344,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     isFullscreen?: boolean;
   };
 
-  const IconPerps = RcIconPerpsCC;
-
-  const hiddenBalance = useRabbySelector((s) => s.preference.hiddenBalance);
-
-  const {
-    availableBalance,
-    perpsPositionInfo,
-    isFetching: perpsFetching,
-    positionPnl,
-  } = usePerpsHomePnl();
-
-  const perpsSubContentNode = useMemo<React.ReactNode>(() => {
-    if (hiddenBalance) {
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-          )}
-        >
-          *****
-        </div>
-      );
-    }
-    if (perpsFetching) {
-      return (
-        <div className="absolute bottom-[6px] text-[11px] font-medium">
-          <Skeleton.Button
-            active={true}
-            className="h-[10px] block rounded-[2px]"
-            style={{ width: 42 }}
-          />
-        </div>
-      );
-    }
-    if (perpsPositionInfo?.assetPositions?.length) {
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-            positionPnl && positionPnl > 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {positionPnl && positionPnl >= 0 ? '+' : '-'}$
-          {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
-        </div>
-      );
-    }
-    return (
-      <div
-        className={clsx(
-          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-        )}
-      >
-        {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
-      </div>
-    );
-  }, [
-    hiddenBalance,
-    perpsFetching,
-    availableBalance,
-    perpsPositionInfo,
-    positionPnl,
-  ]);
-
   const panelItems = {
     swap: {
       icon: RcIconSwapCC,
@@ -455,14 +361,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/send-token?rbisource=dashboard');
       },
     } as IPanelItem,
-    bridge: {
-      icon: RcIconBridgeCC,
-      eventKey: 'Bridge',
-      content: t('page.dashboard.home.panel.bridge'),
-      onClick: () => {
-        history.push('/bridge');
-      },
-    } as IPanelItem,
+
     receive: {
       icon: RcIconReceiveCC,
       eventKey: 'Receive',
@@ -508,23 +407,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
-    ecology: {
-      icon: RcIconEco,
-      eventKey: 'Ecology',
-      content: t('page.dashboard.home.panel.ecology'),
-      onClick: () => {
-        setIsShowEcologyModal(true);
-      },
-    } as IPanelItem,
 
-    points: {
-      icon: RcIconPointsCC,
-      eventKey: 'Hippo Points',
-      content: t('page.dashboard.home.panel.rabbyPoints'),
-      onClick: () => {
-        setIsShowRabbyPoints(true);
-      },
-    } as IPanelItem,
     mobile: {
       icon: RcIconMobileSyncCC,
       eventKey: 'Hippo Mobile',
@@ -534,19 +417,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       },
       isFullscreen: true,
     } as IPanelItem,
-    perps: {
-      icon: IconPerps,
-      eventKey: 'Perps',
-      iconClassName: 'icon-perps',
-      subContent: perpsSubContentNode,
-      content: t('page.dashboard.home.panel.perps'),
-      onClick: async () => {
-        // await wallet.openInDesktop('/desktop/perps');
-        history.push('/perps');
-        // window.close();
-      },
-      // isFullscreen: true,
-    } as IPanelItem,
+
     searchDapp: {
       icon: RcIconSearchCC,
       eventKey: 'Search Dapp',
@@ -572,41 +443,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
-    convertDust: {
-      icon: RcIconConvertDustCC,
-      eventKey: 'Convert Dust',
-      content: t('page.dashboard.home.panel.convertDust'),
-      onClick: async () => {
-        openInTab('desktop.html#/desktop/small-swap', true);
-        // await wallet.openInDesktop('/desktop/small-swap');
-        // window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
-    staking: {
-      icon: RcIconStakingCC,
-      eventKey: 'Staking',
-      content: t('page.dashboard.home.panel.staking'),
-      onClick: () => {
-        history.push('/staking');
-      },
-    } as IPanelItem,
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
     return [
       'swap',
       'send',
-      'bridge',
       'receive',
       'transactions',
       'security',
-      'perps',
-      'staking',
       'mobile',
       'dapps',
-      'convertDust',
-      'points',
     ];
   }, []);
 
@@ -985,20 +832,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         </div>
       </div>
 
-      <ClaimRabbyFreeGasBadgeModal
-        visible={badgeModalVisible}
-        onCancel={() => {
-          setBadgeModalVisible(false);
-        }}
-      />
-      <EcologyPopup
-        visible={isShowEcology}
-        onClose={() => setIsShowEcologyModal(false)}
-      />
-      <RabbyPointsPopup
-        visible={isShowRabbyPoints}
-        onClose={() => setIsShowRabbyPoints(false)}
-      />
       <RecentConnectionsPopup
         visible={isShowDappsPopup}
         onClose={() => {

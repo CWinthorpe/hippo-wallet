@@ -155,4 +155,84 @@ describe('private-build privacy invariants', () => {
       'google-analytics.com'
     );
   });
+
+  test('does not ship removed product services, routes, or SDK dependencies', () => {
+    const packageJson = JSON.parse(read('package.json'));
+    for (const dependency of [
+      '@rabby-wallet/rabby-swap',
+      '@rabby-wallet/rabby-bridge',
+      '@rabby-wallet/hyperliquid-sdk',
+      '@rabby-wallet/staking-sdk',
+      '@opensea/seaport-js',
+    ]) {
+      expect(packageJson.dependencies?.[dependency]).toBeUndefined();
+    }
+
+    for (const removedPath of [
+      'src/background/service/bridge.ts',
+      'src/background/service/gasAccount.ts',
+      'src/background/service/perps.ts',
+      'src/background/service/perpsLive.ts',
+      'src/background/service/rabbyPoints.ts',
+      'src/background/service/swap.ts',
+      'src/background/service/transactionBroadcastWatcher.ts',
+      'src/ui/views/Bridge',
+      'src/ui/views/Perps',
+      'src/ui/views/DesktopPerps',
+      'src/ui/views/Staking',
+      'src/ui/views/RabbyPoints',
+    ]) {
+      expect(fs.existsSync(path.join(root, removedPath))).toBe(false);
+    }
+
+    const routes = read('src/ui/views/MainRoute.tsx');
+    const walletController = read('src/background/controller/wallet.ts');
+    for (const removedRoute of [
+      '/bridge',
+      '/perps',
+      '/staking',
+      '/rabby-points',
+      '/gas-account',
+    ]) {
+      expect(routes).not.toContain(removedRoute);
+    }
+    expect(walletController).not.toContain('postGasStationOrder');
+    expect(walletController).not.toContain('gasTopUp =');
+
+    const approvalSources = [
+      'src/ui/views/Approval/components/SignTx.tsx',
+      'src/ui/views/Approval/components/MiniSignTx/MiniSignTxV2.tsx',
+      'src/ui/component/MiniSignV2/services/SignatureSteps.ts',
+      'src/ui/views/Approval/components/BroadcastMode/index.tsx',
+    ]
+      .map(read)
+      .join('\n');
+    for (const removedCall of [
+      '.gasLessTxCheck(',
+      '.gasLessTxsCheck(',
+      '.checkGasAccountTxs(',
+      '.gasPriceStats(',
+      '.gasSupportedPushType(',
+    ]) {
+      expect(approvalSources).not.toContain(removedCall);
+    }
+  });
+
+  test('ships the consent gate and one-destination replacement paths', () => {
+    const app = read('src/ui/views/index.tsx');
+    const policy = read('src/background/service/remoteDataPolicy.ts');
+    const rpc = read('src/background/service/rpc.ts');
+    const llamaSwap = read('src/background/service/llamaSwap.ts');
+
+    expect(app).toContain('<RemoteDataPolicyGate>');
+    expect(policy).toContain("configured: false");
+    expect(policy).toContain('REMOTE_DATA_UNCLASSIFIED');
+    expect(policy).toContain('REMOTE_FEATURE_REMOVED');
+    expect(rpc).toContain('https://rpc.mevblocker.io/fullprivacy');
+    expect(rpc).toContain('submitRawTransaction');
+    expect(llamaSwap).toContain(
+      'https://swap-api.defillama.com/dexAggregatorQuote'
+    );
+    expect(llamaSwap).toContain('validateLlamaSwapQuote');
+  });
 });

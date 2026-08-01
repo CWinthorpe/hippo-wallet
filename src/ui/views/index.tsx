@@ -25,6 +25,10 @@ import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { useSyncCurrentAccount } from '../utils/withAccountChange';
 import { useSyncDbHistory } from '@/db/hooks/history';
 import { ScreenshotContextMenu } from '../component/ScreenshotContextMenu';
+import {
+  RemoteDataPolicyGate,
+  RemoteDataPolicySettings,
+} from './RemoteDataPolicy';
 const UiType = getUiType();
 const AsyncMainRoute = lazy(() =>
   UiType.isDesktop ? import('./DesktopRoute') : import('./MainRoute')
@@ -127,6 +131,10 @@ const Main = () => {
         <ForgotPassword />
       </Route>
 
+      <Route exact path="/settings/privacy-data">
+        <RemoteDataPolicySettings />
+      </Route>
+
       <PrivateRoute exact path="/dashboard">
         <Dashboard />
       </PrivateRoute>
@@ -142,10 +150,12 @@ const Main = () => {
 const App = ({ wallet }: { wallet: any }) => {
   return (
     <WalletProvider wallet={wallet}>
-      <Router>
-        <Main />
-        <ScreenshotContextMenu />
-      </Router>
+      <RemoteDataPolicyGate>
+        <Router>
+          <Main />
+          <ScreenshotContextMenu />
+        </Router>
+      </RemoteDataPolicyGate>
     </WalletProvider>
   );
 };

@@ -20,9 +20,6 @@ import {
 import { ProtocolLowValueItem } from './ProtocolLowValueItem';
 import BigNumber from 'bignumber.js';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
-import { PERPS_INVITE_URL } from '../../Perps/constants';
-import { useRequest } from 'ahooks';
-import { checkPerpsReference } from '../../Perps/utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -167,20 +164,6 @@ export const ProtocolItem = ({
     }
   }, [isExpand, refreshRealTimeProtocol]);
 
-  const { data: isShowPerpsInvite } = useRequest(
-    async () => {
-      return checkPerpsReference({
-        wallet,
-        account: currentAccount,
-        scene: 'protocol',
-      });
-    },
-    {
-      ready: protocol.id === 'hyperliquid',
-      cacheKey: `check-perps-reference-protocol-${currentAccount?.address}`,
-    }
-  );
-
   const actions = useGetDappActions({
     protocol,
   });
@@ -241,19 +224,7 @@ export const ProtocolItem = ({
             )}
             onClick={(evt) => {
               evt.stopPropagation();
-              if (protocol.id === 'hyperliquid') {
-                wallet.setPerpsCurrentAccount(currentAccount);
-                wallet.switchDesktopPerpsAccount(currentAccount!);
-                wallet.openInDesktop('/desktop/perps');
-                window.close();
-              } else {
-                openInTab(
-                  protocol.id === 'hyperliquid' && isShowPerpsInvite
-                    ? PERPS_INVITE_URL
-                    : protocol.site_url,
-                  false
-                );
-              }
+              openInTab(protocol.site_url, false);
             }}
           >
             <span className="name items-center truncate min-w-0">

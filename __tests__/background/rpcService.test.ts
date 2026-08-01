@@ -26,6 +26,7 @@ jest.mock('@/background/service/openapi', () => ({
 
 import {
   RPCService,
+  MEV_BLOCKER_FULL_PRIVACY_RPC,
   canUseReadFallback,
   isRetryableRPCError,
   normalizeRPCItem,
@@ -35,6 +36,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import openapiService from '@/background/service/openapi';
 import fs from 'fs';
 import path from 'path';
+import { keccak256 } from 'viem';
 
 describe('RPC read failover and broadcast routing', () => {
   const primary = 'https://primary.example';
@@ -394,7 +396,76 @@ describe('RPC read failover and broadcast routing', () => {
     expect(defaultRoute).toBeGreaterThan(customRoute);
   });
 
-  test('direct default-RPC broadcast does not fall back to the wallet backend', () => {
+  test('custom RPC remains authoritative for guarded raw transaction submission', async () => {
+    const service = createService();
+    const rawTx = '0x01' as const;
+    const hash = keccak256(rawTx);
+    service.requestCustomRPC = jest.fn().mockResolvedValue(hash) as any;
+    service.defaultRPCRequest = jest.fn() as any;
+
+    await expect(
+      service.submitRawTransaction({
+        chain: CHAINS_ENUM.ETH,
+        chainServerId: 'eth',
+        rawTx,
+        allowMevBlocker: true,
+      })
+    ).resolves.toMatchObject({
+      hash,
+      usedMevBlocker: false,
+      submissionEndpoint: broadcast,
+    });
+    expect(service.requestCustomRPC).toHaveBeenCalledTimes(1);
+    expect(service.defaultRPCRequest).not.toHaveBeenCalled();
+  });
+
+  test('uses MEV Blocker full-privacy submission once for eligible Ethereum transactions', async () => {
+    const service = new RPCService();
+    const rawTx = '0x01' as const;
+    const hash = keccak256(rawTx);
+    service.defaultRPCRequest = jest.fn().mockResolvedValue(hash) as any;
+
+    await expect(
+      service.submitRawTransaction({
+        chain: CHAINS_ENUM.ETH,
+        chainServerId: 'eth',
+        rawTx,
+        allowMevBlocker: true,
+      })
+    ).resolves.toMatchObject({
+      hash,
+      usedMevBlocker: true,
+      submissionEndpoint: MEV_BLOCKER_FULL_PRIVACY_RPC,
+    });
+    expect(service.defaultRPCRequest).toHaveBeenCalledTimes(1);
+    expect(service.defaultRPCRequest).toHaveBeenCalledWith(
+      MEV_BLOCKER_FULL_PRIVACY_RPC,
+      'eth_sendRawTransaction',
+      [rawTx]
+    );
+  });
+
+  test('treats malformed submission results as ambiguous and never rebroadcasts', async () => {
+    const service = new RPCService();
+    const rawTx = '0x01' as const;
+    service.defaultRPCRequest = jest.fn().mockResolvedValue('malformed') as any;
+
+    await expect(
+      service.submitRawTransaction({
+        chain: CHAINS_ENUM.ETH,
+        chainServerId: 'eth',
+        rawTx,
+        allowMevBlocker: true,
+      })
+    ).rejects.toMatchObject({
+      code: 'RAW_TX_RESULT_INVALID',
+      ambiguousSubmission: true,
+      localTransactionHash: keccak256(rawTx),
+    });
+    expect(service.defaultRPCRequest).toHaveBeenCalledTimes(1);
+  });
+
+  test('provider broadcast path has no Rabby, gas-account, or bridge submission fallback', () => {
     const providerSource = fs.readFileSync(
       path.resolve(
         __dirname,
@@ -402,16 +473,10 @@ describe('RPC read failover and broadcast routing', () => {
       ),
       'utf8'
     );
-    const directBranchStart = providerSource.indexOf("pushType !== 'mev'");
-    const backendOnlyBranchStart = providerSource.indexOf(
-      'adoptBE7702Params();',
-      directBranchStart
-    );
-
-    expect(directBranchStart).toBeGreaterThan(-1);
-    expect(backendOnlyBranchStart).toBeGreaterThan(directBranchStart);
-    expect(
-      providerSource.slice(directBranchStart, backendOnlyBranchStart)
-    ).not.toContain('openapiService.submitTxV2');
+    expect(providerSource).toContain('RPCService.submitRawTransaction({');
+    expect(providerSource).toContain('allowMevBlocker');
+    expect(providerSource).not.toContain('openapiService.submitTxV2');
+    expect(providerSource).not.toContain('gasAccountService');
+    expect(providerSource).not.toContain('bridgeService');
   });
 });

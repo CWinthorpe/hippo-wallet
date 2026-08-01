@@ -1,77 +1,106 @@
 # Hippo Wallet
 
-Hippo Wallet is a privacy-hardened, self-hosted browser wallet derived from [Rabby Wallet](https://github.com/RabbyHub/Rabby). It keeps Rabby's transaction simulation and account tooling while removing product analytics, crash reporting, automatic security-action telemetry, and Rabby-controlled default RPC routing.
+Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [Rabby Wallet](https://github.com/RabbyHub/Rabby). It is built for a single operator who wants explicit control over remote data disclosure, auditable RPC routing and fewer backend-dependent features.
 
 ## Current release
 
-- **Version:** `0.93.101-hippo.2`
+- **Version:** `0.93.102-hippo.3`
 - **Target:** Chromium Manifest V3
 - **Repository:** [CWinthorpe/hippo-wallet](https://github.com/CWinthorpe/hippo-wallet)
 
-Use the ZIP attached to the [latest GitHub release](https://github.com/CWinthorpe/hippo-wallet/releases/latest). Release notes include the SHA-256 digest; verify it before installation.
+Download the ZIP from the [latest GitHub release](https://github.com/CWinthorpe/hippo-wallet/releases/latest) and verify its published SHA-256 digest before installation.
 
-## Privacy changes
+## What makes Hippo Wallet Hippo Wallet
 
-- Product analytics adapters are local no-ops.
-- GA4, Matomo, Sentry initialization, uninstall reporting, rating prompts, and onboarding opt-in behavior are disabled.
-- Automatic `/v1/engine/action/log` reporting is removed from transaction, message, and typed-data approval flows.
-- The action-log API is also disabled at the API-client boundary and blocked by a Manifest V3 declarative network rule.
-- Rabby's `/v1/chainrpc` and `/v1/wallet/eth_rpc` control-plane paths are disabled at the API-client boundary and blocked by declarative network rules.
-- Persistent per-installation Rabby API identifiers are cleared and cannot be re-enabled by normal runtime mutation.
-- No Hippo-operated relay or telemetry server is used.
+### Consent before contact
 
-This does **not** mean the wallet makes no network requests. Portfolio, history, simulation, phishing, token metadata, gasless, gas-account, swap, bridge, and other enhanced features still use their functional upstream APIs. Those services may receive addresses, origins, transaction data, or signed payloads required to perform the requested operation. See [docs/private-fork.md](docs/private-fork.md) for the exact trust boundary.
+Hippo starts with every Rabby/DeBank-backed capability disabled. On first run—and after upgrading from a build without a saved policy—the wallet asks what may be enabled before opening the normal wallet interface.
 
-## Default RPC routing
+The same controls remain under **Settings → Privacy & Data Sources**:
 
-Hippo no longer downloads its RPC routing table from Rabby and no longer uses Rabby's generic `/v1/wallet/eth_rpc` proxy. The built-in map is versioned with the source and can be audited at [`src/constant/default-rpc-providers.json`](src/constant/default-rpc-providers.json).
+- Portfolio, token and DeFi data
+- Transaction history
+- NFT viewing and metadata
+- Enhanced transaction, message and typed-data analysis
+- Approval and allowance discovery
+- Security and reputation lookups
+- Dapp discovery
+- Feedback submission
+
+Each permission is independent. Enabling one does not enable another. Enabling a permission does not prefetch data; the request occurs only when the corresponding feature is used. **Block all** turns every capability off, stops future provider calls and clears provider-derived caches for the current account. Removing the block does not silently restore old selections.
+
+The policy is enforced in the background request adapter, not merely by hiding buttons. Missing, malformed or unknown policy state means deny. Unknown Rabby/DeBank endpoints also fail closed. Blocked requests are rejected locally, are not queued and do not generate remote identifiers.
+
+### No Hippo backend
+
+Hippo operates no relay, proxy, analytics collector or telemetry server. Product analytics, crash reporting, uninstall reporting, automatic action logging and persistent Rabby API identifiers remain disabled.
+
+There is no claim of complete offline operation. The selected RPC provider sees RPC traffic. Optional Rabby/DeBank features receive the data needed for that specific request after permission is granted. LlamaSwap and MEV Blocker have separate trust boundaries described below.
+
+### User-controlled RPC routing
+
+Hippo does not download a routing table from Rabby and does not use Rabby's generic RPC proxy. The reviewed built-in map is versioned at [`src/constant/default-rpc-providers.json`](src/constant/default-rpc-providers.json).
 
 Routing order:
 
-1. User-configured custom primary RPC.
-2. User-configured custom fallback RPCs for replay-safe reads and estimates.
-3. Otherwise, a built-in 1RPC endpoint.
-4. dRPC if 1RPC is unavailable, rate-limited, malformed, or not present for that chain.
-5. PublicNode, then 0xRPC, where listed and applicable.
+1. User-configured custom RPC.
+2. User-configured fallback RPCs for replay-safe reads and estimates.
+3. Otherwise, the bundled 1RPC route.
+4. dRPC, PublicNode and 0xRPC where listed and needed.
 
-Automatic failover is **sequential**, not parallel. It applies only to stateless reads and estimates after transport failures, documented quota/rate-limit responses, selected server failures, or malformed RPC results. Semantic failures such as an execution revert are returned immediately.
+Read failover is sequential, never parallel, and is restricted to replay-safe reads and estimates after transport, quota, selected server or malformed-result failures. Execution reverts and other semantic failures return immediately.
 
-Ordinary signed transaction submission uses exactly one endpoint: the custom broadcast endpoint when configured, otherwise the first built-in endpoint. Hippo does not automatically replay a signed transaction to another provider after an ambiguous failure. Gasless, gas-account, and explicitly selected MEV-protected flows remain backend-assisted because those features require sponsorship or private-orderflow coordination.
+Gas recommendations and gas estimation come from the selected RPC using `eth_feeHistory`, `eth_maxPriorityFeePerGas`, the latest block's base fee, `eth_gasPrice` and `eth_estimateGas`. There is no centralized gas-price fallback.
 
-The reviewed map currently provides built-in routes for **67 of 86** bundled networks. These 19 networks require a custom RPC:
+The bundled map currently covers **67 of 86** networks. The other networks require a custom RPC; see [docs/private-fork.md](docs/private-fork.md).
 
-- Oasys
-- Conflux
-- Story
-- Reya
-- Botanix
-- Citrea
-- IoTeX
-- BounceBit
-- Cyber
-- Etherlink
-- Zircuit
-- Sophon
-- DFK Chain
-- Chiliz
-- Mitosis
-- Taiko
-- Bitlayer
-- DBK Chain
-- Plasma
+### One-destination transaction submission
 
-Existing custom RPC profiles are preserved during upgrade.
+A signed transaction is submitted to exactly one destination for each attempt:
 
-## Provider privacy boundary
+- A configured custom broadcast RPC always wins.
+- Eligible ordinary Ethereum Mainnet transactions use [MEV Blocker](https://mevblocker.io/) at its `fullprivacy` endpoint.
+- Other transactions use the first selected ordinary RPC.
 
-The provider order reflects availability and stated privacy characteristics, not independent proof:
+Hippo computes the transaction hash locally and rejects malformed or mismatched submission results. It never automatically rebroadcasts after a timeout, disconnect, malformed response or other ambiguous outcome. Such a result may mean the first endpoint already accepted the transaction; blind failover would leak it to another provider.
 
-- [1RPC](https://docs.1rpc.io/using-the-web3-api/networks) states that its public relay discards identifying metadata and uses privacy-preserving relay infrastructure.
-- [dRPC](https://drpc.org/chainlist) provides broad coverage; its published privacy policy permits temporary IP processing/logging for routing and rate limiting.
-- [PublicNode](https://www.publicnode.com/privacy) states that operational IP data may be retained for up to 24 hours.
-- [0xRPC](https://0xrpc.io/) states that raw IP addresses are not logged.
+### Direct same-chain swaps
 
-The extension embeds no paid-provider credentials. A VPN user exposes the VPN exit address—not the residential address—to whichever RPC provider actually receives the request. Sequential failover can disclose the same read request to a later provider only after the previous endpoint fails.
+Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo requests same-chain quotes directly from LlamaSwap's production frontend API and currently uses its KyberSwap adapter.
+
+Before presenting a quote, Hippo verifies the selected chain, token addresses, input amount, output amount, recipient, approval spender, transaction target, calldata presence, native value, slippage bounds and absence of an added route fee. Approvals are exact-amount approvals rather than unlimited approvals. Submitted swap hashes are stored locally; Hippo does not post trade history to Rabby.
+
+LlamaSwap's frontend endpoint is not a documented third-party wallet API and may change or apply anti-bot controls without notice. The embedded frontend credential is public by design and is not a secret. If validation fails, Hippo refuses the quote rather than guessing.
+
+### Deliberately fewer features
+
+This release removes the code, routes, services, assets, dependencies and locale sections for:
+
+- Gas accounts, gasless transactions and sponsored submission
+- Points, badges, campaigns, referrals, gifts and promotional ecosystems
+- Perpetual trading, Hyperliquid services and the floating trading widget
+- Every bridge flow, including Hyperliquid and DBK bridge helpers
+- NFT listings, offers, sales and marketplace execution
+- Specialized staking and faucet flows
+- Rabby swap adapters, swap fees and trade reporting
+- Backend transaction-broadcast watchers
+
+The retained generated Rabby API client still contains legacy method names and endpoint strings because the same client supplies the optional portfolio and analysis APIs. Hippo classifies the removed endpoint families centrally and rejects them before transport; those strings do not indicate active feature routes or permission to call them.
+
+NFT viewing and ordinary NFT transfers remain available when their relevant data permission is enabled. Core signing, hardware-wallet, migration and injected-provider compatibility identifiers remain where renaming them would break dapps or existing installations. They are not claims of an active Rabby backend relationship.
+
+## Provider privacy boundaries
+
+A VPN may hide a residential IP address, but it does not hide wallet addresses, chain IDs, calldata, origins, typed data or token interests included in a request.
+
+- **Portfolio/history/NFT/DeFi:** may disclose wallet address, chains and requested asset or protocol context to Rabby/DeBank when enabled.
+- **Enhanced signing analysis:** may disclose origin, wallet, chain, destination, value, calldata, messages or typed-data contents when enabled.
+- **Approval discovery:** may disclose wallet address and chain when enabled. Current allowance state is verified through the selected RPC before display or revoke construction.
+- **RPC providers:** receive the JSON-RPC requests routed to them.
+- **LlamaSwap:** receives quote parameters and the swap recipient for deliberate quote requests.
+- **MEV Blocker:** receives the signed raw transaction for eligible Ethereum Mainnet submission.
+
+Provider privacy statements are claims by those providers, not independent guarantees. Review [docs/private-fork.md](docs/private-fork.md) before using the wallet with sensitive accounts.
 
 ## Install the release ZIP
 
@@ -82,7 +111,7 @@ The extension embeds no paid-provider credentials. A VPN user exposes the VPN ex
 5. Enable **Developer mode**.
 6. Select **Load unpacked** and choose the extracted directory.
 
-Back up seed phrases and private keys before replacing any wallet installation. Treat this as security-sensitive software, not a toy.
+Back up seed phrases and private keys before replacing any wallet installation. Treat this as security-sensitive software.
 
 ## Build from source
 
@@ -95,22 +124,26 @@ Prerequisites:
 git clone https://github.com/CWinthorpe/hippo-wallet.git
 cd hippo-wallet
 node .yarn/releases/yarn-4.14.1.cjs install --immutable
+node .yarn/releases/yarn-4.14.1.cjs typecheck
 node .yarn/releases/yarn-4.14.1.cjs build:pro
 ```
 
 The unpacked MV3 build is written to `dist/`.
 
-Focused privacy and routing tests:
+Focused privacy, routing and replacement tests:
 
 ```bash
 node .yarn/releases/yarn-4.14.1.cjs test \
+  __tests__/background/remoteDataPolicy.test.ts \
+  __tests__/background/openapiPrivacy.test.ts \
   __tests__/background/defaultRPCProviders.test.ts \
   __tests__/background/rpcService.test.ts \
-  __tests__/background/openapiPrivacy.test.ts \
+  __tests__/background/rpcGas.test.ts \
+  __tests__/background/llamaSwap.test.ts \
   __tests__/privacy/privateBuildPrivacy.test.ts \
   --runInBand --no-cache
 ```
 
 ## Upstream and license
 
-Hippo Wallet remains a downstream Rabby fork. Upstream copyright and license notices are retained. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [docs/private-fork.md](docs/private-fork.md).
+Hippo Wallet remains a downstream Rabby fork. Upstream copyright and license notices are retained. See [LICENSE](LICENSE), [NOTICE](NOTICE) and [docs/private-fork.md](docs/private-fork.md).

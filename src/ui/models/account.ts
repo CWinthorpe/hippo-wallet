@@ -238,15 +238,14 @@ export const account = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    async init(_?, store?) {
+    async initLocal() {
       const account: Account = await dispatch.account.getCurrentAccountAsync();
-
-      dispatch.account.onAccountChanged(account?.address);
-
-      // 初始化gift状态
-      await dispatch.gift.initGiftStateAsync();
       await dispatch.account.getSceneAccountMap();
-
+      return account;
+    },
+    async init() {
+      const account: Account = await dispatch.account.initLocal();
+      await dispatch.account.onAccountChanged(account?.address);
       return account;
     },
     async onAccountChanged(currentAccountAddress?: string, store?) {

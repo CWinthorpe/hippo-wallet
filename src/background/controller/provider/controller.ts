@@ -18,21 +18,16 @@ import {
   keyringService,
   permissionService,
   sessionService,
-  openapiService,
   preferenceService,
   transactionWatchService,
   transactionHistoryService,
   pageStateCacheService,
   signTextHistoryService,
   RPCService,
-  swapService,
-  transactionBroadcastWatchService,
   notificationService,
-  bridgeService,
-  gasAccountService,
 } from 'background/service';
 import { Session } from 'background/service/session';
-import { Tx, TxPushType } from 'background/service/openapi';
+import { TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
 import {
@@ -69,7 +64,7 @@ import {
 import { isString } from 'lodash';
 import { broadcastChainChanged } from '../utils';
 import { getOriginFromUrl } from '@/utils';
-import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
+import { isAddress, keccak256, numberToHex, stringToHex, toHex } from 'viem';
 import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
@@ -86,7 +81,6 @@ import {
   TxWithTempoExtras,
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
-import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
 
 const reportSignText = (params: {
   method: string;
@@ -169,15 +163,6 @@ const optionalValue = <T>(value: T | null | undefined) => {
   return value === null || typeof value === 'undefined' ? undefined : value;
 };
 
-const normalizeSerializedTxHex = (serializedTx?: string) => {
-  if (!serializedTx || typeof serializedTx !== 'string') return undefined;
-  let normalized = serializedTx.trim();
-  if (/^0x0x/i.test(normalized)) {
-    normalized = `0x${normalized.slice(4)}`;
-  }
-  return normalized as `0x${string}`;
-};
-
 const normalizeTempoCalls = (params: {
   approvalRes: TxWithTempoExtras<ApprovalRes>;
   txParams: Record<string, any>;
@@ -220,115 +205,6 @@ const normalizeTempoCalls = (params: {
       ),
     })
   );
-};
-
-const toTempoRpcQuantity = (value: unknown) => {
-  if (value === null || typeof value === 'undefined') return undefined;
-  if (typeof value === 'string') return normalizeHexValue(value);
-  if (typeof value === 'bigint' || typeof value === 'number')
-    return toHex(value);
-  return undefined;
-};
-
-const buildTempoSubmitTxFromSerialized = (params: {
-  serializedTx?: `0x${string}`;
-  approvalRes: ApprovalRes;
-  fallbackCalls?: Array<Record<string, any>>;
-  shouldIgnoreFeeToken?: boolean;
-}) => {
-  const {
-    serializedTx,
-    approvalRes,
-    fallbackCalls,
-    shouldIgnoreFeeToken,
-  } = params;
-  const normalizedSerializedTx = normalizeSerializedTxHex(serializedTx);
-  if (!normalizedSerializedTx) return undefined;
-  if (!/^0x[0-9a-fA-F]+$/.test(normalizedSerializedTx)) return undefined;
-  if (!normalizedSerializedTx.toLowerCase().startsWith('0x76'))
-    return undefined;
-
-  let parsed: any;
-  try {
-    parsed = ViemTempoTransaction.deserialize(normalizedSerializedTx) as any;
-  } catch {
-    return undefined;
-  }
-
-  const calls = Array.isArray(parsed?.calls)
-    ? parsed.calls.map((call: any) =>
-        omitUndefined({
-          to: call?.to,
-          data: call?.data,
-          value: toTempoRpcQuantity(call?.value),
-        })
-      )
-    : (fallbackCalls || []).map((call) =>
-        omitUndefined({
-          to: call?.to,
-          data: call?.data,
-          value: normalizeHexValue(call?.value),
-        })
-      );
-
-  return omitUndefined({
-    chainId:
-      typeof parsed?.chainId === 'number'
-        ? parsed.chainId
-        : Number(approvalRes.chainId),
-    type: '0x76',
-    from: parsed?.from || approvalRes.from,
-    gas: toTempoRpcQuantity(parsed?.gas),
-    gasLimit: toTempoRpcQuantity(parsed?.gas),
-    gasPrice: toTempoRpcQuantity(parsed?.gasPrice),
-    maxFeePerGas: toTempoRpcQuantity(parsed?.maxFeePerGas),
-    maxPriorityFeePerGas: toTempoRpcQuantity(parsed?.maxPriorityFeePerGas),
-    nonce: toTempoRpcQuantity(parsed?.nonce),
-    calls,
-    nonceKey: toTempoRpcQuantity(parsed?.nonceKey),
-    keyAuthorization:
-      typeof parsed?.keyAuthorization === 'undefined'
-        ? (approvalRes as any).keyAuthorization
-        : parsed.keyAuthorization,
-    validBefore: toTempoRpcQuantity(parsed?.validBefore),
-    validAfter: toTempoRpcQuantity(parsed?.validAfter),
-    feePayerSignature: optionalValue(parsed?.feePayerSignature),
-    feeToken: shouldIgnoreFeeToken
-      ? undefined
-      : (parsed?.feeToken as any) || (approvalRes as any).feeToken,
-  } as any);
-};
-
-const buildTempoSubmitTxFallback = (params: {
-  approvalRes: ApprovalRes;
-  fallbackCalls?: Array<Record<string, any>>;
-  shouldIgnoreFeeToken?: boolean;
-}) => {
-  const { approvalRes, fallbackCalls, shouldIgnoreFeeToken } = params;
-  return omitUndefined({
-    chainId: approvalRes.chainId,
-    type: '0x76',
-    from: approvalRes.from,
-    gas: approvalRes.gas,
-    gasLimit: approvalRes.gasLimit || approvalRes.gas,
-    gasPrice: approvalRes.gasPrice,
-    maxFeePerGas: approvalRes.maxFeePerGas,
-    maxPriorityFeePerGas: approvalRes.maxPriorityFeePerGas,
-    nonce: approvalRes.nonce,
-    calls: (fallbackCalls || []).map((call) =>
-      omitUndefined({
-        to: call?.to,
-        data: call?.data,
-        value: normalizeHexValue(call?.value),
-      })
-    ),
-    nonceKey: (approvalRes as any).nonceKey,
-    keyAuthorization: (approvalRes as any).keyAuthorization,
-    validBefore: (approvalRes as any).validBefore,
-    validAfter: (approvalRes as any).validAfter,
-    feePayerSignature: optionalValue((approvalRes as any).feePayerSignature),
-    feeToken: shouldIgnoreFeeToken ? undefined : (approvalRes as any).feeToken,
-  } as any);
 };
 
 const parseTempoSignature = (signature: string) => {
@@ -646,29 +522,13 @@ class ProviderController extends BaseController {
     result: any;
     account: Account;
   }) => {
-    const rechargeGasAccountOnTx = (txHash = '') => {
-      if (
-        options?.data?.$ctx?.ga?.rechargeGasAccount &&
-        options?.approvalRes?.nonce
-      ) {
-        try {
-          openapiService
-            .rechargeGasAccount({
-              ...options.data.$ctx.ga.rechargeGasAccount,
-              tx_id: txHash,
-              nonce: parseInt(options.approvalRes.nonce),
-            })
-            .catch((e) => {
-              console.log('rechargeGasAccount e', e);
-            });
-        } catch (error) {
-          console.log('rechargeGasAccount error', error);
-        }
-      }
-    };
-
     assertProviderRequest(options as any);
     if (options.pushed) return options.result;
+    if (options.approvalRes?.isGasLess || options.approvalRes?.isGasAccount) {
+      throw new Error(
+        'Gasless, sponsored, and Gas Account transactions are not supported by Hippo Wallet.'
+      );
+    }
     const {
       data: {
         params: [txParams],
@@ -686,12 +546,6 @@ class ProviderController extends BaseController {
     const signingTxId = approvalRes.signingTxId;
     const isCoboSafe = !!txParams.isCoboSafe;
     const pushType = approvalRes.pushType || 'default';
-    const lowGasDeadline = approvalRes.lowGasDeadline;
-    const preReqId = approvalRes.reqId;
-    const isGasLess = approvalRes.isGasLess || false;
-    const logId = approvalRes.logId || '';
-    const isGasAccount = approvalRes.isGasAccount || false;
-    const sig = approvalRes.sig;
 
     const eip7702Revoke = options?.data?.$ctx?.eip7702Revoke || false;
     const eip7702RevokeAuthorization =
@@ -731,7 +585,7 @@ class ProviderController extends BaseController {
         ...approvalRes,
       },
       chainServerId: chainForTx?.serverId,
-      isGasAccount,
+      isGasAccount: false,
       accountType: currentAccount.type,
     });
     if ((eip7702Revoke || is7702) && origin !== INTERNAL_REQUEST_ORIGIN) {
@@ -899,11 +753,9 @@ class ProviderController extends BaseController {
     try {
       if (isTempoTx) {
         const typedApprovalRes = approvalRes as any;
-        const shouldBackendSponsorTempo = isGasAccount || isGasLess;
         const shouldUseFeePayerPlaceholder =
           'feePayerSignature' in typedApprovalRes ||
-          typedApprovalRes.feePayer === true ||
-          shouldBackendSponsorTempo;
+          typedApprovalRes.feePayer === true;
         const normalizedFeePayerSignature = normalizeTempoSecp256k1Signature(
           typedApprovalRes.feePayerSignature
         );
@@ -935,15 +787,11 @@ class ProviderController extends BaseController {
           authorizationList: typedApprovalRes.authorizationList,
           feePayerSignature: optionalValue(normalizedFeePayerSignature),
           feePayer:
-            shouldBackendSponsorTempo ||
-            (typedApprovalRes.feePayer === true &&
-              typeof typedApprovalRes.feePayerSignature === 'undefined')
+            typedApprovalRes.feePayer === true &&
+            typeof typedApprovalRes.feePayerSignature === 'undefined'
               ? true
               : undefined,
-          // When Gas Account pays gas, fee token should be ignored on-chain.
-          feeToken: shouldBackendSponsorTempo
-            ? undefined
-            : typedApprovalRes.feeToken,
+          feeToken: typedApprovalRes.feeToken,
         });
         if (!shouldUseKeyringTempoSign) {
           throw new Error(
@@ -1005,16 +853,14 @@ class ProviderController extends BaseController {
         signedTransactionSuccess = true;
         statsData.signed = true;
         statsData.signedSuccess = true;
-        rechargeGasAccountOnTx();
         return;
       }
 
       const onTransactionCreated = (info: {
         hash?: string;
-        reqId?: string;
         pushType?: TxPushType;
       }) => {
-        const { hash, reqId, pushType = 'default' } = info;
+        const { hash, pushType = 'default' } = info;
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -1029,8 +875,6 @@ class ProviderController extends BaseController {
         const { r, s, v, ...other } = approvalRes;
 
         if (hash) {
-          swapService.postSwap(chain, hash, other);
-          bridgeService.postBridge(chain, hash, other);
           const key = `${chain}-${getTxMatchData(
             [other, rawTx].find(Boolean) as any
           )}`;
@@ -1062,7 +906,6 @@ class ProviderController extends BaseController {
             isCompleted: false,
             hash,
             failed: false,
-            reqId,
             pushType,
           },
           explain: cacheExplain,
@@ -1081,14 +924,6 @@ class ProviderController extends BaseController {
               chain,
             }
           );
-        }
-        if (reqId && !hash) {
-          transactionBroadcastWatchService.addTx(reqId, {
-            reqId,
-            address: txParams.from,
-            chainId: findChain({ enum: chain })!.id,
-            nonce: approvalRes.nonce,
-          });
         }
 
         if (isCoboSafe) {
@@ -1161,7 +996,6 @@ class ProviderController extends BaseController {
           statsData.signMethod = notificationService.statsData?.signMethod;
         }
         notificationService.setStatsData(statsData);
-        rechargeGasAccountOnTx(signedTx);
         return signedTx;
       }
 
@@ -1174,179 +1008,73 @@ class ProviderController extends BaseController {
 
       try {
         validateGasPriceRange(approvalRes);
-        let hash: string | undefined = undefined;
-        let reqId: string | undefined = undefined;
-        if (
-          !findChain({ enum: chain })?.isTestnet ||
-          isGasAccount ||
-          isGasLess
-        ) {
-          if (RPCService.hasCustomRPC(chain) && !isGasAccount && !isGasLess) {
-            const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
-            const rawTx = bytesToHex(tx.serialize());
-            try {
-              hash = await RPCService.requestCustomRPC(
-                chain,
-                'eth_sendRawTransaction',
-                [rawTx]
-              );
-            } catch (e) {
-              let errMsg = typeof e === 'object' ? e.message : e;
-              if (RPCService.hasCustomRPC(chain)) {
-                const rpc = RPCService.getRPCByChain(chain);
-                if (rpc) {
-                  const origin = getOriginFromUrl(rpc.broadcastUrl || rpc.url);
-                  errMsg = `[From ${origin}] ${errMsg}`;
-                }
-              }
-              onTransactionSubmitFailed({
-                ...e,
-                message: errMsg,
-              });
-            }
-            onTransactionCreated({ hash, reqId, pushType });
-            notificationService.setStatsData(statsData);
-          } else {
-            const chainServerId = findChain({ enum: chain })!.serverId;
-            const tempoSubmitTx = isTempoTx
-              ? (omitUndefined({
-                  ...((buildTempoSubmitTxFromSerialized({
-                    serializedTx: tempoSerializedRawTx,
-                    approvalRes,
-                    fallbackCalls: tempoCalls,
-                    shouldIgnoreFeeToken: isGasAccount,
-                  }) ||
-                    buildTempoSubmitTxFallback({
-                      approvalRes,
-                      fallbackCalls: tempoCalls,
-                      shouldIgnoreFeeToken: isGasAccount,
-                    })) as any),
-                  r: convertToHex(signedTx.r),
-                  s: convertToHex(signedTx.s),
-                  v: convertToHex(signedTx.v),
-                }) as any)
-              : undefined;
-            const params: Parameters<typeof openapiService.submitTxV2>[0] = {
-              context: {
-                tx: (tempoSubmitTx || {
-                  ...approvalRes,
-                  r: convertToHex(signedTx.r),
-                  s: convertToHex(signedTx.s),
-                  v: convertToHex(signedTx.v),
-                  value: approvalRes.value || '0x0',
-                }) as Tx,
-                origin,
-                log_id: logId,
-              },
-              backend_push_require: {
-                gas_type: isGasAccount
-                  ? 'gas_account'
-                  : isGasLess
-                  ? 'gasless'
-                  : null,
-              },
-              sig,
-              mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
-            };
+        let hash: string | undefined;
+        const chainData = findChain({ enum: chain })!;
+        const chainServerId = chainData.serverId;
+        const rawTx = (isTempoTx
+          ? tempoSerializedRawTx
+          : bytesToHex(
+              TransactionFactory.fromTxData(txDataWithRSV, {
+                common,
+              }).serialize()
+            )) as `0x${string}` | undefined;
 
-            const adoptBE7702Params = () => {
-              if (
-                approvalRes.authorizationList &&
-                approvalRes.authorizationList?.some((e) => e.yParity)
-              ) {
-                params.context.tx = {
-                  ...params.context.tx,
-                  authorizationList: approvalRes.authorizationList.map((e) => ({
-                    chainId: hexToNumber(e.chainId),
-                    address: e.address,
-                    nonce: e.nonce,
-                    r: e.r,
-                    s: e.s,
-                    v: e.yParity,
-                  })),
-                } as any;
-              }
-            };
-
-            const defaultRPC = RPCService.getDefaultRPC(chainServerId);
-            if (!isGasLess && !isGasAccount && pushType !== 'mev') {
-              if (!defaultRPC?.txPushToRPC) {
-                throw new Error(
-                  `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
-                );
-              }
-
-              const rawTx = isTempoTx
-                ? tempoSerializedRawTx
-                : bytesToHex(
-                    TransactionFactory.fromTxData(txDataWithRSV, {
-                      common,
-                    }).serialize()
-                  );
-              if (!rawTx) {
-                throw new Error('tempo transaction serialize failed');
-              }
-
-              const [
-                fePushedHash,
-              ] = await RPCService.defaultRPCSubmitTxWithFallback(
-                chainServerId,
-                'eth_sendRawTransaction',
-                [rawTx]
-              );
-              hash = fePushedHash;
-            } else {
-              adoptBE7702Params();
-              const res = await openapiService.submitTxV2(params);
-              if (res.access_token) {
-                void handleGasAccountLoginSuccess(
-                  res.access_token,
-                  currentAccount
-                ).catch((error) => {
-                  console.error('[handleGasAccountLoginSuccess] failed', error);
-                });
-              }
-              hash = res.tx_id;
-            }
-
-            //No more low gas push, reqId is no longer required.
-            reqId = undefined;
-
-            if (!hash) {
-              onTransactionSubmitFailed(new Error('Submit tx failed'));
-            } else {
-              onTransactionCreated({ hash, reqId, pushType });
-              if (notificationService.statsData?.signMethod) {
-                statsData.signMethod =
-                  notificationService.statsData?.signMethod;
-              }
-              notificationService.setStatsData(statsData);
-            }
-          }
-        } else {
-          const chainData = findChain({
-            enum: chain,
-          })!;
-
-          const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
-          const rawTx = bytesToHex(tx.serialize());
-          if (RPCService.hasCustomRPC(chain)) {
-            hash = await RPCService.requestCustomRPC(
-              chain,
-              'eth_sendRawTransaction',
-              [rawTx]
-            );
-          } else {
-            const client = customTestnetService.getClient(chainData.id);
-            hash = await client.request({
-              method: 'eth_sendRawTransaction',
-              params: [rawTx as any],
-            });
-          }
-          onTransactionCreated({ hash, reqId, pushType });
-          notificationService.setStatsData(statsData);
+        if (!rawTx) {
+          throw new Error('Transaction serialization failed');
         }
-        rechargeGasAccountOnTx(hash);
+
+        if (chainData.isTestnet && !RPCService.hasCustomRPC(chain)) {
+          const client = customTestnetService.getClient(chainData.id);
+          const returnedHash = await client.request({
+            method: 'eth_sendRawTransaction',
+            params: [rawTx as any],
+          });
+          const localHash = keccak256(rawTx);
+          if (
+            typeof returnedHash !== 'string' ||
+            returnedHash.toLowerCase() !== localHash.toLowerCase()
+          ) {
+            throw new Error(
+              `Ambiguous transaction submission result; local hash ${localHash}`
+            );
+          }
+          hash = returnedHash;
+        } else {
+          const allowMevBlocker =
+            chain === CHAINS_ENUM.ETH &&
+            !isSpeedUp &&
+            !isCancel &&
+            !is7702 &&
+            !isTempoTx;
+          const submission = await RPCService.submitRawTransaction({
+            chain,
+            chainServerId,
+            rawTx,
+            allowMevBlocker,
+          });
+          hash = submission.hash;
+        }
+
+        if (!hash) {
+          throw new Error('Submit transaction failed');
+        }
+
+        onTransactionCreated({
+          hash,
+          pushType:
+            chain === CHAINS_ENUM.ETH &&
+            !RPCService.hasCustomRPC(chain) &&
+            !isSpeedUp &&
+            !isCancel &&
+            !is7702 &&
+            !isTempoTx
+              ? 'mev'
+              : 'default',
+        });
+        if (notificationService.statsData?.signMethod) {
+          statsData.signMethod = notificationService.statsData.signMethod;
+        }
+        notificationService.setStatsData(statsData);
         return hash;
       } catch (e: any) {
         const chainData = findChain({
@@ -1364,7 +1092,6 @@ class ProviderController extends BaseController {
         }
         console.log('submit tx failed', e);
         onTransactionSubmitFailed(errMsg);
-        rechargeGasAccountOnTx();
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
@@ -1375,7 +1102,6 @@ class ProviderController extends BaseController {
         statsData.signMethod = notificationService.statsData?.signMethod;
       }
       notificationService.setStatsData(statsData);
-      rechargeGasAccountOnTx();
       throw typeof e === 'object' ? e : new Error(e);
     }
   };

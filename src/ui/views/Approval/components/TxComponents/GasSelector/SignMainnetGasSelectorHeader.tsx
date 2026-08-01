@@ -130,7 +130,7 @@ export const SignMainnetGasSelectorHeader = ({
     isWalletConnect: !!isWalletConnect,
   });
 
-  const gasAccountMethodSupported = !isWalletConnect && noCustomRPCEnabled;
+  const gasAccountMethodSupported = false;
 
   const gasCostUsdStr = useMemo(
     () => formatGasHeaderUsdValue(String(gas.gasCostUsd || 0)),

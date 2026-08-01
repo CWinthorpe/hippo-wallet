@@ -2,7 +2,6 @@ import {
   RcIconHomeCC,
   RcIconHomeHover,
   RcIconHomeInActive,
-  RcIconPerpsCC,
 } from '@/ui/assets/desktop/nav';
 import { splitNumberByStep } from '@/ui/utils';
 import { Skeleton, Tooltip } from 'antd';
@@ -11,7 +10,6 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-  RcIconBridgeCC,
   RcIconQueueCC,
   RcIconSendCC,
   RcIconSwapCC,
@@ -24,7 +22,7 @@ import { ga4 } from '@/utils/ga4';
 import { debounce } from 'lodash';
 import { useRabbySelector } from '@/ui/store';
 
-type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
+type DesktopNavAction = 'swap' | 'send' | 'gnosis-queue';
 
 export const DESKTOP_NAV_HEIGHT = 84;
 
@@ -56,7 +54,6 @@ export const DesktopNav: React.FC<{
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
   const currentPathname = history.location.pathname;
-  const IconPerps = RcIconPerpsCC;
 
   const navs: {
     key: string;
@@ -72,14 +69,8 @@ export const DesktopNav: React.FC<{
         title: t('component.DesktopNav.portfolio'),
         eventKey: 'Portfolio',
       },
-      {
-        key: '/desktop/perps',
-        icon: IconPerps,
-        title: t('component.DesktopNav.perps'),
-        eventKey: 'Perps',
-      },
     ];
-  }, [t, IconPerps]);
+  }, [t]);
 
   const activeNav = useMemo(
     () => navs.find((item) => currentPathname.startsWith(item.key)),
@@ -112,12 +103,6 @@ export const DesktopNav: React.FC<{
               title: t('page.desktopProfile.button.send'),
               Icon: RcIconSendCC,
               onClick: () => handleActionClick('send'),
-            },
-            {
-              key: 'bridge',
-              title: t('page.desktopProfile.button.bridge'),
-              Icon: RcIconBridgeCC,
-              onClick: () => handleActionClick('bridge'),
             },
           ]
         : [],

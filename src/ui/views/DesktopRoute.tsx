@@ -9,28 +9,22 @@ import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import clsx from 'clsx';
-import { DesktopPerpsEntry } from './DesktopPerps/entry';
+
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 import { useRabbyDispatch } from '../store';
 import { useEventBusListener } from '../hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
-import { DesktopSmallSwap } from './DesktopSmallSwap';
+
 import { DesktopManageApprovals } from './DesktopManageApprovals';
 
 const Main = () => {
   const location = useLocation();
-  const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
 
-  const hasMountedPerpsRef = useRef(false);
   const hasMountedProfileRef = useRef(false);
 
-  if (isPerpsRoute) {
-    hasMountedPerpsRef.current = true;
-  }
   if (isProfileRoute) {
     hasMountedProfileRef.current = true;
   }
@@ -57,9 +51,6 @@ const Main = () => {
 
   return (
     <>
-      <PrivateRoute exact path="/desktop/small-swap">
-        <DesktopSmallSwap />
-      </PrivateRoute>
       <PrivateRoute exact path="/desktop/manage-approvals">
         <DesktopManageApprovals />
       </PrivateRoute>
@@ -69,13 +60,6 @@ const Main = () => {
             isActive={isProfileRoute}
             style={isProfileRoute ? undefined : { display: 'none' }}
           />
-        </PrivateRouteGuard>
-      ) : null}
-      {hasMountedPerpsRef.current ? (
-        <PrivateRouteGuard>
-          <div className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}>
-            <DesktopPerpsEntry isActive={isPerpsRoute} />
-          </div>
         </PrivateRouteGuard>
       ) : null}
 

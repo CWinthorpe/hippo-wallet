@@ -1,20 +1,10 @@
-import { supportedChainToChain, updateChainStore } from '@/utils/chain';
-import { isManifestV3 } from '@/utils/env';
-import { Chain } from '@debank/common';
-import browser from 'webextension-polyfill';
-import { ALARMS_SYNC_CHAINS } from '../utils/alarms';
-import { http } from '../utils/http';
-import { SupportedChain } from './openapi';
-import { openapiService } from '.';
 import { createPersistStore } from '../utils';
-import dayjs from 'dayjs';
 
 interface SyncChainServiceStore {
   updatedAt: number;
 }
 
 class SyncChainService {
-  timer: ReturnType<typeof setInterval> | null = null;
   store: SyncChainServiceStore = {
     updatedAt: 0,
   };
@@ -30,67 +20,18 @@ class SyncChainService {
     this.store.updatedAt = this.store.updatedAt || 0;
   };
 
-  syncMainnetChainList = async (options?: { force?: boolean }) => {
-    const { force = false } = options || {};
-    if (
-      dayjs().isBefore(dayjs(this.store.updatedAt).add(55, 'minute')) &&
-      !force
-    ) {
-      return;
-    }
-    try {
-      const chains = process.env.DEBUG
-        ? await openapiService.getSupportedChains()
-        : await http
-            .get('https://static.debank.com/supported_chains.json')
-            .then((res) => {
-              return res.data as SupportedChain[];
-            });
-      const list: Chain[] = chains
-        .filter((item) => !item.is_disabled)
-        .map((item) => {
-          const chain: Chain = supportedChainToChain(item);
-          return chain;
-        });
-      updateChainStore({
-        mainnetList: list,
-      });
-      browser.storage.local.set({
-        rabbyMainnetChainList: list,
-      });
-      this.store.updatedAt = Date.now();
-    } catch (e) {
-      console.error('fetch chain list error: ', e);
-    }
+  /**
+   * Hippo ships its reviewed chain inventory with the extension. Keeping this
+   * compatibility method avoids migration breakage without contacting
+   * static.debank.com or Rabby's supported-chain endpoint.
+   */
+  syncMainnetChainList = async (_options?: { force?: boolean }) => {
+    this.store.updatedAt = Date.now();
   };
 
-  resetTimer = () => {
-    const periodInMinutes = 60;
-    if (this.timer) {
-      clearInterval(this.timer);
-    } else if (isManifestV3) {
-      browser.alarms.clear(ALARMS_SYNC_CHAINS);
-    }
+  resetTimer = () => undefined;
 
-    if (isManifestV3) {
-      browser.alarms.create(ALARMS_SYNC_CHAINS, {
-        delayInMinutes: periodInMinutes,
-        periodInMinutes: periodInMinutes,
-      });
-      browser.alarms.onAlarm.addListener((alarm) => {
-        if (alarm.name === ALARMS_SYNC_CHAINS) {
-          this.syncMainnetChainList();
-        }
-      });
-    } else {
-      this.timer = setInterval(() => {
-        this.syncMainnetChainList();
-      }, periodInMinutes * 60 * 1000);
-    }
-  };
-  roll = () => {
-    this.resetTimer();
-  };
+  roll = () => undefined;
 }
 
 export const syncChainService = new SyncChainService();

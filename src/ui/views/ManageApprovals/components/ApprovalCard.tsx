@@ -3,7 +3,7 @@ import { RightOutlined } from '@ant-design/icons';
 
 import { RiskBanner } from './RiskBanner';
 import { AssetAvatar } from './AssetAvatar';
-import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
+import { CheckboxV2 } from '@/ui/component/CheckboxV2';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';

@@ -2019,7 +2019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethereumjs/rlp@npm:5.0.2, @ethereumjs/rlp@npm:^5.0.0, @ethereumjs/rlp@npm:^5.0.1, @ethereumjs/rlp@npm:^5.0.2":
+"@ethereumjs/rlp@npm:5.0.2, @ethereumjs/rlp@npm:^5.0.1, @ethereumjs/rlp@npm:^5.0.2":
   version: 5.0.2
   resolution: "@ethereumjs/rlp@npm:5.0.2"
   bin:
@@ -2158,21 +2158,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethereumjs/util@npm:9.0.0":
-  version: 9.0.0
-  resolution: "@ethereumjs/util@npm:9.0.0"
-  dependencies:
-    "@ethereumjs/rlp": "npm:^5.0.0"
-    ethereum-cryptography: "npm:^2.1.2"
-  peerDependencies:
-    c-kzg: ^2.1.0
-  peerDependenciesMeta:
-    c-kzg:
-      optional: true
-  checksum: 10c0/8b1d0c1b032bb67bddf75fed73bcdb1be88473fb96790d1dfd87a4f087bc7cf0c1d7c4e700846fd2080050ba99df3a6074c4136dc3b4ccdb2ec3497bb271b343
-  languageName: node
-  linkType: hard
-
 "@ethereumjs/util@npm:9.1.0, @ethereumjs/util@npm:^9.0.0, @ethereumjs/util@npm:^9.0.1, @ethereumjs/util@npm:^9.0.3, @ethereumjs/util@npm:^9.1.0":
   version: 9.1.0
   resolution: "@ethereumjs/util@npm:9.1.0"
@@ -2252,7 +2237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/abi@npm:5.8.0, @ethersproject/abi@npm:^5.5.0, @ethersproject/abi@npm:^5.6.3, @ethersproject/abi@npm:^5.7.0, @ethersproject/abi@npm:^5.8.0":
+"@ethersproject/abi@npm:5.8.0, @ethersproject/abi@npm:^5.5.0, @ethersproject/abi@npm:^5.7.0, @ethersproject/abi@npm:^5.8.0":
   version: 5.8.0
   resolution: "@ethersproject/abi@npm:5.8.0"
   dependencies:
@@ -4080,20 +4065,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eth-sig-util@npm:5.1.0":
-  version: 5.1.0
-  resolution: "@metamask/eth-sig-util@npm:5.1.0"
-  dependencies:
-    "@ethereumjs/util": "npm:^8.0.6"
-    bn.js: "npm:^4.12.0"
-    ethereum-cryptography: "npm:^2.0.0"
-    ethjs-util: "npm:^0.1.6"
-    tweetnacl: "npm:^1.0.3"
-    tweetnacl-util: "npm:^0.15.1"
-  checksum: 10c0/6ed9b7a0355e6d4dbbf52360acb2490c96b82ee81230d4f7de18bf2ec6baacf000ac52308eb398dc6512f5e0546ae2916359f396cdd7a1ed7290940912552652
-  languageName: node
-  linkType: hard
-
 "@metamask/eth-sig-util@npm:7.0.1":
   version: 7.0.1
   resolution: "@metamask/eth-sig-util@npm:7.0.1"
@@ -4302,13 +4273,6 @@ __metadata:
   version: 3.13.1
   resolution: "@mobily/ts-belt@npm:3.13.1"
   checksum: 10c0/f988afcf61299861105b52fa2abda62356d3f40ca19ad05667b990774e380dadafd758bacc02b075df9c4b8eab5b910078f28775780ebb137844121968035270
-  languageName: node
-  linkType: hard
-
-"@msgpack/msgpack@npm:3.1.2":
-  version: 3.1.2
-  resolution: "@msgpack/msgpack@npm:3.1.2"
-  checksum: 10c0/4fee6dbea70a485d3a787ac76dd43687f489d662f22919237db1f2abbc3c88070c1d3ad78417ce6e764bcd041051680284654021f52068e0aff82d570cb942d5
   languageName: node
   linkType: hard
 
@@ -4646,16 +4610,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opensea/seaport-js@npm:4.0.5":
-  version: 4.0.5
-  resolution: "@opensea/seaport-js@npm:4.0.5"
-  dependencies:
-    ethers: "npm:^6.9.0"
-    merkletreejs: "npm:^0.5.0"
-  checksum: 10c0/c88e4bbb518bfaa9010c4eb74255b8a5b641dc865bb09608ee7eb924d7c471ddcb9f09ded10f4ac7cf676714894f4eac6f1279ce3082031a36ef4e30a018c360
-  languageName: node
-  linkType: hard
-
 "@paraswap/core@npm:2.2.0":
   version: 2.2.0
   resolution: "@paraswap/core@npm:2.2.0"
@@ -4942,20 +4896,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/hyperliquid-sdk@npm:1.1.15":
-  version: 1.1.15
-  resolution: "@rabby-wallet/hyperliquid-sdk@npm:1.1.15"
-  dependencies:
-    "@ethereumjs/util": "npm:9.0.0"
-    "@metamask/eth-sig-util": "npm:5.1.0"
-    "@msgpack/msgpack": "npm:3.1.2"
-    "@noble/hashes": "npm:1.8.0"
-    ethereum-cryptography: "npm:2.2.1"
-    fflate: "npm:0.8.2"
-  checksum: 10c0/4caf086d36b8a2672e7c012a3c9578148a9521c573ed4ea4d65a06457c84ae85c8f29b80c852a43dea31319be8f09f092744417091b3e6bb85fd215f51524a69
-  languageName: node
-  linkType: hard
-
 "@rabby-wallet/page-provider@npm:0.4.11":
   version: 0.4.11
   resolution: "@rabby-wallet/page-provider@npm:0.4.11"
@@ -5006,16 +4946,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.7":
-  version: 0.0.7
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.7"
-  peerDependencies:
-    "@debank/common": ">=0.3.60"
-    "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/74c156f61cc3e7d466eb72df612468921ccdac564989bb62a4012686b12f6d942fa50c16615a03c07bb38c94dade1b414a8436305aca8aed4b229ce04bb4c826
-  languageName: node
-  linkType: hard
-
 "@rabby-wallet/rabby-security-engine@npm:2.0.12":
   version: 2.0.12
   resolution: "@rabby-wallet/rabby-security-engine@npm:2.0.12"
@@ -5035,30 +4965,6 @@ __metadata:
     sha256-uint8array: "npm:^0.10.3"
     url-parse: "npm:^1.5.1"
   checksum: 10c0/f333ffe0664f0e8a5bad4365cebe0d5ea3db1b5a2d27760f44e053b2b0167e25081dfd5152705d1a6f8e1e64b4e622de407f0e69033e7904c82a4af02d4db29b
-  languageName: node
-  linkType: hard
-
-"@rabby-wallet/rabby-swap@npm:0.0.81":
-  version: 0.0.81
-  resolution: "@rabby-wallet/rabby-swap@npm:0.0.81"
-  dependencies:
-    "@ethersproject/abi": "npm:^5.7.0"
-    axios: "npm:^0.27.2"
-    bignumber.js: "npm:^9.1.1"
-    web3-eth-abi: "npm:^1.8.1"
-  peerDependencies:
-    "@debank/common": ">=0.3.60"
-    "@rabby-wallet/rabby-api": ">=0.6.28"
-  checksum: 10c0/d19157c20893fd38feb2d0cf6f94231e6bcbfe3865ea07966f9520808a5b85ad578a6cb994c5e770cd6604e89646d49503672bc7ce0782cb7f69e690512fc1ad
-  languageName: node
-  linkType: hard
-
-"@rabby-wallet/staking-sdk@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@rabby-wallet/staking-sdk@npm:0.1.0"
-  dependencies:
-    viem: "npm:2.47.6"
-  checksum: 10c0/bc5a843bb1301f3a6c8e2849fbdca4ebe35d6e28832dd9685928b1d31c3de7830da06dcd1026b56c2a0b5ea883d089104c238b2798b722948540ebf33cf9e930
   languageName: node
   linkType: hard
 
@@ -10144,7 +10050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bignumber.js@npm:^9.0.0, bignumber.js@npm:^9.0.1, bignumber.js@npm:^9.0.2, bignumber.js@npm:^9.1.1, bignumber.js@npm:^9.1.2, bignumber.js@npm:^9.3.0, bignumber.js@npm:^9.3.1":
+"bignumber.js@npm:^9.0.0, bignumber.js@npm:^9.0.1, bignumber.js@npm:^9.0.2, bignumber.js@npm:^9.1.2, bignumber.js@npm:^9.3.0, bignumber.js@npm:^9.3.1":
   version: 9.3.1
   resolution: "bignumber.js@npm:9.3.1"
   checksum: 10c0/61342ba5fe1c10887f0ecf5be02ff6709271481aff48631f86b4d37d55a99b87ce441cfd54df3d16d10ee07ceab7e272fc0be430c657ffafbbbf7b7d631efb75
@@ -10244,7 +10150,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bn.js@npm:^4.0.0, bn.js@npm:^4.1.0, bn.js@npm:^4.11.0, bn.js@npm:^4.11.8, bn.js@npm:^4.11.9, bn.js@npm:^4.12.0":
+"bn.js@npm:^4.0.0, bn.js@npm:^4.1.0, bn.js@npm:^4.11.0, bn.js@npm:^4.11.8, bn.js@npm:^4.11.9":
   version: 4.12.3
   resolution: "bn.js@npm:4.12.3"
   checksum: 10c0/53b6a4db8a583abd2522eacd480fece26fe6c4d8d35d03e5e11e15cb0873a3044eb4e3d1f9fef56f47eb008219e99ba5b620c26f57db49a687c6ab2cf848d50b
@@ -10572,13 +10478,6 @@ __metadata:
   version: 1.1.1
   resolution: "buffer-indexof@npm:1.1.1"
   checksum: 10c0/67906b0a9892854e24ac717ef823c3b19790c653a8b1902835bbf3c3c46ea8d99f0680a92f7394fc5acbbecb3385775ccd504ea00587d2d67d8dfaadd460eeae
-  languageName: node
-  linkType: hard
-
-"buffer-reverse@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "buffer-reverse@npm:1.0.1"
-  checksum: 10c0/72f05072a72dc1ec0574693b8358e6d3882abe8d0a7daa875ed145b360d68ea3b95eb1b5fd435bf1f38a80d85021ecdf670bbb57694926cc1a02ea56cbbf4468
   languageName: node
   linkType: hard
 
@@ -13675,18 +13574,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethereum-cryptography@npm:2.2.1, ethereum-cryptography@npm:^2.0.0, ethereum-cryptography@npm:^2.1.2, ethereum-cryptography@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "ethereum-cryptography@npm:2.2.1"
-  dependencies:
-    "@noble/curves": "npm:1.4.2"
-    "@noble/hashes": "npm:1.4.0"
-    "@scure/bip32": "npm:1.4.0"
-    "@scure/bip39": "npm:1.3.0"
-  checksum: 10c0/c6c7626d393980577b57f709878b2eb91f270fe56116044b1d7afb70d5c519cddc0c072e8c05e4a335e05342eb64d9c3ab39d52f78bb75f76ad70817da9645ef
-  languageName: node
-  linkType: hard
-
 "ethereum-cryptography@npm:^0.1.3":
   version: 0.1.3
   resolution: "ethereum-cryptography@npm:0.1.3"
@@ -13719,6 +13606,18 @@ __metadata:
     "@scure/bip32": "npm:1.1.5"
     "@scure/bip39": "npm:1.1.1"
   checksum: 10c0/93e486a4a8b266dc2f274b69252e751345ef47551163371939b01231afb7b519133e2572b5975bb9cb4cc77ac54ccd36002c7c759a72488abeeaf216e4d55b46
+  languageName: node
+  linkType: hard
+
+"ethereum-cryptography@npm:^2.0.0, ethereum-cryptography@npm:^2.1.2, ethereum-cryptography@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "ethereum-cryptography@npm:2.2.1"
+  dependencies:
+    "@noble/curves": "npm:1.4.2"
+    "@noble/hashes": "npm:1.4.0"
+    "@scure/bip32": "npm:1.4.0"
+    "@scure/bip39": "npm:1.3.0"
+  checksum: 10c0/c6c7626d393980577b57f709878b2eb91f270fe56116044b1d7afb70d5c519cddc0c072e8c05e4a335e05342eb64d9c3ab39d52f78bb75f76ad70817da9645ef
   languageName: node
   linkType: hard
 
@@ -13927,7 +13826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^6.13.4, ethers@npm:^6.9.0":
+"ethers@npm:^6.13.4":
   version: 6.16.0
   resolution: "ethers@npm:6.16.0"
   dependencies:
@@ -15566,7 +15465,6 @@ __metadata:
     "@noble/hashes": "npm:1.8.0"
     "@onekeyfe/hd-core": "npm:1.1.0"
     "@onekeyfe/hd-web-sdk": "npm:1.1.0"
-    "@opensea/seaport-js": "npm:4.0.5"
     "@paraswap/sdk": "npm:6.10.0"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.6.2"
     "@rabby-wallet/eth-coinbase-keyring": "npm:0.0.0-beta.8"
@@ -15577,14 +15475,10 @@ __metadata:
     "@rabby-wallet/eth-walletconnect-keyring": "npm:2.1.7"
     "@rabby-wallet/eth-watch-keyring": "npm:1.0.0"
     "@rabby-wallet/gnosis-sdk": "npm:1.4.9"
-    "@rabby-wallet/hyperliquid-sdk": "npm:1.1.15"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.16"
     "@rabby-wallet/rabby-api": "npm:0.9.62"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.7"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
-    "@rabby-wallet/rabby-swap": "npm:0.0.81"
-    "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@rabby-wallet/widgets": "npm:1.0.9"
     "@rematch/core": "npm:2.2.0"
     "@rematch/select": "npm:3.1.2"
@@ -18913,17 +18807,6 @@ __metadata:
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
   checksum: 10c0/254a8a4605b58f450308fc474c82ac9a094848081bf4c06778200207820e5193726dc563a0d2c16468810516a5c97d9d3ea0ca6585d23c58ccfff2403e8dbbeb
-  languageName: node
-  linkType: hard
-
-"merkletreejs@npm:^0.5.0":
-  version: 0.5.2
-  resolution: "merkletreejs@npm:0.5.2"
-  dependencies:
-    buffer-reverse: "npm:^1.0.1"
-    crypto-js: "npm:^4.2.0"
-    treeify: "npm:^1.1.0"
-  checksum: 10c0/c698a7e91965ca73e61077c03d65dd71f798a6ca822135d1f02e28a59f12e5f126f3b2b60c3a2003390c785282c91b6f71ad0e59c9f35346c2203283fc853088
   languageName: node
   linkType: hard
 
@@ -25142,13 +25025,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"treeify@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "treeify@npm:1.1.0"
-  checksum: 10c0/2f0dea9e89328b8a42296a3963d341ab19897a05b723d6b0bced6b28701a340d2a7b03241aef807844198e46009aaf3755139274eb082cfce6fdc1935cbd69dd
-  languageName: node
-  linkType: hard
-
 "trough@npm:^2.0.0":
   version: 2.2.0
   resolution: "trough@npm:2.2.0"
@@ -26434,16 +26310,6 @@ __metadata:
     "@ethersproject/abi": "npm:5.0.7"
     web3-utils: "npm:1.7.0"
   checksum: 10c0/e7803e72bad829b009c848a8c1e0ce762cbf983a43cdb09135b3aba98d0418d470a0338ff41a2e818fb0caf2234e38581a97d514f2719740d351129f024c4ac3
-  languageName: node
-  linkType: hard
-
-"web3-eth-abi@npm:^1.8.1":
-  version: 1.10.4
-  resolution: "web3-eth-abi@npm:1.10.4"
-  dependencies:
-    "@ethersproject/abi": "npm:^5.6.3"
-    web3-utils: "npm:1.10.4"
-  checksum: 10c0/976942b8591d1eb0318cb6ef258a0d4950b95f5217d4b7a9615565f832b6c30a8085241628af847ad34227ea0d604a74e88ec212e8447b7fdfb86a645be2c50f
   languageName: node
   linkType: hard
 

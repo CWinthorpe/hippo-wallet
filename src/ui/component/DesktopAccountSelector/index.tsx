@@ -8,13 +8,11 @@ import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount, isSupportSmallSwapAccount } from '@/utils/account';
-import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import { Popover, Tooltip } from 'antd';
 import clsx from 'clsx';
-import { flatten, sortBy } from 'lodash';
+import { flatten } from 'lodash';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'react-use';
@@ -22,11 +20,6 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { AddressViewer } from 'ui/component';
 import { CopyChecked } from '../CopyChecked';
 import './styles.less';
-import { getCustomClearinghouseState } from '@/ui/views/DesktopPerps/utils';
-import BigNumber from 'bignumber.js';
-import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { EVENTS } from '@/constant';
-import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -36,7 +29,7 @@ interface DesktopAccountSelectorProps {
   disabled?: boolean;
 }
 
-type Scene = 'perps' | 'prediction' | 'smallSwap';
+type Scene = 'prediction' | 'smallSwap';
 
 export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
   value,
@@ -66,15 +59,6 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   });
-
-  useEventBusListener(
-    EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
-    (account: Account) => {
-      if (value && !isSameAccount(value, account)) {
-        onChange?.(account);
-      }
-    }
-  );
 
   return (
     <>
@@ -151,108 +135,13 @@ const CurrentAccount = ({ account }: { account: Account }) => {
   );
 };
 
-// 10 minutes
-const CLEARINGHOUSE_STATE_EXPIRE_TIME = 1000 * 60 * 10;
-
-const useAccountList = (options?: { scene?: Scene }) => {
-  const { scene } = options || {};
+const useAccountList = () => {
   const { sortedAccountsList, fetchAllAccounts } = useAccounts();
-  const dispatch = useRabbyDispatch();
-  const clearinghouseStateMap = useRabbySelector(
-    (s) => s.perps.clearinghouseStateMap
-  );
   const filteredAccounts = useMemo(() => {
-    return flatten(sortedAccountsList).filter((item) => {
-      if (scene === 'perps') {
-        return ![
-          KEYRING_TYPE.WatchAddressKeyring,
-          KEYRING_TYPE.GnosisKeyring,
-        ].includes(item.type as any);
-      }
-      return item.type !== KEYRING_TYPE.WatchAddressKeyring;
-    });
-  }, [sortedAccountsList]);
-
-  useRequest(
-    async () => {
-      if (filteredAccounts.length > 0) {
-        const currentTs = Date.now();
-        const sdk = getPerpsSDK();
-
-        // Filter accounts that need to be fetched
-        const accountsToFetch = filteredAccounts.slice(0, 10).filter((item) => {
-          const clearinghouseState =
-            clearinghouseStateMap[item.address.toLowerCase()];
-          return (
-            !clearinghouseState ||
-            (clearinghouseState?.time &&
-              currentTs - clearinghouseState.time >
-                CLEARINGHOUSE_STATE_EXPIRE_TIME)
-          );
-        });
-
-        if (accountsToFetch.length === 0) {
-          return;
-        }
-
-        // Execute all requests concurrently
-        const newMap: Record<string, ClearinghouseState | null> = {};
-        const promises = accountsToFetch.map(async (item) => {
-          try {
-            const res = await getCustomClearinghouseState(item.address);
-            newMap[item.address.toLowerCase()] = res;
-          } catch (error) {
-            console.error(
-              `Failed to fetch clearinghouse state for ${item.address}:`,
-              error
-            );
-          }
-        });
-        // Wait for all requests to complete, then batch update
-        Promise.all(promises)
-          .then(() => {
-            dispatch.perps.setClearinghouseStateMap(newMap);
-          })
-          .catch((error) => {
-            dispatch.perps.setClearinghouseStateMap(newMap);
-          });
-      }
-    },
-    {
-      refreshDeps: [filteredAccounts],
-      cacheKey: `fetch-clearinghouse-state-${filteredAccounts
-        .map((item) => item.address)
-        .join('-')}`,
-      ready: scene === 'perps',
-    }
-  );
-
-  const perpsAccounts = useMemo(() => {
-    if (scene !== 'perps') {
-      return [];
-    }
-    return sortBy(
-      filteredAccounts,
-      (item) => {
-        return -(
-          clearinghouseStateMap[item.address.toLowerCase()]?.assetPositions
-            ?.length || 0
-        );
-      },
-      (item) => {
-        return -(
-          clearinghouseStateMap[item.address.toLowerCase()]?.withdrawable || 0
-        );
-      }
+    return flatten(sortedAccountsList).filter(
+      (item) => item.type !== KEYRING_TYPE.WatchAddressKeyring
     );
-  }, [filteredAccounts, scene, clearinghouseStateMap]);
-
-  const accounts = useMemo(() => {
-    if (scene === 'perps') {
-      return perpsAccounts;
-    }
-    return filteredAccounts;
-  }, [filteredAccounts, scene, perpsAccounts]);
+  }, [sortedAccountsList]);
 
   useMount(() => {
     if (!sortedAccountsList.length) {
@@ -261,8 +150,7 @@ const useAccountList = (options?: { scene?: Scene }) => {
   });
 
   return {
-    accounts,
-    clearinghouseStateMap,
+    accounts: filteredAccounts,
   };
 };
 
@@ -272,9 +160,7 @@ const AccountList: React.FC<{
   selectedAccount?: Account | null;
   onClose?(): void;
 }> = ({ onSelectAccount, selectedAccount, scene, onClose }) => {
-  const { accounts, clearinghouseStateMap } = useAccountList({
-    scene,
-  });
+  const { accounts } = useAccountList();
 
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const { t } = useTranslation();
@@ -346,9 +232,6 @@ const AccountList: React.FC<{
                 }
                 disabled={disabled}
                 scene={scene}
-                clearinghouseState={
-                  clearinghouseStateMap[item.address.toLowerCase()]
-                }
               >
                 {item.address}
               </AccountItem>
@@ -392,7 +275,7 @@ const AccountItem: React.FC<{
   onClick?(): void;
   isSelected?: boolean;
   isLast?: boolean;
-  clearinghouseState?: ClearinghouseState | null;
+
   children?: React.ReactNode;
   tips?: string;
   disabled?: boolean;
@@ -401,7 +284,7 @@ const AccountItem: React.FC<{
   onClick,
   isSelected,
   isLast,
-  clearinghouseState,
+
   scene,
   disabled,
   tips,
@@ -410,10 +293,6 @@ const AccountItem: React.FC<{
   const addressTypeIcon = useBrandIcon({
     ...item,
   });
-
-  const positionCount = useMemo(() => {
-    return clearinghouseState?.assetPositions?.length || 0;
-  }, [clearinghouseState]);
 
   return (
     <Tooltip title={tips} overlayClassName="rectangle">
@@ -447,26 +326,6 @@ const AccountItem: React.FC<{
               >
                 {item.alianName}
               </div>
-              {scene === 'perps' ? (
-                <>
-                  {positionCount ||
-                  Number(clearinghouseState?.withdrawable) > 0 ? (
-                    <div
-                      className={clsx(
-                        'ml-[10px] truncate flex-1 block text-right',
-                        isSelected
-                          ? 'text-[14px] leading-[19px] font-bold text-rb-neutral-title-1'
-                          : 'text-[14px] leading-[19px] font-medium text-rb-neutral-body'
-                      )}
-                    >
-                      {formatUsdValue(
-                        Number(clearinghouseState?.withdrawable || 0),
-                        BigNumber.ROUND_DOWN
-                      )}
-                    </div>
-                  ) : null}
-                </>
-              ) : null}
             </div>
             <div className="flex items-center">
               <AddressViewer
@@ -489,35 +348,16 @@ const AccountItem: React.FC<{
                 )}
                 checkedClassName={clsx('text-rb-green-default')}
               />
-              {scene === 'perps' ? (
-                <>
-                  {positionCount > 0 ? (
-                    <div
-                      className={clsx(
-                        'ml-[10px] truncate flex-1 block text-right',
-                        'text-[12px] leading-[14px] text-rb-neutral-foot'
-                      )}
-                    >
-                      {positionCount === 1
-                        ? t('page.perpsPro.accountActions.onePosition')
-                        : t('page.perpsPro.accountActions.positionCount', {
-                            count: positionCount,
-                          })}
-                    </div>
-                  ) : null}
-                </>
-              ) : (
-                <div
-                  className={clsx(
-                    'ml-[10px] truncate flex-1 block',
-                    isSelected
-                      ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
-                      : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
-                  )}
-                >
-                  ${splitNumberByStep(item.balance?.toFixed(2))}
-                </div>
-              )}
+              <div
+                className={clsx(
+                  'ml-[10px] truncate flex-1 block',
+                  isSelected
+                    ? 'text-[12px] leading-[14px] text-rb-neutral-title-1'
+                    : 'text-[12px] leading-[14px]  text-rb-neutral-foot'
+                )}
+              >
+                ${splitNumberByStep(item.balance?.toFixed(2))}
+              </div>
             </div>
           </div>
         </div>

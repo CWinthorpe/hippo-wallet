@@ -28,7 +28,7 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
+import { DirectSignGasInfo } from '@/ui/component/DirectSignGasInfo';
 import { formatUsdValue, formatAmount } from '../../utils/format';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { LendingStyledInput } from '../StyledInput';

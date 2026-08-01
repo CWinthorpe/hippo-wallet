@@ -9,7 +9,6 @@ import { sleep, useApproval, useWallet } from 'ui/utils';
 import { ConnectContent } from './ConnectContent';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
 import qs from 'qs';
-import { PerpsInviteContent } from './PerpsInviteContent';
 
 interface ConnectProps {
   params: any;
@@ -40,8 +39,6 @@ const Connect = (props: ConnectProps) => {
   const [isShowSelectWallet, setIsShowSelectWallet] = useState(
     !!$ctx?.providers?.length && !query.ignoreOtherWallet
   );
-
-  const [isShowHyperliquidInvite, setIsShowHyperliquidInvite] = useState(false);
 
   const handleSelectWallet = useMemoizedFn(
     async (info: EIP6963ProviderInfo) => {
@@ -97,18 +94,8 @@ const Connect = (props: ConnectProps) => {
           onSelect={handleSelectWallet}
           providers={$ctx?.providers || []}
         />
-      ) : isShowHyperliquidInvite ? (
-        <PerpsInviteContent {...props} />
       ) : (
-        <ConnectContent
-          {...props}
-          onPerpsInvite={(address) => {
-            wallet.setPerpsInviteConfig(address, {
-              lastConnectedAt: Date.now(),
-            });
-            setIsShowHyperliquidInvite(true);
-          }}
-        />
+        <ConnectContent {...props} />
       )}
     </>
   );

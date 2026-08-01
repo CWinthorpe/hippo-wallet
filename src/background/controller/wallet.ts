@@ -24,6 +24,8 @@ import {
   permissionService,
   sessionService,
   openapiService,
+  llamaSwapService,
+  remoteDataPolicyService,
   pageStateCacheService,
   transactionHistoryService,
   transactionsService,
@@ -31,23 +33,17 @@ import {
   currencyService,
   signTextHistoryService,
   whitelistService,
-  swapService,
   RPCService,
+  rpcGasService,
   unTriggerTxCounter,
   securityEngineService,
-  transactionBroadcastWatchService,
-  RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
-  bridgeService,
-  gasAccountService,
   uninstalledService,
   OfflineChainsService,
-  perpsService,
   miscService,
   lendingService,
   feedbackService,
 } from 'background/service';
-import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -66,11 +62,9 @@ import {
   INTERNAL_REQUEST_SESSION,
   DARK_MODE_TYPE,
   KEYRING_CLASS,
-  DBK_CHAIN_ID,
-  DBK_NFT_CONTRACT_ADDRESS,
   CORE_KEYRING_TYPES,
 } from 'consts';
-import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
+import { ERC20ABI, ERC721ABI } from 'consts/abi';
 import {
   Account,
   IHighlightedAddress,
@@ -82,7 +76,6 @@ import {
   Tx,
   TxHistoryResult,
   NFTDetail,
-  BridgeHistory,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -99,14 +92,7 @@ import {
   isSameAddress,
   setPopupIcon,
 } from 'background/utils';
-import {
-  handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
-  trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
-} from '../utils/gasAccountLogin';
-import {
-  discoverGasAccountRuntimeState,
-  GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT,
-} from '../utils/gasAccountDiscovery';
+
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -126,7 +112,6 @@ import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
-import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -150,6 +135,11 @@ import {
 import { cached } from '../utils/cache';
 import { createSafeService } from '../utils/safe';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import type { RemoteDataCapabilityState } from '../service/remoteDataPolicy';
+import {
+  EMPTY_REMOTE_DATA_CAPABILITIES,
+  REMOTE_DATA_CAPABILITIES,
+} from '../service/remoteDataPolicy';
 import { autoLockService } from '../service/autoLock';
 import { t } from 'i18next';
 import {
@@ -174,7 +164,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
-import { BridgeRecord } from '../service/bridge';
+
 import { TokenSpenderPair } from '@/types/permit2';
 import {
   summarizeRevoke,
@@ -197,18 +187,11 @@ import { metamaskModeService } from '../service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { bgRetryTxMethods } from '../utils/errorTxRetry';
 import {
-  BridgeTxHistoryItem,
   SendNftTxHistoryItem,
   SendTxHistoryItem,
   SwapTxHistoryItem,
 } from '../service/transactionHistory';
 
-import { Seaport } from '@opensea/seaport-js';
-import { OrderComponents } from '@opensea/seaport-js/lib/types';
-import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
-import { buildCreateListingTypedData } from '@/utils/nft';
-import { http } from '../utils/http';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
@@ -439,11 +422,11 @@ const gnosisPQueue = new PQueue({
   concurrency: 2,
 });
 
-type DesktopPageType = 'profile' | 'perps' | 'lending' | 'prediction';
+type DesktopPageType = 'profile' | 'lending' | 'prediction';
 
 function getDesktopPageType(path: string): DesktopPageType {
   const normalized = path.replace(/^\//, '');
-  if (normalized.startsWith('desktop/perps')) return 'perps';
+
   if (normalized.startsWith('desktop/lending')) return 'lending';
   if (normalized.startsWith('desktop/prediction')) return 'prediction';
   return 'profile';
@@ -453,6 +436,73 @@ export class WalletController extends BaseController {
   openapi = openapiService;
   testnetOpenapi = testnetOpenapiService;
   fakeTestnetOpenapi = fakeTestnetOpenapi;
+
+  getRemoteDataPolicy = () => remoteDataPolicyService.getPolicy();
+
+  setRemoteDataPolicy = async (
+    capabilities: Partial<RemoteDataCapabilityState>
+  ) => {
+    const previous = remoteDataPolicyService.getPolicy();
+    const policy = await remoteDataPolicyService.setPolicy(capabilities);
+    const reducedAccess = REMOTE_DATA_CAPABILITIES.some(
+      (capability) =>
+        previous.capabilities[capability] && !policy.capabilities[capability]
+    );
+    return reducedAccess ? this.clearRemoteDataCaches() : policy;
+  };
+
+  disableAllRemoteData = () =>
+    this.setRemoteDataPolicy(EMPTY_REMOTE_DATA_CAPABILITIES);
+
+  clearRemoteDataCaches = async () => {
+    const account = await preferenceService.getCurrentAccount();
+    if (account?.address) {
+      await Promise.all([
+        tokenDbService.deleteForAddress(account.address),
+        defiDbService.deleteForAddress(account.address),
+        appChainDbService.deleteForAddress(account.address),
+        balanceDbService.deleteForAddress(account.address),
+        nftDbService.deleteForAddress(account.address),
+        historyDbService.deleteForAddress(account.address),
+        syncDbService.deleteForAddress(account.address),
+      ]);
+    }
+    return remoteDataPolicyService.clearContactLog();
+  };
+
+  uploadRemoteFeedbackImage = async ({
+    dataUrl,
+    filename,
+  }: {
+    dataUrl: string;
+    filename: string;
+  }) => {
+    const endpoint = 'https://api.rabby.io/v1/feedback/app/upload';
+    remoteDataPolicyService.assertRequestAllowed(endpoint, true);
+    await remoteDataPolicyService.recordRequestContact(endpoint, true);
+    const match = /^data:([^;,]+);base64,(.+)$/.exec(dataUrl);
+    if (!match) throw new Error('Invalid screenshot payload');
+    const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
+    const formData = new FormData();
+    formData.append('file', new Blob([bytes], { type: match[1] }), filename);
+    const response = await fetch(endpoint, { method: 'POST', body: formData });
+    if (!response.ok) {
+      throw new Error(`Feedback upload failed (${response.status})`);
+    }
+    const result = await response.json();
+    if (!result?.image_url || typeof result.image_url !== 'string') {
+      throw new Error('Invalid feedback upload response');
+    }
+    return result.image_url as string;
+  };
+
+  getLlamaSwapQuote = (
+    request: Parameters<typeof llamaSwapService.getQuote>[0]
+  ) => llamaSwapService.getQuote(request);
+
+  getLlamaSwapTokenMetadata = (
+    request: Parameters<typeof llamaSwapService.getTokenMetadata>[0]
+  ) => llamaSwapService.getTokenMetadata(request);
 
   /* wallet */
   boot = async (password) => {
@@ -676,830 +726,6 @@ export class WalletController extends BaseController {
   }) => {
     const safe = await createSafeService({ address, networkId });
     return safe.getBasicSafeInfo();
-  };
-
-  gasTopUp = async (params: {
-    to: string;
-    chainServerId: string;
-    tokenId: string;
-    rawAmount: string;
-    gasPrice?: string;
-    $ctx?: any;
-    toChainId: string;
-    toTokenAmount: string;
-    fromTokenAmount: string;
-    gasTokenSymbol: string;
-    paymentTokenSymbol: string;
-    fromUsdValue: number;
-  }) => {
-    const {
-      gasTokenSymbol,
-      paymentTokenSymbol,
-      fromUsdValue,
-      toChainId,
-      fromTokenAmount,
-      toTokenAmount,
-      ...others
-    } = params;
-
-    stats.report('gasTopUpConfirm', {
-      topUpChain: toChainId,
-      topUpAmount: fromUsdValue,
-      topUpToken: gasTokenSymbol,
-      paymentChain: others.chainServerId,
-      paymentToken: paymentTokenSymbol,
-    });
-
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const txId = await this.sendToken(others);
-
-    stats.report('gasTopUpTxFinished', {
-      topUpChain: toChainId,
-      topUpAmount: fromUsdValue,
-      paymentChain: others.chainServerId,
-      paymentToken: paymentTokenSymbol,
-    });
-
-    const postGasStationOrder = async () =>
-      await this.openapi.postGasStationOrder({
-        userAddr: account.address,
-        fromChainId: others.chainServerId,
-        fromTxId: txId,
-        toChainId: toChainId,
-        toTokenAmount,
-        fromTokenId: others.tokenId,
-        fromTokenAmount: fromTokenAmount,
-        fromUsdValue,
-      });
-
-    const reportGasTopUpPostGasStationOrder = () =>
-      stats.report('gasTopUpPostGasStationOrder', {
-        topUpChain: toChainId,
-        topUpAmount: fromUsdValue,
-        paymentChain: others.chainServerId,
-        paymentToken: paymentTokenSymbol,
-      });
-
-    try {
-      await postGasStationOrder();
-      reportGasTopUpPostGasStationOrder();
-    } catch (error) {
-      try {
-        await postGasStationOrder();
-        reportGasTopUpPostGasStationOrder();
-      } catch (error) {
-        Sentry.captureException(
-          new Error(
-            'postGasStationOrder failed, params: ' +
-              JSON.stringify({
-                userAddr: account.address,
-                fromChainId: others.chainServerId,
-                fromTxId: txId,
-                toChainId: toChainId,
-                toTokenAmount,
-                fromTokenId: others.tokenId,
-                fromTokenAmount: fromTokenAmount,
-                fromUsdValue,
-              })
-          )
-        );
-      }
-    }
-  };
-
-  dexSwap = async (
-    {
-      chain,
-      quote,
-      needApprove,
-      spender,
-      pay_token_id,
-      unlimited,
-      gasPrice,
-      shouldTwoStepApprove,
-      postSwapParams,
-      addHistoryData,
-      swapPreferMEVGuarded,
-    }: {
-      chain: CHAINS_ENUM;
-      quote: QuoteResult;
-      needApprove: boolean;
-      spender: string;
-      pay_token_id: string;
-      unlimited: boolean;
-      gasPrice?: number;
-      shouldTwoStepApprove: boolean;
-      swapPreferMEVGuarded: boolean;
-
-      postSwapParams?: Omit<
-        Parameters<OpenApiService['postSwap']>[0],
-        'tx_id' | 'tx'
-      >;
-      addHistoryData: Omit<SwapTxHistoryItem, 'hash'>;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainObj = findChainByEnum(chain);
-    if (!chainObj)
-      throw new Error(t('background.error.notFindChain', { chain }));
-
-    const shouldBatchTempoSwap =
-      needApprove &&
-      shouldUseTempoBatchTransaction({
-        chainServerId: chainObj.serverId,
-        accountType: account.type,
-        txCount: 1 + Number(needApprove) + Number(shouldTwoStepApprove),
-      });
-
-    if (shouldBatchTempoSwap) {
-      const txs = await this.buildDexSwapTxs(
-        {
-          chainObj,
-          quote,
-          needApprove,
-          spender,
-          pay_token_id,
-          gasPrice,
-          shouldTwoStepApprove,
-          swapPreferMEVGuarded,
-        },
-        $ctx,
-        account
-      );
-
-      if (!txs.length) return;
-      const batchedTx = buildTempoBatchTransaction(txs as any, {
-        stripTopLevelData: false,
-      }) as Tx;
-
-      if (postSwapParams) {
-        swapService.addTx(chain, quote.tx.data, postSwapParams);
-        transactionHistoryService.addCacheHistoryData(
-          `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
-          addHistoryData,
-          'swap'
-        );
-      }
-
-      await this.sendRequest({
-        $ctx: {
-          ga: {
-            ...$ctx?.ga,
-            source: 'approvalAndSwap|swap',
-          },
-        },
-        method: 'eth_sendTransaction',
-        params: [batchedTx],
-      });
-      return;
-    }
-
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded }
-        );
-        unTriggerTxCounter.decrease();
-      }
-
-      if (needApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          // unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
-          quote.fromTokenAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded }
-        );
-        unTriggerTxCounter.decrease();
-      }
-
-      if (postSwapParams) {
-        swapService.addTx(chain, quote.tx.data, postSwapParams);
-        transactionHistoryService.addCacheHistoryData(
-          `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
-          addHistoryData,
-          'swap'
-        );
-      }
-      await this.sendRequest({
-        $ctx:
-          needApprove && pay_token_id !== chainObj.nativeTokenAddress
-            ? {
-                ga: {
-                  ...$ctx?.ga,
-                  source: 'approvalAndSwap|swap',
-                },
-              }
-            : $ctx,
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: quote.tx.from,
-            to: quote.tx.to,
-            data: quote.tx.data || '0x',
-            value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
-            chainId: chainObj.id,
-            gasPrice: gasPrice
-              ? `0x${new BigNumber(gasPrice).toString(16)}`
-              : undefined,
-            isSwap: true,
-            swapPreferMEVGuarded,
-          },
-        ],
-      });
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
-    }
-  };
-
-  private buildDexSwapTxs = async (
-    {
-      chainObj,
-      quote,
-      needApprove,
-      spender,
-      pay_token_id,
-      gasPrice,
-      shouldTwoStepApprove,
-      swapPreferMEVGuarded,
-    }: {
-      chainObj: NonNullable<ReturnType<typeof findChainByEnum>>;
-      quote: QuoteResult;
-      needApprove: boolean;
-      spender: string;
-      pay_token_id: string;
-      gasPrice?: number;
-      shouldTwoStepApprove: boolean;
-      swapPreferMEVGuarded: boolean;
-    },
-    $ctx?: any,
-    account?: Account
-  ) => {
-    const txs: Tx[] = [];
-
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        const res = await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded },
-          true,
-          account
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      if (needApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        const res = await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          quote.fromTokenAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded },
-          true,
-          account
-        );
-
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      const res = await this.sendRequest(
-        {
-          $ctx:
-            needApprove && pay_token_id !== chainObj.nativeTokenAddress
-              ? {
-                  ga: {
-                    ...$ctx?.ga,
-                    source: 'approvalAndSwap|swap',
-                  },
-                }
-              : $ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: quote.tx.from,
-              to: quote.tx.to,
-              data: quote.tx.data || '0x',
-              value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
-              chainId: chainObj.id,
-              gasPrice: gasPrice
-                ? `0x${new BigNumber(gasPrice).toString(16)}`
-                : undefined,
-              isSwap: true,
-              swapPreferMEVGuarded,
-            },
-          ],
-        },
-        {
-          isBuild: true,
-          account,
-        }
-      );
-      txs.push(res.params[0]);
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
-    }
-
-    return txs;
-  };
-
-  buildDexSwap = async (
-    {
-      chain,
-      quote,
-      needApprove,
-      spender,
-      pay_token_id,
-      unlimited,
-      gasPrice,
-      shouldTwoStepApprove,
-      postSwapParams,
-      addHistoryData,
-      swapPreferMEVGuarded,
-    }: {
-      chain: CHAINS_ENUM;
-      quote: QuoteResult;
-      needApprove: boolean;
-      spender: string;
-      pay_token_id: string;
-      unlimited: boolean;
-      gasPrice?: number;
-      shouldTwoStepApprove: boolean;
-      swapPreferMEVGuarded: boolean;
-
-      postSwapParams?: Omit<
-        Parameters<OpenApiService['postSwap']>[0],
-        'tx_id' | 'tx'
-      >;
-      addHistoryData: Omit<SwapTxHistoryItem, 'hash'>;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainObj = findChainByEnum(chain);
-    if (!chainObj)
-      throw new Error(t('background.error.notFindChain', { chain }));
-
-    const txs = await this.buildDexSwapTxs(
-      {
-        chainObj,
-        quote,
-        needApprove,
-        spender,
-        pay_token_id,
-        gasPrice,
-        shouldTwoStepApprove,
-        swapPreferMEVGuarded,
-      },
-      $ctx,
-      account
-    );
-
-    if (postSwapParams) {
-      swapService.addTx(chain, quote.tx.data, postSwapParams);
-      transactionHistoryService.addCacheHistoryData(
-        `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
-        addHistoryData,
-        'swap'
-      );
-    }
-
-    if (
-      shouldUseTempoBatchTransaction({
-        chainServerId: chainObj.serverId,
-        accountType: account.type,
-        txs,
-      })
-    ) {
-      return [
-        buildTempoBatchTransaction(txs as any, {
-          stripTopLevelData: false,
-        }) as Tx,
-      ];
-    }
-
-    return txs;
-  };
-
-  bridgeToken = async (
-    {
-      approveId,
-      to,
-      data,
-      payTokenRawAmount,
-      payTokenId,
-      payTokenChainServerId,
-      shouldApprove,
-      shouldTwoStepApprove,
-      gasPrice,
-      info,
-      value,
-      addHistoryData,
-    }: {
-      approveId?: string;
-      data: string;
-      to: string;
-      value: string;
-      chainId: number;
-      shouldApprove: boolean;
-      shouldTwoStepApprove: boolean;
-      payTokenId: string;
-      payTokenChainServerId: string;
-      payTokenRawAmount: string;
-      gasPrice?: number;
-      info: BridgeRecord;
-      addHistoryData: Omit<BridgeTxHistoryItem, 'hash'>;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainObj = findChain({ serverId: payTokenChainServerId });
-    if (!chainObj)
-      throw new Error(
-        t('background.error.notFindChain', { payTokenChainServerId })
-      );
-
-    const shouldBatchTempoBridge =
-      shouldApprove &&
-      shouldUseTempoBatchTransaction({
-        chainServerId: chainObj.serverId,
-        accountType: account.type,
-        txCount: 1 + Number(shouldApprove) + Number(shouldTwoStepApprove),
-      });
-
-    if (shouldBatchTempoBridge) {
-      const txs = await this.buildBridgeTokenTxs(
-        {
-          approveId,
-          to,
-          data,
-          payTokenRawAmount,
-          payTokenId,
-          chainObj,
-          shouldApprove,
-          shouldTwoStepApprove,
-          gasPrice,
-          value,
-        },
-        $ctx,
-        account
-      );
-
-      if (!txs.length) return;
-      const batchedTx = buildTempoBatchTransaction(txs as any, {
-        stripTopLevelData: false,
-      }) as Tx;
-
-      if (info) {
-        bridgeService.addTx(chainObj.enum, data, info);
-        transactionHistoryService.addCacheHistoryData(
-          `${chainObj.enum}-${getTxMatchData({ data })}`,
-          addHistoryData,
-          'bridge'
-        );
-      }
-
-      await this.sendRequest({
-        $ctx: {
-          ga: {
-            ...$ctx?.ga,
-            source: 'approvalAndBridge|bridge',
-          },
-        },
-        method: 'eth_sendTransaction',
-        params: [batchedTx],
-      });
-      return;
-    }
-
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        await this.approveToken(
-          payTokenChainServerId,
-          payTokenId,
-          approveId || to,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true }
-        );
-        unTriggerTxCounter.decrease();
-      }
-
-      if (shouldApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        await this.approveToken(
-          payTokenChainServerId,
-          payTokenId,
-          approveId || to,
-          payTokenRawAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true }
-        );
-        unTriggerTxCounter.decrease();
-      }
-
-      if (info) {
-        bridgeService.addTx(chainObj.enum, data, info);
-        transactionHistoryService.addCacheHistoryData(
-          `${chainObj.enum}-${getTxMatchData({ data })}`,
-          addHistoryData,
-          'bridge'
-        );
-      }
-      await this.sendRequest({
-        $ctx:
-          shouldApprove && payTokenId !== chainObj.nativeTokenAddress
-            ? {
-                ga: {
-                  ...$ctx?.ga,
-                  source: 'approvalAndBridge|bridge',
-                },
-              }
-            : $ctx,
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: account.address,
-            to: to,
-            data: data || '0x',
-            value: `0x${new BigNumber(value || '0').toString(16)}`,
-            chainId: chainObj.id,
-            gasPrice: gasPrice
-              ? `0x${new BigNumber(gasPrice).toString(16)}`
-              : undefined,
-            isBridge: true,
-          },
-        ],
-      });
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
-    }
-  };
-
-  private buildBridgeTokenTxs = async (
-    {
-      approveId,
-      to,
-      data,
-      payTokenRawAmount,
-      payTokenId,
-      chainObj,
-      shouldApprove,
-      shouldTwoStepApprove,
-      gasPrice,
-      value,
-    }: {
-      approveId?: string;
-      data: string;
-      to: string;
-      value: string;
-      shouldApprove: boolean;
-      shouldTwoStepApprove: boolean;
-      payTokenId: string;
-      chainObj: NonNullable<ReturnType<typeof findChain>>;
-      payTokenRawAmount: string;
-      gasPrice?: number;
-    },
-    $ctx?: any,
-    account?: Account
-  ) => {
-    const txs: Tx[] = [];
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        const res = await this.approveToken(
-          chainObj.serverId,
-          payTokenId,
-          approveId || to,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true },
-          true,
-          account
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      if (shouldApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        const res = await this.approveToken(
-          chainObj.serverId,
-          payTokenId,
-          approveId || to,
-          payTokenRawAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true },
-          true,
-          account
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      const res = await this.sendRequest(
-        {
-          $ctx:
-            shouldApprove && payTokenId !== chainObj.nativeTokenAddress
-              ? {
-                  ga: {
-                    ...$ctx?.ga,
-                    source: 'approvalAndBridge|bridge',
-                  },
-                }
-              : $ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: account?.address,
-              to: to,
-              data: data || '0x',
-              value: `0x${new BigNumber(value || '0').toString(16)}`,
-              chainId: chainObj.id,
-              gasPrice: gasPrice
-                ? `0x${new BigNumber(gasPrice).toString(16)}`
-                : undefined,
-              isBridge: true,
-            },
-          ],
-        },
-        {
-          isBuild: true,
-          account,
-        }
-      );
-      txs.push(res.params[0]);
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
-    }
-
-    return txs;
-  };
-
-  buildBridgeToken = async (
-    {
-      approveId,
-      to,
-      data,
-      payTokenRawAmount,
-      payTokenId,
-      payTokenChainServerId,
-      shouldApprove,
-      shouldTwoStepApprove,
-      gasPrice,
-      info,
-      value,
-      addHistoryData,
-    }: {
-      approveId?: string;
-      data: string;
-      to: string;
-      value: string;
-      chainId: number;
-      shouldApprove: boolean;
-      shouldTwoStepApprove: boolean;
-      payTokenId: string;
-      payTokenChainServerId: string;
-      payTokenRawAmount: string;
-      gasPrice?: number;
-      info: BridgeRecord;
-      addHistoryData: Omit<BridgeTxHistoryItem, 'hash'>;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainObj = findChain({ serverId: payTokenChainServerId });
-    if (!chainObj)
-      throw new Error(
-        t('background.error.notFindChain', { payTokenChainServerId })
-      );
-
-    const txs = await this.buildBridgeTokenTxs(
-      {
-        approveId,
-        to,
-        data,
-        payTokenRawAmount,
-        payTokenId,
-        chainObj,
-        shouldApprove,
-        shouldTwoStepApprove,
-        gasPrice,
-        value,
-      },
-      $ctx,
-      account
-    );
-
-    if (info) {
-      bridgeService.addTx(chainObj.enum, data, info);
-      transactionHistoryService.addCacheHistoryData(
-        `${chainObj.enum}-${getTxMatchData({ data })}`,
-        addHistoryData,
-        'bridge'
-      );
-    }
-
-    if (
-      shouldApprove &&
-      shouldUseTempoBatchTransaction({
-        chainServerId: chainObj.serverId,
-        accountType: account.type,
-        txs,
-      })
-    ) {
-      return [
-        buildTempoBatchTransaction(txs as any, {
-          stripTopLevelData: false,
-        }) as Tx,
-      ];
-    }
-
-    return txs;
   };
 
   getUnTriggerTxCount = () => {
@@ -1732,31 +958,6 @@ export class WalletController extends BaseController {
     });
 
     return res;
-  };
-
-  mintDBKChainNFT = async () => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    await this.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          from: account.address,
-          to: DBK_NFT_CONTRACT_ADDRESS,
-          chainId: DBK_CHAIN_ID,
-          data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-            {
-              name: 'mint',
-              inputs: [],
-              outputs: [],
-              stateMutability: 'nonpayable',
-              type: 'function',
-            },
-            []
-          ),
-        },
-      ],
-    });
   };
 
   transferNFT = async (
@@ -2173,35 +1374,6 @@ export class WalletController extends BaseController {
     preferenceService.setPopupOpen(isOpen);
   };
   openIndexPage = openIndexPage;
-
-  openGasAccountPopup = async (options?: { clearApprovals?: boolean }) => {
-    const { clearApprovals = true } = options || {};
-    if (clearApprovals) {
-      this.rejectAllApprovals();
-    }
-
-    await this.setPageStateCache({
-      path: '/gas-account',
-      params: {},
-      states: {},
-    });
-
-    if (
-      isManifestV3 &&
-      Browser?.action?.openPopup &&
-      typeof Browser?.action?.openPopup === 'function'
-    ) {
-      try {
-        await Browser?.action?.openPopup();
-        return true;
-      } catch (error) {
-        console.error('[openGasAccountPopup] openPopup failed', error);
-      }
-    }
-
-    await openIndexPage('/gas-account');
-    return false;
-  };
 
   openInDesktop = async (
     _url: string,
@@ -2694,39 +1866,6 @@ export class WalletController extends BaseController {
   getAddressSortStoreValue = preferenceService.getAddressSortStoreValue;
   setAddressSortStoreValue = preferenceService.setAddressSortStoreValue;
 
-  getLastSelectedSwapChain = swapService.getSelectedChain;
-  setLastSelectedSwapChain = swapService.setSelectedChain;
-  getSelectedFromToken = swapService.getSelectedFromToken;
-  getSelectedToToken = swapService.getSelectedToToken;
-  setSelectedFromToken = swapService.setSelectedFromToken;
-  setSelectedToToken = swapService.setSelectedToToken;
-
-  getSwap = swapService.getSwap;
-  getSwapGasCache = swapService.getLastTimeGasSelection;
-  updateSwapGasCache = swapService.updateLastTimeGasSelection;
-  getSwapDexId = swapService.getSelectedDex;
-  setSwapDexId = swapService.setSelectedDex;
-  getUnlimitedAllowance = swapService.getUnlimitedAllowance;
-  setUnlimitedAllowance = swapService.setUnlimitedAllowance;
-  setSwapView = swapService.setSwapView;
-  setSwapTrade = swapService.setSwapTrade;
-  getSwapViewList = swapService.getSwapViewList;
-  getSwapTradeList = swapService.getSwapTradeList;
-  getSwapSortIncludeGasFee = swapService.getSwapSortIncludeGasFee;
-  setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
-  getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
-  setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
-  setAutoSlippage = swapService.setAutoSlippage;
-  setIsCustomSlippage = swapService.setIsCustomSlippage;
-  setSlippage = swapService.setSlippage;
-  getRecentSwapToTokens = swapService.getRecentSwapToTokens;
-  setRecentSwapToToken = swapService.setRecentSwapToToken;
-
-  setRedirect2Points = RabbyPointsService.setRedirect2Points;
-  setRabbyPointsSignature = RabbyPointsService.setSignature;
-  getRabbyPointsSignature = RabbyPointsService.getSignature;
-  clearRabbyPointsSignature = RabbyPointsService.clearSignature;
-
   getLastSelectedLendingChain = lendingService.getLastSelectedChain;
   setLastSelectedLendingChain = lendingService.setLastSelectedChain;
   getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
@@ -2734,124 +1873,6 @@ export class WalletController extends BaseController {
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
-
-  getBridgeData = bridgeService.getBridgeData;
-  getBridgeAggregators = bridgeService.getBridgeAggregators;
-  setBridgeAggregators = bridgeService.setBridgeAggregators;
-  getBridgeUnlimitedAllowance = bridgeService.getUnlimitedAllowance;
-  setBridgeUnlimitedAllowance = bridgeService.setUnlimitedAllowance;
-  setBridgeSelectedChain = bridgeService.setSelectedChain;
-  setBridgeSelectedFromToken = bridgeService.setSelectedFromToken;
-  setBridgeSelectedToToken = bridgeService.setSelectedToToken;
-  getBridgeSortIncludeGasFee = bridgeService.getBridgeSortIncludeGasFee;
-  setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
-  setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
-
-  getGasAccountData(): GasAccountServiceStore;
-  getGasAccountData<K extends keyof GasAccountServiceStore>(
-    key: K
-  ): GasAccountServiceStore[K];
-  getGasAccountData(key?: keyof GasAccountServiceStore) {
-    return key
-      ? gasAccountService.getGasAccountData(key)
-      : gasAccountService.getGasAccountData();
-  }
-  getGasAccountSig = gasAccountService.getGasAccountSig;
-  setGasAccountSig = gasAccountService.setGasAccountSig;
-  discoverGasAccountRuntimeState = async (
-    options?: { force?: boolean } | null
-  ) => {
-    const NON_SWITCHABLE_GAS_ACCOUNT_TYPES = new Set<string>([
-      KEYRING_CLASS.WATCH,
-      KEYRING_CLASS.GNOSIS,
-      KEYRING_CLASS.CoboArgus,
-    ]);
-
-    const isGasAccountSwitchableType = (type?: string) =>
-      !!type && !NON_SWITCHABLE_GAS_ACCOUNT_TYPES.has(type);
-
-    const visibleAccounts = (
-      await this.getAllVisibleAccountsArray()
-    ).filter((account) => isGasAccountSwitchableType(account.type));
-
-    const currentGasAccount = gasAccountService.getGasAccountData('account');
-
-    const accountsWithCachedBalance = await Promise.all(
-      visibleAccounts.map(async (account) => {
-        const cachedBalance = await this.getAddressCacheBalance(
-          account.address
-        );
-
-        return {
-          account,
-          balance: Number(cachedBalance?.total_usd_value || 0),
-        };
-      })
-    );
-    const accounts = sortBy(accountsWithCachedBalance, [
-      (item) => -item.balance,
-    ])
-      .slice(
-        0,
-        GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT > 0
-          ? GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT
-          : accountsWithCachedBalance.length
-      )
-      .map((item) => item.account);
-    const currentGasAccountInVisibleAccounts = currentGasAccount
-      ? visibleAccounts.find(
-          (account) =>
-            isSameAddress(account.address, currentGasAccount.address) &&
-            account.type === currentGasAccount.type
-        )
-      : undefined;
-
-    if (
-      currentGasAccountInVisibleAccounts &&
-      !accounts.some(
-        (account) =>
-          isSameAddress(
-            account.address,
-            currentGasAccountInVisibleAccounts.address
-          ) && account.type === currentGasAccountInVisibleAccounts.type
-      )
-    ) {
-      accounts.push(currentGasAccountInVisibleAccounts);
-    }
-
-    return discoverGasAccountRuntimeState(accounts, options);
-  };
-  setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
-    gasAccountService.setCurrentBalanceState(accountId, hasBalance);
-  };
-
-  trackGasAccountActiveStatus = async () => {
-    const { sig, accountId } = this.getGasAccountSig();
-    return trackCurrentGasAccountActiveStatus(sig, accountId);
-  };
-
-  trackGasAccountActiveStatusOncePerDay = async () => {
-    if (gasAccountService.hasTrackedGa4ActiveToday()) {
-      return false;
-    }
-
-    const tracked = await this.trackGasAccountActiveStatus();
-    if (tracked) {
-      gasAccountService.markGa4ActiveTracked();
-    }
-
-    return tracked;
-  };
-
-  handleGasAccountLoginSuccess = async (
-    signature: string,
-    account: Account,
-    options?: {
-      redirectToGasAccount?: boolean;
-    }
-  ) => {
-    await syncGasAccountLoginSuccess(signature, account, options);
-  };
 
   getCloseTipsChains = OfflineChainsService.getCloseTipsChains;
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
@@ -4116,7 +3137,7 @@ export class WalletController extends BaseController {
   clearAddressPendingTransactions = (address: string, chainId?: number) => {
     transactionHistoryService.clearPendingTransactions(address, chainId);
     transactionWatcher.clearPendingTx(address, chainId);
-    transactionBroadcastWatchService.clearPendingTx(address, chainId);
+
     return;
   };
 
@@ -4139,11 +3160,7 @@ export class WalletController extends BaseController {
       nonce,
       chainId,
     });
-    transactionBroadcastWatchService.removeLocalPendingTx({
-      address,
-      nonce,
-      chainId,
-    });
+
     return;
   };
 
@@ -4339,7 +3356,6 @@ export class WalletController extends BaseController {
       });
       preferenceService.removeAddressBalance(address);
       preferenceService.removeCurvePoints(address);
-      perpsService.removeAgentWallet(address);
       this.forceExpireInMemoryAddressBalance(address);
     }
     const current = preferenceService.getCurrentAccount();
@@ -5186,27 +4202,12 @@ export class WalletController extends BaseController {
     type
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
-  updateBridgeGasAccountTx: typeof transactionHistoryService.updateBridgeGasAccountTx = (
-    params
-  ) => transactionHistoryService.updateBridgeGasAccountTx(params);
   checkIsGasDepositTx: typeof transactionHistoryService.checkIsGasDepositTx = (
     params
   ) => transactionHistoryService.checkIsGasDepositTx(params);
   checkIsGasDepositTxs: typeof transactionHistoryService.checkIsGasDepositTxs = (
     params
   ) => transactionHistoryService.checkIsGasDepositTxs(params);
-  completeBridgeTxHistory = (
-    from_tx_id: string,
-    chainId: number,
-    status: BridgeTxHistoryItem['status'],
-    bridgeTx?: BridgeHistory
-  ) =>
-    transactionHistoryService.completeBridgeTxHistory(
-      from_tx_id,
-      chainId,
-      status,
-      bridgeTx
-    );
 
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
@@ -6213,324 +5214,7 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
-  /**
-   * disable some functions when Rabby server is busy
-   * disable approval management and transaction history when level is 1
-   * disable total balance refresh and level 1 content when level is 2
-   */
-  getAPIConfig = cached(
-    'getAPIConfig',
-    async () => {
-      interface IConfig {
-        data: {
-          level: number;
-          authorized: {
-            enable: boolean;
-          };
-          balance: {
-            enable: boolean;
-          };
-          history: {
-            enable: boolean;
-          };
-        };
-      }
-      try {
-        const config = await fetch(
-          'https://static.debank.com/rabby/config.json'
-        );
-        const { data } = (await config.json()) as IConfig;
-        return data.level;
-      } catch (e) {
-        return 0;
-      }
-    },
-    { timeout: 10000, maxSize: 0 }
-  ).fn;
-
-  rabbyPointVerifyAddress = async (params?: {
-    code?: string;
-    claimSnapshot?: boolean;
-    claimNumber?: number;
-    // text: string;
-  }) => {
-    const { code, claimSnapshot } = params || {};
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    let claimText = '';
-    let verifyText = '';
-
-    if (claimSnapshot) {
-      claimText = (
-        await wallet.openapi.getRabbyClaimTextV2({
-          id: account?.address,
-          invite_code: code,
-        })
-      )?.text; //`${account?.address} Claims Hippo Points`;
-    } else {
-      verifyText = (
-        await wallet.openapi.getRabbySignatureTextV2({
-          id: account?.address,
-        })
-      )?.text; //`Hippo Wallet wants you to sign in with your address:\n${account?.address}`;
-    }
-
-    const msg = `0x${Buffer.from(
-      claimSnapshot ? claimText : verifyText,
-      'utf-8'
-    ).toString('hex')}`;
-
-    const signature = await this.sendRequest<string>({
-      method: 'personal_sign',
-      params: [msg, account.address],
-    });
-
-    this.setRabbyPointsSignature(account.address, signature);
-    if (claimSnapshot) {
-      try {
-        await wallet.openapi.claimRabbyPointsSnapshotV2({
-          id: account?.address,
-          invite_code: code,
-          signature,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      this.setPageStateCache({
-        path: '/rabby-points',
-        params: {},
-        states: {},
-      });
-    }
-    return signature;
-  };
-
-  private async executeGasAccountLogin(
-    account: Account,
-    options?: {
-      closeWindowBeforeSign?: boolean;
-    }
-  ): Promise<{
-    signature: string;
-    success: boolean;
-    result?: any;
-  }> {
-    const { closeWindowBeforeSign = true } = options || {};
-    const { text } = await wallet.openapi.getGasAccountSignText(
-      account.address
-    );
-    if (closeWindowBeforeSign) {
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
-      });
-    }
-    const signature = await this.sendRequest<string>(
-      {
-        method: 'personal_sign',
-        params: [text, account.address],
-      },
-      {
-        account,
-      }
-    );
-
-    if (!signature) {
-      return { signature: '', success: false };
-    }
-
-    const result = await pRetry(
-      async () =>
-        wallet.openapi.loginGasAccount({
-          sig: signature,
-          account_id: account.address,
-        }),
-      {
-        retries: 2,
-      }
-    );
-    return { signature, success: result?.success || false, result };
-  }
-
-  private ensureGasAccountSession = async (
-    account: Account,
-    options?: {
-      closeWindowBeforeSign?: boolean;
-    }
-  ) => {
-    const currentSession = this.getGasAccountSig();
-
-    if (currentSession?.sig && currentSession?.accountId) {
-      return {
-        sig: currentSession.sig,
-        accountId: currentSession.accountId,
-      };
-    }
-
-    const { signature, success } = await this.executeGasAccountLogin(
-      account,
-      options
-    );
-    if (!success || !signature) {
-      throw new Error('GasAccount login failed');
-    }
-
-    await this.handleGasAccountLoginSuccess(signature, account);
-
-    const nextSession = this.getGasAccountSig();
-    if (!nextSession?.sig || !nextSession?.accountId) {
-      throw new Error('GasAccount login failed');
-    }
-
-    return {
-      sig: nextSession.sig,
-      accountId: nextSession.accountId,
-    };
-  };
-
-  private reportGasAccountDirectDeposit = async ({
-    account,
-    chainServerId,
-    amount,
-    txHash,
-    gasAccountSession,
-  }: {
-    account: Account;
-    chainServerId: string;
-    amount: number;
-    txHash: string;
-    gasAccountSession: {
-      sig: string;
-      accountId: string;
-    };
-  }) => {
-    const chain = findChainByServerID(chainServerId);
-    if (!chain) {
-      throw new Error('Invalid chain');
-    }
-
-    const usedNonce = await this.getNonceByChain(account.address, chain.id);
-    if (usedNonce === null || usedNonce === undefined || usedNonce <= 0) {
-      throw new Error('GasAccount top up nonce missing');
-    }
-
-    await openapiService.rechargeGasAccount({
-      sig: gasAccountSession.sig,
-      account_id: gasAccountSession.accountId,
-      tx_id: txHash,
-      chain_id: chainServerId,
-      amount,
-      user_addr: account.address,
-      nonce: usedNonce - 1,
-    });
-  };
-
-  signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
-    const { signature, success } = await this.executeGasAccountLogin(account);
-    if (!success || !signature) {
-      return '';
-    }
-
-    await this.handleGasAccountLoginSuccess(signature, account);
-    if (isClaimGift) {
-      await this.claimGasAccountGift(account.address);
-    }
-    this.markGiftAsClaimed();
-    return signature;
-  };
-
-  submitGasAccountDepositTxs = async ({
-    account,
-    txs,
-    amount,
-    chainServerId,
-    depositType,
-    tokenId,
-    tokenAmount,
-    scene = 'recharge',
-  }: {
-    account: Account;
-    txs: Tx[];
-    amount: number;
-    chainServerId: string;
-    depositType: 'direct' | 'bridge';
-    tokenId?: string;
-    tokenAmount?: number;
-    scene?: 'in_tx_flow' | 'recharge';
-  }) => {
-    const gasAccountSession = await this.ensureGasAccountSession(account, {
-      closeWindowBeforeSign: false,
-    });
-
-    if (depositType === 'direct') {
-      if (txs.length !== 1) {
-        throw new Error('GasAccount direct deposit expects a single tx');
-      }
-    }
-
-    const hashes: string[] = [];
-
-    for (const tx of txs) {
-      const hash = await this.sendRequest<string>(
-        {
-          method: 'eth_sendTransaction',
-          params: [tx],
-          $ctx: {
-            ga: {
-              category: 'GasAccount',
-              action: 'deposit',
-            },
-          },
-        },
-        {
-          account,
-        }
-      );
-      hashes.push(hash);
-    }
-
-    if (depositType === 'bridge') {
-      const bridgeHash = hashes[hashes.length - 1];
-      if (!bridgeHash) {
-        throw new Error('GasAccount bridge tx missing');
-      }
-      if (!tokenId) {
-        throw new Error('GasAccount bridge token missing');
-      }
-      if (typeof tokenAmount !== 'number' || Number.isNaN(tokenAmount)) {
-        throw new Error('GasAccount bridge token amount missing');
-      }
-
-      await openapiService.createGasAccountBridgeRecharge({
-        sig: gasAccountSession.sig,
-        gas_account_id: gasAccountSession.accountId,
-        user_addr: account.address,
-        from_chain_id: chainServerId,
-        from_token_id: tokenId,
-        from_token_amount: tokenAmount,
-        from_usd_value: amount,
-        tx_id: bridgeHash,
-        scene,
-      });
-    }
-
-    if (depositType === 'direct') {
-      const directHash = hashes[0];
-      if (!directHash) {
-        throw new Error('GasAccount direct tx missing');
-      }
-
-      await this.reportGasAccountDirectDeposit({
-        account,
-        chainServerId,
-        amount,
-        txHash: directHash,
-        gasAccountSession,
-      });
-    }
-
-    return hashes;
-  };
+  getAPIConfig = async (..._args: any[]) => 0;
 
   addCustomTestnet = async (
     chain: Parameters<typeof customTestnetService.add>[0],
@@ -6724,48 +5408,10 @@ export class WalletController extends BaseController {
           customGas?: number;
         }
   ) => {
-    let chainId: string;
-    let tx: Tx | undefined;
-
-    if ('tx' in params) {
-      chainId = params.chain.serverId;
-
-      if (params?.chain && params?.chain.enum === CHAINS_ENUM.LINEA) {
-        if (params.tx.nonce === undefined) {
-          params.tx.nonce = await this.getRecommendNonce({
-            from: params.tx.from,
-            chainId: params.chain.id,
-          });
-        }
-
-        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
-          params.tx.gasPrice = '0x0';
-        }
-        if (params.tx.gas === undefined || params.tx.gas === '') {
-          params.tx.gas = '0x0';
-        }
-        if (params.tx.data === undefined || params.tx.data === '') {
-          params.tx.data = '0x';
-        }
-        tx = {
-          chainId: params.tx.chainId,
-          data: params.tx.data,
-          from: params.tx.from,
-          gas: params.tx.gas,
-          nonce: params.tx.nonce,
-          to: params.tx.to,
-          value: params.tx.value,
-          gasPrice: params.tx.gasPrice,
-        };
-      }
-    } else {
-      chainId = params.chainId;
-    }
-
-    return openapiService.gasMarketV2({
+    return rpcGasService.getGasMarket({
+      chainServerId: 'tx' in params ? params.chain.serverId : params.chainId,
+      tx: 'tx' in params ? params.tx : undefined,
       customGas: params.customGas,
-      chainId,
-      tx,
     });
   };
 
@@ -6859,172 +5505,6 @@ export class WalletController extends BaseController {
     return preferenceService.setRateGuideLastExposure(...args);
   };
 
-  /**
-   * 领取gift奖励
-   * @param address 地址
-   * @returns 是否成功领取
-   */
-  claimGasAccountGift = async (address: string): Promise<boolean> => {
-    try {
-      // 获取gas account的签名信息
-      const { sig, accountId } = this.getGasAccountSig();
-      if (!sig || !accountId) {
-        console.error('Gas account not logged in, cannot claim gift');
-        return false;
-      }
-
-      // 调用API领取gift
-      const result = await this.openapi.claimGasAccountGift({
-        sig,
-        id: accountId,
-      });
-      if (result.success) {
-        // 标记为已领取
-        this.markGiftAsClaimed();
-        this.setHasAnyAccountClaimedGift(true);
-        return true;
-      } else {
-        console.error('API returned success: false for gift claim');
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to claim gas account gift:', error);
-      return false;
-    }
-  };
-
-  /**
-   * 标记地址已领取gift（内部使用）
-   */
-  markGiftAsClaimed = () => {
-    gasAccountService.markGiftAsClaimed();
-  };
-
-  /**
-   * 获取全局标记：是否有任何账号已经领取过gift
-   * @returns 是否有任何账号已经领取过gift
-   */
-  getHasAnyAccountClaimedGift = () => {
-    return gasAccountService.getHasAnyAccountClaimedGift();
-  };
-
-  /**
-   * 设置全局标记：是否有任何账号已经领取过gift
-   * @param hasClaimed 是否有任何账号已经领取过gift
-   */
-  setHasAnyAccountClaimedGift = (hasClaimed: boolean) => {
-    gasAccountService.setHasAnyAccountClaimedGift(hasClaimed);
-  };
-
-  createPerpsAgentWallet = async (masterWallet: string) => {
-    return perpsService.createAgentWallet(masterWallet);
-  };
-  setPerpsCurrentAccount = perpsService.setCurrentAccount;
-  switchDesktopPerpsAccount = (account: Account) => {
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.DESKTOP.SWITCH_PERPS_ACCOUNT,
-      params: account,
-    });
-  };
-  getPerpsCurrentAccount = perpsService.getCurrentAccount;
-  getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
-  getAgentWalletPreference = async (masterWallet: string) => {
-    return perpsService.getAgentWalletPreference(masterWallet);
-  };
-  getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
-  setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
-  getPerpsMarginModePreferences = perpsService.getPerpsMarginModePreferences;
-  setPerpsMarginModePreference = perpsService.setPerpsMarginModePreference;
-  getPerpsTpslModePreferences = perpsService.getTpslModePreferences;
-  setPerpsTpslModePreference = perpsService.setTpslModePreference;
-  setPerpsSelectedCoin = perpsService.setSelectedCoin;
-  getPerpsSelectedCoin = perpsService.getSelectedCoin;
-  getMarketSlippage = perpsService.getMarketSlippage;
-  setMarketSlippage = perpsService.setMarketSlippage;
-  getSoundEnabled = perpsService.getSoundEnabled;
-  setSoundEnabled = perpsService.setSoundEnabled;
-  getSkipMarketCloseConfirm = perpsService.getSkipMarketCloseConfirm;
-  setSkipMarketCloseConfirm = perpsService.setSkipMarketCloseConfirm;
-  getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
-  updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
-  setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
-  getSendApproveAfterDeposit = async (masterAddress: string) => {
-    return perpsService.getSendApproveAfterDeposit(masterAddress);
-  };
-  getPerpsQuoteUnit = perpsService.getQuoteUnit;
-  setPerpsQuoteUnit = perpsService.setQuoteUnit;
-  getPerpsCandleInterval = perpsService.getCandleInterval;
-  setPerpsCandleInterval = perpsService.setCandleInterval;
-  setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
-  getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
-  setHasDismissedNewUserGuideV2 = perpsService.setHasDismissedNewUserGuideV2;
-  getHasDismissedNewUserGuideV2 = perpsService.getHasDismissedNewUserGuideV2;
-  getPerpsAgentWallet = async (masterWallet: string) => {
-    return perpsService.getAgentWallet(masterWallet);
-  };
-  getOrCreatePerpsAgentWallet = async (masterWallet: string) => {
-    const res = await perpsService.getAgentWallet(masterWallet);
-    if (!res) {
-      const resp = await this.createPerpsAgentWallet(masterWallet);
-      return {
-        vault: resp.vault,
-        agentAddress: resp.agentAddress,
-        isCreate: true,
-      };
-    } else {
-      return {
-        vault: res.vault,
-        agentAddress: res.preference.agentAddress,
-        isCreate: false,
-      };
-    }
-  };
-  getPerpsInviteConfig = perpsService.getInviteConfig;
-  setPerpsInviteConfig = perpsService.setInviteConfig;
-
-  /* Perps float widget RPC */
-  getPerpsWidgetEnabled = () => preferenceService.getPerpsWidgetEnabled();
-  setPerpsWidgetEnabled = (v: boolean) =>
-    preferenceService.setPerpsWidgetEnabled(v);
-  getPerpsWidgetGuideShown = () => preferenceService.getPerpsWidgetGuideShown();
-  setPerpsWidgetGuideShown = (v: boolean) =>
-    preferenceService.setPerpsWidgetGuideShown(v);
-  getPerpsWidgetBlockedHosts = () =>
-    preferenceService.getPerpsWidgetBlockedHosts();
-  setPerpsWidgetBlockedHosts = (hosts: string[]) =>
-    preferenceService.setPerpsWidgetBlockedHosts(hosts);
-  getPerpsWidgetBallPosition = () =>
-    preferenceService.getPerpsWidgetBallPosition();
-  setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) =>
-    preferenceService.setPerpsWidgetBallPosition(pos);
-
-  signPerpsSendSetReferrer = async ({
-    address,
-    typedData,
-    nonce,
-    action,
-  }: {
-    address: string;
-    typedData: Record<string, any>;
-    action: Record<string, any>;
-    nonce: number;
-  }) => {
-    const signature = await wallet.sendRequest<string>({
-      method: 'eth_signTypedData_v4',
-      params: [address, JSON.stringify(typedData)],
-    });
-    if (!signature) {
-      throw new Error('User rejected signing');
-    }
-    const sdk = getPerpsSDK();
-    sdk.initAccount(address);
-    return sdk.exchange?.sendSetReferrer({
-      action: action,
-      nonce: nonce,
-      signature: signature,
-    });
-  };
-
   signTextCreateHistory = (
     params: Parameters<typeof signTextHistoryService.createHistory>[0]
   ) => {
@@ -7108,25 +5588,6 @@ export class WalletController extends BaseController {
     } catch (error) {
       console.error(
         'Failed to get screenshot feedback current account extra',
-        error
-      );
-    }
-
-    try {
-      const mySceneAddresses: Record<string, string> = {};
-      const perpsAccount = await perpsService.getCurrentAccount();
-
-      if (perpsAccount?.address) {
-        mySceneAddresses.Perps = perpsAccount.address;
-      }
-      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-      if (gasAccount?.account?.address) {
-        mySceneAddresses.GasAccount = gasAccount?.account?.address;
-      }
-      extra.mySceneAddresses = mySceneAddresses;
-    } catch (error) {
-      console.error(
-        'Failed to get screenshot feedback scene account extra',
         error
       );
     }
@@ -7225,195 +5686,7 @@ export class WalletController extends BaseController {
     };
   };
 
-  getSeaportCounter = async ({
-    chainId,
-    address,
-  }: {
-    chainId: number;
-    address: string;
-  }) => {
-    const chain = findChain({ id: chainId });
-    if (!chain) {
-      throw new Error('wrong chain');
-    }
-    const data = encodeFunctionData({
-      abi: SeaportABI,
-      functionName: 'getCounter',
-      args: [address as `0x${string}`],
-    });
-
-    const res = await this.requestETHRpc(
-      {
-        method: 'eth_call',
-        params: [
-          {
-            data: data,
-            to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
-          },
-          'latest',
-        ],
-      },
-      chain.serverId
-    );
-
-    const value = decodeFunctionResult({
-      abi: SeaportABI,
-      functionName: 'getCounter',
-      data: res,
-    });
-    return Number(value);
-  };
-
-  buildCancelNFTListTx = ({
-    address,
-    chainId,
-    orders,
-  }: {
-    address: string;
-    chainId: number;
-    orders: OrderComponents[];
-  }) => {
-    try {
-      const data = encodeFunctionData({
-        abi: SeaportABI,
-        functionName: 'cancel',
-        args: [orders as any],
-      });
-
-      return {
-        chainId,
-        from: address,
-        to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
-        data,
-      };
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  };
-
-  buildCreateListingTypedData = async (
-    parmas: Parameters<typeof buildCreateListingTypedData>[0]
-  ) => {
-    const counter =
-      parmas.counter ||
-      (await this.getSeaportCounter({
-        chainId: parmas.chainId,
-        address: parmas.sellerAddress,
-      }));
-    return buildCreateListingTypedData({ ...parmas, counter });
-  };
-
-  buildAcceptNFTOfferTx = async ({
-    address,
-    chainId,
-    order,
-    collectionId,
-    innerId,
-    quantity,
-    isIncludeCreatorFee,
-  }: {
-    address: string;
-    chainId: number;
-    collectionId: string;
-    innerId: string;
-    order: NonNullable<NFTDetail['best_offer_order']>;
-    quantity?: number;
-    isIncludeCreatorFee?: boolean;
-  }) => {
-    const chain = findChain({
-      id: chainId,
-    });
-    if (!chain) {
-      throw new Error('chain not found');
-    }
-    const res = await this.openapi.prepareAcceptNFTOffer({
-      chain_id: chain?.serverId,
-      order_hash: order.order_hash,
-      fulfiller: address,
-      collection_id: collectionId,
-      inner_id: innerId,
-      quantity,
-      include_optional_creator_fees: isIncludeCreatorFee,
-    });
-    const fulfillmentData = res.data;
-    const transaction = fulfillmentData.fulfillment_data.transaction;
-    const inputData = transaction.input_data;
-    const FULFILL_BASIC_ORDER_ALIAS = 'fulfillBasicOrder_efficient_6GL6yc';
-    // Extract function name and build parameters array in correct order
-    const rawFunctionName = transaction.function.split('(')[0];
-    const functionName =
-      rawFunctionName === FULFILL_BASIC_ORDER_ALIAS
-        ? 'fulfillBasicOrder'
-        : rawFunctionName;
-    let params: unknown[];
-
-    // Order parameters based on the function being called
-    if (
-      functionName === 'fulfillAdvancedOrder' &&
-      'advancedOrder' in inputData
-    ) {
-      params = [
-        inputData.advancedOrder,
-        inputData.criteriaResolvers || [],
-        inputData.fulfillerConduitKey ||
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-        inputData.recipient,
-      ];
-    } else if (
-      (functionName === 'fulfillBasicOrder' ||
-        rawFunctionName === FULFILL_BASIC_ORDER_ALIAS) &&
-      'basicOrderParameters' in inputData
-    ) {
-      params = [inputData.basicOrderParameters];
-    } else if (functionName === 'fulfillOrder' && 'order' in inputData) {
-      params = [
-        inputData.order,
-        inputData.fulfillerConduitKey ||
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-        inputData.recipient,
-      ];
-    } else {
-      // Fallback: try to use values in object order
-      params = Object.values(inputData);
-    }
-    try {
-      const encodedData = encodeFunctionData({
-        abi: SeaportABI,
-        functionName: functionName as any,
-        args: params as any,
-      });
-
-      // todo check this
-      return {
-        chainId,
-        from: address,
-        to: transaction.to,
-        value: transaction.value,
-        data: encodedData,
-      };
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  };
-
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;
-
-  resetPerpsStore = perpsService.resetStore;
-
-  fetchRemoteConfig = async (): Promise<{
-    switches?: {
-      isPerpsInviteDisabled?: boolean;
-      rabbySyncTour20260403?: boolean;
-    };
-  }> => {
-    const url = appIsProd
-      ? 'https://download.rabby.io/downloads/wallet-config/rabby-extension.json'
-      : 'https://download.rabby.io/downloads/wallet-config-reg/rabby-extension.json';
-
-    return http.get(url).then((res) => res.data);
-  };
   updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
 

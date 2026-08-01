@@ -3,8 +3,8 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
-import { ReactComponent as RcIconSun } from '@/ui/assets/perps/icon-sun.svg';
-import { ReactComponent as RcIconMoon } from '@/ui/assets/perps/icon-moon.svg';
+import { ReactComponent as RcIconSun } from '@/ui/assets/desktop/icon-sun.svg';
+import { ReactComponent as RcIconMoon } from '@/ui/assets/desktop/icon-moon.svg';
 
 export const SwitchThemeBtn = () => {
   const themeMode = useRabbySelector((state) => state.preference.themeMode);

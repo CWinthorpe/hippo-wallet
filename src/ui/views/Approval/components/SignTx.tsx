@@ -1018,6 +1018,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       if (!isReady || !chain) {
         return Promise.resolve([true, 0, undefined]);
       }
+      if (type === 'gasAccount') {
+        return Promise.resolve([true, 0, undefined]);
+      }
 
       const nextTx = {
         ...tx,
@@ -1051,48 +1054,25 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         account: currentAccount,
         gasTokenDecimals: gasToken.decimals || 18,
       }).then((gasCost) => {
-        if (type === 'native') {
-          const checkResult = checkGasAndNonce({
-            recommendGasLimitRatio,
-            recommendGasLimit,
-            recommendNonce: nextTx.nonce,
-            tx: nextTx,
-            gasLimit: gasLimit || '0',
-            nonce: nextTx.nonce,
-            isCancel,
-            gasExplainResponse: gasCost,
-            isSpeedUp,
-            isGnosisAccount,
-            nativeTokenBalance,
-            gasTokenDecimals: gasToken.decimals || 18,
-            gasTokenId: gasToken.tokenId,
-            tempoPreferredFeeTokenId,
-            checkTxValueInBalance,
-          });
+        const checkResult = checkGasAndNonce({
+          recommendGasLimitRatio,
+          recommendGasLimit,
+          recommendNonce: nextTx.nonce,
+          tx: nextTx,
+          gasLimit: gasLimit || '0',
+          nonce: nextTx.nonce,
+          isCancel,
+          gasExplainResponse: gasCost,
+          isSpeedUp,
+          isGnosisAccount,
+          nativeTokenBalance,
+          gasTokenDecimals: gasToken.decimals || 18,
+          gasTokenId: gasToken.tokenId,
+          tempoPreferredFeeTokenId,
+          checkTxValueInBalance,
+        });
 
-          return [checkResult.some((item) => item.code === 3001), 0, undefined];
-        }
-
-        return wallet.openapi
-          .checkGasAccountTxs({
-            sig: sig || '',
-            account_id: gasAccountAddress || currentAccount.address,
-            tx_list: [
-              {
-                ...nextTx,
-                gas: gasLimit,
-                gasPrice: intToHex(gasLevel.price),
-              },
-            ],
-          })
-          .then((gasAccountRes) => {
-            return [
-              !gasAccountRes.balance_is_enough,
-              (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
-                (gasAccountRes.gas_account_cost?.gas_cost || 0),
-              gasAccountRes,
-            ];
-          });
+        return [checkResult.some((item) => item.code === 3001), 0, undefined];
       });
     }
   );
@@ -1951,7 +1931,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const loadGasMedian = async (chain: Chain) => {
-    const { median } = await wallet.openapi.gasPriceStats(chain.serverId);
+    const levels = await wallet.gasMarketV2({ chain, tx });
+    const median =
+      levels.find((item) => item.level === 'normal')?.price ||
+      levels[0]?.price ||
+      0;
     setGasPriceMedian(median);
     return median;
   };
@@ -1986,55 +1970,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const checkGasLessStatus = async () => {
-    const sendUsdValue =
-      txDetail?.balance_change.send_token_list?.reduce((sum, item) => {
-        return new BigNumber(item.raw_amount || 0)
-          .div(10 ** item.decimals)
-          .times(item.price || 0)
-          .plus(sum);
-      }, new BigNumber(0)) || new BigNumber(0);
-    const receiveUsdValue =
-      txDetail?.balance_change?.receive_token_list.reduce((sum, item) => {
-        return new BigNumber(item.raw_amount || 0)
-          .div(10 ** item.decimals)
-          .times(item.price || 0)
-          .plus(sum);
-      }, new BigNumber(0)) || new BigNumber(0);
-    try {
-      setGasLessLoading(true);
-      const res = await wallet.openapi.gasLessTxCheck({
-        tx: {
-          ...tx,
-          nonce: realNonce || tx.nonce,
-          gasPrice: tx.gasPrice || tx.maxFeePerGas,
-          gas: gasLimit,
-        },
-        usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
-        preExecSuccess: txDetail?.pre_exec.success || false,
-        gasUsed: txDetail?.gas?.gas_used || 0,
-      });
-      setCanUseGasLess(res.is_gasless);
-      setGasLessFailedReason(res.desc);
-      setGasLessLoading(false);
-      setIsFirstGasLessLoading(false);
-      if (res.is_gasless && res?.promotion?.config) {
-        setGasLessConfig(
-          res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
-            ? {
-                ...res.promotion.config,
-                dark_color: '',
-                theme_color: '',
-              }
-            : res?.promotion?.config
-        );
-      }
-    } catch (error) {
-      console.error('gasLessTxCheck error', error);
-      setCanUseGasLess(false);
-      setGasLessConfig(undefined);
-      setGasLessLoading(false);
-      setIsFirstGasLessLoading(false);
-    }
+    setCanUseGasLess(false);
+    setGasLessConfig(undefined);
+    setGasLessFailedReason('Sponsored gas is not available in Hippo Wallet');
+    setGasLessLoading(false);
+    setIsFirstGasLessLoading(false);
   };
 
   const getSafeInfo = async () => {
@@ -2931,13 +2871,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               (isGnosisAccount &&
                 new BigNumber(realNonce || 0).isLessThan(safeInfo?.nonce || 0))
             }
-          />
-          <GasAccountDepositPopup
-            visible={gasAccountDepositVisible}
-            onCancel={() => setGasAccountDepositVisible(false)}
-            onWaitDepositResult={handleTopUpWaitResult}
-            minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
-            disableDirectDeposit
           />
         </>
       )}

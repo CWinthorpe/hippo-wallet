@@ -3,10 +3,7 @@ import { isTempoChain } from '@/utils/tempo';
 import { Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import providerController from '../provider/controller';
-import {
-  openapiService,
-  transactionHistoryService,
-} from '@/background/service';
+import { transactionHistoryService } from '@/background/service';
 import { t } from 'i18next';
 import { INTERNAL_REQUEST_SESSION } from '@/constant';
 import { decodeFunctionResult, encodeFunctionData } from 'viem';
@@ -17,14 +14,16 @@ export const getRecommendGas = async ({
   tx,
   gasUsed,
   preparedHistoryGasUsed,
+  chainId,
 }: {
   gasUsed: number;
   gas: number;
   tx: Tx;
   chainId: number;
   preparedHistoryGasUsed?:
-    | ReturnType<typeof openapiService.historyGasUsed>
-    | Awaited<ReturnType<typeof openapiService.historyGasUsed>>;
+    | { gas_used?: number }
+    | Promise<{ gas_used?: number }>
+    | null;
 }) => {
   if (gas > 0) {
     return {
@@ -42,27 +41,36 @@ export const getRecommendGas = async ({
     };
   }
   try {
-    let res: Awaited<ReturnType<typeof openapiService.historyGasUsed>>;
-    if (!preparedHistoryGasUsed) {
-      res = await openapiService.historyGasUsed({
-        tx: {
-          ...tx,
-          nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
-          data: tx.data,
-          value: tx.value || '0x0',
-          gas: tx.gas || '', // set gas limit if dapp not set
-        },
-        user_addr: tx.from,
-      });
-    } else {
-      res = await preparedHistoryGasUsed;
-    }
+    const chain = findChain({ id: chainId });
+    if (!chain) throw new Error(t('background.error.invalidChainId'));
+    const preparedGas = await preparedHistoryGasUsed;
+    const gasUsed = preparedGas?.gas_used
+      ? preparedGas.gas_used
+      : Number(
+          await providerController.ethRpc(
+            {
+              data: {
+                method: 'eth_estimateGas',
+                params: [
+                  {
+                    from: tx.from,
+                    to: tx.to,
+                    data: tx.data || '0x',
+                    value: tx.value || '0x0',
+                  },
+                ],
+              },
+              session: INTERNAL_REQUEST_SESSION,
+            },
+            chain.serverId
+          )
+        );
 
-    if (res.gas_used > 0) {
+    if (gasUsed > 0) {
       return {
         needRatio: true,
-        gas: new BigNumber(res.gas_used),
-        gasUsed: res.gas_used,
+        gas: new BigNumber(gasUsed),
+        gasUsed,
       };
     }
   } catch (e) {

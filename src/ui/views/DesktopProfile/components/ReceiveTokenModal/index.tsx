@@ -1,13 +1,8 @@
 import { Modal, ModalProps } from 'antd';
-import React, { useState, useEffect } from 'react';
-import Swap from '../../../Swap';
-import { Bridge } from '../../../Bridge';
-import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
+import React from 'react';
 import Receive from '../../../Receive';
 
 export const ReceiveTokenModal: React.FC<ModalProps> = (props) => {
-  const { t } = useTranslation();
   const { ...modalProps } = props;
 
   return (

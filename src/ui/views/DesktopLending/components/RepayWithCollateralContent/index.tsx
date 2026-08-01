@@ -29,8 +29,8 @@ import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-
 import { ReactComponent as RcIconLoading } from '@/ui/assets/swap/quote-circle-loading-cc.svg';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
-import { BridgeSlippage } from '@/ui/views/Bridge/Component/BridgeSlippage';
+import { DirectSignGasInfo } from '@/ui/component/DirectSignGasInfo';
+import { BridgeSlippage } from '@/ui/component/SlippageControl';
 import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress, noop } from '@/ui/utils';
 import { useWallet } from '@/ui/utils/WalletContext';

@@ -24,11 +24,6 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
-import PerpsSingleCoin from './Perps/screen/SingleCoin';
-import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
-import ExploreMore from './Perps/screen/ExploreMore';
-import Staking from './Staking';
-import StakingDetail from './Staking/Detail';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -51,7 +46,6 @@ import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
-import RabbyPoints from './RabbyPoints';
 import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 import InputMnemonics from './ImportMnemonics/InputMnemonics';
 import CreateMnemonics from './CreateMnemonics';
@@ -67,11 +61,8 @@ import { MobileWallets } from './AddAddress/MobileWallets';
 import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
 import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
 import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
-import { Ecology } from './Ecology';
-import { Bridge } from './Bridge';
-import { GasAccount } from './GasAccount';
+
 import { GnosisQueue } from './GnosisQueue';
-import Perps from './Perps/screen/home';
 import { Guide } from './NewUserImport/Guide';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
@@ -385,10 +376,6 @@ const Main = () => {
           <Receive />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/bridge">
-          <Bridge />
-        </PrivateRoute>
-
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
         </PrivateRoute>
@@ -418,33 +405,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
-        </PrivateRoute>
-        <PrivateRoute exact path="/rabby-points">
-          <RabbyPoints />
-        </PrivateRoute>
-        <PrivateRoute path="/ecology/:chainId">
-          <Ecology />
-        </PrivateRoute>
-        <PrivateRoute path="/gas-account">
-          <GasAccount />
-        </PrivateRoute>
-        <PrivateRoute exact path="/perps">
-          <Perps />
-        </PrivateRoute>
-        <PrivateRoute exact path="/perps/single-coin/:coin">
-          <PerpsSingleCoin />
-        </PrivateRoute>
-        <PrivateRoute exact path="/perps/explore">
-          <ExploreMore />
-        </PrivateRoute>
-        <PrivateRoute exact path="/perps/history/:coin">
-          <PerpsHistoryPage />
-        </PrivateRoute>
-        <PrivateRoute exact path="/staking">
-          <Staking />
-        </PrivateRoute>
-        <PrivateRoute exact path="/staking/detail">
-          <StakingDetail />
         </PrivateRoute>
       </Switch>
 

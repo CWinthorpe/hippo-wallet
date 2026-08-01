@@ -3,6 +3,7 @@ import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
 import { CUSTOM_RPC_ENABLED } from '@/constant';
+import { keccak256 } from 'viem';
 import {
   BuiltInDefaultRPC,
   getBuiltInDefaultRPCMap,
@@ -82,6 +83,8 @@ const ARRAY_RESULT_METHODS = new Set([
 ]);
 
 const INVALID_RPC_RESULT_CODE = 'INVALID_RPC_RESULT';
+export const MEV_BLOCKER_FULL_PRIVACY_RPC =
+  'https://rpc.mevblocker.io/fullprivacy';
 
 const RETRYABLE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const RETRYABLE_RPC_CODES = new Set([-32603, -32001, -32005, -32016]);
@@ -347,6 +350,95 @@ export class RPCService {
     }
     const result = await this.defaultRPCRequest(host, method, params);
     return [validateRPCResult(method, result, host), host];
+  };
+
+  submitRawTransaction = async ({
+    chain,
+    chainServerId,
+    rawTx,
+    allowMevBlocker,
+  }: {
+    chain: CHAINS_ENUM;
+    chainServerId: string;
+    rawTx: `0x${string}`;
+    allowMevBlocker: boolean;
+  }) => {
+    const localTransactionHash = keccak256(rawTx);
+    let endpoint = '';
+
+    try {
+      let hash: string;
+      if (this.hasCustomRPC(chain)) {
+        const rpc = this.getRPCByChain(chain)!;
+        endpoint = rpc.broadcastUrl || rpc.url;
+        hash = await this.requestCustomRPC(chain, 'eth_sendRawTransaction', [
+          rawTx,
+        ]);
+      } else if (chain === CHAINS_ENUM.ETH && allowMevBlocker) {
+        endpoint = MEV_BLOCKER_FULL_PRIVACY_RPC;
+        hash = await this.defaultRPCRequest(
+          endpoint,
+          'eth_sendRawTransaction',
+          [rawTx]
+        );
+      } else {
+        endpoint = this.store.defaultRPC?.[chainServerId]?.rpcUrl?.[0] || '';
+        if (!endpoint) {
+          throw new Error(
+            `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
+          );
+        }
+        hash = await this.defaultRPCRequest(
+          endpoint,
+          'eth_sendRawTransaction',
+          [rawTx]
+        );
+      }
+
+      if (typeof hash !== 'string' || !/^0x[0-9a-fA-F]{64}$/.test(hash)) {
+        const malformed = new Error(
+          `RPC returned a malformed transaction hash. Local hash: ${localTransactionHash}`
+        ) as Error & Record<string, any>;
+        malformed.code = 'RAW_TX_RESULT_INVALID';
+        malformed.ambiguousSubmission = true;
+        malformed.localTransactionHash = localTransactionHash;
+        malformed.submissionEndpoint = endpoint;
+        throw malformed;
+      }
+
+      if (hash.toLowerCase() !== localTransactionHash.toLowerCase()) {
+        const mismatch = new Error(
+          `RPC returned a transaction hash that does not match the signed transaction. Local hash: ${localTransactionHash}`
+        ) as Error & Record<string, any>;
+        mismatch.code = 'RAW_TX_HASH_MISMATCH';
+        mismatch.ambiguousSubmission = true;
+        mismatch.localTransactionHash = localTransactionHash;
+        mismatch.submissionEndpoint = endpoint;
+        throw mismatch;
+      }
+
+      return {
+        hash,
+        localTransactionHash,
+        submissionEndpoint: endpoint,
+        usedMevBlocker: endpoint === MEV_BLOCKER_FULL_PRIVACY_RPC,
+      };
+    } catch (error: any) {
+      if (
+        error?.code === 'RAW_TX_HASH_MISMATCH' ||
+        error?.code === 'RAW_TX_RESULT_INVALID'
+      ) {
+        throw error;
+      }
+      const wrapped =
+        error instanceof Error ? error : new Error(String(error || ''));
+      Object.assign(wrapped, {
+        localTransactionHash,
+        submissionEndpoint: endpoint,
+        ambiguousSubmission: isRetryableRPCError(error),
+      });
+      throw wrapped;
+    }
   };
 
   requestDefaultRPC = async ({

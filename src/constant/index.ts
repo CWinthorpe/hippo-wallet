@@ -6,7 +6,7 @@ import {
 } from '@/utils/chain';
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+
 import IconClosed, {
   ReactComponent as RcIconClosed,
 } from 'ui/assets/sign/security-engine/closed.svg';
@@ -213,21 +213,7 @@ import LogoZerion, {
 } from 'ui/assets/walletlogo/zerion.svg';
 import browser from 'webextension-polyfill';
 
-import Logo0X from 'ui/assets/swap/0xswap.png';
-import Logo1inch from 'ui/assets/swap/1inch.svg';
-import LogoOdos from 'ui/assets/swap/odos.png';
-import LogoParaswap from 'ui/assets/swap/paraswap.png';
-import LogoMagpie from 'ui/assets/swap/magpie.png';
-import LogoSushi from 'ui/assets/swap/sushi.png';
-import LogoUniswap from 'ui/assets/swap/uniswap.png';
-
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
-import LogoBinance from 'ui/assets/swap/binance.png';
-import LogoCoinbase from 'ui/assets/swap/coinbase.png';
-import LogoKyberSwap from 'ui/assets/swap/kyberswap.png';
-import LogoOkx from 'ui/assets/swap/okx.png';
-import LogoOpenOcean from 'ui/assets/swap/openocean.png';
-import LogoTokenDefault from 'ui/assets/token-default.svg';
 
 export { default as LANGS } from '../../_raw/locales/index.json';
 
@@ -576,15 +562,7 @@ export const EVENTS = {
     CLOSE_WINDOW: 'CLOSE_WINDOW',
     DISCOVERY_UPDATED: 'DISCOVERY_UPDATED',
   },
-  PERPS: {
-    LOG_OUT: 'PERPS_LOG_OUT',
-    HANDLE_CLICK_PRICE: 'PERPS_HANDLE_CLICK_PRICE',
-    SWITCH_LIMIT_FILL_PRICE: 'SWITCH_LIMIT_FILL_PRICE',
-    USER_INFO_HISTORY_TAB_CHANGED: 'PERPS_USER_INFO_HISTORY_TAB_CHANGED',
-    WIDGET_ACCOUNT_CHANGED: 'PERPS_WIDGET_ACCOUNT_CHANGED',
-    WIDGET_ENABLED_CHANGED: 'PERPS_WIDGET_ENABLED_CHANGED',
-    WIDGET_BLOCKED_HOSTS_CHANGED: 'PERPS_WIDGET_BLOCKED_HOSTS_CHANGED',
-  },
+
   INNER_HISTORY_ITEM_PENDING: 'INNER_HISTORY_ITEM_PENDING',
   INNER_HISTORY_ITEM_COMPLETE: 'INNER_HISTORY_ITEM_COMPLETE',
   PERSIST_KEYRING: 'PERSIST_KEYRING',
@@ -593,7 +571,6 @@ export const EVENTS = {
 
   DESKTOP: {
     FOCUSED: 'DESKTOP_FOCUSED',
-    SWITCH_PERPS_ACCOUNT: 'DESKTOP_SWITCH_PERPS_ACCOUNT',
   },
 
   RELOAD_APPROVAL: 'RELOAD_APPROVAL',
@@ -1545,88 +1522,7 @@ export const WALLET_SORT_SCORE = [
   return pre;
 }, {} as { [k: string]: number });
 
-export const SWAP_FEE_ADDRESS = '0x39041F1B366fE33F9A5a79dE5120F2Aee2577ebc';
-
 export const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
-
-export const DEX = {
-  [DEX_ENUM.ZEROXAPI]: {
-    id: DEX_ENUM.ZEROXAPI,
-    logo: Logo0X,
-    name: '0x',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPI],
-  },
-  [DEX_ENUM.PARASWAP]: {
-    id: DEX_ENUM.PARASWAP,
-    logo: LogoParaswap,
-    name: 'ParaSwap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
-  },
-  [DEX_ENUM.ONEINCH]: {
-    id: DEX_ENUM.ONEINCH,
-    logo: Logo1inch,
-    name: '1inch',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
-  },
-
-  [DEX_ENUM.OPENOCEAN]: {
-    id: DEX_ENUM.OPENOCEAN,
-    logo: LogoOpenOcean,
-    name: 'OpenOcean',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
-  },
-  [DEX_ENUM.KYBERSWAP]: {
-    id: DEX_ENUM.KYBERSWAP,
-    logo: LogoKyberSwap,
-    name: 'KyberSwap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.KYBERSWAP],
-  },
-  [DEX_ENUM.PARASWAPV6]: {
-    id: DEX_ENUM.PARASWAPV6,
-    logo: LogoParaswap,
-    name: 'ParaSwap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAPV6],
-  },
-  [DEX_ENUM.ODOS]: {
-    id: DEX_ENUM.ODOS,
-    logo: LogoOdos,
-    name: 'Odos',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ODOS],
-  },
-  [DEX_ENUM.ZEROXAPIV2]: {
-    id: DEX_ENUM.ZEROXAPIV2,
-    logo: Logo0X,
-    name: '0x',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPIV2],
-  },
-  [DEX_ENUM.MAGPIE]: {
-    id: DEX_ENUM.MAGPIE,
-    logo: LogoMagpie,
-    name: 'Fly',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.MAGPIE],
-  },
-  [DEX_ENUM.SUSHI]: {
-    id: DEX_ENUM.SUSHI,
-    logo: LogoSushi,
-    name: 'Sushi',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.SUSHI],
-  },
-  [DEX_ENUM.UNI]: {
-    id: DEX_ENUM.UNI,
-    logo: LogoUniswap,
-    name: 'Uniswap',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNI],
-  },
-};
-
-export const DEX_WITH_WRAP = {
-  ...DEX,
-  [DEX_ENUM.WRAPTOKEN]: {
-    logo: LogoTokenDefault,
-    name: 'Wrap Contract',
-    chains: DEX_SUPPORT_CHAINS.WrapToken,
-  },
-};
 
 export const CEX = {
   // binance: {
@@ -1645,10 +1541,6 @@ export const CEX = {
   //   logo: LogoOkx,
   // },
 };
-
-export const SWAP_SUPPORT_CHAINS = Array.from(
-  new Set(Object.values(DEX_SUPPORT_CHAINS).flat())
-);
 
 export enum SIGN_PERMISSION_TYPES {
   MAINNET_AND_TESTNET = 'MAINNET_AND_TESTNET',

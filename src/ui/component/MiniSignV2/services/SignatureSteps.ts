@@ -36,7 +36,6 @@ import {
 import { normalizeTxParams } from '@/ui/views/Approval/components/SignTx';
 import { getCexInfo } from '@/ui/models/exchange';
 
-import type { OpenApiService } from '@rabby-wallet/rabby-api';
 import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
 import type { SignerCtx } from '@/ui/component/MiniSignV2/domain/ctx';
 import type { Account } from '@/background/service/preference';
@@ -66,7 +65,6 @@ import {
   buildTempoTransaction,
   isTempoChain,
   shouldUseTempoTransaction,
-  toTempoCallsTx,
   TxWithTempoExtras,
 } from '@/utils/tempo';
 
@@ -223,44 +221,17 @@ async function computeGasless(params: {
   wallet: WalletControllerType;
   txsCalc: CalcItem[];
   gasPriceWei: number;
-}): Promise<ReturnType<OpenApiService['gasLessTxsCheck']>> {
-  const { wallet, txsCalc, gasPriceWei } = params;
-  try {
-    const res = await wallet.openapi.gasLessTxsCheck({
-      tx_list: txsCalc.map((i) => ({
-        ...i.tx,
-        gas: i.gasLimit,
-        gasPrice: intToHex(Math.round(gasPriceWei)),
-      })),
-    });
-    return res;
-  } catch {
-    return { is_gasless: false };
-  }
+}): Promise<{ is_gasless: false }> {
+  void params;
+  return { is_gasless: false };
 }
 
 async function computeGasAccount(params: {
   wallet: WalletControllerType;
   txsCalc: CalcItem[];
 }): Promise<PreparedContext['gasAccount'] | undefined> {
-  const { wallet, txsCalc } = params;
-  try {
-    if (!txsCalc.length) return undefined;
-    const sig = await wallet.getGasAccountSig();
-    const chain = findChain({ id: txsCalc[0]?.tx.chainId })!;
-    const res = await wallet.openapi.checkGasAccountTxs({
-      sig: sig.sig || '',
-      account_id: sig.accountId || txsCalc[0].tx.from,
-      tx_list: txsCalc.map((i) =>
-        isTempoChain(chain.serverId)
-          ? (toTempoCallsTx(i.tx as any, { stripTopLevelData: true }) as any)
-          : i.tx
-      ),
-    });
-    return res as any;
-  } catch (e) {
-    return undefined;
-  }
+  void params;
+  return undefined;
 }
 
 function aggregateCheckErrors(params: {
@@ -555,7 +526,6 @@ export class SignatureSteps {
     const [
       _,
       gasList,
-      { median: gasPriceMedian },
       gasTokenBalanceInfo,
       hasCustomChainRPC,
       baseRecommendNonce,
@@ -566,7 +536,6 @@ export class SignatureSteps {
         tx: txs[0],
         customGas: customGasPrice > 0 ? customGasPrice : undefined,
       }),
-      wallet.openapi.gasPriceStats(chain.serverId),
       getGasTokenBalance({
         wallet,
         chainId: chain.id,
@@ -579,6 +548,10 @@ export class SignatureSteps {
         chainId: chain.id,
       }),
     ]);
+    const gasPriceMedian =
+      gasList.find((item) => item.level === 'normal')?.price ||
+      gasList[0]?.price ||
+      0;
 
     const nativeTokenBalance = gasTokenBalanceInfo.rawBalance;
     const gasToken = gasTokenBalanceInfo.token;

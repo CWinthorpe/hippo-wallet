@@ -40,8 +40,7 @@ export const TokenDetailPopup = ({
   const location = useLocation();
   const action = new URLSearchParams(location.search).get('action');
   const isInDesktopActionModal =
-    isDesktop &&
-    (action === 'send' || action === 'swap' || action === 'bridge');
+    isDesktop && (action === 'send' || action === 'swap');
   const isInSendModal =
     new URLSearchParams(location.search).get('action') === 'send';
   const getContainer = isInDesktopActionModal
@@ -51,7 +50,6 @@ export const TokenDetailPopup = ({
     : getContainerProps;
   const isInSwap = location.pathname === '/dex-swap';
   const isInSend = location.pathname === '/send-token';
-  const isBridge = location.pathname === '/bridge';
 
   const checkIsAdded = React.useCallback(async () => {
     if (!token) return;
@@ -74,7 +72,7 @@ export const TokenDetailPopup = ({
     checkIsAdded();
   }, [checkIsAdded]);
 
-  const popupHeight = isInSend || isInSwap || isBridge ? 540 : 500;
+  const popupHeight = isInSend || isInSwap ? 540 : 500;
 
   return (
     <Popup
