@@ -10,6 +10,7 @@ import {
   LLAMASWAP_CHAIN_BY_SERVER_ID,
   LLAMASWAP_NATIVE_TOKEN,
 } from '@/constant/llama-swap';
+import { freshQuotePreservesReviewedMinimum } from './quoteSafety';
 
 const SUPPORTED_CHAIN_IDS = Object.keys(LLAMASWAP_CHAIN_BY_SERVER_ID);
 
@@ -319,7 +320,12 @@ const Swap = () => {
           'The selected aggregator no longer has a valid route. Review another route.'
         );
       }
-      if (BigInt(fresh.amountOut) < BigInt(quote.minimumAmountOut)) {
+      if (
+        !freshQuotePreservesReviewedMinimum(
+          quote.minimumAmountOut,
+          fresh.minimumAmountOut
+        )
+      ) {
         setQuotes(freshQuotes);
         setQuote(fresh);
         await refreshAllowance(fresh);
