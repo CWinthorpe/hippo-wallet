@@ -95,18 +95,20 @@ describe('private-build privacy invariants', () => {
     });
   });
 
-  test('does not inject the dapp provider into the temporary quote-origin tab', () => {
+  test('does not inject the dapp provider into LlamaSwap transport origins', () => {
     [
       'src/manifest/chrome-mv3/manifest.json',
       'src/manifest/chrome-mv3/manifest.dev.json',
     ].forEach((manifestPath) => {
       const manifest = JSON.parse(read(manifestPath));
       const pageProviderScript = manifest.content_scripts.find(
-        (entry: { js?: string[] }) =>
-          entry.js?.includes('content-script.js')
+        (entry: { js?: string[] }) => entry.js?.includes('content-script.js')
       );
       expect(pageProviderScript?.exclude_matches).toContain(
         'https://swap-api.defillama.com/*'
+      );
+      expect(pageProviderScript?.exclude_matches).toContain(
+        'https://swap.defillama.com/*'
       );
     });
   });
@@ -241,7 +243,7 @@ describe('private-build privacy invariants', () => {
     const llamaSwap = read('src/background/service/llamaSwap.ts');
 
     expect(app).toContain('<RemoteDataPolicyGate>');
-    expect(policy).toContain("configured: false");
+    expect(policy).toContain('configured: false');
     expect(policy).toContain('REMOTE_DATA_UNCLASSIFIED');
     expect(policy).toContain('REMOTE_FEATURE_REMOVED');
     expect(rpc).toContain('https://rpc.mevblocker.io/fullprivacy');

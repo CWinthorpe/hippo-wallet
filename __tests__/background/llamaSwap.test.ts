@@ -25,9 +25,12 @@ import { ethers } from 'ethers';
 import RPCService from '@/background/service/rpc';
 import {
   KYBERSWAP_ROUTER,
+  LLAMASWAP_CHAIN_BY_SERVER_ID,
   LLAMASWAP_NATIVE_TOKEN,
+  LLAMASWAP_PROTOCOLS_BY_CHAIN,
   MATCHA_PROTOCOL,
   ONEINCH_ROUTER,
+  ONEINCH_ZKSYNC_ROUTER,
   PARASWAP_LLAMASWAP_PARTNER,
   PARASWAP_ROUTER,
   PERMIT2_ADDRESS,
@@ -95,15 +98,16 @@ const makeOneInchPayload = ({
   amountOut = '1990000',
   receiver = recipient,
   minReturnAmount = minimum(amountOut),
+  router = ONEINCH_ROUTER,
 } = {}) => ({
   amountReturned: amountOut,
   estimatedGas: 210000,
-  tokenApprovalAddress: ONEINCH_ROUTER,
+  tokenApprovalAddress: router,
   rawQuote: {
     dstAmount: amountOut,
     tx: {
       from: request.userAddress,
-      to: ONEINCH_ROUTER,
+      to: router,
       data: oneInchInterface.encodeFunctionData('swap', [
         oneInchExecutor,
         [
@@ -171,9 +175,7 @@ const makeKyberPayload = ({
 });
 
 const paraSwapPartnerAndFee = (feeData = 0n) =>
-  ethers.BigNumber.from(PARASWAP_LLAMASWAP_PARTNER)
-    .shl(96)
-    .or(feeData);
+  ethers.BigNumber.from(PARASWAP_LLAMASWAP_PARTNER).shl(96).or(feeData);
 
 const makeParaSwapPayload = ({
   request = nativeRequest,
@@ -255,9 +257,7 @@ const makeMatchaPayload = ({
     },
     message
   );
-  const zidAndAffiliate = `${matchaZid}${affiliate
-    .toLowerCase()
-    .slice(2)}`;
+  const zidAndAffiliate = `${matchaZid}${affiliate.toLowerCase().slice(2)}`;
   return {
     amountReturned: amountOut,
     amountIn: request.amount,
@@ -442,9 +442,67 @@ describe('LlamaSwap multi-aggregator validation', () => {
     ]);
   });
 
+  test('mirrors every ordinary chain/provider pair in the production frontend', () => {
+    expect(LLAMASWAP_CHAIN_BY_SERVER_ID).toEqual({
+      eth: 'ethereum',
+      bsc: 'bsc',
+      matic: 'polygon',
+      op: 'optimism',
+      arb: 'arbitrum',
+      avax: 'avax',
+      xdai: 'gnosis',
+      era: 'zksync',
+      base: 'base',
+      linea: 'linea',
+      mnt: 'mantle',
+      scrl: 'scroll',
+      mode: 'mode',
+      world: 'worldchain',
+      sonic: 'sonic',
+      ink: 'ink',
+      bera: 'berachain',
+      uni: 'unichain',
+      hyper: 'hyperevm',
+      plasma: 'plasma',
+      monad: 'monad',
+      megaeth: 'megaeth',
+      tempo: 'tempo',
+    });
+    expect(LLAMASWAP_PROTOCOLS_BY_CHAIN).toEqual({
+      eth: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      bsc: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      matic: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      op: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      arb: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      avax: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      xdai: ['1inch', 'ParaSwap'],
+      era: ['1inch'],
+      base: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      linea: ['1inch', 'KyberSwap', 'Matcha/0x v2'],
+      mnt: ['Matcha/0x v2'],
+      scrl: ['Matcha/0x v2'],
+      mode: ['Matcha/0x v2'],
+      world: ['Matcha/0x v2'],
+      sonic: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      ink: ['Matcha/0x v2'],
+      bera: ['KyberSwap', 'Matcha/0x v2'],
+      uni: ['1inch', 'KyberSwap', 'ParaSwap', 'Matcha/0x v2'],
+      hyper: ['KyberSwap', 'Matcha/0x v2'],
+      plasma: ['KyberSwap', 'Matcha/0x v2'],
+      monad: ['KyberSwap', 'Matcha/0x v2'],
+      megaeth: ['KyberSwap'],
+      tempo: ['Matcha/0x v2'],
+    });
+    expect(Object.keys(LLAMASWAP_PROTOCOLS_BY_CHAIN)).toEqual(
+      Object.keys(LLAMASWAP_CHAIN_BY_SERVER_ID)
+    );
+  });
+
   test('uses only adapters supported by the selected chain', async () => {
     const request = { ...nativeRequest, chainServerId: 'era' };
-    fetchMock.mockResolvedValue(response(makeOneInchPayload()));
+    fetchMock.mockResolvedValue(
+      response(makeOneInchPayload({ request, router: ONEINCH_ZKSYNC_ROUTER }))
+    );
 
     const quotes = await createService().getQuotes(request);
     expect(quotes).toHaveLength(1);
@@ -453,20 +511,31 @@ describe('LlamaSwap multi-aggregator validation', () => {
     expect(fetchMock.mock.calls[0][0]).toContain('chain=zksync');
   });
 
+  test('requires the distinct 1inch zkSync router', () => {
+    const request = { ...nativeRequest, chainServerId: 'era' };
+    expect(
+      validateLlamaSwapQuote(
+        request,
+        makeOneInchPayload({ request, router: ONEINCH_ZKSYNC_ROUTER }),
+        '1inch'
+      ).approvalSpender
+    ).toBe(ONEINCH_ZKSYNC_ROUTER);
+    expect(() =>
+      validateLlamaSwapQuote(request, makeOneInchPayload({ request }), '1inch')
+    ).toThrow('unapproved 1inch router');
+  });
+
   test('fails closed when every adapter fails', async () => {
     fetchMock.mockResolvedValue(response({}, false, 403));
-    await expect(
-      createService().getQuotes(nativeRequest)
-    ).rejects.toThrow('No valid LlamaSwap routes');
+    await expect(createService().getQuotes(nativeRequest)).rejects.toThrow(
+      'No valid LlamaSwap routes'
+    );
   });
 
   test('validates 1inch recipient and minimum output from decoded calldata', () => {
     expect(
-      validateLlamaSwapQuote(
-        nativeRequest,
-        makeOneInchPayload(),
-        '1inch'
-      ).provider
+      validateLlamaSwapQuote(nativeRequest, makeOneInchPayload(), '1inch')
+        .provider
     ).toBe('1inch');
     expect(() =>
       validateLlamaSwapQuote(
@@ -488,11 +557,8 @@ describe('LlamaSwap multi-aggregator validation', () => {
 
   test('rejects KyberSwap route fees and wrong recipients', () => {
     expect(
-      validateLlamaSwapQuote(
-        nativeRequest,
-        makeKyberPayload(),
-        'KyberSwap'
-      ).provider
+      validateLlamaSwapQuote(nativeRequest, makeKyberPayload(), 'KyberSwap')
+        .provider
     ).toBe('KyberSwap');
     expect(() =>
       validateLlamaSwapQuote(

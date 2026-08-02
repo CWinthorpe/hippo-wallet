@@ -4,6 +4,8 @@
 
 import {
   fetchLlamaSwapQuotesFromOrigin,
+  LLAMASWAP_FRONTEND_ORIGIN,
+  LLAMASWAP_FRONTEND_PATH,
   LLAMASWAP_QUOTE_ORIGIN,
   requestLlamaSwapQuotesInPage,
   LlamaSwapQuoteTransportRequest,
@@ -36,13 +38,12 @@ const response = ({
   text: async () => text,
 });
 
-describe('LlamaSwap same-origin quote transport', () => {
+describe('LlamaSwap production-frontend quote transport', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
 
-  test('posts from the quote page origin with credentials and bounded output', async () => {
-    const historyReplaceState = jest.spyOn(window.history, 'replaceState');
+  test('posts cross-origin from the production frontend with no credentials and bounded output', async () => {
     const fetchMock = jest
       .fn()
       .mockResolvedValue(response({ text: '{"amountReturned":"1"}' }));
@@ -51,6 +52,7 @@ describe('LlamaSwap same-origin quote transport', () => {
     const result = await requestLlamaSwapQuotesInPage(
       [request],
       window.location.origin,
+      window.location.pathname,
       2_000_000,
       20_000
     );
@@ -66,8 +68,8 @@ describe('LlamaSwap same-origin quote transport', () => {
       request.url,
       expect.objectContaining({
         method: 'POST',
-        mode: 'same-origin',
-        credentials: 'include',
+        mode: 'cors',
+        credentials: 'omit',
         cache: 'no-store',
         redirect: 'error',
         headers: {
@@ -76,11 +78,6 @@ describe('LlamaSwap same-origin quote transport', () => {
         },
         body: JSON.stringify(request.body),
       })
-    );
-    expect(historyReplaceState).toHaveBeenCalledWith(
-      null,
-      '',
-      `${window.location.origin}/`
     );
   });
 
@@ -91,14 +88,15 @@ describe('LlamaSwap same-origin quote transport', () => {
     await expect(
       requestLlamaSwapQuotesInPage(
         [request],
-        'https://swap-api.defillama.com',
+        LLAMASWAP_FRONTEND_ORIGIN,
+        LLAMASWAP_FRONTEND_PATH,
         2_000_000,
         20_000
       )
     ).resolves.toEqual([
       expect.objectContaining({
         protocol: '1inch',
-        error: 'unexpected quote-page origin',
+        error: 'unexpected quote-page location',
       }),
     ]);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -124,6 +122,7 @@ describe('LlamaSwap same-origin quote transport', () => {
     const results = await requestLlamaSwapQuotesInPage(
       requests,
       window.location.origin,
+      window.location.pathname,
       10,
       20_000
     );
@@ -132,18 +131,18 @@ describe('LlamaSwap same-origin quote transport', () => {
     expect(results[1].error).toBe('quote response is too large');
   });
 
-  test('opens one inactive exact-origin tab, uses the isolated world, and closes it', async () => {
+  test('opens one inactive production-frontend tab, uses the isolated world, and closes it', async () => {
     const create = jest.fn().mockResolvedValue({
       id: 42,
       active: false,
       status: 'complete',
-      url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+      url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
     });
     const get = jest.fn().mockResolvedValue({
       id: 42,
       active: false,
       status: 'complete',
-      url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+      url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
     });
     const remove = jest.fn().mockResolvedValue(undefined);
     const executeScript = jest.fn().mockImplementation(async (options) => {
@@ -151,12 +150,14 @@ describe('LlamaSwap same-origin quote transport', () => {
       expect(options.world).toBe('ISOLATED');
       expect(options.func).toBe(requestLlamaSwapQuotesInPage);
       expect(options.args[0]).toEqual([request]);
+      expect(options.args[1]).toBe(LLAMASWAP_FRONTEND_ORIGIN);
+      expect(options.args[2]).toBe(LLAMASWAP_FRONTEND_PATH);
       return [
         {
           result: [
             {
               protocol: '1inch',
-              origin: LLAMASWAP_QUOTE_ORIGIN,
+              origin: LLAMASWAP_FRONTEND_ORIGIN,
               text: '{}',
             },
           ],
@@ -181,13 +182,13 @@ describe('LlamaSwap same-origin quote transport', () => {
     ).resolves.toEqual([
       {
         protocol: '1inch',
-        origin: LLAMASWAP_QUOTE_ORIGIN,
+        origin: LLAMASWAP_FRONTEND_ORIGIN,
         text: '{}',
         error: undefined,
       },
     ]);
     expect(create).toHaveBeenCalledWith({
-      url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+      url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
       active: false,
     });
     expect(executeScript).toHaveBeenCalledTimes(1);
@@ -205,12 +206,12 @@ describe('LlamaSwap same-origin quote transport', () => {
       .mockResolvedValueOnce({
         id: 42,
         status: 'complete',
-        url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+        url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
       })
       .mockResolvedValueOnce({
         id: 42,
         status: 'complete',
-        url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+        url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
       });
     const api = {
       tabs: {
@@ -225,7 +226,7 @@ describe('LlamaSwap same-origin quote transport', () => {
             result: [
               {
                 protocol: '1inch',
-                origin: LLAMASWAP_QUOTE_ORIGIN,
+                origin: LLAMASWAP_FRONTEND_ORIGIN,
                 text: '{}',
               },
             ],
@@ -241,6 +242,61 @@ describe('LlamaSwap same-origin quote transport', () => {
     expect(listener.removeListener).toHaveBeenCalledTimes(1);
   });
 
+  test('rejects any request outside the exact API endpoint before opening a tab', async () => {
+    const create = jest.fn();
+    const api = {
+      tabs: {
+        create,
+        get: jest.fn(),
+        remove: jest.fn(),
+        onUpdated: {
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
+        },
+      },
+      scripting: { executeScript: jest.fn() },
+    } as any;
+
+    await expect(
+      fetchLlamaSwapQuotesFromOrigin(
+        [
+          {
+            ...request,
+            url: `${LLAMASWAP_FRONTEND_ORIGIN}/dexAggregatorQuote?protocol=1inch`,
+          },
+        ],
+        2_000_000,
+        api
+      )
+    ).rejects.toThrow('Invalid LlamaSwap quote transport request');
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  test('rejects a same-origin redirect away from the static transport path and closes the tab', async () => {
+    const remove = jest.fn().mockResolvedValue(undefined);
+    const api = {
+      tabs: {
+        create: jest.fn().mockResolvedValue({ id: 42 }),
+        get: jest.fn().mockResolvedValue({
+          id: 42,
+          status: 'complete',
+          url: `${LLAMASWAP_FRONTEND_ORIGIN}/`,
+        }),
+        remove,
+        onUpdated: {
+          addListener: jest.fn(),
+          removeListener: jest.fn(),
+        },
+      },
+      scripting: { executeScript: jest.fn() },
+    } as any;
+
+    await expect(
+      fetchLlamaSwapQuotesFromOrigin([request], 2_000_000, api)
+    ).rejects.toThrow('unexpected location');
+    expect(remove).toHaveBeenCalledWith(42);
+  });
+
   test('closes the temporary tab when injection fails', async () => {
     const remove = jest.fn().mockResolvedValue(undefined);
     const api = {
@@ -249,7 +305,7 @@ describe('LlamaSwap same-origin quote transport', () => {
         get: jest.fn().mockResolvedValue({
           id: 42,
           status: 'complete',
-          url: `${LLAMASWAP_QUOTE_ORIGIN}/`,
+          url: `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`,
         }),
         remove,
         onUpdated: {

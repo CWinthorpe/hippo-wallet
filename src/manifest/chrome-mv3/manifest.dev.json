@@ -35,7 +35,10 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "exclude_matches": ["https://swap-api.defillama.com/*"],
+      "exclude_matches": [
+        "https://swap-api.defillama.com/*",
+        "https://swap.defillama.com/*"
+      ],
       "js": ["webextension-polyfill.js", "content-script.js"],
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"

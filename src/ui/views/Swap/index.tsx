@@ -6,22 +6,12 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { findChain } from '@/utils/chain';
 import { getUiType, useWallet } from '@/ui/utils';
-import { LLAMASWAP_NATIVE_TOKEN } from '@/constant/llama-swap';
+import {
+  LLAMASWAP_CHAIN_BY_SERVER_ID,
+  LLAMASWAP_NATIVE_TOKEN,
+} from '@/constant/llama-swap';
 
-const SUPPORTED_CHAIN_IDS = [
-  'eth',
-  'bsc',
-  'matic',
-  'op',
-  'arb',
-  'avax',
-  'xdai',
-  'era',
-  'base',
-  'linea',
-  'sonic',
-  'unichain',
-];
+const SUPPORTED_CHAIN_IDS = Object.keys(LLAMASWAP_CHAIN_BY_SERVER_ID);
 
 const DEFAULT_OUTPUT_TOKEN: Record<string, string> = {
   eth: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
@@ -460,9 +450,9 @@ const Swap = () => {
             aggregator · Gas and broadcast: selected RPC
           </div>
           <div className="mt-[4px] text-[11px] text-r-neutral-foot">
-            Comparing routes opens one temporary inactive DefiLlama API tab for
-            same-origin requests, then closes it automatically. The API origin
-            may remain in local browser history.
+            Comparing routes opens one temporary inactive LlamaSwap transport
+            tab, then closes it automatically. Its static URL may remain in
+            local browser history.
           </div>
         </div>
 

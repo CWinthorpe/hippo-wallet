@@ -3,10 +3,11 @@ import RPCService from './rpc';
 import { findChain } from '@/utils/chain';
 import {
   KYBERSWAP_ROUTER,
+  LLAMASWAP_CHAIN_BY_SERVER_ID,
   LLAMASWAP_NATIVE_TOKEN,
   LLAMASWAP_PROTOCOLS_BY_CHAIN,
   LlamaSwapProtocol,
-  ONEINCH_ROUTER,
+  ONEINCH_ROUTER_BY_LLAMA_CHAIN,
   PARASWAP_LLAMASWAP_PARTNER,
   PARASWAP_ROUTER,
   PERMIT2_ADDRESS,
@@ -32,21 +33,6 @@ const MATCHA_PERMIT_MAX_LIFETIME_SECONDS = 10 * 60;
 const MAX_RESPONSE_CHARACTERS = 2_000_000;
 const MAX_CALLDATA_BYTES = 131_072;
 const MAX_SWAP_GAS = 10_000_000n;
-
-const LLAMASWAP_CHAIN_BY_SERVER_ID: Record<string, string> = {
-  eth: 'ethereum',
-  bsc: 'bsc',
-  matic: 'polygon',
-  op: 'optimism',
-  arb: 'arbitrum',
-  avax: 'avax',
-  xdai: 'gnosis',
-  era: 'zksync',
-  base: 'base',
-  linea: 'linea',
-  sonic: 'sonic',
-  unichain: 'unichain',
-};
 
 const ONEINCH_INTERFACE = new ethers.utils.Interface([
   'function swap(address executor,(address srcToken,address dstToken,address srcReceiver,address dstReceiver,uint256 amount,uint256 minReturnAmount,uint256 flags) desc,bytes data) payable returns (uint256 returnAmount,uint256 spentAmount)',
@@ -370,7 +356,12 @@ const validateOneInch = (
     response.tokenApprovalAddress,
     '1inch spender'
   );
-  if (router !== ONEINCH_ROUTER || spender !== ONEINCH_ROUTER) {
+  const expectedRouter = ONEINCH_ROUTER_BY_LLAMA_CHAIN[state.chainName];
+  if (
+    !expectedRouter ||
+    router !== expectedRouter ||
+    spender !== expectedRouter
+  ) {
     throw new Error('LlamaSwap returned an unapproved 1inch router or spender');
   }
   if (normalizeAddress(tx.from, '1inch sender') !== state.userAddress) {

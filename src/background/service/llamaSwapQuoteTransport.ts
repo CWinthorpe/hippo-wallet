@@ -1,5 +1,7 @@
 export const LLAMASWAP_QUOTE_ORIGIN = 'https://swap-api.defillama.com';
-export const LLAMASWAP_QUOTE_PAGE = `${LLAMASWAP_QUOTE_ORIGIN}/`;
+export const LLAMASWAP_FRONTEND_ORIGIN = 'https://swap.defillama.com';
+export const LLAMASWAP_FRONTEND_PATH = '/robots.txt';
+export const LLAMASWAP_QUOTE_PAGE = `${LLAMASWAP_FRONTEND_ORIGIN}${LLAMASWAP_FRONTEND_PATH}`;
 
 const QUOTE_PAGE_LOAD_TIMEOUT_MS = 20_000;
 const QUOTE_REQUEST_TIMEOUT_MS = 20_000;
@@ -24,12 +26,14 @@ export type LlamaSwapQuoteTransport = (
 type ChromeQuoteApi = Pick<typeof chrome, 'tabs' | 'scripting'>;
 
 /**
- * Runs in Chrome's isolated world inside a temporary same-origin API tab.
- * Keep this function self-contained: chrome.scripting serializes it.
+ * Runs in Chrome's isolated world inside a temporary static page on the
+ * production LlamaSwap web origin. Keep this function self-contained:
+ * chrome.scripting serializes it.
  */
 export function requestLlamaSwapQuotesInPage(
   requests: LlamaSwapQuoteTransportRequest[],
   expectedOrigin: string,
+  expectedPathname: string,
   maxResponseBytes: number,
   requestTimeoutMs: number
 ): Promise<LlamaSwapQuoteTransportResult[]> {
@@ -74,21 +78,19 @@ export function requestLlamaSwapQuotesInPage(
     return pump();
   };
 
-  if (location.origin !== expectedOrigin) {
+  if (
+    location.origin !== expectedOrigin ||
+    location.pathname !== expectedPathname ||
+    location.search ||
+    location.hash
+  ) {
     return Promise.resolve(
       requests.map((request) => ({
         protocol: request.protocol,
         origin: location.origin,
-        error: 'unexpected quote-page origin',
+        error: 'unexpected quote-page location',
       }))
     );
-  }
-
-  try {
-    history.replaceState(null, '', `${expectedOrigin}/`);
-  } catch (_) {
-    // Best-effort removal of Cloudflare challenge query strings from this
-    // temporary tab's current history entry. Quote validation does not rely on it.
   }
 
   return Promise.all(
@@ -97,8 +99,8 @@ export function requestLlamaSwapQuotesInPage(
       const timer = setTimeout(() => controller.abort(), requestTimeoutMs);
       return fetch(request.url, {
         method: 'POST',
-        mode: 'same-origin',
-        credentials: 'include',
+        mode: 'cors',
+        credentials: 'omit',
         cache: 'no-store',
         redirect: 'error',
         headers: {
@@ -184,6 +186,7 @@ export const fetchLlamaSwapQuotesFromOrigin = async (
     if (
       url.origin !== LLAMASWAP_QUOTE_ORIGIN ||
       url.pathname !== '/dexAggregatorQuote' ||
+      url.hash ||
       url.searchParams.get('protocol') !== request.protocol
     ) {
       throw new Error('Invalid LlamaSwap quote transport request');
@@ -201,14 +204,19 @@ export const fetchLlamaSwapQuotesFromOrigin = async (
     }
     tabId = tab.id;
     const loadedTab = await waitForQuotePage(api, tabId);
-    let loadedOrigin = '';
+    let loadedUrl: URL | undefined;
     try {
-      loadedOrigin = new URL(loadedTab.url || '').origin;
+      loadedUrl = new URL(loadedTab.url || '');
     } catch {
-      // Rejected by the exact-origin check below.
+      // Rejected by the exact-location check below.
     }
-    if (loadedOrigin !== LLAMASWAP_QUOTE_ORIGIN) {
-      throw new Error('LlamaSwap quote page loaded an unexpected origin');
+    if (
+      loadedUrl?.origin !== LLAMASWAP_FRONTEND_ORIGIN ||
+      loadedUrl.pathname !== LLAMASWAP_FRONTEND_PATH ||
+      loadedUrl.search ||
+      loadedUrl.hash
+    ) {
+      throw new Error('LlamaSwap quote page loaded an unexpected location');
     }
 
     const execution = await api.scripting.executeScript({
@@ -217,7 +225,8 @@ export const fetchLlamaSwapQuotesFromOrigin = async (
       func: requestLlamaSwapQuotesInPage,
       args: [
         requests,
-        LLAMASWAP_QUOTE_ORIGIN,
+        LLAMASWAP_FRONTEND_ORIGIN,
+        LLAMASWAP_FRONTEND_PATH,
         maxResponseBytes,
         QUOTE_REQUEST_TIMEOUT_MS,
       ],
@@ -232,7 +241,7 @@ export const fetchLlamaSwapQuotesFromOrigin = async (
       if (
         !result ||
         result.protocol !== expected.protocol ||
-        result.origin !== LLAMASWAP_QUOTE_ORIGIN
+        result.origin !== LLAMASWAP_FRONTEND_ORIGIN
       ) {
         return {
           protocol: expected.protocol,

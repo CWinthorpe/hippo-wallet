@@ -26,6 +26,7 @@
     "typecheck": "tsc --noEmit --skipLibCheck --pretty false",
     "check": "npm run lint && npm run typecheck",
     "test": "jest",
+    "smoke:llamaswap": "node scripts/llamaswap-packaged-smoke.js",
     "pub": "node build/release.js",
     "postinstall": "patch-package && node scripts/patch-page-provider-brand.js"
   },
