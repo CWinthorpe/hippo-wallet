@@ -2,7 +2,7 @@
 
 Hippo Wallet is a downstream Rabby Wallet build intended for direct inspection and self-hosted use. It operates no Hippo telemetry collector, RPC relay, swap relay or account backend.
 
-This document describes release `0.93.102-hippo.5`.
+This document describes release `0.93.103-hippo.6`.
 
 ## Fail-closed Rabby/DeBank policy
 
@@ -60,7 +60,7 @@ These payloads are not made anonymous by Hippo. A VPN can hide the residential I
 
 The release removes the routes, services, startup hooks, polling loops, dependencies, assets and locale trees for:
 
-- Gas accounts, gasless and sponsored submission
+- Rabby gas accounts, Rabby-relayed gasless paths and sponsored submission
 - Points, badges, referrals, gifts, campaigns and ecosystem promotions
 - Perpetual trading, Hyperliquid and its floating widget
 - Every bridge implementation
@@ -110,39 +110,30 @@ Every signed raw transaction attempt has one destination:
 
 Hippo computes the local transaction hash before submission and compares it with the returned hash. A timeout, disconnect, malformed hash or mismatched hash is treated as potentially ambiguous. Hippo does not automatically rebroadcast to another provider. External signers such as WalletConnect or Coinbase may control their own broadcast behavior.
 
-## LlamaSwap boundary
+## CoW Protocol boundary
 
-Same-chain swap quotes are requested directly from `https://swap-api.defillama.com/dexAggregatorQuote` using the public credential shipped by LlamaSwap's frontend. Hippo sends the chain, token addresses, raw input amount, recipient and requested slippage to every supported operational transaction adapter in parallel: 1inch, KyberSwap, ParaSwap and Matcha/0x v2 where that adapter supports the selected chain.
+Hippo uses CoW Protocol as its only swap execution system. Same-chain quotes go directly to the documented production order-book API under `https://api.cow.fi/<network>/api/v1`; no Hippo proxy, intermediary aggregator, embedded credential, referral fee or Rabby trade endpoint is involved. Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. Cross-chain and bridge paths remain removed.
 
-The production LlamaSwap bundle also contains a dormant module named `0x Gasless`, but it is a separate relay protocol rather than a transaction quote adapter. That module bypasses `dexAggregatorQuote`, expects a separately configured 0x API credential, requests approval and trade EIP-712 signatures, submits those signatures to a relayer, and polls a relayer receipt. The production browser shim currently supplies no such credential, and current direct and LlamaSwap-origin probes return no route. Hippo does not invent a credential or silently restore removed gasless, sponsored and relayed submission. Consequently this dormant relay module is outside the executable provider matrix; every operational transaction provider returned by LlamaSwap's quote endpoint is covered.
+The exact network API base comes from pinned CoW SDK configuration. The transport accepts only HTTPS requests to an approved production network and only these routes:
 
-The UI and controller consume one shared chain/provider matrix rather than separate hardcoded lists. The current wallet/frontend intersection covers Ethereum, BNB Chain, Polygon, Optimism, Arbitrum, Avalanche, Gnosis, zkSync Era, Base, Linea, Mantle, Scroll, Mode, World Chain, Sonic, Ink, Berachain, Unichain, HyperEVM, Plasma, Monad, MegaETH and Tempo. Each chain queries every ordinary adapter present in LlamaSwap's current production frontend for that chain.
+- `POST /api/v1/quote`
+- `POST /api/v1/orders`
+- `GET /api/v1/orders/<56-byte-order-uid>`
+- `DELETE /api/v1/orders`
 
-Cloudflare currently challenges POSTs made directly by an MV3 service worker from a `chrome-extension://` origin. Hippo does not work around that with a Hippo proxy. For each deliberate quote comparison it creates one temporary inactive tab at the exact static resource `https://swap.defillama.com/robots.txt`, waits for that resource to finish loading, injects the packaged request function into Chrome's **isolated** world, and performs the supported-provider API requests in parallel with `mode: cors` and `credentials: omit`. This reproduces the production frontend's accepted web-origin transport without loading its application JavaScript. The exact static path, API origin, endpoint path, protocol/result pairing, response size and JSON shape are checked locally. Both transport origins are excluded from the ordinary dapp-provider content script. The remote page receives no extension API capability; returned route data remains untrusted and passes through the same provider-specific validation below. The tab closes even when loading, injection or transport fails. It can be visible in the tab strip for the duration of the request, and the static URL can remain in local browser history.
+It sends fixed JSON headers with `credentials: omit`, `referrerPolicy: no-referrer`, `cache: no-store` and `redirect: error`. Caller headers, cookies, query strings, fragments, redirects and arbitrary paths are rejected. Request bodies, deadlines, declared response sizes and streamed response bytes are bounded. Successful non-JSON responses fail closed.
 
-The UI presents every response that survives validation, identifies the executing aggregator explicitly and initially selects the highest quoted token output. It does not call a Kyber-only route “LlamaSwap” or claim that LlamaSwap itself executes the transaction.
+The selected RPC supplies token code, decimals, symbol, account balance, protocol-contract code and transaction gas estimates. A quote request binds the exact sell amount, sell/buy tokens, account/receiver, sell order kind, EIP-712 or EthFlow signing scheme, ERC-20 balance source, ten-minute validity, full app-data document and its Keccak-256 hash. The response must preserve those fields, be marked verified, remain inside the accepted validity window, and reconcile the quoted network fee with the exact pre-fee sell amount. Hippo applies CoW's published sell-order slippage formula locally—subtracting the floored slippage amount from the post-fee buy amount—exactly once, and signs fee amount zero as required by the current order model.
 
-The response is treated as untrusted. Hippo validates:
+ERC-20 input orders use CoW's fixed Vault Relayer and Settlement contracts. Hippo grants only the exact sell amount; a nonzero insufficient allowance is reset before the exact approval for zero-first tokens. Before signing, it requests a fresh quote and refuses a fresh minimum below the reviewed minimum. The background stores the immutable canonical quote under a random short-lived handle, verifies the EIP-712 domain, recovers the active EOA from the signature, recomputes the 56-byte order UID, and submits only that stored order with the original quote ID and matching full app data. Off-chain contract-account signatures are not guessed: that path currently fails closed unless the account is an EOA.
 
-- Supported chain
-- Input/output token addresses
-- Exact input and quoted output amounts
-- Recipient and minimum output encoded in provider-specific calldata
-- Allowlisted approval spender and transaction target
-- Provider entry point, calldata shape and native value
-- Slippage bounds and calculated minimum output
-- Absence of an execution fee, plus exact validation of any static provider-attribution value
+Native-token input uses CoW's official EthFlow contract, not a relay. The quote uses wrapped native token as the protocol sell token and EIP-1271 as the on-chain order scheme. Hippo derives the EthFlow UID with `uint32.max` validity as prescribed by the contract, checks that the UID is unused, encodes the exact `createOrder` tuple, and estimates the transaction through the selected RPC. The transaction deposits only the signed sell amount. Native buy output uses CoW's native-token sentinel.
 
-Provider-specific boundaries:
+Order status is treated as untrusted. Hippo reconstructs the signed order fields, app-data hash, owner and validity from each response and requires the resulting EIP-712 UID to match the requested UID. Open EOA orders use signed batch cancellation through the order book. Open or expired EthFlow orders use the official on-chain `invalidateOrder` transaction; immediately before building it, Hippo verifies the API sender and EthFlow's on-chain `orders(orderDigest)` owner/validity mapping. The contract refunds any unsettled native balance. Fulfilled or cancelled orders cannot be cancelled. Order UIDs, transaction hashes and display metadata remain in extension-local history and are never reported to Rabby.
 
-- **1inch:** fixed per-chain Aggregation Router V6 target (including zkSync's distinct router); decoded swap description must bind the source token, destination token, exact amount, user recipient and minimum return.
-- **KyberSwap:** fixed MetaAggregationRouter target; decoded swap description must bind the tokens, exact amount, user recipient and minimum return, with zero route-fee amounts.
-- **ParaSwap:** fixed Augustus V6.2 target; decoded exact-input data must bind the tokens, amount, beneficiary and minimum return. LlamaSwap's static ParaSwap partner address is accepted only with zero encoded partner fee.
-- **Matcha/0x v2:** the transaction target must equal the current taker-submitted Settler returned by 0x's on-chain deployment registry. The top-level recipient, buy token and minimum output are checked. 0x's ignored `zid & affiliate` metadata must contain the quote's exact 12-byte route identifier and the static affiliate value associated with LlamaSwap's public frontend key; arbitrary affiliate values and all nonzero execution-fee fields are rejected. ERC-20 routes must also carry Permit2 typed data limited to the reviewed token, exact amount, active Settler, current chain and a short deadline; Hippo verifies its EIP-712 hash and recovered signer before appending the signature.
+A quote handle is single-use. Definitive API rejection is surfaced without retry. A timeout, transport error, rate limit, server error, malformed success or mismatched returned UID triggers bounded lookup of the expected deterministic UID; if lookup cannot resolve the outcome, Hippo stores that UID as ambiguous instead of blindly creating another order.
 
-ERC-20 approvals are exact-amount approvals. Quotes are refreshed before submission. A missing provider, changed target or changed approval spender forces another review, and a quote below the prior minimum is rejected. Swap records stay in extension-local storage.
-
-The frontend endpoint is not a stable documented integration contract. Schema changes, credential changes or anti-bot controls can break swaps. Hippo fails closed rather than changing providers silently.
+The API receives the account/receiver, chain, token pair, amount, validity, app-data fields, source IP and—on submission—the public order and signature. CoW orders and EthFlow transactions are public by design. Hippo does not claim that a VPN hides those protocol-level fields.
 
 ## Provider caveats
 
@@ -153,7 +144,7 @@ Privacy descriptions are provider claims, not independent attestations:
 - PublicNode states that operational IP data may be retained for up to 24 hours.
 - 0xRPC states that it does not log raw IP addresses.
 - MEV Blocker receives signed raw Ethereum transactions submitted to it.
-- LlamaSwap's frontend endpoint receives the wallet address, chain, pair, amount, slippage, request metadata and source IP. It relays the quote parameters to the selected aggregators when privacy routing is enabled; those aggregators receive the trade parameters, while DefiLlama remains the network peer. The eventual transaction is public on-chain.
+- CoW's order-book API receives the account/receiver, chain, pair, amount, validity, app-data fields, request metadata and source IP. On submission it receives the signed public order. EthFlow deposits, cancellations, refunds and settlements are public on-chain.
 
 Public endpoints have quotas and may change method support without notice. No paid RPC credential or Hippo server credential is embedded.
 
@@ -162,14 +153,14 @@ Public endpoints have quotas and may change method support without notice. No pa
 A release is incomplete until the built MV3 artifact has passed:
 
 - TypeScript and ESLint checks
-- Focused policy, RPC, gas and LlamaSwap tests
+- Focused policy, RPC, gas and CoW Protocol tests
 - Full Jest suite
 - Production MV3 build
 - ZIP integrity and SHA-256 verification
 - Manifest, branding and removed-feature scans
 - Source-map and embedded source-map scans
 - Fresh-profile Chromium load
-- Two independent fresh-profile packaged-controller LlamaSwap smokes returning validated routes from 1inch, KyberSwap, ParaSwap and Matcha/0x v2 with no leaked transport tab
+- Two independent fresh-profile packaged-controller CoW smokes covering live ERC-20 quote validation, EIP-712 signature rejection, EthFlow transaction construction, live order-status validation, cancellation-state rejection and zero transport tabs
 - First-run deny-all network trace
 - Per-capability allowlist traces
 - Signed-broadcast destination and call-count checks

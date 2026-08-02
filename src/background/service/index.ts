@@ -5,7 +5,7 @@ export { default as preferenceService } from './preference';
 export { default as currencyService } from './currency';
 export { default as sessionService } from './session';
 export { default as openapiService } from './openapi';
-export { default as llamaSwapService } from './llamaSwap';
+export { default as cowSwapService } from './cowSwap';
 export { default as remoteDataPolicyService } from './remoteDataPolicy';
 export { default as transactionWatchService } from './transactionWatcher';
 export { default as pageStateCacheService } from './pageStateCache';

@@ -1,6 +1,6 @@
 {
   "name": "hippo-wallet",
-  "version": "0.93.102",
+  "version": "0.93.103",
   "description": "Consent-gated self-custodial wallet with local RPC routing and a deliberately reduced remote-service surface",
   "scripts": {
     "clean": "node build/clean.js",
@@ -26,7 +26,8 @@
     "typecheck": "tsc --noEmit --skipLibCheck --pretty false",
     "check": "npm run lint && npm run typecheck",
     "test": "jest",
-    "smoke:llamaswap": "node scripts/llamaswap-packaged-smoke.js",
+    "verify:dist": "node scripts/verify-cowswap-dist.js",
+    "smoke:cowswap": "node scripts/cowswap-packaged-smoke.js",
     "pub": "node build/release.js",
     "postinstall": "patch-package && node scripts/patch-page-provider-brand.js"
   },

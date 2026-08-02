@@ -24,7 +24,7 @@ import {
   permissionService,
   sessionService,
   openapiService,
-  llamaSwapService,
+  cowSwapService,
   remoteDataPolicyService,
   pageStateCacheService,
   transactionHistoryService,
@@ -496,17 +496,32 @@ export class WalletController extends BaseController {
     return result.image_url as string;
   };
 
-  getLlamaSwapQuote = (
-    request: Parameters<typeof llamaSwapService.getQuote>[0]
-  ) => llamaSwapService.getQuote(request);
+  getCowSwapQuote = (request: Parameters<typeof cowSwapService.getQuote>[0]) =>
+    cowSwapService.getQuote(request);
 
-  getLlamaSwapQuotes = (
-    request: Parameters<typeof llamaSwapService.getQuotes>[0]
-  ) => llamaSwapService.getQuotes(request);
+  getCowSwapTokenMetadata = (
+    request: Parameters<typeof cowSwapService.getTokenMetadata>[0]
+  ) => cowSwapService.getTokenMetadata(request);
 
-  getLlamaSwapTokenMetadata = (
-    request: Parameters<typeof llamaSwapService.getTokenMetadata>[0]
-  ) => llamaSwapService.getTokenMetadata(request);
+  consumeCowSwapNativeOrder = (
+    request: Parameters<typeof cowSwapService.consumeNativeOrder>[0]
+  ) => cowSwapService.consumeNativeOrder(request);
+
+  submitCowSwapOrder = (
+    request: Parameters<typeof cowSwapService.submitOrder>[0]
+  ) => cowSwapService.submitOrder(request);
+
+  getCowSwapOrderStatus = (
+    request: Parameters<typeof cowSwapService.getOrderStatus>[0]
+  ) => cowSwapService.getOrderStatus(request);
+
+  prepareCowSwapCancellation = (
+    request: Parameters<typeof cowSwapService.prepareCancellation>[0]
+  ) => cowSwapService.prepareCancellation(request);
+
+  submitCowSwapCancellation = (
+    request: Parameters<typeof cowSwapService.submitCancellation>[0]
+  ) => cowSwapService.submitCancellation(request);
 
   /* wallet */
   boot = async (password) => {

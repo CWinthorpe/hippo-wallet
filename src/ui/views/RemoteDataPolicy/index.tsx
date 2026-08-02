@@ -206,8 +206,8 @@ const RemoteDataPolicyEditor = ({
         ))}
 
         <div className="rounded-[12px] border border-r-neutral-line bg-r-neutral-card-1 p-12 text-[11px] leading-[17px] text-r-neutral-foot">
-          RPC providers, LlamaSwap and MEV Blocker are separate data sources and
-          are not controlled by these switches. Removed features cannot be
+          RPC providers, CoW Protocol and MEV Blocker are separate data sources
+          and are not controlled by these switches. Removed features cannot be
           restored here.
         </div>
 

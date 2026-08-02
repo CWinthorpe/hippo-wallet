@@ -1,636 +1,1027 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, Button, Input, Select, message } from 'antd';
 import { ethers } from 'ethers';
-import browser from 'webextension-polyfill';
-import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
-import { getUiType, useWallet } from '@/ui/utils';
 import {
-  LLAMASWAP_CHAIN_BY_SERVER_ID,
-  LLAMASWAP_NATIVE_TOKEN,
-} from '@/constant/llama-swap';
-import { freshQuotePreservesReviewedMinimum } from './quoteSafety';
+  COW_SWAP_CHAIN_CONFIG_BY_ID,
+  COW_SWAP_NATIVE_TOKEN,
+  COW_SWAP_SUPPORTED_CHAIN_IDS,
+} from '@/constant/cow-swap';
+import type {
+  CowSwapOrderStatus,
+  CowSwapTokenMetadata,
+  ValidatedCowSwapQuote,
+} from '@/background/service/cowSwap';
+import { isFreshCowSwapQuoteSafe } from './cowSwapSafety';
 
-const SUPPORTED_CHAIN_IDS = Object.keys(LLAMASWAP_CHAIN_BY_SERVER_ID);
+const HISTORY_KEY = 'hippoLocalCowSwapHistory';
+const HISTORY_LIMIT = 100;
+const RECEIPT_TIMEOUT_MS = 3 * 60 * 1000;
 
-const DEFAULT_OUTPUT_TOKEN: Record<string, string> = {
-  eth: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  bsc: '0x55d398326f99059ff775485246999027b3197955',
-  matic: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
-  op: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-  arb: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
-  avax: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
-  base: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-};
-
-interface TokenMetadata {
-  address: string;
-  decimals: number;
-  symbol: string;
-  balance: string;
-}
-
-interface Quote {
-  provider: string;
+interface LocalCowSwapOrder {
+  orderUid: string;
+  ownerAddress: string;
   chainServerId: string;
+  chainId: number;
   fromToken: string;
   toToken: string;
+  fromSymbol: string;
+  toSymbol: string;
+  fromDecimals: number;
+  toDecimals: number;
   amountIn: string;
   amountOut: string;
   minimumAmountOut: string;
-  slippage: string;
-  approvalSpender: string;
-  estimatedGas: string;
-  transaction: {
-    from: string;
-    to: string;
-    data: string;
-    value: string;
-    gas?: string;
-  };
-  permit2?: {
-    hash: string;
-    domain: {
-      name: string;
-      chainId: number;
-      verifyingContract: string;
-    };
-    types: Record<string, Array<{ name: string; type: string }>>;
-    primaryType: string;
-    message: {
-      permitted: { token: string; amount: string };
-      spender: string;
-      nonce: string;
-      deadline: string;
-    };
-  };
-  quoteId: string;
-  expiresAt: number;
-  providersCompared: string[];
-  availableProviders: string[];
+  nativeSell: boolean;
+  creationTxHash?: string;
+  cancellationTxHash?: string;
+  status:
+    | 'creating'
+    | 'notFound'
+    | 'presignaturePending'
+    | 'open'
+    | 'fulfilled'
+    | 'cancelled'
+    | 'expired'
+    | 'refunded'
+    | 'failed';
+  explorerUrl: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
-const normalizeAddressInput = (value: string) => {
-  const trimmed = value.trim();
-  if (/^(native|eth)$/i.test(trimmed)) return LLAMASWAP_NATIVE_TOKEN;
-  return ethers.utils.getAddress(trimmed).toLowerCase();
+const isAddressOrNative = (value: string) =>
+  /^(native|eth)$/i.test(value.trim()) || ethers.utils.isAddress(value.trim());
+
+const normalizeInputAddress = (value: string) =>
+  /^(native|eth)$/i.test(value.trim())
+    ? COW_SWAP_NATIVE_TOKEN
+    : ethers.utils.getAddress(value.trim()).toLowerCase();
+
+const formatTokenAmount = (amount: string, decimals: number) => {
+  try {
+    const value = ethers.utils.formatUnits(amount, decimals);
+    const [whole, fraction = ''] = value.split('.');
+    const trimmed = fraction.slice(0, 8).replace(/0+$/, '');
+    return trimmed ? `${whole}.${trimmed}` : whole;
+  } catch {
+    return amount;
+  }
 };
 
-const waitForReceipt = async (
-  wallet: ReturnType<typeof useWallet>,
-  chainId: number,
-  hash: string
+const shortHash = (value: string) =>
+  value.length > 18 ? `${value.slice(0, 10)}…${value.slice(-8)}` : value;
+
+const withoutDomainType = (
+  types: Record<string, Array<{ name: string; type: string }>>
 ) => {
-  for (let attempt = 0; attempt < 60; attempt++) {
-    const receipt = await wallet.requestETHRpc(
-      { method: 'eth_getTransactionReceipt', params: [hash] },
-      String(chainId)
+  const { EIP712Domain: _domainType, ...messageTypes } = types;
+  return messageTypes;
+};
+
+const getTrustedExplorerUrl = (order: LocalCowSwapOrder) => {
+  if (!/^0x[0-9a-f]{112}$/.test(order.orderUid)) return null;
+  const chain = findChain({ serverId: order.chainServerId });
+  const config = chain
+    ? COW_SWAP_CHAIN_CONFIG_BY_ID[Number(chain.id)]
+    : undefined;
+  return config ? `${config.explorerBaseUrl}/orders/${order.orderUid}` : null;
+};
+
+const readHistory = (): LocalCowSwapOrder[] => {
+  // The retired aggregator used this separate key. Remove its residual local
+  // order metadata during the first CoW history read.
+  localStorage.removeItem('hippoLocalSwapHistory');
+  try {
+    const raw = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(
+      (item) =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.orderUid === 'string' &&
+        /^0x[0-9a-f]{112}$/.test(item.orderUid) &&
+        typeof item.ownerAddress === 'string' &&
+        ethers.utils.isAddress(item.ownerAddress) &&
+        typeof item.chainServerId === 'string' &&
+        Boolean(
+          COW_SWAP_CHAIN_CONFIG_BY_ID[
+            Number(findChain({ serverId: item.chainServerId })?.id)
+          ]
+        ) &&
+        typeof item.createdAt === 'number'
     );
-    if (receipt) return receipt;
-    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  } catch {
+    return [];
   }
-  throw new Error(
-    `Transaction is still pending. Hash: ${hash}. Hippo will not rebroadcast it automatically.`
+};
+
+const writeHistory = (orders: LocalCowSwapOrder[]) => {
+  localStorage.setItem(
+    HISTORY_KEY,
+    JSON.stringify(orders.slice(0, HISTORY_LIMIT))
   );
 };
 
 const Swap = () => {
   const wallet = useWallet();
   const account = useCurrentAccount();
-  const isTab = getUiType().isTab;
-  const [chainServerId, setChainServerId] = useState('eth');
-  const chain = useMemo(() => findChain({ serverId: chainServerId }), [
+  const chainOptions = useMemo(
+    () =>
+      COW_SWAP_SUPPORTED_CHAIN_IDS.map((chainId) => findChain({ id: chainId }))
+        .filter(Boolean)
+        .map((chain) => ({
+          label: chain!.name,
+          value: chain!.serverId,
+          chainId: Number(chain!.id),
+        })),
+    []
+  );
+  const initialChain = chainOptions[0];
+  const [chainServerId, setChainServerId] = useState(
+    initialChain?.value || 'eth'
+  );
+  const selectedChain = useMemo(() => findChain({ serverId: chainServerId }), [
     chainServerId,
   ]);
-  const [fromAddress, setFromAddress] = useState(LLAMASWAP_NATIVE_TOKEN);
-  const [toAddress, setToAddress] = useState(DEFAULT_OUTPUT_TOKEN.eth);
-  const [fromToken, setFromToken] = useState<TokenMetadata>();
-  const [toToken, setToToken] = useState<TokenMetadata>();
+  const selectedConfig = selectedChain
+    ? COW_SWAP_CHAIN_CONFIG_BY_ID[Number(selectedChain.id)]
+    : undefined;
+  const [fromAddress, setFromAddress] = useState(COW_SWAP_NATIVE_TOKEN);
+  const [toAddress, setToAddress] = useState(
+    selectedConfig?.defaultOutputToken || ''
+  );
+  const [fromToken, setFromToken] = useState<CowSwapTokenMetadata | null>(null);
+  const [toToken, setToToken] = useState<CowSwapTokenMetadata | null>(null);
   const [amount, setAmount] = useState('');
   const [slippage, setSlippage] = useState('0.5');
-  const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [quote, setQuote] = useState<Quote>();
-  const [loading, setLoading] = useState(false);
+  const [quote, setQuote] = useState<ValidatedCowSwapQuote | null>(null);
+  const [allowance, setAllowance] = useState('0');
+  const [history, setHistory] = useState<LocalCowSwapOrder[]>([]);
+  const historyRef = useRef<LocalCowSwapOrder[]>([]);
+  const inputGenerationRef = useRef(0);
+  const [loadingTokens, setLoadingTokens] = useState(false);
+  const [quoting, setQuoting] = useState(false);
   const [approving, setApproving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [allowanceEnough, setAllowanceEnough] = useState(false);
-  const [error, setError] = useState('');
-  const quoteGeneration = useRef(0);
-  const allowanceGeneration = useRef(0);
+  const [cancellingUid, setCancellingUid] = useState<string | null>(null);
+  const activeAccountRef = useRef(account?.address?.toLowerCase());
+  const activeChainRef = useRef(chainServerId);
+  activeAccountRef.current = account?.address?.toLowerCase();
+  activeChainRef.current = chainServerId;
 
-  const loadToken = async (address: string) => {
-    if (!account) throw new Error('No active account');
-    return wallet.getLlamaSwapTokenMetadata({
-      chainServerId,
-      tokenAddress: normalizeAddressInput(address),
-      ownerAddress: account.address,
-    });
+  const assertActiveContext = (
+    expectedOwner: string,
+    expectedChainServerId: string
+  ) => {
+    if (
+      activeAccountRef.current !== expectedOwner.toLowerCase() ||
+      activeChainRef.current !== expectedChainServerId
+    ) {
+      throw new Error('Account or chain changed; review the CoW order again');
+    }
   };
 
   useEffect(() => {
-    const nextOutput = DEFAULT_OUTPUT_TOKEN[chainServerId] || '';
-    setFromAddress(LLAMASWAP_NATIVE_TOKEN);
-    setToAddress(nextOutput);
-    setFromToken(undefined);
-    setToToken(undefined);
-    setQuotes([]);
-    setQuote(undefined);
-    setAllowanceEnough(false);
-  }, [chainServerId]);
+    const owner = account?.address?.toLowerCase();
+    inputGenerationRef.current += 1;
+    setFromToken(null);
+    setToToken(null);
+    setAmount('');
+    setQuote(null);
+    setAllowance('0');
+    setLoadingTokens(false);
+    setQuoting(false);
+    setHistory(
+      readHistory().filter((item) => item.ownerAddress.toLowerCase() === owner)
+    );
+  }, [account?.address]);
 
   useEffect(() => {
-    if (!account) return;
-    let cancelled = false;
-    void loadToken(fromAddress)
-      .then((token) => {
-        if (!cancelled) setFromToken(token);
-      })
-      .catch((e) => {
-        if (!cancelled) setError(e.message);
+    historyRef.current = history;
+  }, [history]);
+
+  const persistHistory = useCallback(
+    (update: (current: LocalCowSwapOrder[]) => LocalCowSwapOrder[]) => {
+      setHistory((current) => {
+        const next = update(current);
+        const all = readHistory().filter(
+          (item) =>
+            item.ownerAddress.toLowerCase() !== account?.address?.toLowerCase()
+        );
+        writeHistory([...next, ...all]);
+        return next;
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [account?.address, chainServerId, fromAddress]);
-
-  useEffect(() => {
-    if (!account || !toAddress) return;
-    let cancelled = false;
-    void loadToken(toAddress)
-      .then((token) => {
-        if (!cancelled) setToToken(token);
-      })
-      .catch((e) => {
-        if (!cancelled) setError(e.message);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [account?.address, chainServerId, toAddress]);
-
-  const rawAmount = useMemo(() => {
-    try {
-      return fromToken && amount
-        ? ethers.utils.parseUnits(amount, fromToken.decimals).toString()
-        : '';
-    } catch {
-      return '';
-    }
-  }, [amount, fromToken]);
-
-  const quoteRequest = useMemo(
-    () =>
-      account && fromToken && toToken && rawAmount
-        ? {
-            chainServerId,
-            fromToken: {
-              address: fromToken.address,
-              decimals: fromToken.decimals,
-              symbol: fromToken.symbol,
-            },
-            toToken: {
-              address: toToken.address,
-              decimals: toToken.decimals,
-              symbol: toToken.symbol,
-            },
-            amount: rawAmount,
-            userAddress: account.address,
-            slippage,
-          }
-        : undefined,
-    [account?.address, chainServerId, fromToken, rawAmount, slippage, toToken]
+    },
+    [account?.address]
   );
 
-  useEffect(() => {
-    quoteGeneration.current += 1;
-    allowanceGeneration.current += 1;
-    setAllowanceEnough(false);
-  }, [quoteRequest]);
+  const resetQuote = () => {
+    inputGenerationRef.current += 1;
+    setQuote(null);
+    setAllowance('0');
+    setLoadingTokens(false);
+    setQuoting(false);
+  };
 
-  const refreshAllowance = async (nextQuote: Quote) => {
-    const generation = ++allowanceGeneration.current;
-    setAllowanceEnough(false);
-    if (!fromToken || !account) return;
-    if (fromToken.address === LLAMASWAP_NATIVE_TOKEN) {
-      if (generation === allowanceGeneration.current) {
-        setAllowanceEnough(true);
-      }
+  const onChainChange = (nextServerId: string) => {
+    const nextChain = findChain({ serverId: nextServerId });
+    const config = nextChain
+      ? COW_SWAP_CHAIN_CONFIG_BY_ID[Number(nextChain.id)]
+      : undefined;
+    setChainServerId(nextServerId);
+    setFromAddress(COW_SWAP_NATIVE_TOKEN);
+    setToAddress(config?.defaultOutputToken || '');
+    setFromToken(null);
+    setToToken(null);
+    setAmount('');
+    resetQuote();
+  };
+
+  const loadTokens = async () => {
+    if (!account || !selectedChain) return;
+    if (!isAddressOrNative(fromAddress) || !isAddressOrNative(toAddress)) {
+      message.error('Enter valid token addresses or use native');
       return;
     }
-    const allowance = await wallet.getERC20Allowance(
+    resetQuote();
+    setLoadingTokens(true);
+    const generation = inputGenerationRef.current;
+    const expectedOwner = account.address.toLowerCase();
+    const expectedChainServerId = chainServerId;
+    try {
+      const [sell, buy] = await Promise.all([
+        wallet.getCowSwapTokenMetadata({
+          chainServerId,
+          tokenAddress: normalizeInputAddress(fromAddress),
+          ownerAddress: account.address,
+        }),
+        wallet.getCowSwapTokenMetadata({
+          chainServerId,
+          tokenAddress: normalizeInputAddress(toAddress),
+          ownerAddress: account.address,
+        }),
+      ]);
+      if (
+        inputGenerationRef.current !== generation ||
+        activeAccountRef.current !== expectedOwner ||
+        activeChainRef.current !== expectedChainServerId
+      ) {
+        return;
+      }
+      if (sell.address.toLowerCase() === buy.address.toLowerCase()) {
+        throw new Error('Sell and buy tokens must differ');
+      }
+      setFromToken(sell);
+      setToToken(buy);
+    } catch (error: any) {
+      if (inputGenerationRef.current === generation) {
+        setFromToken(null);
+        setToToken(null);
+        message.error(error?.message || 'Unable to read token metadata');
+      }
+    } finally {
+      if (inputGenerationRef.current === generation) {
+        setLoadingTokens(false);
+      }
+    }
+  };
+
+  const buildQuoteRequest = () => {
+    if (!account || !fromToken || !toToken) {
+      throw new Error('Load both tokens first');
+    }
+    const amountIn = ethers.utils.parseUnits(amount, fromToken.decimals);
+    if (amountIn.lte(0)) throw new Error('Enter a positive sell amount');
+    return {
+      chainServerId,
+      fromToken: {
+        address: fromToken.address,
+        decimals: fromToken.decimals,
+        symbol: fromToken.symbol,
+      },
+      toToken: {
+        address: toToken.address,
+        decimals: toToken.decimals,
+        symbol: toToken.symbol,
+      },
+      amount: amountIn.toString(),
+      userAddress: account.address,
+      slippage,
+    };
+  };
+
+  const refreshAllowance = async (nextQuote: ValidatedCowSwapQuote) => {
+    if (!nextQuote.approvalSpender || nextQuote.nativeSell || !fromToken) {
+      setAllowance(nextQuote.amountIn);
+      return;
+    }
+    const value = await wallet.getERC20Allowance(
       chainServerId,
       fromToken.address,
       nextQuote.approvalSpender
     );
-    if (generation === allowanceGeneration.current) {
-      setAllowanceEnough(BigInt(allowance) >= BigInt(nextQuote.amountIn));
+    setAllowance(String(value));
+  };
+
+  const requestQuote = async () => {
+    const generation = inputGenerationRef.current;
+    const expectedOwner = account?.address?.toLowerCase();
+    const expectedChainServerId = chainServerId;
+    setQuoting(true);
+    try {
+      const nextQuote = await wallet.getCowSwapQuote(buildQuoteRequest());
+      if (
+        inputGenerationRef.current !== generation ||
+        !expectedOwner ||
+        activeAccountRef.current !== expectedOwner ||
+        activeChainRef.current !== expectedChainServerId
+      ) {
+        return;
+      }
+      setQuote(nextQuote);
+      await refreshAllowance(nextQuote);
+    } catch (error: any) {
+      if (inputGenerationRef.current === generation) {
+        setQuote(null);
+        message.error(error?.message || 'CoW quote failed');
+      }
+    } finally {
+      if (inputGenerationRef.current === generation) {
+        setQuoting(false);
+      }
     }
   };
 
-  const fetchQuote = async () => {
-    if (!quoteRequest) {
-      setError('Enter valid token addresses and an amount.');
-      return;
+  const requestOnSelectedChain = async <T,>(
+    method: string,
+    params: any[]
+  ): Promise<T> => {
+    if (!account || !selectedChain)
+      throw new Error('No active account or chain');
+    return (await wallet.requestETHRpc(
+      { method, params },
+      String(selectedChain.id),
+      account
+    )) as T;
+  };
+
+  const waitForReceipt = async (
+    hash: string,
+    chainId = String(selectedChain?.id || '')
+  ) => {
+    if (!account || !chainId) throw new Error('No active account or chain');
+    if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) {
+      throw new Error('Wallet returned an invalid transaction hash');
     }
-    setLoading(true);
-    setError('');
-    const generation = quoteGeneration.current;
-    try {
-      const nextQuotes = (await wallet.getLlamaSwapQuotes(
-        quoteRequest
-      )) as Quote[];
-      if (generation !== quoteGeneration.current) return;
-      if (!nextQuotes.length) throw new Error('No validated routes available.');
-      const nextQuote = nextQuotes[0];
-      setQuotes(nextQuotes);
-      setQuote(nextQuote);
-      await refreshAllowance(nextQuote);
-    } catch (e: any) {
-      setQuotes([]);
-      setQuote(undefined);
-      setError(e?.message || String(e));
-    } finally {
-      setLoading(false);
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < RECEIPT_TIMEOUT_MS) {
+      const receipt = await wallet.requestETHRpc<any>(
+        { method: 'eth_getTransactionReceipt', params: [hash] },
+        chainId,
+        account
+      );
+      if (receipt) {
+        if (
+          String(receipt.transactionHash).toLowerCase() !== hash.toLowerCase()
+        ) {
+          throw new Error('RPC returned a mismatched transaction receipt');
+        }
+        if (receipt.status !== '0x1') {
+          const error: Error & { code?: string } = new Error(
+            'Transaction reverted'
+          );
+          error.code = 'COW_TX_REVERTED';
+          throw error;
+        }
+        return receipt;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1_500));
     }
+    throw new Error(
+      'Transaction receipt is still pending. Check the chain before retrying.'
+    );
   };
 
   const approve = async () => {
-    if (!account || !chain || !fromToken || !quote) return;
+    if (!quote || !quote.approvalSpender || !fromToken || !account) return;
+    const expectedOwner = account.address.toLowerCase();
+    const expectedChainServerId = chainServerId;
+    const expectedGeneration = inputGenerationRef.current;
     setApproving(true);
-    setError('');
-    const generation = quoteGeneration.current;
     try {
-      const iface = new ethers.utils.Interface([
-        'function approve(address spender,uint256 amount)',
+      const approveInterface = new ethers.utils.Interface([
+        'function approve(address spender,uint256 amount) returns (bool)',
       ]);
-      const hash = await wallet.sendRequest<string>(
-        {
-          method: 'eth_sendTransaction',
-          params: [
+      const sendApproval = async (approvalAmount: string) => {
+        assertActiveContext(expectedOwner, expectedChainServerId);
+        if (inputGenerationRef.current !== expectedGeneration) {
+          throw new Error('Swap input changed; review the CoW approval again');
+        }
+        const hash = await requestOnSelectedChain<string>(
+          'eth_sendTransaction',
+          [
             {
-              from: account.address,
+              from: account!.address,
               to: fromToken.address,
-              data: iface.encodeFunctionData('approve', [
+              data: approveInterface.encodeFunctionData('approve', [
                 quote.approvalSpender,
-                quote.amountIn,
+                approvalAmount,
               ]),
               value: '0x0',
-              chainId: chain.id,
             },
-          ],
-        },
-        { account }
-      );
-      message.info(`Approval submitted: ${hash}`);
-      await waitForReceipt(wallet, chain.id, hash);
-      if (generation !== quoteGeneration.current) {
-        throw new Error('Swap inputs changed while approval was pending.');
+          ]
+        );
+        await waitForReceipt(hash);
+      };
+      if (
+        BigInt(allowance) > 0n &&
+        BigInt(allowance) !== BigInt(quote.amountIn)
+      ) {
+        await sendApproval('0');
       }
-      await refreshAllowance(quote);
-      message.success('Approval confirmed');
-    } catch (e: any) {
-      setError(e?.message || String(e));
+      await sendApproval(quote.amountIn);
+      setAllowance(quote.amountIn);
+      message.success('Exact CoW vault-relayer approval confirmed');
+    } catch (error: any) {
+      message.error(error?.message || 'Approval failed');
     } finally {
       setApproving(false);
     }
   };
 
-  const submitSwap = async () => {
-    if (!account || !chain || !quoteRequest || !quote || !toToken) return;
-    setSubmitting(true);
-    setError('');
-    const generation = quoteGeneration.current;
-    try {
-      const freshQuotes = (await wallet.getLlamaSwapQuotes(
-        quoteRequest
-      )) as Quote[];
-      if (generation !== quoteGeneration.current) {
-        throw new Error('Swap inputs changed while refreshing the route.');
-      }
-      const fresh = freshQuotes.find(
-        (candidate) => candidate.provider === quote.provider
-      );
-      if (!fresh) {
-        const replacement = freshQuotes[0];
-        setQuotes(freshQuotes);
-        setQuote(replacement);
-        if (replacement) await refreshAllowance(replacement);
-        throw new Error(
-          'The selected aggregator no longer has a valid route. Review another route.'
-        );
-      }
-      if (
-        !freshQuotePreservesReviewedMinimum(
-          quote.minimumAmountOut,
-          fresh.minimumAmountOut
-        )
-      ) {
-        setQuotes(freshQuotes);
-        setQuote(fresh);
-        await refreshAllowance(fresh);
-        throw new Error(
-          'The quote moved beyond your slippage limit. Review it again.'
-        );
-      }
-      if (
-        fresh.chainServerId !== quote.chainServerId ||
-        fresh.fromToken !== quote.fromToken ||
-        fresh.toToken !== quote.toToken ||
-        fresh.amountIn !== quote.amountIn ||
-        fresh.transaction.from.toLowerCase() !==
-          account.address.toLowerCase() ||
-        fresh.provider !== quote.provider ||
-        fresh.approvalSpender !== quote.approvalSpender ||
-        fresh.transaction.to !== quote.transaction.to
-      ) {
-        setQuotes(freshQuotes);
-        setQuote(fresh);
-        await refreshAllowance(fresh);
-        throw new Error(
-          'The selected route changed. Review the refreshed route before signing.'
-        );
-      }
+  const addHistoryOrder = (
+    fresh: ValidatedCowSwapQuote,
+    orderUid: string,
+    explorerUrl: string,
+    status: LocalCowSwapOrder['status'],
+    creationTxHash?: string
+  ) => {
+    if (!account || !fromToken || !toToken) return;
+    const now = Date.now();
+    const entry: LocalCowSwapOrder = {
+      orderUid,
+      ownerAddress: account.address.toLowerCase(),
+      chainServerId,
+      chainId: fresh.chainId,
+      fromToken: fresh.fromToken,
+      toToken: fresh.toToken,
+      fromSymbol: fromToken.symbol,
+      toSymbol: toToken.symbol,
+      fromDecimals: fromToken.decimals,
+      toDecimals: toToken.decimals,
+      amountIn: fresh.amountIn,
+      amountOut: fresh.amountOut,
+      minimumAmountOut: fresh.minimumAmountOut,
+      nativeSell: fresh.nativeSell,
+      creationTxHash,
+      status,
+      explorerUrl,
+      createdAt: now,
+      updatedAt: now,
+    };
+    if (activeAccountRef.current !== entry.ownerAddress) {
+      writeHistory([
+        entry,
+        ...readHistory().filter((item) => item.orderUid !== orderUid),
+      ]);
+      return;
+    }
+    persistHistory((current) => [
+      entry,
+      ...current.filter((item) => item.orderUid !== orderUid),
+    ]);
+  };
 
-      let transactionData = fresh.transaction.data;
-      if (fresh.permit2) {
-        const signature = await wallet.sendRequest<string>(
-          {
-            method: 'eth_signTypedData_v4',
-            params: [
-              account.address,
-              JSON.stringify({
-                domain: fresh.permit2.domain,
-                types: fresh.permit2.types,
-                primaryType: fresh.permit2.primaryType,
-                message: fresh.permit2.message,
-              }),
-            ],
-          },
-          { account }
+  const submit = async () => {
+    if (!quote || !account || !selectedChain) return;
+    const expectedOwner = account.address.toLowerCase();
+    const expectedChainServerId = chainServerId;
+    const expectedGeneration = inputGenerationRef.current;
+    const assertSubmissionContext = () => {
+      assertActiveContext(expectedOwner, expectedChainServerId);
+      if (inputGenerationRef.current !== expectedGeneration) {
+        throw new Error('Swap input changed; review the CoW order again');
+      }
+    };
+    setSubmitting(true);
+    try {
+      const fresh = await wallet.getCowSwapQuote(buildQuoteRequest());
+      assertSubmissionContext();
+      if (!isFreshCowSwapQuoteSafe(quote, fresh)) {
+        setQuote(fresh);
+        await refreshAllowance(fresh);
+        throw new Error(
+          'The fresh CoW order no longer preserves the reviewed minimum. Review it again.'
         );
-        const {
-          EIP712Domain: _domain,
-          ...verificationTypes
-        } = fresh.permit2.types;
+      }
+      if (!fresh.nativeSell) {
+        const freshAllowance = await wallet.getERC20Allowance(
+          chainServerId,
+          fromToken!.address,
+          fresh.approvalSpender!
+        );
+        setAllowance(String(freshAllowance));
+        if (BigInt(freshAllowance) !== BigInt(fresh.amountIn)) {
+          setQuote(fresh);
+          throw new Error('The exact approval is missing or changed');
+        }
+        if (!fresh.signingPayload)
+          throw new Error('CoW signing payload is missing');
+        assertSubmissionContext();
+        const signature = await requestOnSelectedChain<string>(
+          'eth_signTypedData_v4',
+          [account.address, JSON.stringify(fresh.signingPayload)]
+        );
         const recovered = ethers.utils.verifyTypedData(
-          fresh.permit2.domain,
-          verificationTypes,
-          fresh.permit2.message,
+          fresh.signingPayload.domain,
+          withoutDomainType(fresh.signingPayload.types),
+          fresh.signingPayload.message,
           signature
         );
         if (recovered.toLowerCase() !== account.address.toLowerCase()) {
+          throw new Error('Order signature did not recover the active account');
+        }
+        assertSubmissionContext();
+        const result = await wallet.submitCowSwapOrder({
+          quoteHandle: fresh.quoteHandle,
+          chainServerId,
+          userAddress: account.address,
+          signature,
+        });
+        addHistoryOrder(
+          fresh,
+          result.orderUid,
+          result.explorerUrl,
+          result.status === 'ambiguous' ? 'notFound' : result.status
+        );
+        if (result.status === 'ambiguous') {
+          message.warning(
+            'Submission outcome is ambiguous. The expected UID is stored locally; check it before placing another order.'
+          );
+        } else {
+          message.success('CoW order submitted');
+        }
+      } else {
+        assertSubmissionContext();
+        const prepared = await wallet.consumeCowSwapNativeOrder({
+          quoteHandle: fresh.quoteHandle,
+          chainServerId,
+          userAddress: account.address,
+        });
+        assertSubmissionContext();
+        const hash = await requestOnSelectedChain<string>(
+          'eth_sendTransaction',
+          [prepared.transaction]
+        );
+        if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) {
           throw new Error(
-            'Permit2 signature did not recover the active account.'
+            'Wallet returned an invalid EthFlow transaction hash'
           );
         }
-        const signatureLength = ethers.utils.hexZeroPad(
-          ethers.utils.hexlify(ethers.utils.arrayify(signature).length),
-          32
+        addHistoryOrder(
+          fresh,
+          prepared.orderUid,
+          prepared.explorerUrl,
+          'creating',
+          hash
         );
-        transactionData = ethers.utils.hexConcat([
-          transactionData,
-          signatureLength,
-          signature,
-        ]);
+        try {
+          await waitForReceipt(hash);
+        } catch (error: any) {
+          if (error?.code === 'COW_TX_REVERTED') {
+            persistHistory((current) =>
+              current.map((item) =>
+                item.orderUid === prepared.orderUid
+                  ? { ...item, status: 'failed', updatedAt: Date.now() }
+                  : item
+              )
+            );
+          }
+          throw error;
+        }
+        message.success('CoW EthFlow order deposited on-chain');
       }
-      if (generation !== quoteGeneration.current) {
-        throw new Error('Swap inputs changed before transaction submission.');
-      }
-      const hash = await wallet.sendRequest<string>(
-        {
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              ...fresh.transaction,
-              data: transactionData,
-              chainId: chain.id,
-            },
-          ],
-        },
-        { account }
-      );
-      const key = 'hippoLocalSwapHistory';
-      const stored = await browser.storage.local.get(key);
-      const history = Array.isArray(stored[key]) ? stored[key] : [];
-      await browser.storage.local.set({
-        [key]: [
-          {
-            hash,
-            chainServerId,
-            fromToken: fresh.fromToken,
-            toToken: fresh.toToken,
-            amountIn: fresh.amountIn,
-            amountOut: fresh.amountOut,
-            provider: fresh.provider,
-            createdAt: Date.now(),
-          },
-          ...history,
-        ].slice(0, 100),
-      });
-      message.success(`Swap submitted: ${hash}`);
-      setQuotes([]);
-      setQuote(undefined);
-      setAmount('');
-    } catch (e: any) {
-      setError(e?.message || String(e));
+      setQuote(null);
+      setAllowance('0');
+    } catch (error: any) {
+      message.error(error?.message || 'CoW order submission failed');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const outputAmount =
-    quote && toToken
-      ? ethers.utils.formatUnits(quote.amountOut, toToken.decimals)
-      : '';
+  const refreshOrderStatuses = useCallback(async () => {
+    if (!account) return;
+    const expectedOwner = account.address.toLowerCase();
+    const pending = historyRef.current
+      .filter(
+        (item) =>
+          item.status !== 'fulfilled' &&
+          item.status !== 'cancelled' &&
+          item.status !== 'refunded' &&
+          item.status !== 'failed' &&
+          !(item.status === 'expired' && !item.nativeSell)
+      )
+      .slice(0, 10);
+    if (!pending.length) return;
+    const updates = await Promise.all(
+      pending.map(async (item) => {
+        try {
+          return await wallet.getCowSwapOrderStatus({
+            chainServerId: item.chainServerId,
+            orderUid: item.orderUid,
+            ownerAddress: account.address,
+          });
+        } catch {
+          return null;
+        }
+      })
+    );
+    if (activeAccountRef.current !== expectedOwner) return;
+    persistHistory((current) =>
+      current.map((item) => {
+        const status = updates.find(
+          (update): update is CowSwapOrderStatus =>
+            !!update && update.orderUid === item.orderUid
+        );
+        if (
+          !status ||
+          (status.status === 'notFound' && item.status === 'creating')
+        ) {
+          return item;
+        }
+        return {
+          ...item,
+          status:
+            status.isNativeSell && status.refundTxHash
+              ? 'refunded'
+              : status.status,
+          explorerUrl: status.explorerUrl,
+          updatedAt: Date.now(),
+        };
+      })
+    );
+  }, [account, persistHistory, wallet]);
+
+  useEffect(() => {
+    void refreshOrderStatuses();
+    const timer = window.setInterval(() => {
+      void refreshOrderStatuses();
+    }, 15_000);
+    return () => window.clearInterval(timer);
+  }, [refreshOrderStatuses]);
+
+  const cancelOrder = async (order: LocalCowSwapOrder) => {
+    if (!account) return;
+    const expectedOwner = account.address.toLowerCase();
+    if (order.ownerAddress.toLowerCase() !== expectedOwner) return;
+    setCancellingUid(order.orderUid);
+    try {
+      const orderChain = findChain({ serverId: order.chainServerId });
+      if (!orderChain) throw new Error('Order chain is unavailable');
+      const prepared = await wallet.prepareCowSwapCancellation({
+        chainServerId: order.chainServerId,
+        orderUid: order.orderUid,
+        ownerAddress: account.address,
+      });
+      if (activeAccountRef.current !== expectedOwner) {
+        throw new Error('Account changed; review the CoW cancellation again');
+      }
+      let cancellationTxHash: string | undefined;
+      let finalStatus:
+        | LocalCowSwapOrder['status']
+        | 'ambiguous' = order.nativeSell ? 'refunded' : 'cancelled';
+      if (prepared.type === 'signature') {
+        const signature = await wallet.requestETHRpc<string>(
+          {
+            method: 'eth_signTypedData_v4',
+            params: [account.address, JSON.stringify(prepared.signingPayload)],
+          },
+          String(orderChain.id),
+          account
+        );
+        const recovered = ethers.utils.verifyTypedData(
+          prepared.signingPayload.domain,
+          withoutDomainType(prepared.signingPayload.types),
+          prepared.signingPayload.message,
+          signature
+        );
+        if (recovered.toLowerCase() !== account.address.toLowerCase()) {
+          throw new Error('Cancellation signature account mismatch');
+        }
+        if (activeAccountRef.current !== expectedOwner) {
+          throw new Error('Account changed; review the CoW cancellation again');
+        }
+        const result = await wallet.submitCowSwapCancellation({
+          cancellationHandle: prepared.cancellationHandle,
+          chainServerId: order.chainServerId,
+          ownerAddress: account.address,
+          signature,
+        });
+        finalStatus = result.status;
+      } else {
+        if (activeAccountRef.current !== expectedOwner) {
+          throw new Error('Account changed; review the CoW cancellation again');
+        }
+        const txHash = await wallet.requestETHRpc<string>(
+          { method: 'eth_sendTransaction', params: [prepared.transaction] },
+          String(orderChain.id),
+          account
+        );
+        cancellationTxHash = txHash;
+        await waitForReceipt(txHash, String(orderChain.id));
+      }
+      const updateCancellationHistory = (current: LocalCowSwapOrder[]) =>
+        current.map((item) =>
+          item.orderUid === order.orderUid
+            ? {
+                ...item,
+                status: finalStatus === 'ambiguous' ? item.status : finalStatus,
+                cancellationTxHash,
+                updatedAt: Date.now(),
+              }
+            : item
+        );
+      if (activeAccountRef.current !== expectedOwner) {
+        writeHistory(updateCancellationHistory(readHistory()));
+      } else {
+        persistHistory(updateCancellationHistory);
+      }
+      if (finalStatus === 'ambiguous') {
+        message.warning(
+          'Cancellation outcome is ambiguous. Refresh the stored UID before placing another order.'
+        );
+      } else if (finalStatus === 'cancelled' || finalStatus === 'refunded') {
+        message.success(
+          order.nativeSell
+            ? 'EthFlow order invalidated and remaining native token refunded'
+            : 'CoW cancellation confirmed'
+        );
+      } else {
+        message.warning(
+          `The order reached ${finalStatus} before cancellation.`
+        );
+      }
+    } catch (error: any) {
+      message.error(error?.message || 'Order cancellation failed');
+    } finally {
+      setCancellingUid(null);
+    }
+  };
+
+  const allowanceEnough =
+    !!quote &&
+    (quote.nativeSell || BigInt(allowance || '0') === BigInt(quote.amountIn));
+
+  if (!account) {
+    return (
+      <div className="p-20">
+        <Alert type="warning" showIcon message="Select an account to trade" />
+      </div>
+    );
+  }
 
   return (
-    <FullscreenContainer className={isTab ? 'h-[700px]' : 'h-[540px]'}>
-      <div className="h-full overflow-auto bg-r-neutral-bg-2 px-[16px] py-[18px]">
-        <div className="mb-[16px]">
-          <div className="text-[20px] font-semibold text-r-neutral-title-1">
-            Same-chain swap
-          </div>
-          <div className="mt-[4px] text-[12px] text-r-neutral-foot">
-            Quote comparison: LlamaSwap frontend API · Execution: selected
-            aggregator · Gas and broadcast: selected RPC
-          </div>
-          <div className="mt-[4px] text-[11px] text-r-neutral-foot">
-            Comparing routes opens one temporary inactive LlamaSwap transport
-            tab, then closes it automatically. Its static URL may remain in
-            local browser history.
-          </div>
+    <div className="h-full overflow-auto bg-r-neutral-bg-2 p-16">
+      <div className="mb-12">
+        <div className="text-[20px] font-semibold text-r-neutral-title-1">
+          CoW Swap
         </div>
+        <div className="mt-4 text-[12px] text-r-neutral-foot">
+          Direct same-chain limit orders through CoW Protocol. No intermediary
+          quote aggregator or Rabby trade relay.
+        </div>
+      </div>
 
-        <label className="text-[12px] text-r-neutral-foot">Network</label>
+      <Alert
+        className="mb-12"
+        type="info"
+        showIcon
+        message="Orders are signed for CoW Protocol and remain open until filled, cancelled or expired. Selling a native token deposits it into the official EthFlow contract."
+      />
+
+      <div className="rounded-[12px] bg-r-neutral-card-1 p-16">
+        <div className="mb-8 text-[12px] text-r-neutral-foot">Network</div>
         <Select
-          className="w-full mt-[6px] mb-[12px]"
+          className="mb-14 w-full"
           value={chainServerId}
-          onChange={setChainServerId}
-          options={SUPPORTED_CHAIN_IDS.map((serverId) => {
-            const item = findChain({ serverId });
-            return { value: serverId, label: item?.name || serverId };
-          })}
+          options={chainOptions}
+          onChange={onChainChange}
         />
 
-        <label className="text-[12px] text-r-neutral-foot">
-          Sell token (`native` or contract address)
-        </label>
+        <div className="mb-6 text-[12px] text-r-neutral-foot">
+          Sell token address (`native` for the chain coin)
+        </div>
         <Input
-          className="mt-[6px] mb-[6px]"
+          className="mb-12"
           value={fromAddress}
-          onChange={(e) => {
-            setFromAddress(e.target.value);
-            setFromToken(undefined);
-            setQuotes([]);
-            setQuote(undefined);
+          onChange={(event) => {
+            setFromAddress(event.target.value);
+            setFromToken(null);
+            resetQuote();
           }}
         />
-        <div className="mb-[12px] text-[12px] text-r-neutral-foot">
-          {fromToken
-            ? `${fromToken.symbol} balance: ${ethers.utils.formatUnits(
-                fromToken.balance,
-                fromToken.decimals
-              )}`
-            : 'Loading token from selected RPC…'}
+
+        <div className="mb-6 text-[12px] text-r-neutral-foot">
+          Buy token address (`native` for native output)
         </div>
-
-        <label className="text-[12px] text-r-neutral-foot">Amount</label>
         <Input
-          className="mt-[6px] mb-[12px]"
-          value={amount}
-          inputMode="decimal"
-          onChange={(e) => {
-            setAmount(e.target.value);
-            setQuotes([]);
-            setQuote(undefined);
-          }}
-          placeholder="0.0"
-        />
-
-        <label className="text-[12px] text-r-neutral-foot">
-          Buy token contract
-        </label>
-        <Input
-          className="mt-[6px] mb-[6px]"
+          className="mb-12"
           value={toAddress}
-          onChange={(e) => {
-            setToAddress(e.target.value);
-            setToToken(undefined);
-            setQuotes([]);
-            setQuote(undefined);
-          }}
-        />
-        <div className="mb-[12px] text-[12px] text-r-neutral-foot">
-          {toToken
-            ? `${toToken.symbol} · ${toToken.decimals} decimals`
-            : 'Loading token…'}
-        </div>
-
-        <label className="text-[12px] text-r-neutral-foot">Slippage (%)</label>
-        <Input
-          className="mt-[6px] mb-[14px]"
-          value={slippage}
-          inputMode="decimal"
-          onChange={(e) => {
-            setSlippage(e.target.value);
-            setQuotes([]);
-            setQuote(undefined);
+          onChange={(event) => {
+            setToAddress(event.target.value);
+            setToToken(null);
+            resetQuote();
           }}
         />
 
-        {error ? (
-          <Alert className="mb-[12px]" type="error" showIcon message={error} />
-        ) : null}
+        <Button
+          block
+          loading={loadingTokens}
+          disabled={
+            !isAddressOrNative(fromAddress) || !isAddressOrNative(toAddress)
+          }
+          onClick={loadTokens}
+        >
+          Load token data from selected RPC
+        </Button>
 
-        {quote && toToken ? (
-          <div className="mb-[12px] rounded-[10px] bg-r-neutral-card-1 p-[12px] text-[13px] text-r-neutral-body">
-            <div className="mb-[10px]">
-              <div className="mb-[4px] text-[12px] text-r-neutral-foot">
-                Validated aggregator route
-              </div>
-              <Select
-                className="w-full"
-                value={quote.provider}
-                onChange={async (provider) => {
-                  const next = quotes.find(
-                    (candidate) => candidate.provider === provider
-                  );
-                  if (!next) return;
-                  setQuote(next);
-                  try {
-                    await refreshAllowance(next);
-                  } catch (e: any) {
-                    setError(e?.message || String(e));
-                  }
-                }}
-                options={quotes.map((candidate) => ({
-                  value: candidate.provider,
-                  label: `${candidate.provider} — ${ethers.utils.formatUnits(
-                    candidate.amountOut,
-                    toToken.decimals
-                  )} ${toToken.symbol}`,
-                }))}
-              />
+        {fromToken && toToken ? (
+          <div className="mt-10 rounded-[8px] bg-r-neutral-bg-1 p-10 text-[12px] text-r-neutral-body">
+            <div>
+              Sell: {fromToken.symbol} · balance{' '}
+              {formatTokenAmount(fromToken.balance, fromToken.decimals)}
             </div>
-            <div className="flex justify-between">
-              <span>Receive</span>
-              <strong className="text-r-neutral-title-1">
-                {outputAmount} {toToken.symbol}
-              </strong>
+            <div className="mt-4">
+              Buy: {toToken.symbol} · balance{' '}
+              {formatTokenAmount(toToken.balance, toToken.decimals)}
             </div>
-            <div className="mt-[6px] flex justify-between">
-              <span>Route</span>
-              <span>{quote.provider} via LlamaSwap</span>
-            </div>
-            <div className="mt-[6px] flex justify-between">
-              <span>Minimum output</span>
-              <span>
-                {ethers.utils.formatUnits(
-                  quote.minimumAmountOut,
-                  toToken.decimals
-                )}{' '}
-                {toToken.symbol}
-              </span>
-            </div>
-            <div className="mt-[6px] flex justify-between">
-              <span>Estimated gas</span>
-              <span>{quote.estimatedGas}</span>
-            </div>
-            <div className="mt-[8px] text-[11px] text-r-neutral-foot">
-              Compared: {quote.providersCompared.join(', ')}. Only routes that
-              pass provider-specific target, calldata, recipient, amount,
-              slippage, value, and fee validation are shown.
-            </div>
-            {quote.permit2 ? (
-              <div className="mt-[8px] text-[11px] text-r-neutral-foot">
-                This Matcha route requires a one-time Permit2 authorization
-                signature after exact token approval.
-              </div>
-            ) : null}
           </div>
         ) : null}
 
-        {!quote ? (
-          <Button block type="primary" loading={loading} onClick={fetchQuote}>
-            Compare validated routes
-          </Button>
-        ) : !allowanceEnough ? (
-          <Button block type="primary" loading={approving} onClick={approve}>
-            Approve exact amount
-          </Button>
-        ) : (
+        <div className="mb-6 mt-14 text-[12px] text-r-neutral-foot">
+          Sell amount
+        </div>
+        <Input
+          value={amount}
+          placeholder="0.0"
+          onChange={(event) => {
+            setAmount(event.target.value);
+            resetQuote();
+          }}
+        />
+
+        <div className="mb-6 mt-14 text-[12px] text-r-neutral-foot">
+          Slippage tolerance (%)
+        </div>
+        <Input
+          value={slippage}
+          onChange={(event) => {
+            setSlippage(event.target.value);
+            resetQuote();
+          }}
+        />
+
+        <Button
+          className="mt-16"
+          type="primary"
+          block
+          loading={quoting}
+          disabled={!fromToken || !toToken || !amount}
+          onClick={requestQuote}
+        >
+          Get verified CoW quote
+        </Button>
+      </div>
+
+      {quote && fromToken && toToken ? (
+        <div className="mt-12 rounded-[12px] bg-r-neutral-card-1 p-16">
+          <div className="text-[14px] font-semibold text-r-neutral-title-1">
+            Review CoW order
+          </div>
+          <div className="mt-10 space-y-6 text-[12px] text-r-neutral-body">
+            <div>
+              Sell exactly:{' '}
+              {formatTokenAmount(quote.amountIn, fromToken.decimals)}{' '}
+              {fromToken.symbol}
+            </div>
+            <div>
+              Quoted output:{' '}
+              {formatTokenAmount(quote.amountOut, toToken.decimals)}{' '}
+              {toToken.symbol}
+            </div>
+            <div>
+              Signed minimum:{' '}
+              {formatTokenAmount(quote.minimumAmountOut, toToken.decimals)}{' '}
+              {toToken.symbol}
+            </div>
+            <div>
+              Estimated network cost in sell token:{' '}
+              {formatTokenAmount(quote.networkFeeAmount, fromToken.decimals)}{' '}
+              {fromToken.symbol}
+            </div>
+            <div>Protocol fee: {quote.protocolFeeBps} bps</div>
+            <div>
+              Execution:{' '}
+              {quote.nativeSell ? 'official EthFlow deposit' : 'EIP-712 order'}
+            </div>
+            <div>Order UID: {shortHash(quote.expectedOrderUid)}</div>
+          </div>
+
+          {!allowanceEnough && quote.approvalSpender ? (
+            <Button
+              className="mt-14"
+              block
+              loading={approving}
+              onClick={approve}
+            >
+              {BigInt(allowance || '0') > 0n
+                ? 'Reset and approve exact amount'
+                : 'Approve exact amount'}
+            </Button>
+          ) : null}
+
           <Button
-            block
+            className="mt-10"
             type="primary"
+            block
             loading={submitting}
-            onClick={submitSwap}
+            disabled={!allowanceEnough}
+            onClick={submit}
           >
-            Review and swap
+            {quote.nativeSell
+              ? 'Refresh, review and deposit order'
+              : 'Refresh, sign and submit order'}
           </Button>
+        </div>
+      ) : null}
+
+      <div className="mt-12 rounded-[12px] bg-r-neutral-card-1 p-16">
+        <div className="flex items-center justify-between">
+          <div className="text-[14px] font-semibold text-r-neutral-title-1">
+            Local CoW order history
+          </div>
+          <Button size="small" onClick={() => void refreshOrderStatuses()}>
+            Refresh
+          </Button>
+        </div>
+        {history.length ? (
+          history.slice(0, 10).map((item) => (
+            <div
+              key={`${item.chainId}:${item.orderUid}`}
+              className="mt-10 rounded-[8px] bg-r-neutral-bg-1 p-10 text-[11px] text-r-neutral-body"
+            >
+              <div className="flex items-center justify-between gap-8">
+                <span className="font-medium">
+                  {formatTokenAmount(item.amountIn, item.fromDecimals)}{' '}
+                  {item.fromSymbol} → {item.toSymbol}
+                </span>
+                <span>{item.status}</span>
+              </div>
+              <div className="mt-4">{shortHash(item.orderUid)}</div>
+              <div className="mt-8 flex gap-8">
+                <Button
+                  size="small"
+                  onClick={() => {
+                    const trustedUrl = getTrustedExplorerUrl(item);
+                    if (trustedUrl) {
+                      window.open(trustedUrl, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
+                >
+                  Explorer
+                </Button>
+                {(item.status === 'open' ||
+                  item.status === 'presignaturePending' ||
+                  (item.nativeSell && item.status === 'expired')) && (
+                  <Button
+                    size="small"
+                    danger
+                    loading={cancellingUid === item.orderUid}
+                    onClick={() => void cancelOrder(item)}
+                  >
+                    Cancel / refund
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="mt-10 text-[12px] text-r-neutral-foot">
+            No local CoW orders for this account.
+          </div>
         )}
       </div>
-    </FullscreenContainer>
+    </div>
   );
 };
 

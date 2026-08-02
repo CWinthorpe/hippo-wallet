@@ -4,7 +4,7 @@ Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [
 
 ## Current release
 
-- **Version:** `0.93.102-hippo.5`
+- **Version:** `0.93.103-hippo.6`
 - **Target:** Chromium Manifest V3
 - **Repository:** [CWinthorpe/hippo-wallet](https://github.com/CWinthorpe/hippo-wallet)
 
@@ -35,7 +35,7 @@ The policy is enforced in the background request adapter, not merely by hiding b
 
 Hippo operates no relay, proxy, analytics collector or telemetry server. Product analytics, crash reporting, uninstall reporting, automatic action logging and persistent Rabby API identifiers remain disabled.
 
-There is no claim of complete offline operation. The selected RPC provider sees RPC traffic. Optional Rabby/DeBank features receive the data needed for that specific request after permission is granted. LlamaSwap and MEV Blocker have separate trust boundaries described below.
+There is no claim of complete offline operation. The selected RPC provider sees RPC traffic. Optional Rabby/DeBank features receive the data needed for that specific request after permission is granted. CoW Protocol and MEV Blocker have separate trust boundaries described below.
 
 ### User-controlled RPC routing
 
@@ -64,23 +64,25 @@ A signed transaction is submitted to exactly one destination for each attempt:
 
 Hippo computes the transaction hash locally and rejects malformed or mismatched submission results. It never automatically rebroadcasts after a timeout, disconnect, malformed response or other ambiguous outcome. Such a result may mean the first endpoint already accepted the transaction; blind failover would leak it to another provider.
 
-### Direct same-chain swaps
+### Direct CoW Protocol swaps
 
-Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo requests same-chain quotes directly from LlamaSwap's production frontend API. For each supported chain it queries every operational transaction adapter exposed by that endpoint: **1inch, KyberSwap, ParaSwap and Matcha/0x v2** where available. LlamaSwap's production bundle also contains a dormant `0x Gasless` relay adapter. It is not an executable transaction adapter: it bypasses the LlamaSwap quote endpoint, depends on a separately configured 0x API credential, collects approval and trade typed-data signatures, and submits them to a relayer instead of returning a wallet transaction. Hippo deliberately does not reintroduce that removed relayed, sponsored and gasless submission path.
+Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo uses only CoW Protocol's documented production order-book API at `https://api.cow.fi/<network>/api/v1`; there is no intermediary quote aggregator, Hippo relay or provider API key. The integration is same-chain only and deliberately does not restore any bridge path.
 
-Hippo shows every route that passes provider-specific validation and defaults to the highest quoted token output; the user can select another validated aggregator. Validation covers the selected chain, token addresses, exact input, quoted and minimum output, recipient, approval spender, transaction target, entry point/calldata, native value and fee fields. 1inch, KyberSwap and ParaSwap use fixed allowlisted routers. Matcha's current Settler target is checked on-chain against 0x's official deployment registry; ERC-20 Matcha routes additionally require an exact-token Permit2 authorization whose typed data is checked locally before signing.
+Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. Token contract code, decimals, symbols, balances, protocol contracts and transaction estimates are read through the selected Hippo RPC policy. Buy-side native output uses CoW's native-token sentinel.
 
-Cloudflare challenges direct service-worker POSTs from a `chrome-extension://` origin. For an explicit quote request, Hippo therefore opens one temporary **inactive** tab at LlamaSwap's static `https://swap.defillama.com/robots.txt` resource and issues the four parallel API requests from Chrome's isolated extension world with the same web origin used by LlamaSwap's production frontend. Cross-origin cookies and credentials are omitted. The exact page path, API origin, endpoint path and protocol/result pairing are checked, and the tab is closed in a `finally` path. Both DefiLlama transport origins are excluded from Hippo's ordinary dapp-provider content-script injection. No remote script receives extension privileges, and every returned field remains untrusted until the provider-specific checks pass. The tab may briefly appear in the browser's tab strip, and the static URL may remain in local browser history.
+For ERC-20 input, Hippo requests an optimal verified sell quote, computes the signed minimum locally with CoW's published sell-order rounding formula, and approves only the exact sell amount to CoW's fixed Vault Relayer. Immediately before signing it refreshes the quote and refuses any result that no longer preserves the reviewed minimum. The wallet signs the exact EIP-712 order for the fixed `Gnosis Protocol` v2 domain and settlement contract; the background independently recovers the EOA, recomputes the order UID and submits the immutable stored order. Contract-account off-chain signatures are rejected rather than guessed.
 
-Approvals are exact-amount approvals rather than unlimited approvals. The selected provider is refreshed before submission; provider or target changes require another review. Submitted swap hashes are stored locally, and Hippo does not post trade history to Rabby.
+For native-token input, Hippo builds an on-chain order for CoW's official EthFlow contract. It validates the quote, derives the `uint32.max` protocol UID prescribed by EthFlow while preserving the reviewed user expiry in the contract order, checks for UID collisions, estimates the exact `createOrder` transaction and deposits only the reviewed sell amount. Native orders can be invalidated through EthFlow; invalidation refunds any unsettled native balance.
 
-LlamaSwap's frontend endpoint is not a documented third-party wallet API and may change or apply anti-bot controls without notice. The embedded frontend credential is public by design and is not a secret. If validation fails, Hippo refuses the quote rather than guessing.
+Order UIDs and creation hashes are stored only in extension-local history. Hippo validates order-book status responses against each EIP-712 UID, supports signed off-chain cancellation for open EOA orders, and supports on-chain cancellation/refund for open or expired EthFlow orders after verifying the contract's owner/validity mapping. Ambiguous submissions are tracked by their expected UID instead of being blindly retried.
+
+Transport is limited to the exact CoW API origins, networks, methods and paths used for quote, submission, status and cancellation. Requests use fixed JSON headers, omit credentials and referrers, reject redirects, and enforce timeout, request-size and streamed response-size limits. Quote and order responses fail closed on malformed or mismatched owner, domain, chain, token, amount, receiver, app-data hash, fee, balance source, signing scheme, validity or UID.
 
 ### Deliberately fewer features
 
 This release removes the code, routes, services, assets, dependencies and locale sections for:
 
-- Gas accounts, gasless transactions and sponsored submission
+- Rabby gas accounts, Rabby-relayed gasless paths and sponsored submission
 - Points, badges, campaigns, referrals, gifts and promotional ecosystems
 - Perpetual trading, Hyperliquid services and the floating trading widget
 - Every bridge flow, including Hyperliquid and DBK bridge helpers
@@ -101,7 +103,7 @@ A VPN may hide a residential IP address, but it does not hide wallet addresses, 
 - **Enhanced signing analysis:** may disclose origin, wallet, chain, destination, value, calldata, messages or typed-data contents when enabled.
 - **Approval discovery:** may disclose wallet address and chain when enabled. Current allowance state is verified through the selected RPC before display or revoke construction.
 - **RPC providers:** receive the JSON-RPC requests routed to them.
-- **LlamaSwap:** receives quote parameters and the swap recipient for deliberate quote requests.
+- **CoW Protocol:** receives token, amount, account/receiver, validity and app-data fields for deliberate quote, order, status and cancellation requests. ERC-20 order signatures and public order UIDs are submitted to CoW's order book; native orders are also visible on-chain through EthFlow.
 - **MEV Blocker:** receives the signed raw transaction for eligible Ethereum Mainnet submission.
 
 Provider privacy statements are claims by those providers, not independent guarantees. Review [docs/private-fork.md](docs/private-fork.md) before using the wallet with sensitive accounts.
@@ -143,7 +145,8 @@ node .yarn/releases/yarn-4.14.1.cjs test \
   __tests__/background/defaultRPCProviders.test.ts \
   __tests__/background/rpcService.test.ts \
   __tests__/background/rpcGas.test.ts \
-  __tests__/background/llamaSwap.test.ts \
+  __tests__/background/cowSwap.test.ts \
+  __tests__/background/cowSwapTransport.test.ts \
   __tests__/privacy/privateBuildPrivacy.test.ts \
   --runInBand --no-cache
 ```

@@ -95,22 +95,26 @@ describe('private-build privacy invariants', () => {
     });
   });
 
-  test('does not inject the dapp provider into LlamaSwap transport origins', () => {
-    [
-      'src/manifest/chrome-mv3/manifest.json',
-      'src/manifest/chrome-mv3/manifest.dev.json',
-    ].forEach((manifestPath) => {
-      const manifest = JSON.parse(read(manifestPath));
-      const pageProviderScript = manifest.content_scripts.find(
-        (entry: { js?: string[] }) => entry.js?.includes('content-script.js')
-      );
-      expect(pageProviderScript?.exclude_matches).toContain(
-        'https://swap-api.defillama.com/*'
-      );
-      expect(pageProviderScript?.exclude_matches).toContain(
-        'https://swap.defillama.com/*'
-      );
-    });
+  test('ships no retired intermediary source, endpoint, script, or controller surface', () => {
+    const retiredName = ['l', 'l', 'a', 'm', 'a', 'S', 'w', 'a', 'p'].join('');
+    for (const removedPath of [
+      `src/background/service/${retiredName}.ts`,
+      `src/background/service/${retiredName}QuoteTransport.ts`,
+      `src/constant/${retiredName.toLowerCase().replace('swap', '-swap')}.ts`,
+      `scripts/${retiredName.toLowerCase()}-packaged-smoke.js`,
+    ]) {
+      expect(fs.existsSync(path.join(root, removedPath))).toBe(false);
+    }
+    const activeSources = [
+      read('src/background/controller/wallet.ts'),
+      read('src/background/service/index.ts'),
+      read('src/ui/views/Swap/index.tsx'),
+      read('package.json'),
+    ].join('\n');
+    expect(activeSources.toLowerCase()).not.toContain(
+      retiredName.toLowerCase()
+    );
+    expect(activeSources).not.toContain(['defi', 'llama'].join(''));
   });
 
   test('cannot emit security action telemetry or use Rabby as the RPC control plane', () => {
@@ -185,6 +189,12 @@ describe('private-build privacy invariants', () => {
     ]) {
       expect(packageJson.dependencies?.[dependency]).toBeUndefined();
     }
+    expect(
+      packageJson.dependencies?.['@cowprotocol/sdk-config']
+    ).toBeUndefined();
+    expect(
+      packageJson.dependencies?.['@cowprotocol/sdk-order-book']
+    ).toBeUndefined();
 
     for (const removedPath of [
       'src/background/service/bridge.ts',
@@ -240,7 +250,8 @@ describe('private-build privacy invariants', () => {
     const app = read('src/ui/views/index.tsx');
     const policy = read('src/background/service/remoteDataPolicy.ts');
     const rpc = read('src/background/service/rpc.ts');
-    const llamaSwap = read('src/background/service/llamaSwap.ts');
+    const cowSwap = read('src/background/service/cowSwap.ts');
+    const cowTransport = read('src/background/service/cowSwapTransport.ts');
 
     expect(app).toContain('<RemoteDataPolicyGate>');
     expect(policy).toContain('configured: false');
@@ -248,9 +259,11 @@ describe('private-build privacy invariants', () => {
     expect(policy).toContain('REMOTE_FEATURE_REMOVED');
     expect(rpc).toContain('https://rpc.mevblocker.io/fullprivacy');
     expect(rpc).toContain('submitRawTransaction');
-    expect(llamaSwap).toContain(
-      'https://swap-api.defillama.com/dexAggregatorQuote'
-    );
-    expect(llamaSwap).toContain('validateLlamaSwapQuote');
+    expect(cowSwap).toContain('validateApiOrder');
+    expect(cowSwap).toContain('verifyTypedData');
+    expect(cowSwap).toContain('consumeNativeOrder');
+    expect(cowSwap).toContain('submitCancellation');
+    expect(cowTransport).toContain("credentials: 'omit'");
+    expect(cowTransport).toContain("redirect: 'error'");
   });
 });
