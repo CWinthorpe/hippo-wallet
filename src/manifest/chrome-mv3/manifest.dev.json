@@ -3,8 +3,8 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.93.103",
-  "version_name": "0.93.103-hippo.6-dev",
+  "version": "0.93.104",
+  "version_name": "0.93.104-hippo.7-dev",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {

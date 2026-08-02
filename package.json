@@ -1,6 +1,6 @@
 {
   "name": "hippo-wallet",
-  "version": "0.93.103",
+  "version": "0.93.104",
   "description": "Consent-gated self-custodial wallet with local RPC routing and a deliberately reduced remote-service surface",
   "scripts": {
     "clean": "node build/clean.js",
