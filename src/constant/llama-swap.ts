@@ -8,6 +8,9 @@ export const KYBERSWAP_ROUTER = '0x6131b5fae19ea4f9d964eac0408e4408b66337b5';
 export const PARASWAP_ROUTER = '0x6a000f20005980200259b80c5102003040001068';
 export const PARASWAP_LLAMASWAP_PARTNER =
   '0x08a3c2a819e3de7aca384c798269b3ce1cd0e437';
+// ParaSwap V6.2 fee-data bits 95 and 92: take positive slippage and cap the
+// surplus considered for that split at 1%. Fixed-fee bits remain zero.
+export const PARASWAP_LLAMASWAP_FEE_DATA = 0x900000000000000000000000n;
 export const PERMIT2_ADDRESS = '0x000000000022d473030f116ddee9f6b43ac78ba3';
 export const ZEROX_SETTLER_DEPLOYER =
   '0x00000000000004533fe15556b1e086bb1a72ceae';

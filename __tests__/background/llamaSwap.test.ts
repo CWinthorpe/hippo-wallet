@@ -31,6 +31,7 @@ import {
   MATCHA_PROTOCOL,
   ONEINCH_ROUTER,
   ONEINCH_ZKSYNC_ROUTER,
+  PARASWAP_LLAMASWAP_FEE_DATA,
   PARASWAP_LLAMASWAP_PARTNER,
   PARASWAP_ROUTER,
   PERMIT2_ADDRESS,
@@ -174,7 +175,7 @@ const makeKyberPayload = ({
   },
 });
 
-const paraSwapPartnerAndFee = (feeData = 0n) =>
+const paraSwapPartnerAndFee = (feeData = PARASWAP_LLAMASWAP_FEE_DATA) =>
   ethers.BigNumber.from(PARASWAP_LLAMASWAP_PARTNER).shl(96).or(feeData);
 
 const makeParaSwapPayload = ({
@@ -578,7 +579,7 @@ describe('LlamaSwap multi-aggregator validation', () => {
     ).toThrow('does not match the reviewed quote');
   });
 
-  test('allows only LlamaSwap ParaSwap attribution with a zero partner fee', () => {
+  test('allows only the exact live LlamaSwap ParaSwap fee configuration', () => {
     const quote = validateLlamaSwapQuote(
       nativeRequest,
       makeParaSwapPayload(),
@@ -591,6 +592,13 @@ describe('LlamaSwap multi-aggregator validation', () => {
       validateLlamaSwapQuote(
         nativeRequest,
         makeParaSwapPayload({ partnerAndFee: paraSwapPartnerAndFee(1n) }),
+        'ParaSwap'
+      )
+    ).toThrow('unexpected partner fee');
+    expect(() =>
+      validateLlamaSwapQuote(
+        nativeRequest,
+        makeParaSwapPayload({ partnerAndFee: paraSwapPartnerAndFee(0n) }),
         'ParaSwap'
       )
     ).toThrow('unexpected partner fee');

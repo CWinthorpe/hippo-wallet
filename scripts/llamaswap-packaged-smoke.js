@@ -35,8 +35,8 @@ const parseArgs = () => {
   );
   return {
     chromium: args.chromium || process.env.CHROMIUM || 'chromium',
-    extensionDir: path.resolve(args['extension-dir'] || 'dist/chrome'),
-    runs: Number(args.runs || 1),
+    extensionDir: path.resolve(args['extension-dir'] || 'dist'),
+    runs: Number(args.runs || 2),
     headless: args.headless === 'true',
     keepProfiles: args['keep-profiles'] === 'true',
   };
@@ -294,9 +294,30 @@ const runOnce = async (
   const stderr = [];
   const chromiumArgs = [
     '--no-sandbox',
+    '--disable-field-trial-config',
+    '--disable-background-networking',
+    '--disable-background-timer-throttling',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-back-forward-cache',
+    '--disable-client-side-phishing-detection',
+    '--disable-component-update',
+    '--disable-default-apps',
     '--disable-dev-shm-usage',
+    '--disable-features=GlobalMediaControls,HttpsUpgrades,MediaRouter,OptimizationHints,PaintHolding,RenderDocument,Translate',
+    '--allow-pre-commit-input',
+    '--disable-hang-monitor',
+    '--disable-ipc-flooding-protection',
+    '--disable-popup-blocking',
+    '--disable-prompt-on-repost',
+    '--disable-renderer-backgrounding',
+    '--metrics-recording-only',
     '--no-first-run',
     '--no-default-browser-check',
+    '--no-service-autorun',
+    '--password-store=basic',
+    '--use-mock-keychain',
+    '--disable-search-engine-choice-screen',
+    '--disable-sync',
     '--remote-allow-origins=*',
     `--remote-debugging-port=${port}`,
     `--user-data-dir=${profile}`,
@@ -370,8 +391,19 @@ const runOnce = async (
     ]);
     if (browser.exitCode === null && browser.signalCode === null) {
       browser.kill('SIGKILL');
+      await Promise.race([
+        new Promise((resolve) => browser.once('exit', resolve)),
+        delay(3_000),
+      ]);
     }
-    if (!keepProfiles) fs.rmSync(profile, { recursive: true, force: true });
+    if (!keepProfiles) {
+      fs.rmSync(profile, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+        retryDelay: 200,
+      });
+    }
   }
 };
 

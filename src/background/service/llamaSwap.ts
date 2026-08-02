@@ -8,6 +8,7 @@ import {
   LLAMASWAP_PROTOCOLS_BY_CHAIN,
   LlamaSwapProtocol,
   ONEINCH_ROUTER_BY_LLAMA_CHAIN,
+  PARASWAP_LLAMASWAP_FEE_DATA,
   PARASWAP_LLAMASWAP_PARTNER,
   PARASWAP_ROUTER,
   PERMIT2_ADDRESS,
@@ -531,8 +532,13 @@ const validateParaSwap = (
     );
     const partner = `0x${packed.slice(2, 42)}`.toLowerCase();
     const feeData = BigInt(`0x${packed.slice(42)}`);
-    if (partner !== PARASWAP_LLAMASWAP_PARTNER || feeData !== 0n) {
-      throw new Error('ParaSwap calldata contains an unexpected partner fee');
+    if (
+      partner !== PARASWAP_LLAMASWAP_PARTNER ||
+      feeData !== PARASWAP_LLAMASWAP_FEE_DATA
+    ) {
+      throw new Error(
+        'ParaSwap calldata contains an unexpected partner fee configuration'
+      );
     }
   } catch (error) {
     if (
