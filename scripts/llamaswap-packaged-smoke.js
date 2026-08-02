@@ -26,6 +26,15 @@ const DEFAULT_REQUEST = {
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const terminateProcessGroup = (child, signal) => {
+  try {
+    if (process.platform === 'win32' || !child.pid) child.kill(signal);
+    else process.kill(-child.pid, signal);
+  } catch (error) {
+    if (error?.code !== 'ESRCH') throw error;
+  }
+};
+
 const parseArgs = () => {
   const args = Object.fromEntries(
     process.argv.slice(2).map((arg) => {
@@ -251,7 +260,7 @@ const assertSmokeResult = (result) => {
     if (quote.chainServerId !== DEFAULT_REQUEST.chainServerId) {
       throw new Error(`${quote.provider} returned the wrong chain`);
     }
-    if (!/^\\d+$/.test(quote.amountOut) || BigInt(quote.amountOut) <= 0n) {
+    if (!/^\d+$/.test(quote.amountOut) || BigInt(quote.amountOut) <= 0n) {
       throw new Error(`${quote.provider} returned an invalid output amount`);
     }
     if (!/^0x[0-9a-f]{40}$/.test(quote.approvalSpender)) {
@@ -327,6 +336,8 @@ const runOnce = async (
   ];
   if (headless) chromiumArgs.unshift('--headless=new');
   const browser = childProcess.spawn(chromium, chromiumArgs, {
+    detached: true,
+    env: { ...process.env, DISPLAY: process.env.DISPLAY || ':99' },
     stdio: ['ignore', 'ignore', 'pipe'],
   });
   browser.stderr.on('data', (chunk) => {
@@ -384,24 +395,19 @@ const runOnce = async (
     throw new Error(`${error.message}\nChromium stderr:\n${logs}`);
   } finally {
     if (client) client.close();
-    browser.kill('SIGTERM');
+    terminateProcessGroup(browser, 'SIGTERM');
     await Promise.race([
       new Promise((resolve) => browser.once('exit', resolve)),
       delay(3_000),
     ]);
-    if (browser.exitCode === null && browser.signalCode === null) {
-      browser.kill('SIGKILL');
-      await Promise.race([
-        new Promise((resolve) => browser.once('exit', resolve)),
-        delay(3_000),
-      ]);
-    }
+    terminateProcessGroup(browser, 'SIGKILL');
+    await delay(500);
     if (!keepProfiles) {
       fs.rmSync(profile, {
         recursive: true,
         force: true,
-        maxRetries: 5,
-        retryDelay: 200,
+        maxRetries: 20,
+        retryDelay: 250,
       });
     }
   }
