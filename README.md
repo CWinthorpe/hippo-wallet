@@ -10,7 +10,7 @@ Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [
 - **Artifact:** `hippo-wallet-v0.93.105-hippo.8-mv3.zip`
 - **Size:** `13,699,960` bytes
 - **SHA-256:** `18f71c5cc77f246d9932ca81863bcc64010250b9e76db9b775b58774d9d0b8cd`
-- **Access:** The [repository](https://github.com/CWinthorpe/hippo-wallet) and its releases are private; authenticated GitHub access is required.
+
 
 The release passed `yarn`, `yarn check`, the full Jest suite (49 suites; 292 passed, 1 skipped), the production MV3 build, the artifact/privacy scan and ZIP integrity verification. Packaged-browser smoke testing was intentionally not run, so this artifact remains incomplete under the documented [release checklist](docs/private-fork.md#release-verification).
 
