@@ -18,6 +18,9 @@ Download the ZIP from the [tagged GitHub release](https://github.com/CWinthorpe/
 
 ## What makes Hippo Wallet Hippo Wallet
 
+- **WalletConnect restored:** Hippo restores WalletConnect account support removed from current upstream Rabby, including QR-based connection and session reconnection.
+- **Custom RPC restored:** Hippo restores **Settings → Custom RPC** for adding, editing, enabling, disabling and removing per-network primary, read-fallback and broadcast RPC endpoints.
+
 ### Consent before contact
 
 Hippo starts with every Rabby/DeBank-backed capability disabled. On first run—and after upgrading from a build without a saved policy—the wallet asks what may be enabled before opening the normal wallet interface.
