@@ -299,6 +299,44 @@ describe('CowSwapService', () => {
     );
   });
 
+  test('rejects native execution from a contract account', async () => {
+    const requestRpc = RPCService.requestDefaultRPC as jest.Mock;
+    const originalImplementation = requestRpc.getMockImplementation()!;
+    requestRpc.mockImplementation(async (request) => {
+      if (
+        request.method === 'eth_getCode' &&
+        String(request.params[0]).toLowerCase() === OWNER
+      ) {
+        return '0x6001600055';
+      }
+      return originalImplementation(request);
+    });
+    const service = new CowSwapService(makeTransport());
+
+    await expect(
+      service.getQuote(quoteRequest(COW_SWAP_NATIVE_TOKEN))
+    ).rejects.toThrow('externally owned account');
+  });
+
+  test('allows native execution from an EIP-7702 delegated EOA', async () => {
+    const requestRpc = RPCService.requestDefaultRPC as jest.Mock;
+    const originalImplementation = requestRpc.getMockImplementation()!;
+    requestRpc.mockImplementation(async (request) => {
+      if (
+        request.method === 'eth_getCode' &&
+        String(request.params[0]).toLowerCase() === OWNER
+      ) {
+        return `0xef0100${'11'.repeat(20)}`;
+      }
+      return originalImplementation(request);
+    });
+    const service = new CowSwapService(makeTransport());
+
+    await expect(
+      service.getQuote(quoteRequest(COW_SWAP_NATIVE_TOKEN))
+    ).resolves.toMatchObject({ nativeSell: true });
+  });
+
   test('signs and submits only the exact stored order', async () => {
     let expectedUid = '';
     let submittedBody: any;
@@ -568,6 +606,7 @@ describe('CowSwapService', () => {
       withoutDomainType(prepared.signingPayload.types),
       prepared.signingPayload.message
     );
+    (Date.now as jest.Mock).mockReturnValue(NOW_MS + 3 * 60 * 1000);
     const result = await service.submitCancellation({
       cancellationHandle: prepared.cancellationHandle,
       chainServerId: 'eth',

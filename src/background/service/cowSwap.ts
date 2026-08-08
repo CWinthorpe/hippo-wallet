@@ -23,6 +23,7 @@ const MAX_QUOTE_VALIDITY_SECONDS = 15 * 60;
 const MAX_NATIVE_QUOTE_EXPIRATION_SECONDS = 4 * 60 * 60;
 const MAX_STORED_QUOTES = 64;
 const MAX_STORED_CANCELLATIONS = 32;
+const CANCELLATION_HANDLE_TTL_MS = 10 * 60 * 1000;
 const CONTRACT_VERIFICATION_TTL_MS = 10 * 60 * 1000;
 const MAX_UINT256 = (1n << 256n) - 1n;
 const MAX_SIGNED_INT64 = (1n << 63n) - 1n;
@@ -31,6 +32,7 @@ const ORDER_UID_PATTERN = /^0x[0-9a-f]{112}$/;
 const SIGNATURE_PATTERN = /^0x[0-9a-fA-F]{130}$/;
 const HASH_PATTERN = /^0x[0-9a-f]{64}$/;
 const ADDRESS_PATTERN = /^0x[0-9a-f]{40}$/;
+const EIP7702_DELEGATION_CODE_PATTERN = /^0xef0100[0-9a-f]{40}$/i;
 const TERMINAL_ORDER_STATUSES = new Set(['fulfilled', 'cancelled', 'expired']);
 const VALID_ORDER_STATUSES = new Set([
   'presignaturePending',
@@ -796,12 +798,16 @@ export class CowSwapService {
     }
 
     const nativeSell = fromToken === COW_SWAP_NATIVE_TOKEN;
-    if (
-      !nativeSell &&
-      (typeof ownerCode !== 'string' || !/^0x(?:00)*$/i.test(ownerCode))
-    ) {
+    const emptyOwnerCode =
+      typeof ownerCode === 'string' && /^0x(?:00)*$/i.test(ownerCode);
+    const delegatedEoa =
+      typeof ownerCode === 'string' &&
+      EIP7702_DELEGATION_CODE_PATTERN.test(ownerCode);
+    if (!emptyOwnerCode && !(nativeSell && delegatedEoa)) {
       throw new Error(
-        'CoW off-chain order signing currently requires an externally owned account'
+        delegatedEoa
+          ? 'CoW off-chain orders do not currently support delegated accounts'
+          : 'CoW order execution currently requires an externally owned account'
       );
     }
     await this.verifyProtocolContracts(
@@ -1495,7 +1501,7 @@ export class CowSwapService {
       owner,
       orderUid,
       typedData,
-      expiresAt: Date.now() + 2 * 60 * 1000,
+      expiresAt: Date.now() + CANCELLATION_HANDLE_TTL_MS,
       used: false,
     });
     return {

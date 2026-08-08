@@ -1,4 +1,4 @@
-import { isFreshCowSwapQuoteSafe } from '@/ui/views/Swap/cowSwapSafety';
+import { isReviewedCowSwapQuoteExecutable } from '@/ui/views/Swap/cowSwapSafety';
 import type { ValidatedCowSwapQuote } from '@/background/service/cowSwap';
 
 const quote = (
@@ -26,66 +26,37 @@ const quote = (
   ...overrides,
 });
 
-describe('fresh CoW quote safety', () => {
-  test('accepts a fresh quote that preserves or improves the reviewed minimum', () => {
+describe('reviewed CoW quote execution window', () => {
+  test('allows an ERC-20 order with more than one minute remaining', () => {
     expect(
-      isFreshCowSwapQuoteSafe(
-        quote(),
-        quote({ minimumAmountOut: '1790001', amountOut: '1801000' }),
+      isReviewedCowSwapQuoteExecutable(
+        quote({ expiresAt: 1_060_001 }),
         1_000_000
       )
     ).toBe(true);
   });
 
-  test('rejects double slippage and execution-context changes', () => {
-    const reviewed = quote();
+  test('requires an updated review near ERC-20 expiry', () => {
     expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({ minimumAmountOut: '1789999' }),
-        1_000_000
-      )
-    ).toBe(false);
-    expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({
-          approvalSpender: '0x0000000000000000000000000000000000000001',
-        }),
-        1_000_000
-      )
-    ).toBe(false);
-    expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({ amountIn: '999999999999999' }),
-        1_000_000
-      )
-    ).toBe(false);
-    expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({ nativeSell: true, approvalSpender: null }),
+      isReviewedCowSwapQuoteExecutable(
+        quote({ expiresAt: 1_060_000 }),
         1_000_000
       )
     ).toBe(false);
   });
 
-  test('rejects stale and internally inconsistent quotes', () => {
-    const reviewed = quote();
+  test('keeps a two-minute signing and mining buffer for EthFlow', () => {
+    const native = quote({
+      nativeSell: true,
+      approvalSpender: null,
+      expiresAt: 1_120_000,
+    });
+    expect(isReviewedCowSwapQuoteExecutable(native, 1_000_000)).toBe(false);
     expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({ expiresAt: 1_019_999 }),
+      isReviewedCowSwapQuoteExecutable(
+        { ...native, expiresAt: 1_120_001 },
         1_000_000
       )
-    ).toBe(false);
-    expect(
-      isFreshCowSwapQuoteSafe(
-        reviewed,
-        quote({ amountOut: '1789999' }),
-        1_000_000
-      )
-    ).toBe(false);
+    ).toBe(true);
   });
 });

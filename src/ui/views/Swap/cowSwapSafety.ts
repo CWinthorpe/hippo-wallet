@@ -1,32 +1,15 @@
 import type { ValidatedCowSwapQuote } from '@/background/service/cowSwap';
 
-const sameNullableAddress = (left: string | null, right: string | null) =>
-  left === null
-    ? right === null
-    : right !== null && left.toLowerCase() === right.toLowerCase();
+const ORDER_SIGNING_BUFFER_MS = 60 * 1000;
+const NATIVE_ORDER_EXECUTION_BUFFER_MS = 2 * 60 * 1000;
 
-export const isFreshCowSwapQuoteSafe = (
-  reviewed: ValidatedCowSwapQuote,
-  fresh: ValidatedCowSwapQuote,
+export const isReviewedCowSwapQuoteExecutable = (
+  quote: ValidatedCowSwapQuote,
   now = Date.now()
-) => {
-  try {
-    return (
-      reviewed.provider === 'CoW Swap' &&
-      fresh.provider === 'CoW Swap' &&
-      reviewed.chainServerId === fresh.chainServerId &&
-      reviewed.chainId === fresh.chainId &&
-      reviewed.fromToken.toLowerCase() === fresh.fromToken.toLowerCase() &&
-      reviewed.toToken.toLowerCase() === fresh.toToken.toLowerCase() &&
-      reviewed.amountIn === fresh.amountIn &&
-      reviewed.slippageBps === fresh.slippageBps &&
-      reviewed.nativeSell === fresh.nativeSell &&
-      sameNullableAddress(reviewed.approvalSpender, fresh.approvalSpender) &&
-      BigInt(fresh.minimumAmountOut) >= BigInt(reviewed.minimumAmountOut) &&
-      BigInt(fresh.amountOut) >= BigInt(fresh.minimumAmountOut) &&
-      fresh.expiresAt > now + 20_000
-    );
-  } catch {
-    return false;
-  }
-};
+) =>
+  quote.provider === 'CoW Swap' &&
+  quote.expiresAt >
+    now +
+      (quote.nativeSell
+        ? NATIVE_ORDER_EXECUTION_BUFFER_MS
+        : ORDER_SIGNING_BUFFER_MS);

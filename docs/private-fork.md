@@ -2,7 +2,7 @@
 
 Hippo Wallet is a downstream Rabby Wallet build intended for direct inspection and self-hosted use. It operates no Hippo telemetry collector, RPC relay, swap relay or account backend.
 
-This document describes release `0.93.104-hippo.7`.
+This document describes release `0.93.105-hippo.8`.
 
 ## Fail-closed Rabby/DeBank policy
 
@@ -114,7 +114,7 @@ Hippo computes the local transaction hash before submission and compares it with
 
 Hippo uses CoW Protocol as its only swap execution system. Same-chain quotes go directly to the documented production order-book API under `https://api.cow.fi/<network>/api/v1`; no Hippo proxy, intermediary aggregator, embedded credential, referral fee or Rabby trade endpoint is involved. Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. Cross-chain and bridge paths remain removed.
 
-The exact network API base comes from pinned CoW SDK configuration. The transport accepts only HTTPS requests to an approved production network and only these routes:
+The exact network API bases and protocol deployments are pinned explicitly in Hippo source rather than loaded from an SDK at runtime. The transport accepts only HTTPS requests to an approved production network and only these routes:
 
 - `POST /api/v1/quote`
 - `POST /api/v1/orders`
@@ -123,9 +123,9 @@ The exact network API base comes from pinned CoW SDK configuration. The transpor
 
 It sends fixed JSON headers with `credentials: omit`, `referrerPolicy: no-referrer`, `cache: no-store` and `redirect: error`. Caller headers, cookies, query strings, fragments, redirects and arbitrary paths are rejected. Request bodies, deadlines, declared response sizes and streamed response bytes are bounded. Successful non-JSON responses fail closed.
 
-The selected RPC supplies token code, decimals, symbol, account balance, protocol-contract code and transaction gas estimates. A quote request binds the exact sell amount, sell/buy tokens, account/receiver, sell order kind, EIP-712 or EthFlow signing scheme, ERC-20 balance source, ten-minute validity, full app-data document and its Keccak-256 hash. The response must preserve those fields, be marked verified, remain inside the accepted validity window, and reconcile the quoted network fee with the exact pre-fee sell amount. Hippo applies CoW's published sell-order slippage formula locally—subtracting the floored slippage amount from the post-fee buy amount—exactly once, and signs fee amount zero as required by the current order model.
+The selector always includes reviewed native, wrapped-native and stablecoin choices. When Portfolio discovery is enabled it also lists wallet assets and supports remote name or symbol search. Exact contract-address lookup remains available through the selected RPC without Portfolio discovery, and non-reviewed tokens require an explicit contract warning confirmation. The selected RPC supplies token code, decimals, symbol, account balance, protocol-contract code and transaction gas estimates. A quote request binds the exact sell amount, sell/buy tokens, account/receiver, sell order kind, EIP-712 or EthFlow signing scheme, ERC-20 balance source, ten-minute validity, full app-data document and its Keccak-256 hash. The response must preserve those fields, be marked verified, remain inside the accepted validity window, and reconcile the quoted network fee with the exact pre-fee sell amount. Hippo applies CoW's published sell-order slippage formula locally—subtracting the floored slippage amount from the post-fee buy amount—exactly once, and signs fee amount zero as required by the current order model.
 
-ERC-20 input orders use CoW's fixed Vault Relayer and Settlement contracts. Hippo grants only the exact sell amount; a nonzero insufficient allowance is reset before the exact approval for zero-first tokens. Before signing, it requests a fresh quote and refuses a fresh minimum below the reviewed minimum. The background stores the immutable canonical quote under a random short-lived handle, verifies the EIP-712 domain, recovers the active EOA from the signature, recomputes the 56-byte order UID, and submits only that stored order with the original quote ID and matching full app data. Off-chain contract-account signatures are not guessed: that path currently fails closed unless the account is an EOA.
+ERC-20 input orders use CoW's fixed Vault Relayer and Settlement contracts. Hippo grants only the exact sell amount; a nonzero insufficient allowance is reset before the exact approval for zero-first tokens. It signs the exact order shown in review. If that immutable quote is too close to expiry, Hippo obtains a replacement and requires another explicit review before signing. The background stores the canonical quote under a random short-lived handle, verifies the EIP-712 domain, recovers the active EOA from the signature, recomputes the 56-byte order UID, and submits only that stored order with the original quote ID and matching full app data. Contract-account execution is not guessed: current CoW paths fail closed unless the account is an EOA.
 
 Native-token input uses CoW's official EthFlow contract, not a relay. The quote uses wrapped native token as the protocol sell token and EIP-1271 as the on-chain order scheme. Hippo derives the EthFlow UID with `uint32.max` validity as prescribed by the contract, checks that the UID is unused, encodes the exact `createOrder` tuple, and estimates the transaction through the selected RPC. The transaction deposits only the signed sell amount. Native buy output uses CoW's native-token sentinel.
 

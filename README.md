@@ -4,7 +4,7 @@ Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [
 
 ## Current release
 
-- **Version:** `0.93.104-hippo.7`
+- **Version:** `0.93.105-hippo.8`
 - **Target:** Chromium Manifest V3
 - **Repository:** [CWinthorpe/hippo-wallet](https://github.com/CWinthorpe/hippo-wallet)
 
@@ -68,9 +68,9 @@ Hippo computes the transaction hash locally and rejects malformed or mismatched 
 
 Rabby's quote, fee, gas-estimation and trade-reporting pipeline has been removed. Hippo uses only CoW Protocol's documented production order-book API at `https://api.cow.fi/<network>/api/v1`; there is no intermediary quote aggregator, Hippo relay or provider API key. The integration is same-chain only and deliberately does not restore any bridge path.
 
-Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. Token contract code, decimals, symbols, balances, protocol contracts and transaction estimates are read through the selected Hippo RPC policy. Buy-side native output uses CoW's native-token sentinel.
+Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. The selector combines reviewed native, wrapped-native and stablecoin defaults with wallet assets when Portfolio discovery is enabled. Name and symbol search follows that consent; an exact contract can always be validated through the selected RPC and requires an explicit warning confirmation when it is not a reviewed token. Token contract code, decimals, symbols, balances, protocol contracts and transaction estimates are read through the selected Hippo RPC policy. Buy-side native output uses CoW's native-token sentinel.
 
-For ERC-20 input, Hippo requests an optimal verified sell quote, computes the signed minimum locally with CoW's published sell-order rounding formula, and approves only the exact sell amount to CoW's fixed Vault Relayer. Immediately before signing it refreshes the quote and refuses any result that no longer preserves the reviewed minimum. The wallet signs the exact EIP-712 order for the fixed `Gnosis Protocol` v2 domain and settlement contract; the background independently recovers the EOA, recomputes the order UID and submits the immutable stored order. Contract-account off-chain signatures are rejected rather than guessed.
+For ERC-20 input, Hippo requests an optimal verified sell quote, computes the signed minimum locally with CoW's published sell-order rounding formula, and approves only the exact sell amount to CoW's fixed Vault Relayer. The wallet signs the exact reviewed EIP-712 order for the fixed `Gnosis Protocol` v2 domain and settlement contract. If that order is too close to expiry, Hippo replaces it and requires another review rather than silently signing different fields. The background independently recovers the EOA, recomputes the order UID and submits the immutable stored order. Contract-account execution is rejected rather than guessed.
 
 For native-token input, Hippo builds an on-chain order for CoW's official EthFlow contract. It validates the quote, derives the `uint32.max` protocol UID prescribed by EthFlow while preserving the reviewed user expiry in the contract order, checks for UID collisions, estimates the exact `createOrder` transaction and deposits only the reviewed sell amount. Native orders can be invalidated through EthFlow; invalidation refunds any unsettled native balance.
 
@@ -147,6 +147,9 @@ node .yarn/releases/yarn-4.14.1.cjs test \
   __tests__/background/rpcGas.test.ts \
   __tests__/background/cowSwap.test.ts \
   __tests__/background/cowSwapTransport.test.ts \
+  __tests__/ui/cowSwapSafety.test.ts \
+  __tests__/ui/cowSwapTokens.test.ts \
+  __tests__/ui/cowSwapWallet.test.ts \
   __tests__/privacy/privateBuildPrivacy.test.ts \
   --runInBand --no-cache
 ```
