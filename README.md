@@ -103,6 +103,9 @@ A VPN may hide a residential IP address, but it does not hide wallet addresses, 
 - **Enhanced signing analysis:** may disclose origin, wallet, chain, destination, value, calldata, messages or typed-data contents when enabled.
 - **Approval discovery:** may disclose wallet address and chain when enabled. Current allowance state is verified through the selected RPC before display or revoke construction.
 - **RPC providers:** receive the JSON-RPC requests routed to them.
+- **WalletConnect/Reown:** receives pairing and session traffic when you use
+  WalletConnect. Hippo ships its own public Reown project ID; it does not use
+  Rabby's project identity.
 - **CoW Protocol:** receives token, amount, account/receiver, validity and app-data fields for deliberate quote, order, status and cancellation requests. ERC-20 order signatures and public order UIDs are submitted to CoW's order book; native orders are also visible on-chain through EthFlow.
 - **MEV Blocker:** receives the signed raw transaction for eligible Ethereum Mainnet submission.
 
@@ -135,6 +138,10 @@ node .yarn/releases/yarn-4.14.1.cjs build:pro
 ```
 
 The unpacked MV3 build is written to `dist/`.
+
+Hippo's public, operator-owned Reown project ID is bundled so WalletConnect
+works in release and local builds. Set `WALLETCONNECT_PROJECT_ID` only to
+override that ID for a separately operated build.
 
 Focused privacy, routing and replacement tests:
 

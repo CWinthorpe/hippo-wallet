@@ -22,6 +22,7 @@ jobs:
     runs-on: [self-hosted, X64, Linux, webextension, builder]
     env:
       NODE_OPTIONS: '--max_old_space_size=12288'
+      WALLETCONNECT_PROJECT_ID: ${{ vars.WALLETCONNECT_PROJECT_ID }}
     steps:
       - name: checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -48,6 +49,7 @@ jobs:
     needs: setup
     env:
       NODE_OPTIONS: '--max_old_space_size=12288'
+      WALLETCONNECT_PROJECT_ID: ${{ vars.WALLETCONNECT_PROJECT_ID }}
     steps:
       - name: checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -94,3 +96,4 @@ jobs:
           GIT_REF_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          RABBY_SENTRY_DSN: ${{ secrets.RABBY_SENTRY_DSN }}

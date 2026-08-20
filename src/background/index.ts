@@ -56,7 +56,10 @@ import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
-
+import {
+  BACKGROUND_READY_EVENT,
+  BACKGROUND_READY_MESSAGE,
+} from '@/utils/message/constants';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
@@ -114,6 +117,7 @@ async function restoreAppState() {
   rpcCache.start();
 
   appStoreLoaded = true;
+  eventBus.emit(BACKGROUND_READY_EVENT);
 
   syncChainService.roll();
   transactionWatchService.roll();
@@ -272,26 +276,39 @@ browser.runtime.onConnect.addListener((port) => {
       });
     };
 
-    if (port.name === 'popup') {
-      preferenceService.setPopupOpen(true);
-
-      port.onDisconnect.addListener(() => {
-        preferenceService.setPopupOpen(false);
+    let activated = false;
+    const activateUIConnection = () => {
+      eventBus.removeEventListener(
+        BACKGROUND_READY_EVENT,
+        activateUIConnection
+      );
+      activated = true;
+      eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
+      if (port.name === 'popup') {
+        preferenceService.setPopupOpen(true);
+      }
+      feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
+        // Reset the native menu for newly opened extension pages.
       });
+      browser.runtime.sendMessage({ type: 'pageOpened' });
+      pm.send('message', { event: BACKGROUND_READY_MESSAGE });
+    };
+    if (appStoreLoaded) {
+      activateUIConnection();
+    } else {
+      eventBus.addEventListener(BACKGROUND_READY_EVENT, activateUIConnection);
     }
 
-    feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
-      // Reset the native menu for newly opened extension pages.
-    });
-
-    browser.runtime.sendMessage({
-      type: 'pageOpened',
-    });
-    eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
-    port.onDisconnect.addListener((p) => {
-      browser.runtime.sendMessage({
-        type: 'pageClosed',
-      });
+    port.onDisconnect.addListener(() => {
+      eventBus.removeEventListener(
+        BACKGROUND_READY_EVENT,
+        activateUIConnection
+      );
+      if (!activated) return;
+      if (port.name === 'popup') {
+        preferenceService.setPopupOpen(false);
+      }
+      browser.runtime.sendMessage({ type: 'pageClosed' });
       eventBus.removeEventListener(EVENTS.broadcastToUI, boardcastCallback);
     });
 

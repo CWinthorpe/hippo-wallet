@@ -14,7 +14,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
@@ -24,7 +24,6 @@ import {
 } from '@/ui/utils/cex';
 
 // icons
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -75,7 +74,6 @@ const WhitelistInput = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
@@ -198,7 +196,6 @@ const WhitelistInput = () => {
       exchanges,
       selectedExchange?.id
     );
-    dispatch.whitelist.getWhitelist();
     await wallet.updateAlianName(
       address,
       inputAlias || '',
@@ -326,18 +323,6 @@ const WhitelistInput = () => {
           contentClassName="thin-header"
           forceShowBack
           canBack
-          // rightSlot={
-          //   isDesktop || isTab ? null : (
-          //     <div
-          //       className="text-r-neutral-title1 cursor-pointer absolute right-0 "
-          //       onClick={() => {
-          //         openInternalPageInTab(`send-poly${history.location.search}`);
-          //       }}
-          //     >
-          //       <RcIconFullscreen />
-          //     </div>
-          //   )
-          // }
         >
           {t('page.whitelist.title')}
         </PageHeader>

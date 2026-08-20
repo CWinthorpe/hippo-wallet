@@ -110,6 +110,14 @@ Every signed raw transaction attempt has one destination:
 
 Hippo computes the local transaction hash before submission and compares it with the returned hash. A timeout, disconnect, malformed hash or mismatched hash is treated as potentially ambiguous. Hippo does not automatically rebroadcast to another provider. External signers such as WalletConnect or Coinbase may control their own broadcast behavior.
 
+## WalletConnect boundary
+
+WalletConnect uses Hippo's own public Reown project ID and Hippo-branded client
+metadata. Pairing and session traffic reaches the WalletConnect/Reown relay only
+after the user opens and uses the WalletConnect flow. Release builds do not use
+Rabby's Reown project identity. Operators can rotate the public client ID with
+the `WALLETCONNECT_PROJECT_ID` build environment variable.
+
 ## CoW Protocol boundary
 
 Hippo uses CoW Protocol as its only swap execution system. Same-chain quotes go directly to the documented production order-book API under `https://api.cow.fi/<network>/api/v1`; no Hippo proxy, intermediary aggregator, embedded credential, referral fee or Rabby trade endpoint is involved. Supported production networks are Ethereum, BNB Chain, Gnosis Chain, Polygon, Base, Plasma, Arbitrum One, Avalanche, Ink and Linea. Cross-chain and bridge paths remain removed.

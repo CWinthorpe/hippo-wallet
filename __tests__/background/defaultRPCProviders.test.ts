@@ -78,9 +78,11 @@ describe('bundled privacy RPC provider map', () => {
     }
   });
 
-  test('ships 67 built-in routes and requires explicit custom RPCs for the rest', () => {
+  test('preserves Hippo chain coverage, adds upstream chains, and fails closed without a reviewed endpoint', () => {
     expect(Object.keys(getBuiltInDefaultRPCMap())).toHaveLength(67);
-    expect(getChainsRequiringCustomRPC()).toHaveLength(19);
+    expect(getChainsRequiringCustomRPC()).toHaveLength(22);
+    expect(providerConfiguration.routes.ftm.chainId).toBe(250);
+    expect(providerConfiguration.routes.xdc.endpoints).toEqual([]);
     expect(providerConfiguration.routes.plasma.endpoints).toEqual([]);
   });
 });

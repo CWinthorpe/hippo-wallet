@@ -32,7 +32,7 @@ import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
@@ -529,8 +529,6 @@ const SendNFT = () => {
   }, [nftItem, wallet, history.location.pathname, form]);
 
   const init = useCallback(async () => {
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
     const account = await wallet.syncGetCurrentAccount();
 
@@ -539,7 +537,7 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  }, [dispatch.contactBook, dispatch.whitelist, history, wallet]);
+  }, [dispatch.contactBook, history, wallet]);
 
   useEffect(() => {
     init();
@@ -611,7 +609,7 @@ const SendNFT = () => {
                   window.close();
                 }}
               >
-                <RcIconFullscreen />
+                <RcIconJumpBoldCC />
               </div>
             )
           }

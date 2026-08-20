@@ -1,6 +1,6 @@
 import { SvgIconCross } from '@/ui/assets';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import AddAddress from '@/ui/views/AddAddress';
 import { AddMoreAddressesFromSeedPhrase } from '@/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase';
 import { AddNewAddress } from '@/ui/views/AddAddress/AddNewAddress';
@@ -26,14 +26,8 @@ import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
 export const AddAddressModal: React.FC = () => {
-  const state = useRabbySelector(
-    (store) =>
-      store.desktopProfile.addAddress || {
-        visible: false,
-        importType: '',
-      }
-  );
-  const dispatch = useRabbyDispatch();
+  const state = useDesktopProfileStore((store) => store.addAddress);
+  const setAddAddress = useDesktopProfileStore((store) => store.setAddAddress);
   const importType = state.importType;
 
   const isBlackCloseIcon = useMemo(() => {
@@ -46,17 +40,19 @@ export const AddAddressModal: React.FC = () => {
     ].includes(importType);
   }, [importType]);
 
+  const isHideCloseIcon = useMemo(() => {
+    return ['add-more-from-seed-phrase'].includes(importType);
+  }, [importType]);
+
   return (
     <Modal
       visible={state.visible}
       onCancel={() => {
-        dispatch.desktopProfile.setField({
-          addAddress: { visible: false, importType: '' },
-        });
+        setAddAddress({ visible: false, importType: '' });
       }}
       width={403}
       centered
-      closable
+      closable={!isHideCloseIcon}
       className="modal-support-darkmode"
       closeIcon={
         <SvgIconCross
@@ -83,32 +79,24 @@ export const AddAddressModal: React.FC = () => {
 };
 
 const AddAddressModalContent: React.FC = () => {
-  const { importType, state } = useRabbySelector(
-    (store) =>
-      store.desktopProfile.addAddress || {
-        visible: false,
-        importType: '',
-      }
+  const { importType, state } = useDesktopProfileStore(
+    (store) => store.addAddress
   );
-  const dispatch = useRabbyDispatch();
+  const setAddAddress = useDesktopProfileStore((store) => store.setAddAddress);
   const onNavigate = useMemoizedFn(
     (type: string, state?: Record<string, any>) => {
-      dispatch.desktopProfile.setField({
-        addAddress: {
-          visible: type === 'done' ? false : true,
-          importType: type,
-          state: state || {},
-        },
+      setAddAddress({
+        visible: type === 'done' ? false : true,
+        importType: type,
+        state: state || {},
       });
     }
   );
   const onBack = useMemoizedFn(() => {
-    dispatch.desktopProfile.setField({
-      addAddress: {
-        visible: true,
-        importType: '',
-        state: {},
-      },
+    setAddAddress({
+      visible: true,
+      importType: '',
+      state: {},
     });
   });
   return (

@@ -47,7 +47,6 @@ export const app = createModel<RootModel>()({
       await Promise.allSettled([
         dispatch.account.initLocal(),
         dispatch.preference.init(),
-        dispatch.whitelist.init(),
       ]);
     },
   }),

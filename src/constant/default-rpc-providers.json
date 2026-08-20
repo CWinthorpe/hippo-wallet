@@ -1,7 +1,12 @@
 {
   "schemaVersion": 1,
   "reviewedAt": "2026-08-01",
-  "providerOrder": ["1RPC", "dRPC", "PublicNode", "0xRPC"],
+  "providerOrder": [
+    "1RPC",
+    "dRPC",
+    "PublicNode",
+    "0xRPC"
+  ],
   "sources": {
     "1RPC": "https://docs.1rpc.io/using-the-web3-api/networks",
     "dRPC": "https://drpc.org/chainlist",
@@ -576,7 +581,7 @@
     },
     "b2": {
       "chainId": 223,
-      "name": "B\u00b2",
+      "name": "B²",
       "endpoints": [
         {
           "provider": "dRPC",
@@ -817,7 +822,7 @@
     },
     "story": {
       "chainId": 1514,
-      "name": "Story",
+      "name": "DATA Network",
       "endpoints": []
     },
     "lens": {
@@ -961,6 +966,21 @@
           "url": "https://tempo-mainnet.drpc.org"
         }
       ]
+    },
+    "xdc": {
+      "chainId": 50,
+      "endpoints": [],
+      "name": "XDC"
+    },
+    "kite": {
+      "chainId": 2366,
+      "endpoints": [],
+      "name": "KiteAI"
+    },
+    "hood": {
+      "chainId": 4663,
+      "endpoints": [],
+      "name": "Robinhood"
     }
   }
 }

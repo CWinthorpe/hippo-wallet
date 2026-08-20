@@ -10,7 +10,7 @@ import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountLis
 import { SwapTokenModal } from './components/SwapTokenModal';
 import { TransactionsTabPane } from './components/TransactionsTabPane';
 import { DesktopChainSelector } from '../DesktopChainSelector';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { findChainByEnum } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
@@ -43,6 +43,7 @@ import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { expiredNft } from '@/db/utils/expired';
+import { useHomeBalanceViewOuterPrefetch } from '../Dashboard/components/BalanceView/useHomeBalanceView';
 
 const DESKTOP_NAV_HEIGHT = 0;
 
@@ -68,10 +69,15 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile: React.FC<{
+type DesktopProfileProps = {
   isActive?: boolean;
   style?: React.CSSProperties;
-}> = ({ isActive = true, style }) => {
+};
+
+const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
+  isActive = true,
+  style,
+}) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
@@ -82,14 +88,14 @@ export const DesktopProfile: React.FC<{
 
   const history = useHistory();
   const location = useLocation();
-  const dispatch = useRabbyDispatch();
+  const setActiveTab = useDesktopProfileStore((state) => state.setActiveTab);
   const activeTab = useMemo(() => {
     const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
     return match?.[1] || 'tokens';
   }, [location.pathname]);
 
   const handleTabChange = (key: string) => {
-    dispatch.desktopProfile.setField({ activeTab: key });
+    setActiveTab(key);
     history.replace(`/desktop/profile/${key}`);
     const $scrollElement = scrollContainerRef.current;
     if (!$scrollElement) {
@@ -110,7 +116,8 @@ export const DesktopProfile: React.FC<{
       sendPageType: searchParams.get('sendPageType'),
     };
   }, [location.search]);
-  const chain = useRabbySelector((store) => store.desktopProfile.chain);
+  const chain = useDesktopProfileStore((state) => state.chain);
+  const setChain = useDesktopProfileStore((state) => state.setChain);
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -119,9 +126,11 @@ export const DesktopProfile: React.FC<{
     curveChartData,
     isBalanceLoading,
     isCurveLoading,
+    isRefreshing,
     appChainIds,
     refreshBalance,
     refreshCurve,
+    refreshBalanceAndCurveIfExpired,
   } = useDesktopBalanceView({
     address: currentAccount?.address,
   });
@@ -174,6 +183,16 @@ export const DesktopProfile: React.FC<{
     refreshCurve();
   });
 
+  const handleFocusedUpdate = useMemoizedFn(async () => {
+    if (activeTab === 'nft' && currentAccount?.address) {
+      expiredNft(currentAccount.address);
+    }
+
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalanceAndCurveIfExpired();
+  });
+
   useListenTxReload(async () => {
     refreshBalance();
     refreshCurve();
@@ -197,7 +216,7 @@ export const DesktopProfile: React.FC<{
 
   useEventBusListener(EVENTS.DESKTOP.FOCUSED, () => {
     // window.location.reload();
-    handleUpdate();
+    handleFocusedUpdate();
   });
 
   useMount(() => {
@@ -243,6 +262,7 @@ export const DesktopProfile: React.FC<{
                     evmBalance={evmBalance}
                     curveChartData={curveChartData}
                     isLoading={isBalanceLoading || isCurveLoading}
+                    isRefreshing={isRefreshing}
                     onRefresh={handleUpdate}
                     appChainIds={appChainIds}
                   />
@@ -281,9 +301,7 @@ export const DesktopProfile: React.FC<{
                             <DesktopPending />
                             <DesktopChainSelector
                               value={chain}
-                              onChange={(v) =>
-                                dispatch.desktopProfile.setField({ chain: v })
-                              }
+                              onChange={setChain}
                             />
                           </div>
                         </>
@@ -460,5 +478,35 @@ export const DesktopProfile: React.FC<{
         destroyOnClose
       />
     </>
+  );
+};
+
+const DesktopProfilePrefetched: React.FC<
+  DesktopProfileProps & { currentAddress: string }
+> = ({ currentAddress, ...props }) => {
+  const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
+    currentAddress
+  );
+
+  if (!dashboardBalanceCacheInited) {
+    return null;
+  }
+
+  return <DesktopProfileContent {...props} />;
+};
+
+export const DesktopProfile: React.FC<DesktopProfileProps> = (props) => {
+  const currentAccount = useCurrentAccount();
+
+  if (!currentAccount?.address) {
+    return null;
+  }
+
+  return (
+    <DesktopProfilePrefetched
+      key={currentAccount.address}
+      currentAddress={currentAccount.address}
+      {...props}
+    />
   );
 };

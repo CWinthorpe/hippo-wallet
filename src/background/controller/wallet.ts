@@ -112,6 +112,16 @@ import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
+import type {
+  PersistedStoreKey,
+  PersistedStoreMap,
+  PersistedStorePatch,
+  PersistedStoreSnapshot,
+} from '@/types/persistedStore';
+import {
+  getPersistStoreOrigin,
+  getPersistStoreRevision,
+} from 'background/utils/persistStore';
 
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -1885,6 +1895,56 @@ export class WalletController extends BaseController {
   getAddressSortStoreValue = preferenceService.getAddressSortStoreValue;
   setAddressSortStoreValue = preferenceService.setAddressSortStoreValue;
 
+  getStorageItem = <Key extends PersistedStoreKey>(
+    key: Key
+  ): PersistedStoreMap[Key] => {
+    switch (key) {
+      case 'currency':
+        return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'whitelist':
+        return whitelistService.getStore() as PersistedStoreMap[Key];
+      default:
+        throw new Error(`Unknown persisted store: ${String(key)}`);
+    }
+  };
+
+  getStorageSnapshot = <Key extends PersistedStoreKey>(
+    key: Key
+  ): PersistedStoreSnapshot<Key> => ({
+    origin: getPersistStoreOrigin(),
+    revision: getPersistStoreRevision(key),
+    state: this.getStorageItem(key),
+  });
+
+  setStorageItem = <Key extends PersistedStoreKey>(
+    key: Key,
+    partials: PersistedStorePatch<Key>,
+    clearedKeys?: string[]
+  ) => {
+    if (!partials || typeof partials !== 'object') {
+      throw new Error(`Invalid persisted store value: ${String(key)}`);
+    }
+    const patch = { ...partials } as Record<string, unknown>;
+    if (Array.isArray(clearedKeys)) {
+      clearedKeys.forEach((clearedKey) => {
+        if (typeof clearedKey === 'string') {
+          patch[clearedKey] = undefined;
+        }
+      });
+    }
+
+    switch (key) {
+      case 'currency':
+        currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
+        return;
+      case 'whitelist':
+        whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
+        return;
+      default:
+        throw new Error(`Unknown persisted store: ${String(key)}`);
+    }
+  };
+
   getLastSelectedLendingChain = lendingService.getLastSelectedChain;
   setLastSelectedLendingChain = lendingService.setLastSelectedChain;
   getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
@@ -3140,11 +3200,17 @@ export class WalletController extends BaseController {
     return keyring.hasBackup == null ? true : keyring.hasBackup;
   };
 
-  backupSeedPhraseConfirmed = async (address: string) => {
-    const keyring = await keyringService.getKeyringForAccount(
-      address,
-      KEYRING_CLASS.MNEMONIC
-    );
+  backupSeedPhraseConfirmed = async (
+    value: string,
+    type: 'address' | 'publickey' = 'address'
+  ) => {
+    const keyring =
+      type === 'publickey'
+        ? await this.#getMnemonicKeyring(type, value)
+        : await keyringService.getKeyringForAccount(
+            value,
+            KEYRING_CLASS.MNEMONIC
+          );
     if (!keyring) {
       throw new Error('Keyring not found');
     }
@@ -3488,8 +3554,11 @@ export class WalletController extends BaseController {
   getMnemonicFromPublicKey = async (password: string, publicKey: string) => {
     await this.verifyPassword(password);
     const targetKeyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!targetKeyring) {
+      throw new Error('Keyring not found');
+    }
 
-    return targetKeyring?.mnemonic;
+    return targetKeyring.mnemonic;
   };
 
   getMnemonicKeyRingIdFromPublicKey = (publicKey: string) => {
@@ -5357,6 +5426,7 @@ export class WalletController extends BaseController {
   tryUnlock = async () => {
     await keyringService.tryUnlock();
     this.syncPopupIcon();
+    return this.isUnlocked();
   };
 
   syncPopupIcon = () => {

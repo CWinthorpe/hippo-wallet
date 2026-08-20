@@ -4,15 +4,13 @@ import {
   HIPPO_WALLET_ICON_DATA_URI,
   HIPPO_WALLET_NAME,
   HIPPO_WALLET_REPOSITORY,
+  HIPPO_WALLETCONNECT_PROJECT_ID,
 } from '@/constant/hippo-brand';
 
 export const GET_WALLETCONNECT_CONFIG: () => ConstructorOptions = () => {
-  const projectId = process.env.WALLETCONNECT_PROJECT_ID?.trim();
-  if (!projectId) {
-    throw new Error(
-      'WalletConnect requires WALLETCONNECT_PROJECT_ID from an operator-owned Reown project'
-    );
-  }
+  const projectId =
+    process.env.WALLETCONNECT_PROJECT_ID?.trim() ||
+    HIPPO_WALLETCONNECT_PROJECT_ID;
 
   return {
     // 1h
