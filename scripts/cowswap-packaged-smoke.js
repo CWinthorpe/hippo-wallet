@@ -482,7 +482,7 @@ const runOnce = async (
     client = await CdpClient.connect(page.webSocketDebuggerUrl);
     await client.send('Page.enable');
     await client.send('Runtime.enable');
-    const extensionPage = `chrome-extension://${extensionId}/index.html#/swap`;
+    const extensionPage = `chrome-extension://${extensionId}/index.html#/dex-swap`;
     await client.send('Page.navigate', { url: extensionPage });
     await waitFor(async () => {
       const state = await evaluate(
