@@ -30,6 +30,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { ga4 } from '@/utils/ga4';
+import { routeNotificationAfterUnlock } from './approvalResolution';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -90,7 +91,7 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  const [, resolveApproval] = useApproval();
+  const [getApproval, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -186,7 +187,11 @@ const Unlock = () => {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        resolveApproval();
+        await routeNotificationAfterUnlock({
+          getApproval,
+          resolveApproval,
+          replace: (path) => history.replace(path),
+        });
       }
     } else if (UiType.isTab || UiType.isDesktop) {
       const account = query.address
