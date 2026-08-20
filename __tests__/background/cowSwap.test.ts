@@ -148,7 +148,9 @@ const makeQuoteBody = (requestBody: Record<string, any>) => ({
     feeAmount: NETWORK_FEE,
     gasAmount: '215931',
     gasPrice: '191319333',
-    sellTokenPrice: '1',
+    // Sanitized from a live verified CoW mainnet USDC quote. CoW defines
+    // sellTokenPrice as a positive decimal string, not a uint amount.
+    sellTokenPrice: '438464534.5571591854095458984375',
     kind: 'sell',
     partiallyFillable: false,
     sellTokenBalance: 'erc20',
@@ -298,6 +300,52 @@ describe('CowSwapService', () => {
       OWNER
     );
   });
+
+  test.each(['0.0004', '1', '1.0'])(
+    'accepts the official positive decimal sell token price format: %s',
+    async (sellTokenPrice) => {
+      const transport = makeTransport((request, parsed) => {
+        if (!request.url.endsWith('/quote')) return undefined as any;
+        const body = makeQuoteBody(parsed!);
+        return jsonResponse(200, {
+          ...body,
+          quote: { ...body.quote, sellTokenPrice },
+        });
+      });
+
+      await expect(
+        new CowSwapService(transport).getQuote(quoteRequest())
+      ).resolves.toMatchObject({ provider: 'CoW Swap' });
+    }
+  );
+
+  test.each([
+    ['number', 1],
+    ['zero', '0'],
+    ['zero decimal', '0.0'],
+    ['negative', '-1'],
+    ['positive sign', '+1'],
+    ['exponent notation', '1e-6'],
+    ['missing integer part', '.5'],
+    ['missing fractional part', '1.'],
+    ['leading whitespace', ' 1'],
+  ])(
+    'rejects a malformed quoted sell token price: %s',
+    async (_label, value) => {
+      const transport = makeTransport((request, parsed) => {
+        if (!request.url.endsWith('/quote')) return undefined as any;
+        const body = makeQuoteBody(parsed!);
+        return jsonResponse(200, {
+          ...body,
+          quote: { ...body.quote, sellTokenPrice: value },
+        });
+      });
+
+      await expect(
+        new CowSwapService(transport).getQuote(quoteRequest())
+      ).rejects.toThrow('Invalid quoted sell token price');
+    }
+  );
 
   test('rejects native execution from a contract account', async () => {
     const requestRpc = RPCService.requestDefaultRPC as jest.Mock;

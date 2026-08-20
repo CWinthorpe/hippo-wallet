@@ -28,6 +28,12 @@ const normalRequest = {
   userAddress: PUBLIC_EOA,
   slippage: '0.5',
 };
+const decimalPriceRequest = {
+  ...normalRequest,
+  fromToken: { address: USDC, decimals: 6, symbol: 'USDC' },
+  toToken: { address: WETH, decimals: 18, symbol: 'WETH' },
+  amount: '1000000000',
+};
 const nativeRequest = {
   ...normalRequest,
   fromToken: { address: NATIVE, decimals: 18, symbol: 'ETH' },
@@ -227,8 +233,8 @@ const smokeExpression = () => `
 
   await callController('setCustomRPC', [
     'ETH',
-    'https://1rpc.io/eth',
-    ['https://eth.drpc.org', 'https://ethereum-rpc.publicnode.com'],
+    'https://eth.drpc.org',
+    ['https://1rpc.io/eth'],
   ]);
   await callController('setRPCEnable', ['ETH', true]);
 
@@ -237,6 +243,9 @@ const smokeExpression = () => `
   }]);
   const normalQuote = await callController('getCowSwapQuote', [${JSON.stringify(
     normalRequest
+  )}]);
+  const decimalPriceQuote = await callController('getCowSwapQuote', [${JSON.stringify(
+    decimalPriceRequest
   )}]);
   const badSignature = '0x' + '00'.repeat(65);
   const signatureGate = await callController('submitCowSwapOrder', [{
@@ -278,6 +287,16 @@ const smokeExpression = () => `
       signingDomain: normalQuote.signingPayload?.domain,
       signingDomainTypeCount:
         normalQuote.signingPayload?.types?.EIP712Domain?.length,
+    },
+    decimalPriceQuote: {
+      provider: decimalPriceQuote.provider,
+      chainId: decimalPriceQuote.chainId,
+      amountIn: decimalPriceQuote.amountIn,
+      amountOut: decimalPriceQuote.amountOut,
+      minimumAmountOut: decimalPriceQuote.minimumAmountOut,
+      approvalSpender: decimalPriceQuote.approvalSpender,
+      nativeSell: decimalPriceQuote.nativeSell,
+      expectedOrderUid: decimalPriceQuote.expectedOrderUid,
     },
     signatureGate,
     nativeQuote: {
@@ -351,6 +370,33 @@ const assertSmokeResult = (result) => {
     throw new Error(
       'Packaged controller did not reject the invalid order signature'
     );
+  }
+
+  const decimalPriceQuote = result.decimalPriceQuote;
+  if (
+    decimalPriceQuote.provider !== 'CoW Swap' ||
+    decimalPriceQuote.chainId !== 1 ||
+    decimalPriceQuote.amountIn !== decimalPriceRequest.amount ||
+    decimalPriceQuote.approvalSpender !== VAULT_RELAYER ||
+    decimalPriceQuote.nativeSell !== false
+  ) {
+    throw new Error(
+      'Packaged controller returned invalid decimal-price CoW quote context'
+    );
+  }
+  assertUint(decimalPriceQuote.amountOut, 'decimal-price quoted output');
+  assertUint(
+    decimalPriceQuote.minimumAmountOut,
+    'decimal-price minimum output'
+  );
+  if (
+    BigInt(decimalPriceQuote.minimumAmountOut) >
+    BigInt(decimalPriceQuote.amountOut)
+  ) {
+    throw new Error('Decimal-price CoW minimum exceeds quoted output');
+  }
+  if (!decimalPriceQuote.expectedOrderUid.includes(PUBLIC_EOA.slice(2))) {
+    throw new Error('Decimal-price CoW UID does not encode the expected owner');
   }
 
   const native = result.nativeQuote;
@@ -499,6 +545,7 @@ const runOnce = async (
       profile,
       extensionId,
       normalOrderUid: result.normalQuote.expectedOrderUid,
+      decimalPriceOrderUid: result.decimalPriceQuote.expectedOrderUid,
       nativeOrderUid: result.nativeQuote.expectedOrderUid,
       nativeTransactionTarget: result.nativePrepared.transaction.to,
       knownOrderStatus: result.knownStatus.status,

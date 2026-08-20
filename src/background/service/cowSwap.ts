@@ -244,6 +244,17 @@ const parseUintString = (
   return parsed;
 };
 
+const parsePositiveDecimalString = (value: unknown, label: string) => {
+  if (
+    typeof value !== 'string' ||
+    !/^[0-9]+(?:\.[0-9]+)?$/.test(value) ||
+    !/[1-9]/.test(value)
+  ) {
+    throw new Error(`Invalid ${label}`);
+  }
+  return value;
+};
+
 const parseRpcQuantity = (
   value: unknown,
   label: string,
@@ -887,7 +898,10 @@ export class CowSwapService {
     parseUintString(rawQuote.gasPrice, 'quoted gas price', {
       allowZero: true,
     });
-    parseUintString(rawQuote.sellTokenPrice, 'quoted sell token price');
+    parsePositiveDecimalString(
+      rawQuote.sellTokenPrice,
+      'quoted sell token price'
+    );
     const validTo = parseSafeInteger(
       rawQuote.validTo,
       'quoted validity',
