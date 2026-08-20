@@ -17,8 +17,8 @@ const manifestPath = path.join(root, 'manifest.json');
 if (!fs.existsSync(manifestPath)) fail('missing manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.manifest_version !== 3) fail('manifest is not MV3');
-if (manifest.version !== '0.93.105') fail('unexpected manifest version');
-if (manifest.version_name !== '0.93.105-hippo.8') {
+if (manifest.version !== '0.94.3') fail('unexpected manifest version');
+if (manifest.version_name !== '0.94.3-hippo.9') {
   fail('unexpected manifest version_name');
 }
 if (manifest.action?.default_title !== 'Hippo Wallet') {
@@ -30,6 +30,13 @@ if (manifest.homepage_url !== 'https://github.com/CWinthorpe/hippo-wallet') {
 if (JSON.stringify(manifest.externally_connectable?.ids) !== '[]') {
   fail('externally_connectable must be closed');
 }
+if (
+  !manifest.content_scripts?.some((entry) =>
+    entry.matches?.includes('*://connect.trezor.io/*/popup.html*')
+  )
+) {
+  fail('restricted Trezor popup content-script match is missing');
+}
 const permissions = new Set(manifest.permissions || []);
 if (!permissions.has('scripting')) fail('scripting permission missing');
 for (const forbidden of ['webRequest', 'webRequestBlocking', 'debugger']) {
@@ -37,7 +44,16 @@ for (const forbidden of ['webRequest', 'webRequestBlocking', 'debugger']) {
     fail(`forbidden permission present: ${forbidden}`);
 }
 
-const requiredFiles = ['background.js', 'ui.js', 'sw.js', 'rules/privacy.json'];
+const requiredFiles = [
+  'background.js',
+  'ui.js',
+  'sw.js',
+  'offscreen.html',
+  'trezor-usb-permissions.html',
+  'vendor/trezor/trezor-content-script.js',
+  'vendor/trezor-usb-permissions.js',
+  'rules/privacy.json',
+];
 for (const name of requiredFiles) {
   if (!fs.existsSync(path.join(root, name)))
     fail(`missing required file: ${name}`);
@@ -75,6 +91,7 @@ const runtimeFiles = files.filter(({ relative }) =>
   ['.js', '.html', '.css'].includes(path.extname(relative).toLowerCase())
 );
 const requiredMarkers = [
+  'fc0e0867d8540f1d7df27c322976534d',
   'https://api.cow.fi/mainnet',
   'https://api.cow.fi/xdai',
   'https://api.cow.fi/arbitrum_one',
