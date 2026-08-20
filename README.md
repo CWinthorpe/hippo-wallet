@@ -52,7 +52,7 @@ Read failover is sequential, never parallel, and is restricted to replay-safe re
 
 Gas recommendations and gas estimation come from the selected RPC using `eth_feeHistory`, `eth_maxPriorityFeePerGas`, the latest block's base fee, `eth_gasPrice` and `eth_estimateGas`. There is no centralized gas-price fallback.
 
-The bundled map currently covers **67 of 86** networks. The other networks require a custom RPC; see [docs/private-fork.md](docs/private-fork.md).
+The bundled map currently covers **67 of 89** networks. The other networks require a custom RPC; see [docs/private-fork.md](docs/private-fork.md).
 
 ### One-destination transaction submission
 
@@ -101,15 +101,20 @@ A VPN may hide a residential IP address, but it does not hide wallet addresses, 
 
 - **Portfolio/history/NFT/DeFi:** may disclose wallet address, chains and requested asset or protocol context to Rabby/DeBank when enabled.
 - **Enhanced signing analysis:** may disclose origin, wallet, chain, destination, value, calldata, messages or typed-data contents when enabled.
-- **Approval discovery:** may disclose wallet address and chain when enabled. Current allowance state is verified through the selected RPC before display or revoke construction.
+- **Approval discovery:** may disclose wallet address and chain to Rabby/DeBank when enabled. The displayed ERC-20 and NFT approval list is provider-indexed. Revoke calldata is constructed locally and sent through the normal wallet/RPC path, but the wallet does not independently re-read every displayed approval on-chain before display or revoke construction. EIP-7702 delegation checks use a separate RPC-backed path.
 - **RPC providers:** receive the JSON-RPC requests routed to them.
 - **WalletConnect/Reown:** receives pairing and session traffic when you use
   WalletConnect. Hippo ships its own public Reown project ID; it does not use
   Rabby's project identity.
-- **CoW Protocol:** receives token, amount, account/receiver, validity and app-data fields for deliberate quote, order, status and cancellation requests. ERC-20 order signatures and public order UIDs are submitted to CoW's order book; native orders are also visible on-chain through EthFlow.
+- **CoW Protocol:** receives token, amount, account/receiver, validity, app-data fields, source IP and request metadata for deliberate quote, order, status and cancellation requests, including automatic status polling while the Swap page is open. The app data identifies the client as `Hippo Wallet` but contains no installation identifier. ERC-20 order signatures and public order UIDs are submitted to CoW's order book; native orders are also visible on-chain through EthFlow.
 - **MEV Blocker:** receives the signed raw transaction for eligible Ethereum Mainnet submission.
+- **External account integrations:** WalletConnect, Coinbase, Safe and hardware-wallet integrations may contact their own relays, services or vendor endpoints when used.
 
-Provider privacy statements are claims by those providers, not independent guarantees. Review [docs/private-fork.md](docs/private-fork.md) before using the wallet with sensitive accounts.
+Provider privacy statements are claims by those providers, not independent guarantees. Review the implementation, [docs/private-fork.md](docs/private-fork.md) and each provider's current policy before using the wallet with sensitive accounts.
+
+## Browser permissions
+
+The MV3 release requests `<all_urls>` and injects its provider bridge into all HTTP(S) and `file://` frames so dapps can reach the wallet. It also requests scripting, storage, unlimited storage, alarms, active-tab, notifications, offscreen, context-menu and declarative-network-request permissions. It does not request `webRequest`, `webRequestBlocking` or `debugger`. These broad compatibility permissions make the consent policy and reviewed transport boundaries security-critical.
 
 ## Install the release ZIP
 
@@ -133,8 +138,10 @@ Prerequisites:
 git clone https://github.com/CWinthorpe/hippo-wallet.git
 cd hippo-wallet
 node .yarn/releases/yarn-4.14.1.cjs install --immutable
-node .yarn/releases/yarn-4.14.1.cjs typecheck
+node .yarn/releases/yarn-4.14.1.cjs check
+node .yarn/releases/yarn-4.14.1.cjs test --runInBand
 node .yarn/releases/yarn-4.14.1.cjs build:pro
+node .yarn/releases/yarn-4.14.1.cjs verify:dist
 ```
 
 The unpacked MV3 build is written to `dist/`.
