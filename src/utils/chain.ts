@@ -15,11 +15,52 @@ import { CHAINS, CHAINS_ENUM, EVENTS } from 'consts';
 import { toHex } from 'viem';
 import browser from 'webextension-polyfill';
 
+const bundledMainnetList = defaultSuppordChain
+  .filter((item) => !item.is_disabled)
+  .map((item) => supportedChainToChain(item));
+
+const chainInventoryKey = (chain: Chain) => chain.serverId || String(chain.id);
+
+/**
+ * Keep the bundled, reviewed inventory authoritative while retaining any
+ * cache-only chain that an older Hippo release already exposed.
+ */
+export const mergeMainnetChainInventory = (
+  bundled: Chain[],
+  cached: Chain[]
+): Chain[] => {
+  const cachedByKey = new Map(
+    cached.map((chain) => [chainInventoryKey(chain), chain])
+  );
+  const seen = new Set<string>();
+  const merged = bundled.map((chain) => {
+    const key = chainInventoryKey(chain);
+    seen.add(key);
+    return {
+      ...cachedByKey.get(key),
+      ...chain,
+    } as Chain;
+  });
+
+  for (const chain of cached) {
+    const key = chainInventoryKey(chain);
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(chain);
+    }
+  }
+
+  return merged;
+};
+
 export const getMainnetListFromLocal = () => {
   return Promise.resolve(
     browser.storage.local.get('rabbyMainnetChainList')
   ).then((res) => {
-    return res?.rabbyMainnetChainList || [];
+    const cached = Array.isArray(res?.rabbyMainnetChainList)
+      ? res.rabbyMainnetChainList
+      : [];
+    return mergeMainnetChainInventory(bundledMainnetList, cached);
   });
 };
 
@@ -32,11 +73,7 @@ getMainnetListFromLocal().then((list) => {
 });
 
 const store = {
-  mainnetList: defaultSuppordChain
-    .filter((item) => !item.is_disabled)
-    .map((item) => {
-      return supportedChainToChain(item);
-    }),
+  mainnetList: bundledMainnetList,
   testnetList: [] as TestnetChain[],
 };
 

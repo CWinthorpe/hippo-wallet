@@ -98,7 +98,7 @@ Fallback is sequential and limited to replay-safe reads and estimates. Transport
 
 Gas data is derived from the selected RPC using fee history, priority fee, latest-block base fee, gas price and gas estimation. There is no centralized gas API fallback.
 
-The bundled map covers 67 of 86 integrated networks. These 19 networks require a custom RPC: Oasys, Conflux, Story, Reya, Botanix, Citrea, IoTeX, BounceBit, Cyber, Etherlink, Zircuit, Sophon, DFK Chain, Chiliz, Mitosis, Taiko, Bitlayer, DBK Chain and Plasma.
+The bundled map covers 67 of 89 integrated networks. These 22 networks require a custom RPC: IoTeX, DFK, Conflux, Oasys, Bitlayer, Reya, BounceBit, Taiko, Cyber, Chiliz, DBK Chain, Etherlink, Zircuit, Sophon, DATA Network, Plasma, Mitosis, Botanix, Citrea, XDC, KiteAI and Robinhood. An empty route means Hippo requires an explicit custom RPC; it does not fall back to Rabby.
 
 ## Raw-transaction submission
 
