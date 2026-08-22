@@ -110,12 +110,6 @@ class OpenapiStore {
   set apiTime(_value: number | null) {
     this.store.apiTime = null;
   }
-
-  generateAPIKey = () => {
-    // Hippo: no API key is ever generated for functional API traffic.
-    this.store.apiKey = null;
-    this.store.apiTime = null;
-  };
 }
 
 const proxyStore = new OpenapiStore();

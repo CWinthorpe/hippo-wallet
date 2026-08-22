@@ -10,7 +10,6 @@ import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
 import store from './store';
-import { initializeExchangeStore } from './state/exchange';
 import {
   initializeWalletStatusStore,
   useWalletStatusStore,
@@ -96,10 +95,6 @@ const main = async () => {
   );
   await walletStatusInitialization;
   compensateUnlockedOnceFlag();
-
-  store.dispatch.app.initBizStore();
-  void initializeExchangeStore();
-  store.dispatch.chains.init();
   if (getUiType().isPop) {
     wallet
       .tryOpenOrActiveUserGuide()

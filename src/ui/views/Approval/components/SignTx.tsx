@@ -49,7 +49,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
+import { useSize, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -65,10 +65,7 @@ import { FooterBar } from './FooterBar/FooterBar';
 import Actions from './Actions';
 import { useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
-import {
-  Level,
-  defaultRules,
-} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
@@ -356,7 +353,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const logId = useRef('');
   const actionType = useRef('');
   const explainEpochRef = useRef(0);
-  const gasPriceMedianRequestRef = useRef<Promise<void> | null>(null);
   const preparedBlockPromiseRef = useRef<Promise<BlockInfo | null> | null>(
     null
   );
@@ -367,7 +363,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
-  const [gasPriceMedian, setGasPriceMedian] = useState<null | number>(null);
+  const [gasPriceMedian] = useState<null | number>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
   const [gasUsed, setGasUsed] = useState(0);
   const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 2
@@ -984,26 +980,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           return [checkResult.some((item) => item.code === 3001), 0, undefined];
         }
 
-        return wallet.openapi
-          .checkGasAccountTxs({
-            sig: sig || '',
-            account_id: gasAccountAddress || currentAccount.address,
-            tx_list: [
-              {
-                ...nextTx,
-                gas: gasLimit,
-                gasPrice: intToHex(gasLevel.price),
-              },
-            ],
-          })
-          .then((gasAccountRes) => {
-            return [
-              !gasAccountRes.balance_is_enough,
-              (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
-                (gasAccountRes.gas_account_cost?.gas_cost || 0),
-              gasAccountRes,
-            ];
-          });
+        // Hippo: Gas Account sponsored/gasless payment is removed, so the
+        // 'gasAccount' gas method always reports insufficient balance and the
+        // user signs with native gas.
+        return [true, 0, undefined];
       });
     }
   );
@@ -1952,18 +1932,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const loadGasMedian = useMemoizedFn(() => {
-    if (gasPriceMedian !== null || gasPriceMedianRequestRef.current) {
+    // Hippo: the DeBank gas-price-stats endpoint is not contacted.
+    if (gasPriceMedian !== null) {
       return;
     }
-    gasPriceMedianRequestRef.current = wallet.openapi
-      .gasPriceStats(chain.serverId)
-      .then(({ median }) => {
-        setGasPriceMedian(median);
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        gasPriceMedianRequestRef.current = null;
-      });
   });
 
   const checkCanProcess = async () => {
@@ -1994,55 +1966,12 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const checkGasLessStatus = async () => {
-    const sendUsdValue =
-      txDetail?.balance_change.send_token_list?.reduce((sum, item) => {
-        return new BigNumber(item.raw_amount || 0)
-          .div(10 ** item.decimals)
-          .times(item.price || 0)
-          .plus(sum);
-      }, new BigNumber(0)) || new BigNumber(0);
-    const receiveUsdValue =
-      txDetail?.balance_change?.receive_token_list.reduce((sum, item) => {
-        return new BigNumber(item.raw_amount || 0)
-          .div(10 ** item.decimals)
-          .times(item.price || 0)
-          .plus(sum);
-      }, new BigNumber(0)) || new BigNumber(0);
-    try {
-      setGasLessLoading(true);
-      const res = await wallet.openapi.gasLessTxCheck({
-        tx: {
-          ...tx,
-          nonce: realNonce || tx.nonce,
-          gasPrice: tx.gasPrice || tx.maxFeePerGas,
-          gas: gasLimit,
-        },
-        usdValue: Math.max(sendUsdValue.toNumber(), receiveUsdValue.toNumber()),
-        preExecSuccess: txDetail?.pre_exec.success || false,
-        gasUsed: txDetail?.gas?.gas_used || 0,
-      });
-      setCanUseGasLess(res.is_gasless);
-      setGasLessFailedReason(res.desc);
-      setGasLessLoading(false);
-      setIsFirstGasLessLoading(false);
-      if (res.is_gasless && res?.promotion?.config) {
-        setGasLessConfig(
-          res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
-            ? {
-                ...res.promotion.config,
-                dark_color: '',
-                theme_color: '',
-              }
-            : res?.promotion?.config
-        );
-      }
-    } catch (error) {
-      console.error('gasLessTxCheck error', error);
-      setCanUseGasLess(false);
-      setGasLessConfig(undefined);
-      setGasLessLoading(false);
-      setIsFirstGasLessLoading(false);
-    }
+    // Hippo: Gas Account gasless submission is removed; never contact the
+    // gas-less check endpoint.
+    setCanUseGasLess(false);
+    setGasLessConfig(undefined);
+    setGasLessLoading(false);
+    setIsFirstGasLessLoading(false);
   };
 
   const getSafeInfo = async () => {
@@ -2158,17 +2087,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
     securityEngine.closeRuleDrawer();
   };
-
-  const { run: reportLogId } = useDebounceFn(
-    (rules) => {
-      wallet.openapi.postActionLog({
-        id: logId.current,
-        type: 'tx',
-        rules,
-      });
-    },
-    { wait: 1000 }
-  );
 
   const checkBlockedAddress = useMemoizedFn(async () => {
     try {
@@ -2643,28 +2561,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
   useEffect(() => {
     if (logId.current && isReady && securityEngineCtx.current) {
-      try {
-        const keys = Object.keys(securityEngineCtx.current);
-        const key: any = keys[0];
-        const notTriggeredRules = defaultRules.filter((rule) => {
-          return (
-            rule.requires.includes(key) &&
-            !engineResults.some((item) => item.id === rule.id)
-          );
-        });
-        reportLogId([
-          ...notTriggeredRules.map((rule) => ({
-            id: rule.id,
-            level: null,
-          })),
-          ...engineResults.map((result) => ({
-            id: result.id,
-            level: result.level,
-          })),
-        ]);
-      } catch (e) {
-        // IGNORE
-      }
+      // Hippo sends no security-action telemetry (postActionLog is disabled);
+      // the rule audit list is intentionally not reported.
     }
   }, [isReady, engineResults]);
 

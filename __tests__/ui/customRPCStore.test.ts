@@ -64,9 +64,13 @@ describe('custom RPC store', () => {
       url: 'https://bsc.example',
     });
 
+    // Hippo extension: the store forwards the replay-safe fallback and
+    // broadcast endpoints, defaulting to an empty fallback list.
     expect(wallet.setCustomRPC).toHaveBeenCalledWith(
       CHAINS_ENUM.BSC,
-      'https://bsc.example'
+      'https://bsc.example',
+      [],
+      undefined
     );
     // Persisting the whole map here would be last-writer-wins against any
     // other UI context; the background merges one chain and broadcasts back.
