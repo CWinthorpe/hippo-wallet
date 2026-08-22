@@ -81,6 +81,12 @@ import {
   TxWithTempoExtras,
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
+import {
+  attachSigningContext,
+  bindSigningCarrier,
+  getSigningContext,
+  takeSigningCarrier,
+} from '@/utils/sentry';
 
 const reportSignText = (params: {
   method: string;
@@ -822,10 +828,22 @@ class ProviderController extends BaseController {
       });
     } catch (e) {
       console.error(e);
-      const errObj =
-        typeof e === 'object'
-          ? { message: e.message }
-          : ({ message: e } as any);
+      const signingCarrier = takeSigningCarrier(e);
+      const signingContext =
+        getSigningContext(e) ?? getSigningContext(signingCarrier);
+      const carrier =
+        signingCarrier ??
+        (signingContext && e instanceof Error ? e : undefined);
+      const errObj: any = {
+        message: e && typeof e === 'object' ? e.message : e,
+      };
+      if (signingContext && !carrier) {
+        attachSigningContext(errObj, signingContext);
+      }
+      if (carrier) {
+        bindSigningCarrier(errObj, carrier);
+        errObj.reportedFromBackground = true;
+      }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 
       throw errObj;

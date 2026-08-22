@@ -28,6 +28,7 @@ const HD_PATH_TYPE = {
 let callStackCounter = 0;
 
 class LatticeKeyring extends OldLatticeKeyring {
+  signingDiagnosticsProvider = 'gridplus';
   [x: string]: any;
   appName = 'Hippo';
   static type = keyringType;

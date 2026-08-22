@@ -1,20 +1,42 @@
 import { Account } from '@/background/service/preference';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { useWallet } from '@/ui/utils';
+import { findChain } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import { KEYRING_CLASS, SecurityEngineLevel } from 'consts';
-import React from 'react';
+import {
+  CHAINS,
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  SecurityEngineLevel,
+} from 'consts';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
+import {
+  GasAccountTips,
+  GasLessActivityToSign,
+  GasLessConfig,
+  GasLessNotEnough,
+} from '../FooterBar/GasLessComponents';
+import {
+  shouldAutoSwitchToGasAccountFromGasless,
+  shouldShowGasLessNotEnough,
+} from '../FooterBar/gasAccountDecision';
 import { MiniCommonAction } from './MiniCommonAction';
 import { MiniLedgerAction } from './MiniLedgerAction';
-import { MiniOneKeyAction } from './MiniOneKeyAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
+import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
+import { MiniOneKeyAction } from './MiniOneKeyAction';
+import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -35,11 +57,11 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   Main?: React.ReactNode;
   gasLessFailedReason?: string;
   isWatchAddr?: boolean;
-  gasLessConfig?: Record<string, unknown>;
+  gasLessConfig?: GasLessConfig;
   isGasNotEnough?: boolean;
   task: BatchSignTxTaskType;
   gasMethod?: 'native' | 'gasAccount';
-  gasAccountCost?: unknown;
+  gasAccountCost?: GasAccountCheckResult;
   onChangeGasAccount?: () => void | Promise<void>;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
@@ -62,15 +84,17 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
 }
 
 const Wrapper = styled.section`
-  padding: 12px 20px 20px;
-  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  padding-top: 12px;
+  border-radius: 16px 16px 0px 0px;
   background: var(--r-neutral-bg-1, #3d4251);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
+  box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
 
   &.is-darkmode {
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
   }
+
+  position: relative;
 
   .security-level-tip {
     margin-top: 10px;
@@ -80,6 +104,42 @@ const Wrapper = styled.section`
     font-size: 13px;
     line-height: 15px;
     display: flex;
+    position: relative;
+    .icon-level {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-bottom: 8px solid currentColor;
+      top: -13px;
+      left: 115px;
+    }
+  }
+`;
+
+const GasTipsWrapper = styled.div`
+  position: relative;
+
+  .security-level-tip {
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    position: relative;
+    .icon-level {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+    }
   }
 `;
 
@@ -98,6 +158,16 @@ const Shadow = styled.div<{ isShow: boolean }>`
   );
   z-index: 0;
   opacity: ${(props) => (props.isShow ? 1 : 0)};
+  transition: opacity 0.1s;
+`;
+
+const ChainLogo = styled.img`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
 `;
 
 const SecurityLevelTipColor = {
@@ -119,108 +189,363 @@ const SecurityLevelTipColor = {
 };
 
 export const MiniFooterBar: React.FC<Props> = ({
+  origin,
+  originLogo,
   gnosisAccount,
   securityLevel,
+  engineResults = [],
   hasUnProcessSecurityResult,
   hasShadow = false,
+  showGasLess = false,
+  useGasLess = false,
+  canUseGasLess = false,
   onIgnoreAllRules,
+  enableGasLess,
   Header,
   Main,
+  gasLessFailedReason,
+  isWatchAddr,
+  gasLessConfig,
+  gasAccountCost,
+  gasMethod,
+  onChangeGasAccount,
+  isGasAccountLogin,
+  isWalletConnect,
+  gasAccountCanPay,
+  noCustomRPC,
+  canGotoUseGasAccount,
+  canDepositUseGasAccount,
+  gasAccountAddress,
+  onOpenGasAccountDeposit,
+  disableGasAccountDeposit,
   task,
   getContainer,
+  isFirstGasCostLoading,
+  isFirstGasLessLoading,
+  disableAutoGasAccountSwitch = false,
+  isGasNotEnough,
   directSubmit,
   account: propsAccount,
   disableSignBtn = false,
+  onRedirectToDeposit,
   className,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
+  const [
+    connectedSite,
+    setConnectedSite,
+  ] = React.useState<ConnectedSite | null>(null);
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { isDarkTheme } = useThemeMode();
+
+  const { rules, processedRules, openRuleDrawer } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
+
+  const currentChain = useMemo(() => {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      return props.chain || CHAINS.ETH;
+    } else {
+      if (!connectedSite) return CHAINS.ETH;
+      return findChain({
+        enum: connectedSite.chain,
+      })!;
+    }
+  }, [props.chain, origin, connectedSite]);
+
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
+
+  const payGasByGasAccount = gasMethod === 'gasAccount';
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
+  const init = async () => {
+    const currentAccount =
+      propsAccount || gnosisAccount || (await wallet.syncGetCurrentAccount());
+    if (currentAccount) setAccount(currentAccount);
+  };
+
+  const isSetGasMethodRef = useRef(false);
+  const [isInited, setIsInited] = useState(false);
+
+  useEffect(() => {
+    if (origin) {
+      wallet.getConnectedSite(origin).then((site) => {
+        site && setConnectedSite(site);
+      });
+    }
+  }, [origin]);
 
   React.useEffect(() => {
-    let mounted = true;
-    void (async () => {
-      const currentAccount =
-        propsAccount || gnosisAccount || (await wallet.syncGetCurrentAccount());
-      if (mounted && currentAccount) setAccount(currentAccount);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [gnosisAccount, propsAccount, wallet]);
+    init();
+  }, []);
 
-  if (!account) return null;
+  useEffect(() => {
+    if (disableAutoGasAccountSwitch) {
+      return;
+    }
+    if (isSetGasMethodRef.current) {
+      return;
+    }
+    if (!isFirstGasCostLoading && !isFirstGasLessLoading) {
+      isSetGasMethodRef.current = true;
 
-  const footer =
-    securityLevel && hasUnProcessSecurityResult ? (
-      <div
-        className="security-level-tip"
-        style={{
-          color: SecurityLevelTipColor[securityLevel].bg,
-          backgroundColor: SecurityLevelTipColor[securityLevel].bg,
-        }}
-      >
-        <img
-          src={SecurityLevelTipColor[securityLevel].icon}
-          className="icon icon-level"
+      if (
+        shouldAutoSwitchToGasAccountFromGasless({
+          showGasLess,
+          isGasNotEnough: !!isGasNotEnough,
+          canUseGasLess,
+          canGotoUseGasAccount: !!canGotoUseGasAccount,
+        })
+      ) {
+        onChangeGasAccount?.();
+      }
+
+      const otherGasAccountError =
+        !!gasAccountCost?.err_msg &&
+        gasAccountCost?.err_msg?.toLowerCase() !==
+          GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase();
+
+      if (
+        showGasLess &&
+        directSubmit &&
+        (canGotoUseGasAccount || otherGasAccountError)
+      ) {
+        onChangeGasAccount?.();
+      }
+
+      setIsInited(true);
+    }
+  }, [
+    directSubmit,
+    canGotoUseGasAccount,
+    canUseGasLess,
+    disableAutoGasAccountSwitch,
+    isFirstGasCostLoading,
+    isFirstGasLessLoading,
+    onChangeGasAccount,
+    showGasLess,
+    gasAccountCost?.err_msg,
+  ]);
+
+  const { isDarkTheme } = useThemeMode();
+  const showGasLessNotEnoughTip =
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    shouldShowGasLessNotEnough({
+      showGasLess,
+      isGasNotEnough: !!isGasNotEnough,
+      payGasByGasAccount,
+      canUseGasLess,
+    });
+  const showNativePendingHardwareGasAccountTip =
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    !!isGasNotEnough;
+
+  if (!account) {
+    return null;
+  }
+
+  const footer = (
+    <>
+      {securityLevel && hasUnProcessSecurityResult && (
+        <div
+          className="security-level-tip"
+          style={{
+            color: SecurityLevelTipColor[securityLevel].bg,
+            backgroundColor: SecurityLevelTipColor[securityLevel].bg,
+          }}
+        >
+          <img
+            src={SecurityLevelTipColor[securityLevel].icon}
+            className="icon icon-level"
+          />
+          <span
+            className="flex-1"
+            style={{
+              color: SecurityLevelTipColor[securityLevel].text,
+            }}
+          >
+            {t('page.signFooterBar.processRiskAlert')}
+          </span>
+          <span
+            className="underline text-13 font-medium cursor-pointer"
+            style={{
+              color: SecurityLevelTipColor[securityLevel].text,
+            }}
+            onClick={onIgnoreAllRules}
+          >
+            {t('page.signFooterBar.ignoreAll')}
+          </span>
+        </div>
+      )}
+      {showGasLess &&
+      !payGasByGasAccount &&
+      (!securityLevel || !hasUnProcessSecurityResult) ? (
+        canUseGasLess ? (
+          <GasLessActivityToSign
+            gasLessEnable={useGasLess}
+            handleFreeGas={() => {
+              enableGasLess?.();
+            }}
+            gasLessConfig={gasLessConfig}
+          />
+        ) : showGasLessNotEnoughTip ? (
+          <GasLessNotEnough
+            approvalUiStyle
+            nativeTokenInsufficient={!!isGasNotEnough}
+            gasAccountCost={gasAccountCost}
+            gasAccountAddress={gasAccountAddress}
+            canGotoUseGasAccount={canGotoUseGasAccount}
+            onChangeGasAccount={onChangeGasAccount}
+            canDepositUseGasAccount={canDepositUseGasAccount}
+            onRedirectToDeposit={onRedirectToDeposit}
+            onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+            disableGasAccountDeposit={disableGasAccountDeposit}
+            preserveApprovalContext={supportedDirectSign(account.type)}
+          />
+        ) : null
+      ) : null}
+
+      {showNativePendingHardwareGasAccountTip ? (
+        <GasAccountTips
+          approvalUiStyle
+          gasAccountCost={gasAccountCost}
+          gasAccountAddress={gasAccountAddress}
+          isWalletConnect={isWalletConnect}
+          noCustomRPC={noCustomRPC}
+          nativeTokenInsufficient={!!isGasNotEnough}
+          onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+          disableGasAccountDeposit={disableGasAccountDeposit}
+          onChangeGasAccount={onChangeGasAccount}
+          preserveApprovalContext={supportedDirectSign(account.type)}
+          pendingHardwareOnly
         />
-        <span
-          className="flex-1"
-          style={{ color: SecurityLevelTipColor[securityLevel].text }}
-        >
-          {t('page.signFooterBar.processRiskAlert')}
-        </span>
-        <span
-          className="underline text-13 font-medium cursor-pointer"
-          style={{ color: SecurityLevelTipColor[securityLevel].text }}
-          onClick={onIgnoreAllRules}
-        >
-          {t('page.signFooterBar.ignoreAll')}
-        </span>
-      </div>
-    ) : null;
+      ) : null}
+
+      {payGasByGasAccount && !gasAccountCanPay ? (
+        <GasAccountTips
+          approvalUiStyle
+          gasAccountCost={gasAccountCost}
+          gasAccountAddress={gasAccountAddress}
+          isWalletConnect={isWalletConnect}
+          noCustomRPC={noCustomRPC}
+          nativeTokenInsufficient={!!isGasNotEnough}
+          onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+          disableGasAccountDeposit={disableGasAccountDeposit}
+          onChangeGasAccount={onChangeGasAccount}
+          preserveApprovalContext={supportedDirectSign(account.type)}
+        />
+      ) : null}
+    </>
+  );
 
   const MiniHardwareAction =
     account.type === KEYRING_CLASS.HARDWARE.LEDGER
       ? MiniLedgerAction
       : MiniOneKeyAction;
-  const disabledProcess = disableSignBtn || props.disabledProcess;
+
+  const overWriteDisabledProcess = disableSignBtn
+    ? true
+    : payGasByGasAccount
+    ? !gasAccountCanPay
+    : useGasLess
+    ? false
+    : props.disabledProcess;
 
   return (
     <div className="relative">
       {!isDarkTheme && <Shadow isShow={hasShadow} />}
-      <Wrapper className={clsx({ 'is-darkmode': hasShadow }, className)}>
+      <Wrapper
+        className={clsx(
+          {
+            'is-darkmode': hasShadow,
+          },
+          className
+        )}
+      >
         {Header}
-        {Main}
         <div className="pt-[10px]">
           {[
             KEYRING_CLASS.HARDWARE.LEDGER,
             KEYRING_CLASS.HARDWARE.ONEKEY,
           ].includes(account.type) ? (
             <MiniHardwareAction
-              {...(props as ActionGroupProps)}
               directSubmit={directSubmit}
               isMiniSignTx
+              key={gasMethod}
               task={task}
               account={account}
-              gasLess={false}
-              disabledProcess={disabledProcess}
-              enableTooltip={props.enableTooltip}
+              gasLess={useGasLess && !payGasByGasAccount}
+              {...props}
+              disabledProcess={overWriteDisabledProcess}
+              enableTooltip={
+                payGasByGasAccount
+                  ? false
+                  : useGasLess
+                  ? false
+                  : props.enableTooltip
+              }
+              gasLessThemeColor={
+                isDarkTheme
+                  ? gasLessConfig?.dark_color
+                  : gasLessConfig?.theme_color
+              }
               footer={footer}
               getContainer={getContainer}
-            />
+            ></MiniHardwareAction>
           ) : (
             <MiniCommonAction
-              {...(props as ActionGroupProps)}
               directSubmit={directSubmit}
               isMiniSignTx
+              key={gasMethod}
               task={task}
               account={account}
-              gasLess={false}
-              disabledProcess={disabledProcess}
-              enableTooltip={props.enableTooltip}
+              gasLess={useGasLess && !payGasByGasAccount}
+              {...props}
+              disabledProcess={overWriteDisabledProcess}
+              enableTooltip={
+                payGasByGasAccount
+                  ? false
+                  : useGasLess
+                  ? false
+                  : props.enableTooltip
+              }
+              gasLessThemeColor={
+                isDarkTheme
+                  ? gasLessConfig?.dark_color
+                  : gasLessConfig?.theme_color
+              }
               footer={footer}
             />
           )}

@@ -26,6 +26,8 @@ export type RPCServiceStore = {
   defaultRPC?: Record<string, RPCDefaultItem>;
 };
 
+export type CustomRPCServiceStore = Pick<RPCServiceStore, 'customRPC'>;
+
 const READ_FALLBACK_METHODS = new Set([
   'eth_blockNumber',
   'eth_call',
@@ -488,6 +490,45 @@ export class RPCService {
 
   getAllRPC = (): Record<string, RPCItem> => {
     return CUSTOM_RPC_ENABLED ? this.store.customRPC : {};
+  };
+
+  getCustomRPCStore = (): CustomRPCServiceStore => ({
+    customRPC: this.getAllRPC(),
+  });
+
+  /**
+   * Merge a partial store from the UI (`setStorageItem('rpc', ...)`). The
+   * proxied store persists and broadcasts every assignment; only customRPC
+   * writes clear the routing/probe cache and report changed chains so the
+   * caller can re-sync custom-testnet RPCs.
+   */
+  patchStore = (partials: Partial<RPCServiceStore>): CHAINS_ENUM[] => {
+    const previousCustomRPC = this.store.customRPC;
+    if (Object.prototype.hasOwnProperty.call(partials, 'defaultRPC')) {
+      this.store.defaultRPC = partials.defaultRPC;
+    }
+    if (!Object.prototype.hasOwnProperty.call(partials, 'customRPC')) {
+      return [];
+    }
+    this.store.customRPC = {
+      ...this.store.customRPC,
+      ...partials.customRPC,
+    };
+    const changedChains = Object.keys({
+      ...previousCustomRPC,
+      ...this.store.customRPC,
+    }).filter((chain) => {
+      const previous = previousCustomRPC[chain];
+      const current = this.store.customRPC[chain];
+      return (
+        previous?.url !== current?.url || previous?.enable !== current?.enable
+      );
+    }) as CHAINS_ENUM[];
+    changedChains.forEach((chain) => {
+      delete this.rpcStatus[chain];
+      this.routingVersion++;
+    });
+    return changedChains;
   };
 
   getRoutingVersion = () => this.routingVersion;

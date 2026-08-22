@@ -21,6 +21,7 @@ import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { useAppVersionStore } from '@/ui/state/appVersion';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -28,9 +29,14 @@ const Dashboard = () => {
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
 
-  const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
-    ...s.appVersion,
-  }));
+  const {
+    firstNotice,
+    updateContent,
+    version,
+    checkIfFirstLoginAsync,
+    afterFirstLogin,
+  } = useAppVersionStore();
+  const locale = useRabbySelector((s) => s.preference.locale);
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
@@ -55,9 +61,9 @@ const Dashboard = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    dispatch.appVersion.checkIfFirstLoginAsync();
-  }, [dispatch]);
+  useMount(() => {
+    void checkIfFirstLoginAsync(locale);
+  });
 
   const { t } = useTranslation();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
@@ -146,7 +152,7 @@ const Dashboard = () => {
         title={t('page.dashboard.home.whatsNew')}
         className="first-notice"
         onCancel={() => {
-          dispatch.appVersion.afterFirstLogin();
+          afterFirstLogin();
         }}
         maxHeight="420px"
       >

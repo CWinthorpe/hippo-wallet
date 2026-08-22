@@ -52,7 +52,10 @@ import {
   feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
-import { testnetOpenapiService } from './service/openapi';
+import {
+  initializeOpenapiStore,
+  testnetOpenapiService,
+} from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
@@ -83,6 +86,7 @@ async function restoreAppState() {
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   keyringService.sanitizeUnencryptedKeyringDataInStore();
+  await initializeOpenapiStore();
   await openapiService.init();
   await testnetOpenapiService.init();
 

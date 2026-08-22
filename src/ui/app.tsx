@@ -10,7 +10,13 @@ import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
 import store from './store';
+import { initializeExchangeStore } from './state/exchange';
+import {
+  initializeWalletStatusStore,
+  useWalletStatusStore,
+} from './state/walletStatus';
 
+import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { Button } from 'antd';
 import { wallet } from './wallet';
@@ -42,10 +48,10 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
-const compensateUnlockedOnceFlag = async () => {
+const compensateUnlockedOnceFlag = () => {
   try {
     if (store.getState().app.hasUnlockedOnce) return;
-    const isUnlocked = await wallet.isUnlocked();
+    const isUnlocked = useWalletStatusStore.getState().isUnlocked;
     if (isUnlocked) {
       store.dispatch.app.setField({
         hasUnlockedOnce: true,
@@ -82,8 +88,18 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
 };
 
 const main = async () => {
-  await compensateUnlockedOnceFlag();
+  const walletStatusInitialization = initializeWalletStatusStore().catch(
+    (e) => {
+      console.error('[main] wallet status initialization failed', e);
+      Sentry.captureException(e);
+    }
+  );
+  await walletStatusInitialization;
+  compensateUnlockedOnceFlag();
 
+  store.dispatch.app.initBizStore();
+  void initializeExchangeStore();
+  store.dispatch.chains.init();
   if (getUiType().isPop) {
     wallet
       .tryOpenOrActiveUserGuide()
@@ -121,10 +137,34 @@ const main = async () => {
   );
 };
 
-main().catch((e) => {
-  console.error('[main] bootstrap failed', e);
-  Sentry.captureException(e);
-});
+const bootstrap = () => {
+  if (!isManifestV3) {
+    void main().catch((e) => {
+      console.error('[main] bootstrap failed', e);
+      Sentry.captureException(e);
+    });
+    return;
+  }
+
+  browser.runtime
+    .sendMessage({ type: 'getBackgroundReady' })
+    .then((res) => {
+      if (!res) {
+        setTimeout(bootstrap, 100);
+        return;
+      }
+
+      void main().catch((e) => {
+        console.error('[main] bootstrap failed', e);
+        Sentry.captureException(e);
+      });
+    })
+    .catch(() => {
+      setTimeout(bootstrap, 100);
+    });
+};
+
+bootstrap();
 
 const checkSwAlive = () => {
   console.log('[checkSwAlive]', new Date());

@@ -76,6 +76,8 @@ import {
   Tx,
   TxHistoryResult,
   NFTDetail,
+  getOpenapiStore,
+  patchOpenapiStore,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -188,6 +190,12 @@ import {
   shouldUseTempoBatchTransaction,
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
+import { bootWallet } from './walletUtils/boot';
+import {
+  cancelAllSignTxPreparations,
+  getSignTxPreparationGas,
+  getSignTxPreparation,
+} from '../service/signTxPreparation';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -534,18 +542,10 @@ export class WalletController extends BaseController {
   ) => cowSwapService.submitCancellation(request);
 
   /* wallet */
-  boot = async (password) => {
-    await keyringService.boot(password);
-    userGuideService.destroy();
-    const hasOtherProvider = preferenceService.getHasOtherProvider();
-    const isDefaultWallet = preferenceService.getIsDefaultWallet();
-    if (!hasOtherProvider) {
-      setPopupIcon('default');
-    } else {
-      setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
-    }
-  };
+  boot = bootWallet;
   isBooted = () => keyringService.isBooted();
+  getSignTxPreparation = getSignTxPreparation;
+  getSignTxPreparationGas = getSignTxPreparationGas;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -1353,18 +1353,26 @@ export class WalletController extends BaseController {
     });
   };
   isUnlocked = () => keyringService.isUnlocked();
+  getWalletStatus = () => ({
+    isBooted: this.isBooted(),
+    isUnlocked: this.isUnlocked(),
+  });
 
   lockWallet = async () => {
     await keyringService.setLocked();
+    // The keyring is locked from here on, so tell the UI before the remaining
+    // best-effort cleanup. A throw below must not leave open pages rendering
+    // protected content against a stale "unlocked" snapshot.
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.LOCK_WALLET,
+    });
+    cancelAllSignTxPreparations();
     if (isManifestV3) {
       await Browser.storage.session.clear();
     }
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
     setPopupIcon('locked');
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.LOCK_WALLET,
-    });
   };
 
   setAutoLockTime = (time: number) => {
@@ -1901,6 +1909,10 @@ export class WalletController extends BaseController {
     switch (key) {
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'openapi':
+        return getOpenapiStore() as PersistedStoreMap[Key];
+      case 'rpc':
+        return RPCService.getCustomRPCStore() as PersistedStoreMap[Key];
       case 'whitelist':
         return whitelistService.getStore() as PersistedStoreMap[Key];
       default:
@@ -1937,6 +1949,15 @@ export class WalletController extends BaseController {
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
+      case 'openapi':
+        return patchOpenapiStore(patch as PersistedStorePatch<'openapi'>);
+      case 'rpc': {
+        const changedChains = RPCService.patchStore(
+          patch as PersistedStorePatch<'rpc'>
+        );
+        changedChains.forEach(this.syncCustomTestnetRPC);
+        return;
+      }
       case 'whitelist':
         whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
         return;
@@ -1963,6 +1984,21 @@ export class WalletController extends BaseController {
   setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
   getTxFailedResult = bgRetryTxMethods.getTxFailedResult;
 
+  private syncCustomTestnetRPC = (chainEnum: CHAINS_ENUM) => {
+    const chain = findChain({ enum: chainEnum });
+    if (!chain?.isTestnet) return;
+
+    const rpc = RPCService.getRPCByChain(chainEnum);
+    if (rpc?.enable && RPCService.hasCustomRPC(chainEnum)) {
+      customTestnetService.setCustomRPC({
+        chainId: chain.id,
+        url: rpc.url,
+      });
+    } else {
+      customTestnetService.removeCustomRPC(chain.id);
+    }
+  };
+
   setCustomRPC = (
     chainEnum: CHAINS_ENUM,
     url: string,
@@ -1970,40 +2006,18 @@ export class WalletController extends BaseController {
     broadcastUrl?: string
   ) => {
     RPCService.setRPC(chainEnum, url, fallbackUrls, broadcastUrl);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet && RPCService.hasCustomRPC(chainEnum)) {
-      customTestnetService.setCustomRPC({ chainId: chain.id, url: url });
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   removeCustomRPC = (chainEnum: CHAINS_ENUM) => {
     RPCService.removeCustomRPC(chainEnum);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet) {
-      customTestnetService.removeCustomRPC(chain.id);
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   getAllCustomRPC = RPCService.getAllRPC;
   getCustomRpcByChain = RPCService.getRPCByChain;
   pingCustomRPC = RPCService.ping;
   setRPCEnable = (chainEnum: CHAINS_ENUM, enable: boolean) => {
     RPCService.setRPCEnable(chainEnum, enable);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet) {
-      if (enable && RPCService.hasCustomRPC(chainEnum)) {
-        customTestnetService.setCustomRPC({
-          chainId: chain.id,
-          url: RPCService.getRPCByChain(chainEnum)!.url,
-        });
-      } else {
-        customTestnetService.removeCustomRPC(chain.id);
-      }
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   validateRPC = async (url: string, chainId: number) => {
     const chain = findChain({
@@ -4225,7 +4239,7 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(_account);
   };
 
-  unlockHardwareAccount = async (keyring, indexes, keyringId) => {
+  unlockHardwareAccount = async (keyring, indexes, keyringId, brand?) => {
     let keyringInstance: any = null;
     try {
       keyringInstance = this.#getKeyringByType(keyring);
@@ -4235,6 +4249,9 @@ export class WalletController extends BaseController {
     if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
       await keyringService.addKeyring(stashKeyrings[keyringId]);
       keyringInstance = stashKeyrings[keyringId];
+    }
+    if (brand && keyringInstance?.setCurrentBrand) {
+      keyringInstance.setCurrentBrand(brand);
     }
     for (let i = 0; i < indexes.length; i++) {
       keyringInstance!.setAccountToUnlock(indexes[i]);
@@ -5552,10 +5569,25 @@ export class WalletController extends BaseController {
   hasUnencryptedKeyringData = async () =>
     keyringService.hasUnencryptedKeyringData();
 
-  resetPassword = async (password: string) =>
-    keyringService.resetPassword(password);
+  resetPassword = async (password: string) => {
+    await keyringService.resetPassword(password);
+    // Not LOCK_WALLET: that event also drives `useAutoLock`, which would
+    // redirect the Forgot Password page to /unlock before it can render its
+    // next step. Other pages still re-gate off the refreshed status.
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.WALLET_STATUS_CHANGED,
+    });
+  };
 
-  resetBooted = async () => keyringService.resetBooted();
+  resetBooted = async () => {
+    await keyringService.resetBooted();
+    // This clears `booted` without locking, so the correct destination for
+    // other open pages is /welcome -- which PrivateRoute resolves once the
+    // status refreshes, unlike LOCK_WALLET's hardcoded /unlock.
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.WALLET_STATUS_CHANGED,
+    });
+  };
 
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
