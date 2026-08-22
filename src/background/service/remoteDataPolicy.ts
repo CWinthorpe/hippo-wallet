@@ -229,7 +229,12 @@ export class RemoteDataPolicyService {
   private policy: RemoteDataPolicy = clonePolicy(DEFAULT_POLICY);
   private initPromise?: Promise<void>;
   private policyChangeListeners = new Set<() => void>();
-  private locked = false;
+  // Fail closed: the service is created in the session-locked state so a
+  // service-worker restart can never transiently re-enable Rabby/DeBank
+  // consent before the wallet's own lock state is known. `unlock()` is the
+  // only path that re-applies saved consent, and it runs only after the
+  // keyring reports unlocked.
+  private locked = true;
 
   init = async () => {
     if (!this.initPromise) {

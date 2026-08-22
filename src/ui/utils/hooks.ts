@@ -20,6 +20,27 @@ export const useApproval = () => {
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
 
+  // Capability binding: capture the approval this component actually rendered
+  // ONCE at mount, and bind every resolve/reject to that exact id. We never
+  // re-derive the id from the live queue inside the click handler, so a
+  // queue rotation can never make A's event handler resolve approval B.
+  const renderedApprovalIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    let disposed = false;
+    void getApproval()
+      .then((approval) => {
+        if (!disposed) {
+          renderedApprovalIdRef.current = approval?.id;
+        }
+      })
+      .catch(() => {
+        // approval unavailable; resolve/reject below will no-op safely
+      });
+    return () => {
+      disposed = true;
+    };
+  }, []);
+
   const resolveApproval = async (
     data?: any,
     stay = false,
@@ -28,11 +49,11 @@ export const useApproval = () => {
   ) => {
     const approval = await getApproval();
 
-    // Bind this resolution to the exact approval that rendered this UI,
-    // captured BEFORE any async work (deviceConnect can take seconds). If the
-    // queue advanced while we waited, the background's exact-id guard makes
+    // Bind this resolution to the approval that rendered this UI, captured at
+    // mount — never the live queue. If the queue advanced (or the session
+    // epoch changed) meanwhile, the background's exact-id + epoch guard makes
     // the resolve a no-op instead of resolving whatever is current now.
-    const boundId = approvalId ?? approval?.id;
+    const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (!boundId) {
       return;
     }
@@ -64,7 +85,7 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     const approval = await getApproval();
-    const boundId = approvalId ?? approval?.id;
+    const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }

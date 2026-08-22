@@ -62,6 +62,8 @@ describe('Rabby/DeBank remote data policy', () => {
     const service = new RemoteDataPolicyService();
     await service.init();
     await service.setPolicy({ portfolio: true });
+    // Simulate an unlocked wallet explicitly re-applying consent.
+    await service.unlock();
 
     expect(() =>
       service.assertRequestAllowed(
@@ -167,6 +169,11 @@ describe('Rabby/DeBank remote data policy', () => {
     const service = new RemoteDataPolicyService();
     await service.init();
     await service.setPolicy({ portfolio: true, history: true });
+    // A newly constructed service is session-locked (fail-closed boot); an
+    // unlocked wallet explicitly re-applies consent.
+    expect(service.isLocked()).toBe(true);
+    await service.unlock();
+    expect(service.isLocked()).toBe(false);
 
     // Consent is active before locking.
     expect(service.isAllowed('portfolio')).toBe(true);
@@ -226,6 +233,7 @@ describe('Rabby/DeBank remote data policy', () => {
     service.onPolicyChange(listener);
     await service.init();
     await service.setPolicy({ portfolio: true });
+    await service.unlock();
     listener.mockClear();
 
     await service.lock();

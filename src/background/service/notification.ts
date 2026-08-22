@@ -24,6 +24,8 @@ type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
 export interface Approval {
   id: string;
+  /** Lifecycle generation at creation time; see `approvalEpoch`. */
+  approvedEpoch: number;
   taskId: number | null;
   signingTxId?: string;
   data: {
@@ -74,6 +76,16 @@ export type StatsData = {
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
+  /**
+   * Lifecycle generation for approvals. Bumped on session boundaries (lock,
+   * window teardown): approvals created in an earlier generation can never be
+   * resolved/rejected afterwards, so a pre-boundary async continuation cannot
+   * finish the request after the session changed.
+   */
+  approvalEpoch = 0;
+  bumpApprovalEpoch = () => {
+    this.approvalEpoch += 1;
+  };
   dappManager = new Map<
     string,
     {
@@ -198,10 +210,15 @@ class NotificationService extends Events {
     approvalId?: string
   ) => {
     // Approval identity is mandatory: an approval may only be resolved by the
-    // exact id that rendered it. Without an id (or with a stale one after the
-    // queue advanced) this is a no-op, never a blind resolve of whatever is
-    // current.
-    if (!approvalId || approvalId !== this.currentApproval?.id) {
+    // exact id AND lifecycle epoch that rendered it. Without a matching id
+    // (or after the epoch bumped on lock/session teardown) this is a no-op,
+    // never a blind resolve of whatever is current.
+    if (
+      !approvalId ||
+      approvalId !== this.currentApproval?.id ||
+      (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
+        this.approvalEpoch
+    ) {
       return;
     }
     if (forceReject) {
@@ -233,9 +250,15 @@ class NotificationService extends Events {
     isInternal = false,
     approvalId?: string
   ) => {
-    // Optional identity: when provided, only the matching approval may be
-    // rejected; a stale id is ignored rather than rejecting a newer approval.
-    if (approvalId && approvalId !== this.currentApproval?.id) {
+    // Mandatory identity + epoch: only the matching rendered approval may be
+    // rejected. A missing or stale id/epoch is ignored rather than rejecting
+    // a newer approval (or the same approval after a session boundary).
+    if (
+      !approvalId ||
+      approvalId !== this.currentApproval?.id ||
+      (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
+        this.approvalEpoch
+    ) {
       return;
     }
     this.addLastRejectDapp();
@@ -328,6 +351,7 @@ class NotificationService extends Events {
         signingTxId,
         data,
         winProps,
+        approvedEpoch: this.approvalEpoch,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);

@@ -54,39 +54,45 @@ export default function initLattice() {
       // the response from the lattice connector with the deviceID and password.
       // We can then forward that response to the lattice-offscreen-keyring's
       // _getCreds method using sendResponse API from the chrome runtime.
-      window.addEventListener(
-        'message',
-        (event) => {
-          // Ensure origin
+      const onMessage = (event: MessageEvent) => {
+        // Fail closed on BOTH origin and source: only the exact Lattice
+        // connector window we just opened may deliver credentials. A message
+        // from our own offscreen document (or any other window) with a forged
+        // payload must never be treated as device credentials.
+        if (
+          event.origin !== KnownOrigins.lattice ||
+          event.source !== browserTab
+        ) {
+          return;
+        }
+
+        clearInterval(listenInterval);
+        window.removeEventListener('message', onMessage, false);
+
+        try {
+          // Parse and return creds
+          const creds = JSON.parse(event.data);
           if (
-            event.origin !== KnownOrigins.lattice &&
-            event.source === browserTab
+            typeof creds?.deviceID !== 'string' ||
+            !creds.deviceID ||
+            typeof creds?.password !== 'string' ||
+            !creds.password
           ) {
+            sendResponse({
+              error: new Error('Invalid credentials returned from Lattice.'),
+            });
             return;
           }
-
-          try {
-            // Stop the listener
-            clearInterval(listenInterval);
-
-            // Parse and return creds
-            const creds = JSON.parse(event.data);
-            if (!creds.deviceID || !creds.password) {
-              sendResponse({
-                error: new Error('Invalid credentials returned from Lattice.'),
-              });
-            }
-            sendResponse({
-              result: creds,
-            });
-          } catch (err) {
-            sendResponse({
-              error: err,
-            });
-          }
-        },
-        false
-      );
+          sendResponse({
+            result: creds,
+          });
+        } catch (err) {
+          sendResponse({
+            error: err,
+          });
+        }
+      };
+      window.addEventListener('message', onMessage, false);
     });
 
     // eslint-disable-next-line consistent-return

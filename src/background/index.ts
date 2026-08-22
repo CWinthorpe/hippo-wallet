@@ -78,14 +78,24 @@ const { PortMessage } = Message;
 let appStoreLoaded = false;
 
 async function restoreAppState() {
-  // The policy starts in deny-all mode at module load. Hydrate it before any
-  // service is allowed to initialize a Rabby/DeBank-backed request path.
-  await remoteDataPolicyService.init();
-  await onInstall();
+  // Determine the keyring session state from durable storage BEFORE any
+  // service or migration may issue a Rabby/DeBank request. The remote-data
+  // policy starts session-locked, so a locked wallet must never transiently
+  // re-enable consent during worker startup.
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   keyringService.sanitizeUnencryptedKeyringDataInStore();
+
+  await remoteDataPolicyService.init();
+  await onInstall();
+  // Consent is re-enabled only for a wallet that is already unlocked from
+  // storage before the network-capable services and migrations start. For a
+  // locked wallet the deny-by-default rules stay installed for the whole
+  // boot; tryUnlock() below or the explicit unlock event re-applies consent.
+  if (keyringService.isUnlocked()) {
+    await remoteDataPolicyService.unlock();
+  }
   await initializeOpenapiStore();
   await openapiService.init();
   await testnetOpenapiService.init();
@@ -118,11 +128,12 @@ async function restoreAppState() {
 
   await walletController.tryUnlock();
 
-  // Remote-data consent must never be active for a locked wallet after a
-  // service-worker restart; re-apply the session boundary when boot leaves
-  // the wallet locked (the keyring 'unlock' event re-applies consent on the
-  // next explicit unlock).
-  if (!keyringService.isUnlocked()) {
+  // Re-sync the session boundary after auto-unlock: consent is live only when
+  // the wallet is unlocked (idempotent; for a locked wallet the deny-by-
+  // default rules installed at init() remain in force).
+  if (keyringService.isUnlocked()) {
+    await remoteDataPolicyService.unlock();
+  } else {
     await remoteDataPolicyService.lock();
   }
 

@@ -1377,9 +1377,16 @@ export class WalletController extends BaseController {
       method: EVENTS.LOCK_WALLET,
     });
     cancelAllSignTxPreparations();
-    // Lock is a session boundary: revoke remote-data consent (in-memory),
-    // abort in-flight Rabby/DeBank requests and reinstall deny-by-default
-    // network rules. The user's saved policy is preserved for after unlock.
+    // Lock is a session boundary for pending consent: reject every queued
+    // approval and invalidate the approval lifecycle epoch so a pre-lock
+    // async continuation (device connect, hardware sign) can never resolve
+    // the request after lock.
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+    notificationService.bumpApprovalEpoch();
+    // Lock also revokes remote-data consent (in-memory), aborts in-flight
+    // Rabby/DeBank requests and reinstalls deny-by-default network rules. The
+    // user's saved policy is preserved for after unlock.
     await remoteDataPolicyService.lock();
     if (isManifestV3) {
       await Browser.storage.session.clear();

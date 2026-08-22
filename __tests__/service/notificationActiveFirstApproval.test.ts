@@ -56,6 +56,7 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.approvals = [];
     notificationService.currentApproval = null;
     notificationService.notifiWindowId = null;
+    notificationService.approvalEpoch = 0;
     mockGetAll.mockReset();
     mockOpenNotification.mockReset();
     mockCaptureException.mockReset();
@@ -71,6 +72,7 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.approvals = [
       {
         id: 'approval-id',
+        approvedEpoch: 0,
         taskId: null,
         data: {
           approvalComponent: 'SignTx',
@@ -104,8 +106,9 @@ describe('notificationService.activeFirstApproval', () => {
     });
   });
 
-  const makeApproval = (id: string): any => ({
+  const makeApproval = (id: string, approvedEpoch = 0): any => ({
     id,
+    approvedEpoch,
     taskId: null,
     data: {
       approvalComponent: 'SignTx',
@@ -159,5 +162,25 @@ describe('notificationService.activeFirstApproval', () => {
       'approval-A'
     );
     expect(current.reject).toHaveBeenCalled();
+  });
+
+  test('a session-epoch bump invalidates in-flight resolve/reject continuations', async () => {
+    const current = makeApproval('approval-A', 0);
+    notificationService.currentApproval = current;
+    notificationService.approvals = [current];
+
+    // Simulate a lock: the epoch bumps and the queue is cleared.
+    notificationService.bumpApprovalEpoch();
+    notificationService.currentApproval = null;
+    notificationService.approvals = [];
+
+    // A pre-lock continuation that still holds the old id can no longer
+    // resolve anything, because the current approval is gone.
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-A'
+    );
+    expect(current.resolve).not.toHaveBeenCalled();
   });
 });

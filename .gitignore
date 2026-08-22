@@ -23,3 +23,5 @@ src/manifest/chrome-mv3/manifest.local.json
 
 # Local agent specs/plans — not part of the repo
 docs/superpowers/
+/hippo-wallet-v*-mv*.zip
+/rabby-private-wallet-*-mv*.zip
