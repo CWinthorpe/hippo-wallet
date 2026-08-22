@@ -118,6 +118,14 @@ async function restoreAppState() {
 
   await walletController.tryUnlock();
 
+  // Remote-data consent must never be active for a locked wallet after a
+  // service-worker restart; re-apply the session boundary when boot leaves
+  // the wallet locked (the keyring 'unlock' event re-applies consent on the
+  // next explicit unlock).
+  if (!keyringService.isUnlocked()) {
+    await remoteDataPolicyService.lock();
+  }
+
   rpcCache.start();
 
   appStoreLoaded = true;
@@ -185,6 +193,8 @@ restoreAppState();
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
     contactBookService.detectWhiteListCex();
+    // Unlock re-applies the user's saved remote-data consent.
+    void remoteDataPolicyService.unlock();
   });
 }
 

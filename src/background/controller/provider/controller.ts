@@ -111,6 +111,22 @@ const reportSignText = (params: {
   });
 };
 
+/**
+ * Fail-closed signing gate. Any signature path that consumes an approval
+ * result must verify the result exists before touching the keyring: a null or
+ * undefined `approvalRes` means the approval flow resolved without data (or
+ * was never rendered), and signing anyway with `approvalRes?.extra` would be
+ * the classic optional-chaining fail-open. Companion to the exact-id guard in
+ * `notificationService.resolveApproval`/`rejectApproval`.
+ */
+const assertSigningApprovalResult = (approvalRes: unknown) => {
+  if (approvalRes === undefined || approvalRes === null) {
+    throw ethErrors.provider.userRejectedRequest({
+      message: 'Signing approval result is missing; request rejected',
+    });
+  }
+};
+
 const convertToHex = (data: Buffer | bigint) => {
   if (typeof data === 'bigint') {
     return `0x${data.toString(16)}`;
@@ -1171,6 +1187,7 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertSigningApprovalResult(approvalRes);
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
@@ -1250,6 +1267,7 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertSigningApprovalResult(approvalRes);
     try {
       const result = await this._signTypedData(
         {
@@ -1300,6 +1318,7 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertSigningApprovalResult(approvalRes);
     try {
       const result = await this._signTypedData(
         {
@@ -1349,6 +1368,7 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertSigningApprovalResult(approvalRes);
     try {
       const result = await this._signTypedData(
         {
@@ -1398,6 +1418,7 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertSigningApprovalResult(approvalRes);
     try {
       const result = await this._signTypedData(
         {

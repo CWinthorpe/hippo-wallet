@@ -103,4 +103,61 @@ describe('notificationService.activeFirstApproval', () => {
       tags: { function: 'activeFirstApproval' },
     });
   });
+
+  const makeApproval = (id: string): any => ({
+    id,
+    taskId: null,
+    data: {
+      approvalComponent: 'SignTx',
+      account: {
+        type: 'PrivateKey',
+        address: '0xaccount',
+        brandName: '私钥',
+      },
+    },
+    winProps: {},
+    resolve: jest.fn(),
+    reject: jest.fn(),
+  });
+
+  test('resolveApproval without a matching approval id is a no-op', async () => {
+    const current = makeApproval('approval-A');
+    notificationService.currentApproval = current;
+    notificationService.approvals = [current];
+
+    // Missing id must NOT resolve "whatever is current".
+    await notificationService.resolveApproval({ signedTx: '0x' }, false);
+    expect(current.resolve).not.toHaveBeenCalled();
+
+    // Stale id from a rotated queue must not resolve the current approval.
+    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-B');
+    expect(current.resolve).not.toHaveBeenCalled();
+
+    // Matching id resolves the exact approval and advances the queue.
+    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-A');
+    expect(current.resolve).toHaveBeenCalledWith({ signedTx: '0x' });
+    expect(notificationService.currentApproval).toBeNull();
+  });
+
+  test('rejectApproval with a stale id is ignored; matching id rejects', async () => {
+    const current = makeApproval('approval-A');
+    notificationService.currentApproval = current;
+    notificationService.approvals = [current];
+
+    await notificationService.rejectApproval(
+      'user cancelled',
+      false,
+      false,
+      'approval-B'
+    );
+    expect(current.reject).not.toHaveBeenCalled();
+
+    await notificationService.rejectApproval(
+      'user cancelled',
+      false,
+      false,
+      'approval-A'
+    );
+    expect(current.reject).toHaveBeenCalled();
+  });
 });

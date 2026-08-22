@@ -144,7 +144,12 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          this.rejectApproval(
+            undefined,
+            false,
+            false,
+            this.currentApproval?.id
+          );
         }
       }
     });
@@ -192,7 +197,13 @@ class NotificationService extends Events {
     forceReject = false,
     approvalId?: string
   ) => {
-    if (approvalId && approvalId !== this.currentApproval?.id) return;
+    // Approval identity is mandatory: an approval may only be resolved by the
+    // exact id that rendered it. Without an id (or with a stale one after the
+    // queue advanced) this is a no-op, never a blind resolve of whatever is
+    // current.
+    if (!approvalId || approvalId !== this.currentApproval?.id) {
+      return;
+    }
     if (forceReject) {
       this.currentApproval?.reject &&
         this.currentApproval?.reject(
@@ -216,7 +227,17 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
-  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+  rejectApproval = async (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string
+  ) => {
+    // Optional identity: when provided, only the matching approval may be
+    // rejected; a stale id is ignored rather than rejecting a newer approval.
+    if (approvalId && approvalId !== this.currentApproval?.id) {
+      return;
+    }
     this.addLastRejectDapp();
     const approval = this.currentApproval;
     if (this.approvals.length <= 1) {

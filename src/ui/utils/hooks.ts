@@ -28,13 +28,22 @@ export const useApproval = () => {
   ) => {
     const approval = await getApproval();
 
+    // Bind this resolution to the exact approval that rendered this UI,
+    // captured BEFORE any async work (deviceConnect can take seconds). If the
+    // queue advanced while we waited, the background's exact-id guard makes
+    // the resolve a no-op instead of resolving whatever is current now.
+    const boundId = approvalId ?? approval?.id;
+    if (!boundId) {
+      return;
+    }
+
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
       return;
     }
 
     if (approval) {
-      wallet.resolveApproval(data, forceReject, approvalId);
+      wallet.resolveApproval(data, forceReject, boundId);
     }
 
     if (stay) {
@@ -48,14 +57,20 @@ export const useApproval = () => {
     }, 0);
   };
 
-  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+  const rejectApproval = async (
+    err?,
+    stay = false,
+    isInternal = false,
+    approvalId?: string
+  ) => {
     const approval = await getApproval();
+    const boundId = approvalId ?? approval?.id;
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    if (approval) {
-      await wallet.rejectApproval(err, stay, isInternal);
+    if (approval && boundId) {
+      await wallet.rejectApproval(err, stay, isInternal, boundId);
     }
     if (!stay) {
       history.push('/');

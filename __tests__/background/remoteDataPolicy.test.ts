@@ -162,4 +162,76 @@ describe('Rabby/DeBank remote data policy', () => {
     await service.setPolicy({ portfolio: true });
     expect(listener).toHaveBeenCalledTimes(2);
   });
+
+  test('lock revokes consent until unlock while preserving saved policy', async () => {
+    const service = new RemoteDataPolicyService();
+    await service.init();
+    await service.setPolicy({ portfolio: true, history: true });
+
+    // Consent is active before locking.
+    expect(service.isAllowed('portfolio')).toBe(true);
+    expect(() =>
+      service.assertRequestAllowed(
+        'https://api.rabby.io/v1/user/total_balance?id=0x1',
+        true
+      )
+    ).not.toThrow();
+
+    await service.lock();
+
+    // Locked: capability access revoked, saved configuration untouched.
+    expect(service.isLocked()).toBe(true);
+    expect(service.isAllowed('portfolio')).toBe(false);
+    expect(service.getPolicy()).toMatchObject({
+      configured: true,
+      capabilities: expect.objectContaining({ portfolio: true }),
+    });
+    expect(() =>
+      service.assertRequestAllowed(
+        'https://api.rabby.io/v1/user/total_balance?id=0x1',
+        true
+      )
+    ).toThrow(
+      expect.objectContaining<Partial<RemoteDataPolicyError>>({
+        code: 'REMOTE_DATA_DISABLED',
+      })
+    );
+    // Deny-by-default network rules are reinstalled while locked.
+    expect(
+      updateDynamicRules.mock.calls[
+        updateDynamicRules.mock.calls.length - 1
+      ][0].addRules
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ action: { type: 'block' } }),
+      ])
+    );
+
+    await service.unlock();
+
+    // Unlock re-applies the saved consent.
+    expect(service.isLocked()).toBe(false);
+    expect(service.isAllowed('portfolio')).toBe(true);
+    expect(() =>
+      service.assertRequestAllowed(
+        'https://api.rabby.io/v1/user/total_balance?id=0x1',
+        true
+      )
+    ).not.toThrow();
+  });
+
+  test('lock aborts in-flight requests via policy-change listeners', async () => {
+    const service = new RemoteDataPolicyService();
+    const listener = jest.fn();
+    service.onPolicyChange(listener);
+    await service.init();
+    await service.setPolicy({ portfolio: true });
+    listener.mockClear();
+
+    await service.lock();
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    await service.unlock();
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
 });

@@ -229,6 +229,7 @@ export class RemoteDataPolicyService {
   private policy: RemoteDataPolicy = clonePolicy(DEFAULT_POLICY);
   private initPromise?: Promise<void>;
   private policyChangeListeners = new Set<() => void>();
+  private locked = false;
 
   init = async () => {
     if (!this.initPromise) {
@@ -247,8 +248,31 @@ export class RemoteDataPolicyService {
 
   isConfigured = () => this.policy.configured;
 
+  isLocked = () => this.locked;
+
   isAllowed = (capability: RemoteDataCapability) =>
-    this.policy.configured && this.policy.capabilities[capability] === true;
+    this.policy.configured &&
+    !this.locked &&
+    this.policy.capabilities[capability] === true;
+
+  /**
+   * Session boundary: locking the wallet revokes Rabby/DeBank capability
+   * access until an explicit unlock. In-memory only — the user's saved
+   * consent is preserved and re-applied by `unlock()`. Emitting a policy
+   * change aborts in-flight remote requests via the fetch-adapter listener,
+   * and the deny-by-default network rules are reinstalled.
+   */
+  lock = async () => {
+    this.locked = true;
+    this.emitPolicyChange();
+    await this.updateNetworkRules();
+  };
+
+  unlock = async () => {
+    this.locked = false;
+    this.emitPolicyChange();
+    await this.updateNetworkRules();
+  };
 
   onPolicyChange = (listener: () => void) => {
     this.policyChangeListeners.add(listener);
@@ -364,15 +388,20 @@ export class RemoteDataPolicyService {
     const dnr = (globalThis as any).chrome?.declarativeNetRequest;
     if (!dnr?.updateDynamicRules) return;
 
-    const anyApiEnabled = REMOTE_DATA_CAPABILITIES.some(
-      (capability) => this.policy.capabilities[capability]
-    );
-    const remoteMediaEnabled = ['portfolio', 'nft', 'dapps'].some(
-      (capability) =>
-        this.policy.capabilities[capability as RemoteDataCapability]
-    );
+    const anyApiEnabled =
+      !this.locked &&
+      REMOTE_DATA_CAPABILITIES.some(
+        (capability) => this.policy.capabilities[capability]
+      );
+    const remoteMediaEnabled =
+      !this.locked &&
+      ['portfolio', 'nft', 'dapps'].some(
+        (capability) =>
+          this.policy.capabilities[capability as RemoteDataCapability]
+      );
+    const configured = this.policy.configured && !this.locked;
     const addRules: any[] = [];
-    if (!this.policy.configured || !anyApiEnabled) {
+    if (!configured || !anyApiEnabled) {
       addRules.push({
         id: REMOTE_DATA_BLOCK_RULE_ID,
         priority: 1,

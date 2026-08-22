@@ -10,6 +10,7 @@ import { ga4 } from '@/utils/ga4';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { CHAINS_ENUM } from '@debank/common';
 import { intToHex } from '@ethereumjs/util';
+import supportedTestnetChainLogos from './data/supported_testnet_chains.json';
 import { abiERC1155, abiERC721 } from '@metamask/metamask-eth-abis';
 import { GasLevel, ParseTxResponse, Tx } from 'background/service/openapi';
 import {
@@ -45,7 +46,6 @@ import { http as axios } from '../utils/http';
 import { getFormattedIpfsUrl } from '../utils/ipfs';
 import { storage } from '../webapi';
 import RPCService, { RPCServiceStore } from './rpc';
-import dayjs from 'dayjs';
 // import openapiService from './openapi';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
@@ -757,22 +757,15 @@ class CustomTestnetService {
   };
 
   fetchLogos = async () => {
-    try {
-      if (
-        dayjs().isBefore(dayjs(this.store.logosUpdatedAt || 0).add(1, 'day'))
-      ) {
-        return {};
-      }
-      const { data } = await axios.get<CustomTestnetServiceStore['logos']>(
-        'https://static.debank.com/supported_testnet_chains.json'
-      );
-      this.store.logos = data;
-      this.store.logosUpdatedAt = Date.now();
-      return data;
-    } catch (e) {
-      console.error(e);
-      return {};
-    }
+    // Testnet chain logos are bundled locally. Do not fetch the DeBank
+    // testnet-chains snapshot over the network at startup: that endpoint is
+    // unclassified by the remote-data policy, so a bare HTTP request would
+    // bypass the policy adapter and contact the host before any consent. The
+    // logo images themselves load lazily and remain gated by the declarative
+    // network rules.
+    this.store.logos = supportedTestnetChainLogos as never;
+    this.store.logosUpdatedAt = Date.now();
+    return this.store.logos;
   };
 
   setCustomRPC = ({ chainId, url }: { chainId: number; url: string }) => {

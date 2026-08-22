@@ -7,6 +7,7 @@ import {
 } from '@/constant/offscreen-communication';
 
 import { installTrezorBrowserApi } from './trezor-browser-api';
+import { isTrustedBackgroundSender } from './senderAuth';
 
 type TrezorRequest = {
   target: OffscreenCommunicationTarget;
@@ -105,7 +106,7 @@ export function initTrezor() {
   chrome.runtime.onMessage.addListener(
     (msg: TrezorRequest, sender, sendResponse) => {
       if (
-        sender.id !== chrome.runtime.id ||
+        !isTrustedBackgroundSender(sender) ||
         msg.target !== OffscreenCommunicationTarget.trezorOffscreen
       ) {
         return;
