@@ -73,7 +73,7 @@ describe('preference store', () => {
       locale: 'en',
       pinnedChain: [],
       hiddenBalance: false,
-      themeMode: DARK_MODE_TYPE.system,
+      themeMode: DARK_MODE_TYPE.dark,
       reserveGasOnSendToken: false,
     });
     expect(selectIsReserveGasOnSendToken(state)).toBe(false);

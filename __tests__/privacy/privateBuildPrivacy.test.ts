@@ -157,9 +157,11 @@ describe('private-build privacy invariants', () => {
     ].join('\n');
     expect(onboarding).not.toContain('setUserDataTrackingOptOut(false)');
 
-    const preferenceModel = read('src/ui/models/preference.ts');
-    expect(preferenceModel).not.toContain('userDataTrackingOptOut: value');
-    expect(preferenceModel).not.toContain('setUserDataTrackingOptOut(value)');
+    const preferenceStore = read('src/ui/state/preference.ts');
+    expect(preferenceStore).toContain('set({ userDataTrackingOptOut: true })');
+    expect(preferenceStore).toContain(
+      'wallet.setUserDataTrackingOptOut(true)'
+    );
 
     const dashboard = read(
       'src/ui/views/Dashboard/components/DashboardPanel/index.tsx'

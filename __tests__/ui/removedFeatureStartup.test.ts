@@ -5,32 +5,40 @@ const readSource = (relativePath: string) =>
   fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8');
 
 describe('removed feature model initialization', () => {
-  test('app startup initializes only models that still exist', () => {
-    const app = readSource('src/ui/models/app.ts');
-    for (const removedDispatch of [
-      'dispatch.swap.',
-      'dispatch.bridge.',
-      'dispatch.gasAccount.',
-      'dispatch.perps.',
+  test('the legacy rematch model layer is fully removed', () => {
+    expect(fs.existsSync('src/ui/models')).toBe(false);
+  });
+
+  test('business store bootstrap initializes only the retained stores', () => {
+    const bootstrapStores = readSource('src/ui/state/initializeBizStores.ts');
+    for (const removedStore of [
+      'initializeBridgeStore',
+      'initializeGasAccountStore',
+      'initializePerpsStore',
+      'initializeGiftStore',
+      'gift',
+      'perps',
+      'gasAccount',
+      'bridge',
     ]) {
-      expect(app).not.toContain(removedDispatch);
+      expect(bootstrapStores).not.toContain(removedStore);
     }
+    expect(bootstrapStores).toContain('initializePreferenceStore');
+    expect(bootstrapStores).toContain('initializeContactBookStore');
   });
 
-  test('account startup no longer initializes promotional gift state', () => {
-    const account = readSource('src/ui/models/account.ts');
-    expect(account).not.toContain('dispatch.gift.');
-    expect(account).not.toContain('initGiftStateAsync');
-  });
-
-  test('business models initialize only after the privacy policy is configured', () => {
+  test('app startup bootstraps no business stores before the privacy gate', () => {
     const bootstrap = readSource('src/ui/app.tsx');
+    expect(bootstrap).not.toContain('initializeBizStores()');
+    expect(bootstrap).not.toContain('initializeExchangeStore()');
+    expect(bootstrap).not.toContain('initializeChainsStore()');
+  });
+
+  test('business stores initialize only after the privacy policy is configured', () => {
     const gate = readSource('src/ui/views/RemoteDataPolicy/index.tsx');
-    expect(bootstrap).not.toContain('store.dispatch.app.initBizStore()');
     expect(gate).toContain('if (!policy?.configured) return');
-    expect(gate).toContain('dispatch.app.initBizStore()');
-    const appModel = readSource('src/ui/models/app.ts');
-    expect(appModel).not.toContain('dispatch.currency.init()');
-    expect(appModel).not.toContain('dispatch.exchange.init()');
+    expect(gate).toContain('initializeBizStores()');
+    expect(gate).toContain('initializeExchangeStore()');
+    expect(gate).toContain('initializeChainsStore()');
   });
 });

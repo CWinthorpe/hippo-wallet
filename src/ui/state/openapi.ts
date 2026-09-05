@@ -12,8 +12,6 @@ export type OpenapiStore = PublicOpenapiStore & OpenapiActions;
 export const useOpenapiStore = createRabbyStore<OpenapiStore>(
   (set) => ({
     host: INITIAL_OPENAPI_URL,
-    apiKey: null,
-    apiTime: null,
 
     setHost(host) {
       set({ host });
