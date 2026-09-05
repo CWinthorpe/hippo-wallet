@@ -129,9 +129,9 @@ describe('createExtensionStoreOptions', () => {
 
     const { state } = listener.mock.calls[0][0];
     expect(state.selectedChain).toBe('BSC');
-    expect(Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')).toBe(
-      true
-    );
+    expect(
+      Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')
+    ).toBe(true);
     expect(state.selectedFromToken).toBeUndefined();
     dispose();
   });

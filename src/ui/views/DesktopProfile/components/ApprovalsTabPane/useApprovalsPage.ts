@@ -12,7 +12,7 @@ import { useAsyncFn } from 'react-use';
 import { VariableSizeGrid } from 'react-window';
 import PQueue from 'p-queue';
 
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import {
@@ -115,14 +115,7 @@ export function useApprovalsPage(options?: {
 }) {
   const wallet = useWallet();
 
-  const dispatch = useRabbyDispatch();
-
   const account = useRabbySelector((state) => state.account.currentAccount);
-
-  useEffect(() => {
-    dispatch.account.fetchCurrentAccountAliasNameAsync();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.address]);
 
   const [filterType, setFilterType] = useState<keyof typeof FILTER_TYPES>(
     'contract'
@@ -171,9 +164,7 @@ export function useApprovalsPage(options?: {
   ] = useAsyncFn(async () => {
     setIsLoadingOnAsyncFn(true);
 
-    const openapiClient = options?.isTestnet
-      ? wallet.testnetOpenapi
-      : wallet.openapi;
+    const openapiClient = wallet.openapi;
 
     const userAddress = account!.address;
     const usedChainList = await openapiClient.usedChainList(userAddress);

@@ -1,0 +1,316 @@
+import axios from 'axios';
+import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios';
+import remoteDataPolicyService, {
+  isKnownRabbyOrDeBankUrl,
+} from 'background/service/remoteDataPolicy';
+
+type AxiosErrorCtor = typeof import('axios').AxiosError;
+type AxiosErrorLike = Error & { isAxiosError?: boolean };
+type FetchResult<T = any> = AxiosResponse<T> | AxiosErrorLike;
+
+type AdapterExtras = {
+  mode?: RequestMode;
+  cache?: RequestCache;
+  integrity?: string;
+  redirect?: RequestRedirect;
+  referrer?: string;
+  settle?: (
+    resolve: (value: AxiosResponse) => void,
+    reject: (reason?: any) => void,
+    response: AxiosResponse
+  ) => void;
+  responseType?: AxiosRequestConfig['responseType'];
+};
+
+const activeRemoteRequestControllers = new Set<AbortController>();
+
+remoteDataPolicyService.onPolicyChange(() => {
+  activeRemoteRequestControllers.forEach((controller) => controller.abort());
+  activeRemoteRequestControllers.clear();
+});
+
+const runFetchAdapter = async (
+  config: AxiosRequestConfig,
+  forceRemoteDataPolicy: boolean
+) => {
+  const requestUrl = axios.getUri(config);
+  remoteDataPolicyService.assertRequestAllowed(
+    requestUrl,
+    forceRemoteDataPolicy
+  );
+  await remoteDataPolicyService.recordRequestContact(
+    requestUrl,
+    forceRemoteDataPolicy
+  );
+
+  const isRemoteDataRequest =
+    forceRemoteDataPolicy || isKnownRabbyOrDeBankUrl(requestUrl);
+  const controller = isRemoteDataRequest ? new AbortController() : undefined;
+  const originalSignal = config.signal;
+  const abortFromOriginalSignal = () => controller?.abort();
+  if (controller) {
+    activeRemoteRequestControllers.add(controller);
+    if (originalSignal?.aborted) {
+      controller.abort();
+    } else {
+      originalSignal?.addEventListener('abort', abortFromOriginalSignal, {
+        once: true,
+      });
+    }
+  }
+
+  const requestConfig = controller
+    ? { ...config, signal: controller.signal }
+    : config;
+  const request = createRequest(requestConfig);
+  const executors: Array<Promise<FetchResult>> = [
+    getResponse(request, requestConfig),
+  ];
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    if (requestConfig.timeout && requestConfig.timeout > 0) {
+      executors.push(
+        new Promise<FetchResult>((resolve) => {
+          timeoutId = setTimeout(() => {
+            controller?.abort();
+            const message =
+              requestConfig.timeoutErrorMessage ??
+              `timeout of ${requestConfig.timeout}ms exceeded`;
+            const transitional = requestConfig.transitional ?? {};
+            const timeoutCode = transitional.clarifyTimeoutError
+              ? 'ETIMEDOUT'
+              : 'ECONNABORTED';
+            resolve(createError(message, requestConfig, timeoutCode, request));
+          }, requestConfig.timeout);
+        })
+      );
+    }
+
+    const settled = await Promise.race(executors);
+
+    if (settled instanceof Error) {
+      throw settled;
+    }
+
+    const extras = requestConfig as AdapterExtras;
+
+    if (extras.settle) {
+      return await new Promise<AxiosResponse>((resolve, reject) => {
+        extras.settle!(resolve, reject, settled);
+      });
+    }
+
+    return settleResponse(settled);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (controller) {
+      activeRemoteRequestControllers.delete(controller);
+      originalSignal?.removeEventListener('abort', abortFromOriginalSignal);
+    }
+  }
+};
+
+const fetchAdapter: AxiosAdapter = (config) => runFetchAdapter(config, false);
+
+export const rabbyOpenapiFetchAdapter: AxiosAdapter = (config) =>
+  runFetchAdapter(config, true);
+
+export default fetchAdapter;
+
+async function getResponse(
+  request: Request,
+  config: AxiosRequestConfig
+): Promise<FetchResult> {
+  let response: Response;
+  try {
+    response = await fetch(request);
+  } catch (error: any) {
+    if (isAbortError(error)) {
+      return createError('Request aborted', config, 'ERR_CANCELED', request);
+    }
+    return createError('Network Error', config, 'ERR_NETWORK', request);
+  }
+
+  return {
+    data: await parseBody(response, config),
+    status: response.status,
+    statusText: response.statusText,
+    headers: toPlainHeaders(response.headers),
+    config,
+    request,
+  };
+}
+
+function createRequest(config: AxiosRequestConfig) {
+  const headers = new Headers();
+  if (config.headers) {
+    Object.keys(config.headers).forEach((key) => {
+      const value = (config.headers as any)[key];
+      if (value != null) headers.append(key, String(value));
+    });
+  }
+
+  if (config.auth) {
+    const username = config.auth.username ?? '';
+    const password = config.auth.password
+      ? decodeURI(encodeURIComponent(config.auth.password))
+      : '';
+    headers.set('Authorization', `Basic ${btoa(`${username}:${password}`)}`);
+  }
+
+  const method = (config.method ?? 'get').toUpperCase();
+  const options: RequestInit = { headers, method };
+  if (
+    method !== 'GET' &&
+    method !== 'HEAD' &&
+    typeof config.data !== 'undefined'
+  ) {
+    options.body = config.data as BodyInit;
+  }
+
+  const extras = config as AdapterExtras;
+  if (extras.mode) options.mode = extras.mode;
+  if (extras.cache) options.cache = extras.cache;
+  if (extras.integrity) options.integrity = extras.integrity;
+  if (extras.redirect) options.redirect = extras.redirect;
+  if (extras.referrer) options.referrer = extras.referrer;
+  if (typeof config.withCredentials !== 'undefined') {
+    options.credentials = config.withCredentials ? 'include' : 'omit';
+  }
+  if (config.signal) options.signal = config.signal;
+
+  return new Request(axios.getUri(config), options);
+}
+
+function settleResponse(response: AxiosResponse) {
+  const validateStatus = response.config?.validateStatus;
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    return response;
+  }
+
+  const code = response.status >= 500 ? 'ERR_BAD_RESPONSE' : 'ERR_BAD_REQUEST';
+  throw createError(
+    `Request failed with status code ${response.status}`,
+    response.config,
+    code,
+    response.request,
+    response
+  );
+}
+
+function parseBody(response: Response, config: AxiosRequestConfig) {
+  const method = (config.method ?? 'get').toUpperCase();
+  if (method === 'HEAD' || response.status === 204 || response.status === 205) {
+    return Promise.resolve(null);
+  }
+
+  switch ((config as AdapterExtras).responseType) {
+    case 'arraybuffer':
+      return response.arrayBuffer();
+    case 'blob':
+      return response.blob();
+    case 'stream':
+      return Promise.resolve(response.body);
+    case 'json':
+      return parseJsonSafely(response);
+    case 'document':
+    case 'text':
+    default:
+      return response.text();
+  }
+}
+
+async function parseJsonSafely(response: Response) {
+  const value = await response.text();
+  if (!value) return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function toPlainHeaders(headers: Headers) {
+  const flattened: Record<string, string> = {};
+  headers.forEach((value, key) => {
+    const existing = flattened[key];
+    flattened[key] = existing ? `${existing}, ${value}` : value;
+  });
+  return flattened;
+}
+
+function isAbortError(error: any): boolean {
+  return (
+    !!error &&
+    (error.name === 'AbortError' ||
+      error.code === 'ERR_CANCELED' ||
+      error.message === 'canceled')
+  );
+}
+
+function createError(
+  message: string,
+  config: AxiosRequestConfig,
+  code?: string,
+  request?: any,
+  response?: AxiosResponse
+) {
+  const AxiosErrorClass: AxiosErrorCtor | undefined = (axios as any).AxiosError;
+  const resolvedCode = resolveAxiosCode(code, AxiosErrorClass);
+  if (AxiosErrorClass && typeof AxiosErrorClass === 'function') {
+    return new AxiosErrorClass(
+      message,
+      resolvedCode,
+      config,
+      request,
+      response
+    );
+  }
+  return enhanceError(
+    new Error(message),
+    config,
+    resolvedCode,
+    request,
+    response
+  );
+}
+
+function resolveAxiosCode(code: string | undefined, ctor?: AxiosErrorCtor) {
+  if (!code) return code;
+  if (ctor && (ctor as any)[code]) return (ctor as any)[code];
+  return code;
+}
+
+function enhanceError(
+  error: AxiosErrorLike,
+  config: AxiosRequestConfig,
+  code?: string,
+  request?: any,
+  response?: AxiosResponse
+) {
+  (error as any).config = config;
+  if (code) (error as any).code = code;
+  if (request) (error as any).request = request;
+  if (response) (error as any).response = response;
+  error.isAxiosError = true;
+  (error as any).toJSON = function toJSON() {
+    return {
+      message: this.message,
+      name: this.name,
+      description: (this as any).description,
+      number: (this as any).number,
+      fileName: (this as any).fileName,
+      lineNumber: (this as any).lineNumber,
+      columnNumber: (this as any).columnNumber,
+      stack: this.stack,
+      config: (this as any).config,
+      code: (this as any).code,
+      status:
+        this.response && this.response.status ? this.response.status : null,
+    };
+  };
+  return error;
+}

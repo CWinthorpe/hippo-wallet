@@ -9,7 +9,9 @@ import {
   RemoteDataCapabilityState,
   RemoteDataPolicy,
 } from '@/types/remoteDataPolicy';
-import { useRabbyDispatch } from '@/ui/store';
+import { initializeBizStores } from '@/ui/state/initializeBizStores';
+import { initializeChainsStore } from '@/ui/state/chains';
+import { initializeExchangeStore } from '@/ui/state/exchange';
 import browser from 'webextension-polyfill';
 
 const CAPABILITY_COPY: Array<{
@@ -238,7 +240,6 @@ const RemoteDataPolicyEditor = ({
 
 export const RemoteDataPolicyGate = ({ children }: { children: ReactNode }) => {
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const [policy, setPolicy] = useState<RemoteDataPolicy>();
 
   useEffect(() => {
@@ -268,9 +269,13 @@ export const RemoteDataPolicyGate = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!policy?.configured) return;
-    dispatch.app.initBizStore();
-    dispatch.chains.init();
-  }, [dispatch, policy?.configured]);
+    // Hippo consent gate: business stores (account, contact book, preference,
+    // chains, exchange) initialize only after the remote-data policy is
+    // configured. Nothing above this point may start business data reads.
+    void initializeBizStores();
+    void initializeExchangeStore();
+    void initializeChainsStore();
+  }, [policy?.configured]);
 
   if (!policy) {
     return (

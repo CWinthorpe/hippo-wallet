@@ -41,7 +41,6 @@ import {
   uninstalledService,
   OfflineChainsService,
   miscService,
-  lendingService,
   feedbackService,
 } from 'background/service';
 import buildinProvider, {
@@ -78,7 +77,6 @@ import {
   NFTDetail,
   getOpenapiStore,
   patchOpenapiStore,
-  testnetOpenapiService,
 } from '../service/openapi';
 import {
   ContextActionData,
@@ -211,7 +209,6 @@ import {
 } from '../service/transactionHistory';
 
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { AccountScene } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
@@ -440,19 +437,16 @@ const gnosisPQueue = new PQueue({
   concurrency: 2,
 });
 
-type DesktopPageType = 'profile' | 'lending' | 'prediction';
+type DesktopPageType = 'profile' | 'prediction';
 
 function getDesktopPageType(path: string): DesktopPageType {
   const normalized = path.replace(/^\//, '');
-
-  if (normalized.startsWith('desktop/lending')) return 'lending';
   if (normalized.startsWith('desktop/prediction')) return 'prediction';
   return 'profile';
 }
 
 export class WalletController extends BaseController {
   openapi = openapiService;
-  testnetOpenapi = testnetOpenapiService;
   fakeTestnetOpenapi = fakeTestnetOpenapi;
 
   getRemoteDataPolicy = () => remoteDataPolicyService.getPolicy();
@@ -1650,66 +1644,30 @@ export class WalletController extends BaseController {
     }
   );
 
-  private getTestnetTotalBalanceCached = cached(
-    'getTestnetTotalBalanceCached',
-    async (address: string) => {
-      const testnetData = await testnetOpenapiService.getTotalBalance(address);
-      preferenceService.updateTestnetAddressBalance(address, testnetData);
-      return testnetData;
-    },
-    {
-      timeout: BALANCE_LOADING_CONFS.TIMEOUT,
-      maxSize: BALANCE_LOADING_CONFS.CACHE_LIMIT,
-    }
-  );
-
   /**
    * @description get balance about info by address,
    * it will use cache in memory, or re-fetch, update-cache
    * AND **persist the cache to preference store** if expired
    */
-  getInMemoryAddressBalance = async (
-    address: string,
-    force = false,
-    isTestnet = false
-  ) => {
+  getInMemoryAddressBalance = async (address: string, force = false) => {
     const addr = address?.toLowerCase() || '';
-
-    if (isTestnet) {
-      return this.getTestnetTotalBalanceCached.fn([addr], addr, force);
-    }
     return this.getTotalBalanceCached.fn([addr], addr, force);
   };
 
-  forceExpireInMemoryAddressBalance = (address: string, isTestnet = false) => {
-    if (isTestnet) {
-      // preferenceService.removeTestnetAddressBalance(address);
-      return this.getTestnetTotalBalanceCached.forceExpire(address);
-    }
-
+  forceExpireInMemoryAddressBalance = (address: string) => {
     // preferenceService.removeAddressBalance(address);
     return this.getTotalBalanceCached.forceExpire(address);
   };
 
-  isInMemoryAddressBalanceExpired = (address: string, isTestnet = false) => {
-    if (isTestnet) {
-      return this.getTestnetTotalBalanceCached.isExpired(address);
-    }
-
+  isInMemoryAddressBalanceExpired = (address: string) => {
     return this.getTotalBalanceCached.isExpired(address);
   };
 
   /**
    * @deprecatedgetPersistedBalanceAboutCacheMap
    */
-  getAddressCacheBalance = async (
-    address: string | undefined,
-    isTestnet = false
-  ) => {
+  getAddressCacheBalance = async (address: string | undefined) => {
     if (!address) return null;
-    if (isTestnet) {
-      return null;
-    }
 
     try {
       const balance = await balanceDbService.queryBalance(address);
@@ -1884,19 +1842,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
-  switchSceneAccount = ({
-    scene,
-    account,
-  }: {
-    scene: AccountScene;
-    account: Account;
-  }) => {
-    const prev = preferenceService.getPreference('sceneAccountMap') || {};
-    preferenceService.setPreferencePartials({
-      sceneAccountMap: { ...prev, [scene]: account },
-    });
-  };
-
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
   setLastTimeSendToken = (token: TokenItem) =>
     preferenceService.setLastTimeSendToken(token);
@@ -1928,6 +1873,8 @@ export class WalletController extends BaseController {
     key: Key
   ): PersistedStoreMap[Key] => {
     switch (key) {
+      case 'contactBook':
+        return contactBookService.getContactsByMap() as PersistedStoreMap[Key];
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
       case 'openapi':
@@ -1967,6 +1914,11 @@ export class WalletController extends BaseController {
     }
 
     switch (key) {
+      case 'contactBook':
+        contactBookService.patchStore(
+          patch as PersistedStorePatch<'contactBook'>
+        );
+        return;
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
@@ -1986,11 +1938,6 @@ export class WalletController extends BaseController {
         throw new Error(`Unknown persisted store: ${String(key)}`);
     }
   };
-
-  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
-  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
-  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
-  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;

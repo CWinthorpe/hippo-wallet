@@ -8,7 +8,7 @@ import {
   KEYRING_TYPE,
   WALLET_BRAND_CONTENT,
 } from 'consts';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
@@ -17,7 +17,7 @@ import WatchLogo from 'ui/assets/waitcup.svg';
 
 import { AddressViewer, Popup } from 'ui/component';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { useWallet } from 'ui/utils';
+import { formatUsdValue, useWallet } from 'ui/utils';
 
 import { getKRCategoryByType } from '@/utils/transaction';
 
@@ -64,7 +64,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
 }) => {
   const history = useHistory();
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
 
   const currentAccount = useCurrentAccount();
 
@@ -75,7 +74,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
     (state) => state.getPendingTxCountAsync
   );
 
-  const [displayName, setDisplayName] = useState<string>('');
+  const displayName = currentAccount?.alianName || '';
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
 
   useInterval(() => {
@@ -86,19 +85,13 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   }, 30000);
 
   useEffect(() => {
-    if (currentAccount) {
-      if (currentAccount.type !== KEYRING_TYPE.GnosisKeyring) {
-        void getPendingTxCountAsync(currentAccount.address);
-      }
-
-      wallet
-        .getAlianName(currentAccount?.address.toLowerCase())
-        .then((name) => {
-          dispatch.account.setField({ alianName: name });
-          setDisplayName(name!);
-        });
+    if (
+      currentAccount?.address &&
+      currentAccount.type !== KEYRING_TYPE.GnosisKeyring
+    ) {
+      void getPendingTxCountAsync(currentAccount.address);
     }
-  }, [currentAccount]);
+  }, [currentAccount?.address, currentAccount?.type, getPendingTxCountAsync]);
 
   const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
     currentAccount?.address
