@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "Sözleşme:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "sendGas": "Mevcut işlem için size aktarılan gas:",
+        "estimatedGas": "Tahmini gas:",
+        "maxGas": "Maksimum Gaz:",
+        "gasCost": "Adresinize gas aktarımı için gas maliyeti:",
+        "description": "GasAccount kullanarak gaz ücretlerini ödemek. Aşağıdaki ödeme detaylarını görüntüleyin:"
+      },
+      "gasAccountForGas": "Gas ödemesi yapmak için GasAccount'ımdaki USD'yi kullan"
     },
     "signFooterBar": {
       "requestFrom": "Talep eden",
@@ -475,7 +483,12 @@
       "imKeyNotConnected": "imKey bağlantısı yok",
       "imKeyConnected": "imKey bağlı",
       "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle",
-      "iGotIt": "Anladım"
+      "iGotIt": "Anladım",
+      "gasless": {
+        "watchUnavailableTip": "Sadece izleme adresi Free Gas için desteklenmez.",
+        "customRpcUnavailableTip": "Özel RPC'ler Free Gas için desteklenmemektedir.",
+        "walletConnectUnavailableTip": "WalletConnect ile bağlanan mobil cüzdanlar Free Gas için desteklenmez."
+      }
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}} Yazılmış Veriyi İmzala",
@@ -504,7 +517,19 @@
       "contractCall": {
         "operationDecoded": "İşlem mesajdan çözüldü"
       },
-      "safeCantSignTypedData": "Bu bir Safe adresidir ve yalnızca EIP-712 tipinde verileri veya stringleri imzalamayı destekler."
+      "safeCantSignTypedData": "Bu bir Safe adresidir ve yalnızca EIP-712 tipinde verileri veya stringleri imzalamayı destekler.",
+      "sellNFT": {
+        "title": "NFT Emri",
+        "receiveToken": "Tokeni al",
+        "listNFT": "NFT Listele",
+        "specificBuyer": "Belirli alıcı"
+      },
+      "buyNFT": {
+        "payToken": "Token öde",
+        "receiveNFT": "NFT al",
+        "expireTime": "Son geçerlilik süresi",
+        "listOn": "Listele"
+      }
     },
     "activities": {
       "title": "İmza Kaydı",
@@ -891,7 +916,8 @@
         "revokeWithOneKey": "OneKey ile iptal işlemini başlat",
         "oneKeySended": "Lütfen OneKey üzerinde isteği imzalayın ({{current}}/{{total}})",
         "oneKeySending": "İmzalama isteği gönderiliyor ({{current}}/{{total}})",
-        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})"
+        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})",
+        "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır."
       }
     },
     "swap": {
@@ -988,7 +1014,7 @@
       "approve-swap": "Onayla ve Takas Yap",
       "sort-with-gas": "Gaz ile sırala",
       "usd-after-fees": "≈ {{usd}}",
-      "preferMEV": "MEV Korumalı Tercih Et",
+      "preferMEV": "MEV Koruması",
       "no-fee-for-wrap": "Wrap için Hippo ücreti yok",
       "process-with-two-step-approve": "İki adımlı onayla devam et",
       "loss-tips": "{{usd}} kaybediyorsunuz. Küçük bir pazarda daha küçük bir miktar deneyin.",
@@ -998,7 +1024,7 @@
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "USDT iznini değiştirmek için 2 işlem gerekir. Önce izni sıfırlamanız, ardından yeni izin değerini belirlemeniz gerekir.",
-      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
+      "preferMEVTip": "Sandviç saldırısı riskini azaltmak için Ethereum ve BNB Chain takaslarında \"MEV Koruması\" özelliğini etkinleştirin. Not: Özel bir RPC veya WalletConnect adresi kullanıyorsanız bu özellik desteklenmez.",
       "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
       "approve": "Onayla",
       "search-by-token-name-address": "Token Adı / Adresi Ara",
@@ -1334,7 +1360,9 @@
         "customizedHasAddedTips": "Token Hippo tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
         "IssuerWebsite": "Yayımcının Web Sitesi",
         "blockedListTitle": "blokajlı token",
-        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez."
+        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
+        "BridgeProvider": "Köprü Sağlayıcı",
+        "BridgeIssue": "Üçüncü taraf tarafından köprülenmiş token"
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -1386,8 +1414,8 @@
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
         "blockDescription": "Tarafınızdan engellenen token burada gösterilecek",
-        "unfoldChain": "1 zinciri aç",
-        "unfoldChainPlural": "{{moreLen}} zinciri aç",
+        "unfoldChain": "1 ağ daha",
+        "unfoldChainPlural": "{{moreLen}} ağ daha",
         "customLinkText": "Farklı bir token eklemek için adresi ara",
         "customDescription": "Tarafınızdan özel olarak eklenen token burada gösterilecek",
         "comingSoon": "Yakında...",
@@ -1661,7 +1689,8 @@
           "disconnect": "Bağlantıyı Kes",
           "connect": "Bağlan",
           "howToSwitch": "Nasıl değiştirilir"
-        }
+        },
+        "changeBridgeServer": "Bridge sunucusunu değiştir"
       },
       "hd": {
         "tooltip": {
@@ -3267,7 +3296,23 @@
       "revoke": "İptal Et",
       "approvals": "onaylar",
       "unselectAll": "Tüm Seçimleri Kaldır",
-      "selectAll": "Tümünü Seç"
+      "selectAll": "Tümünü Seç",
+      "approvalsCount": "{{count}} onay"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "Daha Fazla Göster"
+      },
+      "Select": "Seç",
+      "pendingItem": {
+        "swapStatus": "Takasta Değiştir",
+        "sendStatus": "Gönderim Durumu"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Gaz Token",
+      "gasFee": "Gas ücreti"
     }
   },
   "component": {
@@ -3387,7 +3432,11 @@
       "chainFilterLine": {
         "filterAll": "Tüm Zincirler"
       },
-      "noLpTokens": "LP Token Yok"
+      "noLpTokens": "LP Token Yok",
+      "bridge": {
+        "high": "Yüksek likidite",
+        "low": "Düşük likidite"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

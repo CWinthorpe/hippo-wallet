@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "Контракт:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "maxGas": "Максимум газа:",
+        "gasCost": "Стоимость газа для перевода газа на ваш адрес:",
+        "sendGas": "Перевод газа для текущей транзакции:",
+        "estimatedGas": "Оценочная комиссия за газ:",
+        "description": "Используя GasAccount для оплаты газовых сборов. Посмотрите детали платежа ниже:"
+      },
+      "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа"
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -475,7 +483,12 @@
       "cancelCurrentConnection": "Отменить текущее подключение",
       "imKeyNotConnected": "imKey не подключен",
       "imKeyConnected": "imKey подключен",
-      "iGotIt": "Я понял это"
+      "iGotIt": "Я понял это",
+      "gasless": {
+        "customRpcUnavailableTip": "Пользовательские RPC не поддерживаются для Free Gas",
+        "walletConnectUnavailableTip": "Мобильный кошелек, подключенный через WalletConnect, не поддерживает Free Gas",
+        "watchUnavailableTip": "Free Gas не поддерживается для адресов только для просмотра"
+      }
     },
     "signTypedData": {
       "signTypeDataOnChain": "Подписать Типизированные данные {{chain}}",
@@ -504,7 +517,19 @@
       "contractCall": {
         "operationDecoded": "Операция декодирована из сообщения"
       },
-      "safeCantSignTypedData": "Это адрес Safe, и он поддерживает только подпись данных типа EIP-712 или строки."
+      "safeCantSignTypedData": "Это адрес Safe, и он поддерживает только подпись данных типа EIP-712 или строки.",
+      "sellNFT": {
+        "title": "Ордер на продажу NFT",
+        "receiveToken": "Получить токен",
+        "listNFT": "Выставить NFT",
+        "specificBuyer": "Конкретный покупатель"
+      },
+      "buyNFT": {
+        "payToken": "Заплатить токеном",
+        "receiveNFT": "Получить NFT",
+        "expireTime": "Время истечения",
+        "listOn": "Выставлен на"
+      }
     },
     "activities": {
       "title": "История подписей",
@@ -891,7 +916,8 @@
         "revokeWithOneKey": "Начать отзыв с OneKey",
         "oneKeySended": "Пожалуйста, подпишите запрос на OneKey ({{current}}/{{total}})",
         "oneKeySending": "Отправка запроса на подпись ({{current}}/{{total}})",
-        "oneKeySigned": "Подписано. Создание транзакции ({{current}}/{{total}})"
+        "oneKeySigned": "Подписано. Создание транзакции ({{current}}/{{total}})",
+        "useGasAccount": "Ваш газовый баланс низкий. Ваш GasAccount покроет комиссию за газ."
       }
     },
     "swap": {
@@ -921,8 +947,8 @@
       "unlimited-allowance": "Неограниченный лимит",
       "insufficient-balance": "Недостаточный баланс",
       "rabby-fee": "Комиссия Hippo",
-      "preferMEV": "Выбрать защиту от MEV",
-      "preferMEVTip": "Включить \"MEV Guarded\" функцию для Ethereum обмена чтобы снизить риск сендвич-атак. Примечание: функция работает только со встроенным RPC и кошельком",
+      "preferMEV": "Защита от MEV",
+      "preferMEVTip": "Включите «Защиту от MEV» для обменов в сетях Ethereum и BNB Chain, чтобы снизить риск сэндвич-атак. Примечание: эта функция не поддерживается при использовании пользовательского RPC или адреса WalletConnect.",
       "minimum-received": "Минимум к получению",
       "there-is-no-fee-and-slippage-for-this-trade": "Для этой сделки нет комиссии и отклонения",
       "approve-tips": "1.Подтвердить → 2.Обменять",
@@ -1335,7 +1361,9 @@
         "AddToMyTokenList": "Добавить в мой список токенов",
         "fdvTips": "Рыночная капитализация, если максимальное предложение находится в обращении. Полная разводненная оценка (FDV) = Цена x Максимальное предложение. Если Максимальное предложение равно нулю, FDV = Цена x Общее предложение. Если ни Максимальное предложение, ни Общее предложение не определены или бесконечны, FDV не отображается.",
         "blockedListTitles": "Заблокированные токены",
-        "blockedTips": "Заблокированные токены не будут отображаться в списке токенов."
+        "blockedTips": "Заблокированные токены не будут отображаться в списке токенов.",
+        "BridgeIssue": "Токен, перетасованный третьей стороной",
+        "BridgeProvider": "Кроссчейн-провайдер"
       },
       "assets": {
         "usdValue": "ОЦЕНКА В USD",
@@ -1387,8 +1415,8 @@
         "noAssets": "Нет активов",
         "blockLinkText": "Искать адрес, чтобы заблокировать токен",
         "blockDescription": "Заблокированные вами токены будут показаны здесь",
-        "unfoldChain": "Развернуть 1 сеть",
-        "unfoldChainPlural": "Развернуть {{moreLen}} сетей",
+        "unfoldChain": "Ещё 1 сеть",
+        "unfoldChainPlural": "Ещё сетей: {{moreLen}}",
         "customLinkText": "Искать адрес, чтобы добавить пользовательский токен",
         "customDescription": "Добавленные вами пользовательские токены будут показаны здесь",
         "comingSoon": "Скоро...",
@@ -1682,7 +1710,8 @@
           "disconnect": "Отключить",
           "connect": "Подключить",
           "howToSwitch": "Как переключиться"
-        }
+        },
+        "changeBridgeServer": "Изменить bridge-сервер"
       },
       "hd": {
         "tooltip": {
@@ -3266,7 +3295,23 @@
       "revoke": "Отозвать",
       "approvals": "одобрения",
       "unselectAll": "Снять выделение со всех",
-      "selectAll": "Выделить все"
+      "selectAll": "Выделить все",
+      "approvalsCount": "{{count}} одобрений"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "Показать больше"
+      },
+      "Select": "Выбрать",
+      "pendingItem": {
+        "sendStatus": "Статус отправки",
+        "swapStatus": "Статус обмена"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Газовый токен",
+      "gasFee": "Комиссия за газ"
     }
   },
   "component": {
@@ -3386,7 +3431,11 @@
       "chainFilterLine": {
         "filterAll": "Все сети"
       },
-      "noLpTokens": "Нет токена поставщика ликвидности (LP)"
+      "noLpTokens": "Нет токена поставщика ликвидности (LP)",
+      "bridge": {
+        "low": "Низкая ликвидность",
+        "high": "Высокая ликвидность"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

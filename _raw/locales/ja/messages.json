@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "コントラクト:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "estimatedGas": "推定Gas： ",
+        "sendGas": "現在のトランザクションに対するGasの送金: ",
+        "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト： ",
+        "maxGas": "最大Gas： ",
+        "description": "GasAccountを使用してガス料金を支払います。支払いの詳細は以下をご覧ください："
+      },
+      "gasAccountForGas": "GasAccount の USD を使用してガス代を支払う"
     },
     "signFooterBar": {
       "requestFrom": "リクエスト元",
@@ -475,7 +483,12 @@
       "cancelTransaction": "トランザクションをキャンセル",
       "cancelCurrentTransaction": "現在のトランザクションをキャンセルする",
       "detectedMultipleRequestsFromThisDapp": "このDappからの複数のリクエストを検出しました。",
-      "iGotIt": "わかった"
+      "iGotIt": "わかった",
+      "gasless": {
+        "watchUnavailableTip": "閲覧専用アドレスでは無料ガスを利用できません",
+        "walletConnectUnavailableTip": "モバイルウォレットがWalletConnectを通じて接続されている場合、Free Gasはサポートされていません。",
+        "customRpcUnavailableTip": "カスタムRPCはFree Gasをサポートしていません。"
+      }
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}}の型付きデータに署名",
@@ -504,7 +517,19 @@
       "contractCall": {
         "operationDecoded": "操作はメッセージからデコードされました"
       },
-      "safeCantSignTypedData": "これはSafeアドレスであり、EIP-712タイプのデータまたは文字列の署名のみをサポートしています。"
+      "safeCantSignTypedData": "これはSafeアドレスであり、EIP-712タイプのデータまたは文字列の署名のみをサポートしています。",
+      "sellNFT": {
+        "title": "NFTオーダー",
+        "receiveToken": "トークンを受け取る",
+        "listNFT": "NFTをリストする",
+        "specificBuyer": "特定の購入者"
+      },
+      "buyNFT": {
+        "payToken": "トークンを支払う",
+        "receiveNFT": "NFTを受け取る",
+        "expireTime": "有効期限",
+        "listOn": "リストオン"
+      }
     },
     "activities": {
       "title": "署名レコード",
@@ -891,7 +916,8 @@
         "revokeWithOneKey": "OneKeyで取り消しを開始",
         "oneKeySended": "OneKey 上でリクエストに署名してください ({{current}}/{{total}})",
         "oneKeySending": "署名リクエストを送信中 ({{current}}/{{total}})",
-        "oneKeySigned": "署名完了。トランザクションを作成中 ({{current}}/{{total}})"
+        "oneKeySigned": "署名完了。トランザクションを作成中 ({{current}}/{{total}})",
+        "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。"
       }
     },
     "swap": {
@@ -984,7 +1010,7 @@
       "approve-and-swap": "{{name}} で承認してスワップする",
       "no-slippage-for-wrap": "Wrap にスリッページはありません",
       "no-fee-for-wrap": "Wrap に Hippo 手数料はかかりません",
-      "preferMEV": "MEV保護を優先",
+      "preferMEV": "MEV保護",
       "hidden-no-quote-rates_one": "{{count}} 件のレートは利用できません",
       "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
       "process-with-two-step-approve": "2段階承認を進める",
@@ -998,7 +1024,7 @@
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}の損失が発生します。流動性の低い市場では、金額を減らしてお試しください。",
-      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
+      "preferMEVTip": "EthereumとBNB Chainのスワップで「MEV保護」を有効にし、サンドイッチ攻撃のリスクを軽減します。注：カスタムRPCまたはWalletConnectアドレスを使用する場合、この機能はサポートされません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
       "search-by-token-name-address": "トークン名 / アドレスを検索",
@@ -1334,7 +1360,9 @@
         "blockedTips": "ブロックされたトークンはトークンリストに表示されません。",
         "TokenName": "トークン名",
         "ListedBy": "掲載元",
-        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。"
+        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。",
+        "BridgeProvider": "ブリッジプロバイダー",
+        "BridgeIssue": "第三者によってブリッジされたトークン"
       },
       "assets": {
         "usdValue": "USD換算額",
@@ -1386,8 +1414,8 @@
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
         "blockDescription": "ユーザーによってブロックされたトークンがここに表示されます",
-        "unfoldChain": "1つのチェーンを展開",
-        "unfoldChainPlural": "{{moreLen}}のチェーンを展開",
+        "unfoldChain": "他1件のチェーン",
+        "unfoldChainPlural": "他{{moreLen}}件のチェーン",
         "customLinkText": "カスタムトークンを追加するためのアドレスを検索",
         "customDescription": "ユーザーによって追加されたカスタムトークンがここに表示されます",
         "comingSoon": "近日公開...",
@@ -1661,7 +1689,8 @@
           "disconnect": "切断",
           "connect": "接続",
           "howToSwitch": "切り替え方法"
-        }
+        },
+        "changeBridgeServer": "ブリッジサーバーを変更"
       },
       "hd": {
         "tooltip": {
@@ -3264,7 +3293,23 @@
       "revoke": "取り消し",
       "approvals": "承認",
       "unselectAll": "すべて選択解除",
-      "selectAll": "すべて選択"
+      "selectAll": "すべて選択",
+      "approvalsCount": "{{count}} 件の承認"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "もっと表示"
+      },
+      "Select": "選択",
+      "pendingItem": {
+        "swapStatus": "スワップステータス",
+        "sendStatus": "送信状況"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "ガストークン",
+      "gasFee": "ガス手数料"
     }
   },
   "component": {
@@ -3384,7 +3429,11 @@
       "chainFilterLine": {
         "filterAll": "すべてのチェーン"
       },
-      "noLpTokens": "流動性提供者 (LP) トークンがありません"
+      "noLpTokens": "流動性提供者 (LP) トークンがありません",
+      "bridge": {
+        "high": "高い流動性",
+        "low": "流動性が低い"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

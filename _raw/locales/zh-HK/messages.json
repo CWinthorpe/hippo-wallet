@@ -354,7 +354,9 @@
         "blockedListTitle": "已隱藏代幣",
         "maybeScamTips": "這是一個低品質代幣，可能存在詐騙風險。",
         "myBalance": "我的餘額",
-        "fdvTips": "假設最大供應量全部流通時的市值。完全稀釋估值（FDV）= 價格 x 最大供應量。如果最大供應量為空，則 FDV = 價格 x 總供應量。如果最大供應量和總供應量均未定義或為無限，則不顯示 FDV。"
+        "fdvTips": "假設最大供應量全部流通時的市值。完全稀釋估值（FDV）= 價格 x 最大供應量。如果最大供應量為空，則 FDV = 價格 x 總供應量。如果最大供應量和總供應量均未定義或為無限，則不顯示 FDV。",
+        "BridgeProvider": "跨鏈橋服務方",
+        "BridgeIssue": "由第三方跨鏈橋發行的代幣"
       },
       "assets": {
         "usdValue": "美元價值",
@@ -406,8 +408,8 @@
         "noAssets": "沒有資產",
         "blockLinkText": "搜尋代幣地址以隱藏代幣",
         "blockDescription": "被你隱藏的代幣將顯示在此處",
-        "unfoldChain": "展開 1 條鏈",
-        "unfoldChainPlural": "展開 {{moreLen}} 條鏈",
+        "unfoldChain": "還有 1 條鏈",
+        "unfoldChainPlural": "還有 {{moreLen}} 條鏈",
         "customLinkText": "搜尋代幣地址，新增代幣",
         "customDescription": "你手動新增的代幣將顯示在此處",
         "comingSoon": "即將推出...",
@@ -709,7 +711,8 @@
           "disconnect": "斷開",
           "connect": "連接",
           "howToSwitch": "如何切換"
-        }
+        },
+        "changeBridgeServer": "更改橋接伺服器"
       },
       "hd": {
         "tooltip": {
@@ -1141,7 +1144,8 @@
         "revokeWithOneKey": "開始使用 OneKey 撤銷",
         "oneKeySended": "請在 OneKey 上簽署請求 ({{current}}/{{total}})",
         "oneKeySending": "正在發送簽名請求（{{current}}/{{total}}）",
-        "oneKeySigned": "已簽名，正在建立交易（{{current}}/{{total}}）"
+        "oneKeySigned": "已簽名，正在建立交易（{{current}}/{{total}}）",
+        "useGasAccount": "你的 Gas 結餘不足。你的 GasAccount 將支付 Gas 費用。"
       }
     },
     "connect": {
@@ -1510,7 +1514,12 @@
       "blockDappFromSendingRequests": "阻止 Dapp 在 1 分鐘內發送請求",
       "cancelConnection": "取消連接",
       "cancelCurrentConnection": "取消目前連接",
-      "iGotIt": "我明白了"
+      "iGotIt": "我明白了",
+      "gasless": {
+        "customRpcUnavailableTip": "自訂 RPC 不支援 Free Gas",
+        "walletConnectUnavailableTip": "透過 WalletConnect 連接的手機錢包不支援 Free Gas",
+        "watchUnavailableTip": "僅觀察地址不支援 Free Gas"
+      }
     },
     "signText": {
       "createKey": {
@@ -1853,7 +1862,15 @@
       "signMessageTag": {
         "contract": "合約：",
         "eoa": "EOA："
-      }
+      },
+      "gasAccount": {
+        "estimatedGas": "預估 Gas：",
+        "sendGas": "本次交易轉入你地址的 Gas：",
+        "maxGas": "最大 Gas：",
+        "gasCost": "將 Gas 轉入你地址所需的 Gas 費用：",
+        "description": "使用 GasAccount 支付 Gas 費用。付款詳情如下："
+      },
+      "gasAccountForGas": "使用我的 GasAccount 中的 USD 支付 Gas 費用"
     },
     "signTypedData": {
       "contractCall": {
@@ -1882,7 +1899,19 @@
       "verifyAddress": {
         "title": "驗證地址"
       },
-      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型化資料或字串。"
+      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型化資料或字串。",
+      "buyNFT": {
+        "expireTime": "過期時間",
+        "listOn": "掛單於",
+        "payToken": "賣出",
+        "receiveNFT": "接收 NFT"
+      },
+      "sellNFT": {
+        "listNFT": "掛出 NFT",
+        "receiveToken": "接收代幣",
+        "specificBuyer": "指定買家",
+        "title": "NFT 掛單"
+      }
     },
     "swap": {
       "Completed": "已完成",
@@ -1922,8 +1951,8 @@
       "pendingTip": "交易已提交。\n如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
       "price-expired-refresh-quote": "價格已過期，\n重新整理報價",
       "rabby-fee": "Hippo 手續費",
-      "preferMEV": "優先使用 MEV 保護",
-      "preferMEVTip": "為 Ethereum 兌換啟用「MEV Guarded」功能，以降低遭受三明治攻擊的風險。注意：使用自訂 RPC 或 WalletConnect 地址時不支援此功能。",
+      "preferMEV": "MEV 保護",
+      "preferMEVTip": "為 Ethereum 和 BNB Chain 兌換啟用「MEV 保護」，以降低三明治攻擊風險。注意：使用自訂 RPC 或 WalletConnect 地址時不支援此功能。",
       "rate": "匯率",
       "rates-from-cex": "來自 CEX 的匯率",
       "recommend-slippage": "為了防止被搶先交易，我們建議滑點為 <2>{{ slippage }}</2>%",
@@ -3311,7 +3340,23 @@
       "revoke": "撤銷",
       "approvals": "授權",
       "unselectAll": "取消全選",
-      "selectAll": "全選"
+      "selectAll": "全選",
+      "approvalsCount": "{{count}} 項授權"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "顯示更多"
+      },
+      "Select": "選擇",
+      "pendingItem": {
+        "sendStatus": "發送狀態",
+        "swapStatus": "兌換狀態"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Gas 代幣",
+      "gasFee": "Gas 費用"
     }
   },
   "component": {
@@ -3431,7 +3476,11 @@
       "chainFilterLine": {
         "filterAll": "所有鏈"
       },
-      "noLpTokens": "無流動性提供者（LP）代幣"
+      "noLpTokens": "無流動性提供者（LP）代幣",
+      "bridge": {
+        "high": "高流動性",
+        "low": "低流動性"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

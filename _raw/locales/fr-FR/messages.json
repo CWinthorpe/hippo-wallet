@@ -171,7 +171,11 @@
       "chainFilterLine": {
         "filterAll": "Tous les réseaux"
       },
-      "noLpTokens": "Aucun token de fournisseur de liquidité (LP)"
+      "noLpTokens": "Aucun token de fournisseur de liquidité (LP)",
+      "bridge": {
+        "low": "Liquidité faible",
+        "high": "Haute liquidité"
+      }
     },
     "Uploader": {
       "placeholder": "Sélectionner un fichier JSON"
@@ -607,7 +611,8 @@
         "revokeWithOneKey": "Démarrer la révocation avec OneKey",
         "oneKeySended": "Veuillez signer la demande sur OneKey ({{current}}/{{total}})",
         "oneKeySending": "Envoi de la demande de signature ({{current}}/{{total}})",
-        "oneKeySigned": "Signé. Création de la transaction ({{current}}/{{total}})"
+        "oneKeySigned": "Signé. Création de la transaction ({{current}}/{{total}})",
+        "useGasAccount": "Votre solde de gas est faible. Votre GasAccount couvrira les frais de gas."
       }
     },
     "backupPrivateKey": {
@@ -758,8 +763,8 @@
         "tokenButton": {
           "subTitle": "Les tokens de cette liste ne seront pas ajoutés au solde total."
         },
-        "unfoldChain": "Déplier 1 réseau",
-        "unfoldChainPlural": "Déplier {{moreLen}} réseaux",
+        "unfoldChain": "1 chaîne supplémentaire",
+        "unfoldChainPlural": "{{moreLen}} chaînes supplémentaires",
         "usdValue": "VALEUR EN USD",
         "AddMainnetToken": {
           "tokenAddress": "Adresse du token",
@@ -1109,7 +1114,9 @@
         "TokenName": "Nom du token",
         "blockedListTitles": "tokens bloqués",
         "IssuerWebsite": "Site de l'émetteur",
-        "fdvTips": "La capitalisation boursière si l'offre maximale était en circulation. Valorisation entièrement diluée (FDV) = prix × offre maximale. Si l'offre maximale n'est pas renseignée, FDV = prix × offre totale. Si aucune des deux n'est définie ou si elle est infinie, la FDV n'est pas affichée."
+        "fdvTips": "La capitalisation boursière si l'offre maximale était en circulation. Valorisation entièrement diluée (FDV) = prix × offre maximale. Si l'offre maximale n'est pas renseignée, FDV = prix × offre totale. Si aucune des deux n'est définie ou si elle est infinie, la FDV n'est pas affichée.",
+        "BridgeIssue": "Token bridgé par un tiers",
+        "BridgeProvider": "Fournisseur du bridge"
       },
       "GnosisWrongChainAlertBar": {
         "warning": "L'adresse Safe ne prend pas en charge {{chain}}",
@@ -1522,7 +1529,8 @@
         },
         "title": "Se connecter à {{brandName}}",
         "url": "URL",
-        "viaWalletConnect": "via WalletConnect"
+        "viaWalletConnect": "via WalletConnect",
+        "changeBridgeServer": "Changer de serveur de bridge"
       },
       "keystone": {
         "allowRabbyPermissionsTitle": "Autoriser Hippo à :",
@@ -1908,7 +1916,12 @@
       "keystoneNotConnected": "Keystone non connecté",
       "imKeyConnected": "imKey est connecté",
       "imKeyNotConnected": "imKey n'est pas connecté",
-      "iGotIt": "J’ai compris"
+      "iGotIt": "J’ai compris",
+      "gasless": {
+        "watchUnavailableTip": "Les adresses en lecture seule ne sont pas prises en charge pour Free Gas",
+        "customRpcUnavailableTip": "Les RPC personnalisés ne sont pas pris en charge pour Free Gas",
+        "walletConnectUnavailableTip": "Le portefeuille mobile connecté via WalletConnect n'est pas pris en charge pour Free Gas."
+      }
     },
     "signText": {
       "createKey": {
@@ -2251,7 +2264,15 @@
       "signMessageTag": {
         "contract": "Contrat :",
         "eoa": "EOA :"
-      }
+      },
+      "gasAccount": {
+        "gasCost": "Frais de gas pour transférer le gas à votre adresse : ",
+        "estimatedGas": "Gas estimé : ",
+        "maxGas": "Gas maximal : ",
+        "sendGas": "Le transfert de Gas pour votre transaction actuelle : ",
+        "description": "Utiliser GasAccount pour payer les frais de gas. Voir les détails du paiement ci-dessous :"
+      },
+      "gasAccountForGas": "Utiliser les USD de mon GasAccount pour payer le gas"
     },
     "signTypedData": {
       "contractCall": {
@@ -2280,7 +2301,19 @@
       "verifyAddress": {
         "title": "Vérifier l'adresse"
       },
-      "safeCantSignTypedData": "Il s’agit d’une adresse Safe, qui prend uniquement en charge la signature de données typées EIP-712 ou de chaînes de caractères."
+      "safeCantSignTypedData": "Il s’agit d’une adresse Safe, qui prend uniquement en charge la signature de données typées EIP-712 ou de chaînes de caractères.",
+      "buyNFT": {
+        "expireTime": "Date d'expiration",
+        "listOn": "Lister sur",
+        "payToken": "Token de paiement",
+        "receiveNFT": "Recevoir le NFT"
+      },
+      "sellNFT": {
+        "listNFT": "Mettre le NFT en vente",
+        "receiveToken": "Recevoir un token",
+        "specificBuyer": "Acheteur spécifique",
+        "title": "Ordre NFT"
+      }
     },
     "swap": {
       "Completed": "Terminée",
@@ -2352,8 +2385,8 @@
       "unlimited-allowance": "Autorisation illimitée",
       "view-quotes": "Voir les cotations",
       "wrap-contract": "Smart contract de wrap",
-      "preferMEV": "Préférer MEV Guarded",
-      "preferMEVTip": "Activez la fonctionnalité « MEV Guarded » pour les swaps sur Ethereum afin de réduire le risque d'attaque sandwich. Remarque : cette fonctionnalité n'est pas prise en charge avec un RPC personnalisé ou une adresse WalletConnect.",
+      "preferMEV": "Protection MEV",
+      "preferMEVTip": "Activez la « protection MEV » pour les swaps sur Ethereum et BNB Chain afin de réduire le risque d’attaque sandwich. Remarque : cette fonctionnalité n’est pas prise en charge avec un RPC personnalisé ou une adresse WalletConnect.",
       "sort-with-gas": "Trier avec les frais de gas",
       "rabbyFee": {
         "wallet": "Portefeuille",
@@ -3583,7 +3616,23 @@
       "revoke": "Révoquer",
       "approvals": "autorisations",
       "unselectAll": "Tout désélectionner",
-      "selectAll": "Tout sélectionner"
+      "selectAll": "Tout sélectionner",
+      "approvalsCount": "{{count}} autorisations"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "Afficher plus"
+      },
+      "Select": "Sélectionner",
+      "pendingItem": {
+        "swapStatus": "État de l'échange",
+        "sendStatus": "État de l'envoi"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Token de gas",
+      "gasFee": "Frais de gas"
     }
   }
 }

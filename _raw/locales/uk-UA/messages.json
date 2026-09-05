@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "Контракт:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "sendGas": "Газ, який буде переказано вам для поточної транзакції:",
+        "gasCost": "Вартість газу за переказ газу на вашу адресу:",
+        "maxGas": "Максимум газу:",
+        "estimatedGas": "Орієнтовна вартість газу: ",
+        "description": "Використовуючи GasAccount для сплати комісій за газ. Перегляньте деталі платежу нижче:"
+      },
+      "gasAccountForGas": "Використовувати USD з GasAccount для оплати газу"
     },
     "signFooterBar": {
       "requestFrom": "Запит від",
@@ -476,7 +484,12 @@
       "cancelCurrentConnection": "Скасувати поточне підключення",
       "imKeyConnected": "imKey підключено",
       "blockDappFromSendingRequests": "Заблокувати запит Dapp на 1 хвилину",
-      "iGotIt": "Зрозуміло"
+      "iGotIt": "Зрозуміло",
+      "gasless": {
+        "watchUnavailableTip": "Free Gas не підтримується для адрес лише для перегляду",
+        "customRpcUnavailableTip": "Користувацькі RPC не підтримуються для Free Gas",
+        "walletConnectUnavailableTip": "Мобільний гаманець, підключений через WalletConnect, не підтримується для Free Gas"
+      }
     },
     "signTypedData": {
       "signTypeDataOnChain": "Підписати {{chain}} Типові дані",
@@ -505,7 +518,19 @@
       "contractCall": {
         "operationDecoded": "Операція декодована з повідомлення"
       },
-      "safeCantSignTypedData": "Це адреса Safe, і вона підтримує лише підписування типізованих даних EIP-712 або рядків."
+      "safeCantSignTypedData": "Це адреса Safe, і вона підтримує лише підписування типізованих даних EIP-712 або рядків.",
+      "sellNFT": {
+        "title": "NFT-ордер",
+        "receiveToken": "Отримати токен",
+        "listNFT": "Залістити NFT",
+        "specificBuyer": "Конкретний покупець"
+      },
+      "buyNFT": {
+        "payToken": "Токен для оплати",
+        "receiveNFT": "Отримати NFT",
+        "expireTime": "Час закінчення терміну дії",
+        "listOn": "Увімкнути список"
+      }
     },
     "activities": {
       "title": "Ваші підписи",
@@ -893,7 +918,8 @@
         "revokeWithOneKey": "Почати відкликання за допомогою OneKey",
         "oneKeySended": "Будь ласка, підпишіть запит на OneKey ({{current}}/{{total}})",
         "oneKeySending": "Надсилаємо запит на підписання ({{current}}/{{total}})",
-        "oneKeySigned": "Підписано. Створюємо транзакцію ({{current}}/{{total}})"
+        "oneKeySigned": "Підписано. Створюємо транзакцію ({{current}}/{{total}})",
+        "useGasAccount": "Ваш газовий баланс низький. Ваш GasAccount покриє комісії за газ."
       }
     },
     "swap": {
@@ -985,7 +1011,7 @@
       "Gas-fee-too-high": "Комісія за газ занадто висока",
       "approve-and-swap": "Затвердити та обміняти через {{name}}",
       "hidden-no-quote-rates_other": "{{count}} курсів недоступно",
-      "preferMEVTip": "Увімкніть функцію \"MEV Guarded\" для обмінів Ethereum, щоб знизити ризики атак типу \"бутерброд\". Примітка: ця функція не підтримується, якщо ви використовуєте користувацькі RPC або адресу підключення гаманця.",
+      "preferMEVTip": "Увімкніть «Захист від MEV» для обмінів у мережах Ethereum і BNB Chain, щоб знизити ризик сендвіч-атак. Примітка: ця функція не підтримується, якщо ви використовуєте власний RPC або адресу WalletConnect.",
       "no-fee-for-wrap": "Wrap без комісії Hippo",
       "no-quote-found": "Не знайдено котирування",
       "Auto": "Авто",
@@ -999,7 +1025,7 @@
       "two-step-approve-details": "Токен USDT вимагає 2 транзакції для зміни дозволу. Спочатку потрібно скинути дозвол до нуля, а потім встановити нове значення дозволу.",
       "two-step-approve": "Підпишіть 2 транзакції, щоб змінити ліміт дозволу",
       "loss-tips": "Ви втрачаєте {{usd}}. Спробуйте меншу суму на маленькому ринку.",
-      "preferMEV": "Віддати перевагу MEV Guarded",
+      "preferMEV": "Захист від MEV",
       "from": "Від",
       "understandRisks": "Я розумію ризики і хочу продовжити",
       "approve": "Схвалити",
@@ -1336,7 +1362,9 @@
         "OriginIssue": "Нативно випущено на цьому блокчейні",
         "ListedBy": "Додано до списку:",
         "fdvTips": "Капіталізація ринку, якщо максимальна пропозиція була в обігу. Повна розведена оцінка (FDV) = Ціна x Максимальна пропозиція. Якщо максимальна пропозиція є null, FDV = Ціна x Загальна пропозиція. Якщо жодна з максимальних або загальних пропозицій не визначена або є безкінечною, FDV не відображається.",
-        "AddToMyTokenList": "Додати до мого списку токенів"
+        "AddToMyTokenList": "Додати до мого списку токенів",
+        "BridgeIssue": "Токен перенесено стороннім кросчейн-сервісом",
+        "BridgeProvider": "Кросчейн-провайдер"
       },
       "assets": {
         "usdValue": "ВАРТІСТЬ У USD",
@@ -1388,8 +1416,8 @@
         "noAssets": "Немає активів",
         "blockLinkText": "Адреса для пошуку токена блоку",
         "blockDescription": "Тут буде показано заблокований вами токен",
-        "unfoldChain": "Розгорнути 1 мережу",
-        "unfoldChainPlural": "Розгорнути {{moreLen}} мереж",
+        "unfoldChain": "Ще 1 мережа",
+        "unfoldChainPlural": "Ще мереж: {{moreLen}}",
         "customLinkText": "Шукайте адресу для додавання кастомного токена",
         "customDescription": "Тут буде показано доданий вами кастомний токен",
         "comingSoon": "Незабаром...",
@@ -1672,7 +1700,8 @@
           "disconnect": "Від'єднати",
           "connect": "Підключити",
           "howToSwitch": "Як переключити"
-        }
+        },
+        "changeBridgeServer": "Змінити bridge-сервер"
       },
       "hd": {
         "tooltip": {
@@ -3275,7 +3304,23 @@
       "revoke": "Скасувати",
       "approvals": "схвалення",
       "unselectAll": "Зняти виділення з усіх",
-      "selectAll": "Виділити всі"
+      "selectAll": "Виділити всі",
+      "approvalsCount": "{{count}} схвалень"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "Показати більше"
+      },
+      "Select": "Вибрати",
+      "pendingItem": {
+        "sendStatus": "Відправити статус",
+        "swapStatus": "Статус обміну"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Газовий токен",
+      "gasFee": "Комісія за газ"
     }
   },
   "component": {
@@ -3395,7 +3440,11 @@
       "chainFilterLine": {
         "filterAll": "Усі мережі"
       },
-      "noLpTokens": "Немає токена постачальника ліквідності (LP)"
+      "noLpTokens": "Немає токена постачальника ліквідності (LP)",
+      "bridge": {
+        "low": "Низька ліквідність",
+        "high": "Висока ліквідність"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

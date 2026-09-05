@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "Kontrak:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "estimatedGas": "Estimasi Gas: ",
+        "maxGas": "Max Gas: ",
+        "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda: ",
+        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini: ",
+        "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
+      },
+      "gasAccountForGas": "Gunakan USD dari GasAccount saya untuk membayar gas"
     },
     "signFooterBar": {
       "walletConnect": {
@@ -475,7 +483,12 @@
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
       "imKeyNotConnected": "imKey tidak terhubung",
-      "iGotIt": "Saya Mengerti"
+      "iGotIt": "Saya Mengerti",
+      "gasless": {
+        "watchUnavailableTip": "Alamat hanya-pantau tidak dapat menggunakan gas gratis",
+        "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Free Gas",
+        "customRpcUnavailableTip": "Custom RPC tidak didukung untuk Free Gas"
+      }
     },
     "signTypedData": {
       "permit": {
@@ -504,7 +517,19 @@
       },
       "signTypeDataOnChain": "Tandatangani data terstruktur di {{chain}}",
       "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks.",
-      "safeCantSignTypedData": "Ini adalah alamat Safe, dan hanya mendukung tanda tangan data bertipe EIP-712 atau string."
+      "safeCantSignTypedData": "Ini adalah alamat Safe, dan hanya mendukung tanda tangan data bertipe EIP-712 atau string.",
+      "sellNFT": {
+        "receiveToken": "Terima token",
+        "specificBuyer": "Pembeli spesifik",
+        "listNFT": "Daftar NFT",
+        "title": "Pesanan NFT"
+      },
+      "buyNFT": {
+        "payToken": "Bayar token",
+        "expireTime": "Waktu Kedaluwarsa",
+        "listOn": "Daftar di",
+        "receiveNFT": "Terima NFT"
+      }
     },
     "activities": {
       "signedTx": {
@@ -891,7 +916,8 @@
         "revokeWithOneKey": "Mulai pencabutan dengan OneKey",
         "oneKeySended": "Silakan tanda tangani permintaan di OneKey ({{current}}/{{total}})",
         "oneKeySending": "Mengirim permintaan tanda tangan ({{current}}/{{total}})",
-        "oneKeySigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})"
+        "oneKeySigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})",
+        "useGasAccount": "Saldo gas Anda rendah. GasAccount Anda akan menanggung biaya gas."
       }
     },
     "swap": {
@@ -935,7 +961,7 @@
       "hidden-no-quote-rates_one": "{{count}} tarif tidak tersedia",
       "security-verification-failed": "Verifikasi keamanan gagal",
       "approve-tips": "1. Setujui → 2. Tukar",
-      "preferMEV": "Suka MEV Guarded",
+      "preferMEV": "Perlindungan MEV",
       "unlimited-allowance": "Izin tak terbatas",
       "there-is-no-fee-and-slippage-for-this-trade": "Tidak ada slippage untuk perdagangan ini.",
       "get-quotes": "Dapatkan penawaran harga",
@@ -966,7 +992,7 @@
       "enable-trading": "Aktifkan Perdagangan",
       "trade": "Perdagangan",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Slippage rendah dapat menyebabkan transaksi gagal akibat volatilitas tinggi",
-      "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk swap Ethereum guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
+      "preferMEVTip": "Aktifkan \"Perlindungan MEV\" untuk swap di Ethereum dan BNB Chain guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "est-payment": "Est. Pembayaran:",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Penawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
       "tradingSettingTip2": "2. Hippo tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
@@ -1334,7 +1360,9 @@
         "Chain": "Rantai",
         "ContractAddress": "Alamat Kontrak",
         "myBalance": "Saldo Saya",
-        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan."
+        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan.",
+        "BridgeProvider": "Penyedia Jembatan",
+        "BridgeIssue": "Token yang dijembatani oleh pihak ketiga"
       },
       "assets": {
         "portfolio": {
@@ -1410,8 +1438,8 @@
         "addTokenEntryText": "Token",
         "noTestnetAssets": "Tidak ada Aset Jaringan Kustom",
         "noAssets": "Tidak ada aset",
-        "unfoldChain": "Buka 1 jaringan",
-        "unfoldChainPlural": "Buka {{moreLen}} rantai",
+        "unfoldChain": "1 jaringan lagi",
+        "unfoldChainPlural": "{{moreLen}} jaringan lagi",
         "searchPlaceholder": "Tokens",
         "blockDescription": "Token yang diblokir oleh Anda akan ditampilkan di sini",
         "blockLinkText": "Cari alamat untuk memblokir token",
@@ -1670,7 +1698,8 @@
         "viaWalletConnect": "melalui Wallet Connect",
         "qrCodeError": "Silakan periksa jaringan Anda atau segarkan kode QR",
         "disconnected": "Terputus",
-        "title": "Hubungkan dengan {{brandName}}"
+        "title": "Hubungkan dengan {{brandName}}",
+        "changeBridgeServer": "Ubah server bridge"
       },
       "hd": {
         "tooltip": {
@@ -3261,7 +3290,23 @@
       "revoke": "Batalkan",
       "approvals": "persetujuan",
       "unselectAll": "Batalkan Pilih Semua",
-      "selectAll": "Pilih Semua"
+      "selectAll": "Pilih Semua",
+      "approvalsCount": "{{count}} persetujuan"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "Tampilkan Lebih Banyak"
+      },
+      "Select": "Pilih",
+      "pendingItem": {
+        "sendStatus": "Kirim Status",
+        "swapStatus": "Status Swap"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "Token gas",
+      "gasFee": "Biaya gas"
     }
   },
   "component": {
@@ -3381,7 +3426,11 @@
       "chainFilterLine": {
         "filterAll": "Semua Rantai"
       },
-      "noLpTokens": "Tidak ada Token Penyedia Likuiditas (LP)"
+      "noLpTokens": "Tidak ada Token Penyedia Likuiditas (LP)",
+      "bridge": {
+        "high": "Likuiditas tinggi",
+        "low": "Likuiditas rendah"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {

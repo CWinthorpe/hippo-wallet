@@ -426,6 +426,14 @@
       "signMessageTag": {
         "contract": "Contract:",
         "eoa": "EOA:"
+      },
+      "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
+      "gasAccount": {
+        "description": "Using GasAccount to pay for gas fees. View payment details below:",
+        "gasCost": "Gas cost for transferring gas to your address: ",
+        "estimatedGas": "Estimated Gas: ",
+        "maxGas": "Max Gas: ",
+        "sendGas": "The Gas transfer to you for current transaction: "
       }
     },
     "signFooterBar": {
@@ -529,7 +537,12 @@
       "cancelConnection": "Cancel connection",
       "cancelCurrentConnection": "Cancel current connection",
       "imKeyNotConnected": "imKey is not connected",
-      "imKeyConnected": "imKey is connected"
+      "imKeyConnected": "imKey is connected",
+      "gasless": {
+        "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
+        "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
+        "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
+      }
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -558,7 +571,19 @@
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
       },
-      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string"
+      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string",
+      "sellNFT": {
+        "title": "NFT Order",
+        "receiveToken": "Receive token",
+        "listNFT": "List NFT",
+        "specificBuyer": "Specific buyer"
+      },
+      "buyNFT": {
+        "payToken": "Pay token",
+        "receiveNFT": "Receive NFT",
+        "expireTime": "Expire time",
+        "listOn": "List on"
+      }
     },
     "activities": {
       "title": "Signature Record",
@@ -1364,7 +1389,8 @@
         "revokeWithOneKey": "Start revoke with OneKey",
         "oneKeySended": "Please sign the request on OneKey ({{current}}/{{total}})",
         "oneKeySending": "Sending signing request ({{current}}/{{total}})",
-        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})"
+        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})",
+        "useGasAccount": "Your gas balance is low. Your GasAccount will cover the gas fees."
       }
     },
     "swap": {
@@ -1402,8 +1428,8 @@
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Hippo fee",
-      "preferMEV": "Prefer MEV Guarded",
-      "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
+      "preferMEV": "MEV Protection",
+      "preferMEVTip": "Enable \"MEV Protection\" for Ethereum and BNB Chain swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no slippage for this trade",
       "no-slippage-for-wrap": "No slippage for Wrap",
@@ -1807,7 +1833,9 @@
         "blockedListTitle": "blocked token",
         "blockedListTitles": "blocked tokens",
         "blockedButton": "blocked",
-        "blockedButtons": "blocked"
+        "blockedButtons": "blocked",
+        "BridgeIssue": "Bridged token by a third party",
+        "BridgeProvider": "Bridge Provider"
       },
       "assets": {
         "usdValue": "USD VALUE",
@@ -1860,8 +1888,8 @@
         "noAssets": "No assets",
         "blockLinkText": "Search address to block token",
         "blockDescription": "Token blocked by you will be shown here",
-        "unfoldChain": "Unfold 1 chain",
-        "unfoldChainPlural": "Unfold {{moreLen}} chains",
+        "unfoldChain": "1 more chain",
+        "unfoldChainPlural": "{{moreLen}} more chains",
         "customButtonText": "Add custom token",
         "customDescription": "Custom token added by you will be shown here",
         "comingSoon": "Coming Soon...",
@@ -2183,7 +2211,8 @@
           "disconnect": "Disconnect",
           "connect": "Connect",
           "howToSwitch": "How to switch"
-        }
+        },
+        "changeBridgeServer": "Change bridge server"
       },
       "hd": {
         "tooltip": {
@@ -3291,7 +3320,23 @@
       "ListByContracts": {
         "noApprovals": "No approvals",
         "notMatched": "Not Matched"
+      },
+      "approvalsCount": "{{count}} approvals"
+    },
+    "bridge": {
+      "Select": "Select",
+      "showMore": {
+        "title": "Show More"
+      },
+      "pendingItem": {
+        "swapStatus": "Swap Status",
+        "sendStatus": "Send Status"
       }
+    },
+    "gasAccount": {
+      "gasFee": "Gas fee",
+      "title": "GasAccount",
+      "gasToken": "Gas Token"
     }
   },
   "component": {
@@ -3426,6 +3471,10 @@
       "chainNotSupport": "This chain is not supported",
       "chainFilterLine": {
         "filterAll": "All Chains"
+      },
+      "bridge": {
+        "low": "Low liquidity",
+        "high": "High liquidity"
       }
     },
     "ModalPreviewNFTItem": {

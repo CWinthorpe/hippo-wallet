@@ -372,7 +372,15 @@
       "signMessageTag": {
         "contract": "컨트랙트:",
         "eoa": "EOA:"
-      }
+      },
+      "gasAccount": {
+        "estimatedGas": "예상 가스: ",
+        "gasCost": "귀하의 주소로 가스를 전송하는 데 드는 가스 비용: ",
+        "maxGas": "최대 가스: ",
+        "sendGas": "현재 거래를 위한 Gas 전송: ",
+        "description": "GasAccount를 사용하여 가스 요금을 지불합니다. 아래에서 결제 세부정보를 확인하세요:"
+      },
+      "gasAccountForGas": "GasAccount에서 USD를 사용하여 가스를 지불합니다."
     },
     "signFooterBar": {
       "walletConnect": {
@@ -475,7 +483,12 @@
       "resend": "재시도",
       "blockDappFromSendingRequests": "블록 Dapp이 1분 동안 요청을 보내지 못하게 합니다.",
       "cancelConnection": "연결 취소",
-      "iGotIt": "알겠어요"
+      "iGotIt": "알겠어요",
+      "gasless": {
+        "customRpcUnavailableTip": "Free Gas에 대한 사용자 지정 RPC는 지원되지 않습니다.",
+        "watchUnavailableTip": "보기 전용 주소에서는 무료 가스를 사용할 수 없습니다.",
+        "walletConnectUnavailableTip": "WalletConnect를 통해 연결된 모바일 지갑은 Free Gas를 지원하지 않습니다."
+      }
     },
     "signTypedData": {
       "permit": {
@@ -504,7 +517,19 @@
       },
       "signTypeDataOnChain": "{{chain}} 타입 데이터 서명",
       "safeCantSignText": "이것은 Safe 주소이며, 텍스트를 서명하는 데 사용할 수 없습니다.",
-      "safeCantSignTypedData": "이것은 Safe 주소이며, EIP-712 형식 데이터 또는 문자열 서명만 지원합니다."
+      "safeCantSignTypedData": "이것은 Safe 주소이며, EIP-712 형식 데이터 또는 문자열 서명만 지원합니다.",
+      "sellNFT": {
+        "title": "NFT 주문",
+        "receiveToken": "토큰 수신",
+        "listNFT": "NFT 목록",
+        "specificBuyer": "특정 구매자"
+      },
+      "buyNFT": {
+        "payToken": "토큰을 지불하십시오",
+        "receiveNFT": "NFT 받기",
+        "listOn": "리스트 온",
+        "expireTime": "만료 시간"
+      }
     },
     "activities": {
       "signedTx": {
@@ -891,7 +916,8 @@
         "revokeWithOneKey": "OneKey로 철회 시작",
         "oneKeySended": "OneKey에서 요청에 서명해 주세요 ({{current}}/{{total}})",
         "oneKeySending": "서명 요청 전송 중 ({{current}}/{{total}})",
-        "oneKeySigned": "서명 완료. 트랜잭션 생성 중 ({{current}}/{{total}})"
+        "oneKeySigned": "서명 완료. 트랜잭션 생성 중 ({{current}}/{{total}})",
+        "useGasAccount": "귀하의 가스 잔액이 부족합니다. 귀하의 GasAccount가 가스 요금을 충당할 것입니다."
       }
     },
     "swap": {
@@ -940,7 +966,7 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "이 거래소에서는 거래할 수 없습니다.",
       "there-is-no-fee-and-slippage-for-this-trade": "이 거래에는 슬리피지가 없습니다.",
       "minimum-received": "최소 수신",
-      "preferMEV": "MEV Guarded를 선호하세요",
+      "preferMEV": "MEV 보호",
       "no-fee-for-wrap": "Wrap에는 Hippo 수수료가 없습니다",
       "enable-it": "사용 가능하게 하세요",
       "rates-from-cex": "CEX에서의 요금",
@@ -965,7 +991,7 @@
       "process-with-two-step-approve": "두 단계 승인을 진행하세요",
       "estimate": "추정:",
       "cex": "CEX",
-      "preferMEVTip": "Ethereum 스왑에서 \"MEV Guarded\" 기능을 활성화해 샌드위치 공격 위험을 줄이세요. 사용자 지정 RPC 또는 WalletConnect 주소를 사용할 때는 지원되지 않습니다.",
+      "preferMEVTip": "Ethereum 및 BNB Chain 스왑에서 \"MEV 보호\"를 활성화하여 샌드위치 공격 위험을 줄이세요. 사용자 지정 RPC 또는 WalletConnect 주소를 사용하는 경우 이 기능은 지원되지 않습니다.",
       "est-difference": "추정 차이:",
       "trade": "거래",
       "usd-after-fees": "≈ {{usd}} ",
@@ -1334,7 +1360,9 @@
         "maybeScamTips": "이것은 저품질 토큰이며 사기일 수 있습니다.",
         "fdvTips": "시장에서 유통되고 있는 최대 공급량 기준의 시가총액. 완전 희석 가치(FDV) = 가격 x 최대 공급량. 만약 최대 공급량이 null이면, FDV = 가격 x 총 공급량. 만약 최대 공급량이나 총 공급량이 정의되지 않았거나 무한대인 경우, FDV는 표시되지 않습니다.",
         "ListedBy": "등록자",
-        "verifyScamTips": "이것은 사기 토큰입니다."
+        "verifyScamTips": "이것은 사기 토큰입니다.",
+        "BridgeIssue": "타사에 의해 브리징된 토큰",
+        "BridgeProvider": "브리지 제공자"
       },
       "assets": {
         "portfolio": {
@@ -1410,8 +1438,8 @@
         "blockDescription": "여기에는 당신이 차단한 토큰이 표시됩니다.",
         "blockLinkText": "주소 검색하여 토큰 차단",
         "customDescription": "귀하가 추가한 커스텀 토큰은 여기에서 표시됩니다.",
-        "unfoldChainPlural": "{{moreLen}} 체인을 펼치기",
-        "unfoldChain": "1 체인을 펼치세요",
+        "unfoldChainPlural": "체인 {{moreLen}}개 더",
+        "unfoldChain": "체인 1개 더",
         "customButtonText": "사용자 정의 토큰 추가",
         "addTokenEntryText": "토큰",
         "noTestnetAssets": "사용자 지정 네트워크 자산이 없습니다.",
@@ -1670,7 +1698,8 @@
         "connectYour": "지갑 연결",
         "viaWalletConnect": "Wallet Connect를 통해",
         "qrCodeError": "네트워크를 확인하거나 QR 코드를 새로 고쳐 주세요.",
-        "title": "{{brandName}}와 연결하기"
+        "title": "{{brandName}}와 연결하기",
+        "changeBridgeServer": "브릿지 서버 변경"
       },
       "hd": {
         "tooltip": {
@@ -3261,7 +3290,23 @@
       "revoke": "철회",
       "approvals": "승인",
       "unselectAll": "모두 선택 해제",
-      "selectAll": "모두 선택"
+      "selectAll": "모두 선택",
+      "approvalsCount": "승인 {{count}}개"
+    },
+    "bridge": {
+      "showMore": {
+        "title": "더 보기"
+      },
+      "Select": "선택하세요",
+      "pendingItem": {
+        "sendStatus": "전송 상태",
+        "swapStatus": "스왑 상태"
+      }
+    },
+    "gasAccount": {
+      "title": "GasAccount",
+      "gasToken": "가스 토큰",
+      "gasFee": "가스비"
     }
   },
   "component": {
@@ -3381,7 +3426,11 @@
       "chainFilterLine": {
         "filterAll": "모든 체인"
       },
-      "noLpTokens": "유동성 공급자 (LP) 토큰 없음"
+      "noLpTokens": "유동성 공급자 (LP) 토큰 없음",
+      "bridge": {
+        "low": "낮은 유동성",
+        "high": "높은 유동성"
+      }
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
