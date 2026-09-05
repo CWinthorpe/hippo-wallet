@@ -17,8 +17,8 @@ const manifestPath = path.join(root, 'manifest.json');
 if (!fs.existsSync(manifestPath)) fail('missing manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 if (manifest.manifest_version !== 3) fail('manifest is not MV3');
-if (manifest.version !== '0.94.4') fail('unexpected manifest version');
-if (manifest.version_name !== '0.94.4-hippo.12') {
+if (manifest.version !== '0.94.7') fail('unexpected manifest version');
+if (manifest.version_name !== '0.94.7-hippo.13') {
   fail('unexpected manifest version_name');
 }
 if (manifest.action?.default_title !== 'Hippo Wallet') {
