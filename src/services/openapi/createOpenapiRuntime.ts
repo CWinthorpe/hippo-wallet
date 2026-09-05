@@ -1,4 +1,5 @@
 import type { OpenApiService } from '@rabby-wallet/rabby-api';
+import type { AxiosAdapter } from 'axios';
 
 import {
   createOpenapiClient,
@@ -38,6 +39,12 @@ export type CreateBackgroundOpenapiRuntimeOptions = OpenapiRuntimeCommonOptions 
   kind: 'background';
   store: OpenapiClientStore;
   initializeStore: () => Promise<void>;
+  /**
+   * Adapter for the background client. Hippo requires the forced-policy
+   * adapter (`rabbyOpenapiFetchAdapter`) so a user-configured custom OpenAPI
+   * host cannot bypass RemoteDataPolicy classification.
+   */
+  clientAdapter?: AxiosAdapter;
 };
 
 export type CreateOpenapiRuntimeOptions =
@@ -150,7 +157,7 @@ export const createOpenapiRuntime = (
     ? new UIOpenapiStore(uiOptions.commit, onError)
     : undefined;
   const store = uiStore || backgroundOptions!.store;
-  const clients = createOpenapiClient(store);
+  const clients = createOpenapiClient(store, backgroundOptions?.clientAdapter);
   let disposed = false;
   let initialized = false;
   let initialization: Promise<void> | undefined;

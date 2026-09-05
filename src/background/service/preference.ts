@@ -418,7 +418,15 @@ class PreferenceService {
     if (key === 'isShowTestnet') {
       return true;
     }
-    return key ? this.store[key] : { ...this.store, isShowTestnet: true };
+    // Hippo privacy policy: pins are applied at the read boundary so no
+    // snapshot (including legacy persisted values) can hydrate a UI store or
+    // caller with an un-pinned value.
+    if (key === 'userDataTrackingOptOut') {
+      return true;
+    }
+    return key
+      ? this.store[key]
+      : { ...this.store, isShowTestnet: true, userDataTrackingOptOut: true };
   };
 
   setPreferencePartials = (data: Partial<PreferenceStore>) => {

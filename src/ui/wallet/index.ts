@@ -1,10 +1,6 @@
 import { EVENTS } from 'consts';
 
 import eventBus from '@/eventBus';
-import { createOpenapiRuntime } from '@/services/openapi';
-import type { PublicOpenapiStore } from '@/services/openapi';
-import type { PersistedStoreSnapshot } from '@/types/persistedStore';
-import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 import { getUITypeName } from '../utils/uiType';
 import { createWallet } from './createWallet';
 
@@ -15,34 +11,13 @@ const walletClient = createWallet({
   },
 });
 
-const uiOpenapiRuntime = createOpenapiRuntime({
-  kind: 'ui',
-  async load() {
-    return (await walletClient.request({
-      type: 'controller',
-      method: 'getStorageSnapshot',
-      params: ['openapi'],
-    })) as PersistedStoreSnapshot<'openapi'>;
-  },
-  async commit(partials: Partial<PublicOpenapiStore>) {
-    await walletClient.request({
-      type: 'controller',
-      method: 'setStorageItem',
-      params: ['openapi', partials, []],
-    });
-  },
-  subscribe(listener) {
-    return onBackgroundStoreChanged(
-      'openapi',
-      ({ origin, partials, revision }) => {
-        listener({ origin, partials, revision });
-      }
-    );
-  },
-  onReconnect: walletClient.onReconnect,
-});
-
-walletClient.setNamespace('openapi', uiOpenapiRuntime.openapi);
+// Hippo invariant: the OpenAPI client is constructed only in the background,
+// where the RemoteDataPolicyService is initialized and consent-gated. UI
+// windows route every openapi call through the background port instead of a
+// local client whose process-local policy instance would be uninitialized
+// (deny-by-default would break configured traffic, and a custom host would
+// bypass classification entirely). The UI openapi store remains a read-only
+// host mirror hydrated from the background snapshot.
 
 eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
   void walletClient.request({
@@ -57,7 +32,6 @@ export const walletReady = walletClient.ready;
 export const walletRequest = walletClient.request;
 export const onWalletReconnect = walletClient.onReconnect;
 export const disposeWallet = () => {
-  uiOpenapiRuntime.dispose();
   walletClient.dispose();
 };
 

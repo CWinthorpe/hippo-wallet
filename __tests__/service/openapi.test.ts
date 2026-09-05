@@ -13,12 +13,22 @@ jest.mock('background/utils', () => ({
 }));
 
 const mockInitSync = jest.fn();
+const mockCreateOpenapiClient = jest.fn((store: unknown, adapter: unknown) => ({
+  openapi: { initSync: mockInitSync, store, adapter },
+  init: async () => undefined,
+}));
 jest.mock('@/services/openapi/createOpenapiClient', () => ({
-  createOpenapiClient: (store: unknown) => ({
-    openapi: { initSync: mockInitSync, store },
-    init: async () => undefined,
-  }),
+  createOpenapiClient: (store: unknown, adapter: unknown) =>
+    mockCreateOpenapiClient(store, adapter),
   createReadyOpenapiProxy: (client: unknown) => client,
+}));
+
+const mockForcedAdapter = jest.fn();
+const mockDefaultAdapter = jest.fn();
+jest.mock('@/services/openapi/fetchAdapter', () => ({
+  __esModule: true,
+  default: (...args: unknown[]) => mockDefaultAdapter(...args),
+  rabbyOpenapiFetchAdapter: (...args: unknown[]) => mockForcedAdapter(...args),
 }));
 
 import openapiService, {
@@ -27,10 +37,21 @@ import openapiService, {
   patchOpenapiStore,
 } from '@/background/service/openapi';
 import { createPersistStore } from 'background/utils';
+import { rabbyOpenapiFetchAdapter } from '@/services/openapi/fetchAdapter';
 
 describe('background OpenAPI store (Hippo privacy policy)', () => {
   beforeEach(() => {
     mockInitSync.mockClear();
+  });
+
+  test('background client is bound to the forced-policy adapter (never the default)', () => {
+    // The OpenAPI client can target a user-configured custom host, so every
+    // request must pass RemoteDataPolicy classification (forceRemoteDataPolicy
+    // = true). A default-adapter client would silently allow custom hosts.
+    expect(mockCreateOpenapiClient).toHaveBeenCalledTimes(1);
+    const adapter = mockCreateOpenapiClient.mock.calls[0][1];
+    expect(adapter).toBe(rabbyOpenapiFetchAdapter);
+    expect(adapter).toBeDefined();
   });
 
   test('removes the legacy testnet host and clears persisted identity', async () => {

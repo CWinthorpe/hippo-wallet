@@ -9,6 +9,7 @@ import {
   PublicOpenapiStore,
 } from '@/services/openapi';
 import { createPersistStore, patchPersistStore } from 'background/utils';
+import { rabbyOpenapiFetchAdapter } from '@/services/openapi/fetchAdapter';
 
 export * from '@/services/openapi';
 
@@ -88,6 +89,9 @@ const openapiRuntime = createOpenapiRuntime({
   kind: 'background',
   store: proxyStore,
   initializeStore: proxyStore.init,
+  // Forced policy enforcement: every background OpenAPI request (including a
+  // user-configured custom host) must pass RemoteDataPolicy classification.
+  clientAdapter: rabbyOpenapiFetchAdapter,
 });
 const service = openapiRuntime.openapi;
 
