@@ -91117,6 +91117,7 @@
     "require": [
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/events/events.js",
+      "node_modules/uuid/dist/esm-browser/v4.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/index.ts",
       "src/offscreen/scripts/senderAuth.ts"
