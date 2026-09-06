@@ -90812,6 +90812,7 @@
       "node_modules/@metamask/metamask-eth-abis/dist/index.js",
       "node_modules/@metamask/obs-store/dist/index.js",
       "node_modules/@metamask/post-message-stream/dist/browser.js",
+      "node_modules/@noble/hashes/esm/sha256.js",
       "node_modules/@onekeyfe/hd-shared/dist/index.js",
       "node_modules/@rabby-wallet/eth-coinbase-keyring/dist/index.js",
       "node_modules/@rabby-wallet/eth-hd-keyring/dist/index.js",
@@ -90908,7 +90909,8 @@
       "src/background/service/keyring/eth-onekey-keyring/onekey-bridge.ts",
       "src/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge.ts",
       "src/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge.ts",
-      "src/constant/offscreen-communication.ts"
+      "src/constant/offscreen-communication.ts",
+      "src/offscreen/scripts/senderAuth.ts"
     ]
   },
   "src/background/service/customTestnet.ts": {
@@ -90963,7 +90965,8 @@
     "require": [
       "node_modules/hdkey/lib/hdkey.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/offscreen-communication.ts"
+      "src/constant/offscreen-communication.ts",
+      "src/offscreen/scripts/senderAuth.ts"
     ]
   },
   "src/background/service/keyring/eth-imkey-keyring/imkey-bridge.ts": {
@@ -90998,7 +91001,8 @@
     "require": [
       "node_modules/events/events.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/offscreen-communication.ts"
+      "src/constant/offscreen-communication.ts",
+      "src/offscreen/scripts/senderAuth.ts"
     ]
   },
   "src/background/service/pageStateCache.ts": {
@@ -91114,7 +91118,8 @@
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/events/events.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/index.ts"
+      "src/constant/index.ts",
+      "src/offscreen/scripts/senderAuth.ts"
     ]
   },
   "src/constant/default-rpc-providers.ts": {
@@ -91296,6 +91301,12 @@
       "node_modules/@onekeyfe/hd-web-sdk/build/onekey-js-sdk.js",
       "node_modules/@trezor/connect-web/lib/index.js",
       "node_modules/hdkey/lib/hdkey.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js"
+    ]
+  },
+  "src/offscreen/scripts/senderAuth.ts": {
+    "enable": true,
+    "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js"
     ]
   },
