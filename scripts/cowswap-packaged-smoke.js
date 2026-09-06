@@ -407,9 +407,12 @@ const assertSmokeResult = (result) => {
       'Decimal-price CoW raw quote did not carry a fractional sellTokenPrice'
     );
   }
+  // Production digests the raw price with @ethereumjs/util bytesToHex, which is
+  // 0x-prefixed; the runner must bind that exact format (64-hex bare regex was
+  // a false-negative defect that failed every honest run).
   if (
-    result.decimalPriceSellTokenDigest === 'missing' ||
-    !/^[0-9a-f]{64}$/.test(result.decimalPriceSellTokenDigest || '')
+    decimalPriceQuote.sellTokenPriceSha256 === 'missing' ||
+    !/^0x[0-9a-f]{64}$/.test(decimalPriceQuote.sellTokenPriceSha256 || '')
   ) {
     throw new Error('Decimal-price raw sellTokenPrice evidence is not bound');
   }
