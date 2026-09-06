@@ -47,6 +47,7 @@ import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
+import { uploadRemoteFeedbackImage as uploadRemoteFeedbackImageViaTransport } from 'background/service/feedbackUploadTransport';
 import { CacheState } from 'background/service/pageStateCache';
 import { DisplayedKeryring, KeyringService } from 'background/service/keyring';
 import providerController from './provider/controller';
@@ -482,31 +483,10 @@ export class WalletController extends BaseController {
     return remoteDataPolicyService.clearContactLog();
   };
 
-  uploadRemoteFeedbackImage = async ({
-    dataUrl,
-    filename,
-  }: {
-    dataUrl: string;
-    filename: string;
-  }) => {
-    const endpoint = 'https://api.rabby.io/v1/feedback/app/upload';
-    remoteDataPolicyService.assertRequestAllowed(endpoint, true);
-    await remoteDataPolicyService.recordRequestContact(endpoint, true);
-    const match = /^data:([^;,]+);base64,(.+)$/.exec(dataUrl);
-    if (!match) throw new Error('Invalid screenshot payload');
-    const bytes = Uint8Array.from(atob(match[2]), (char) => char.charCodeAt(0));
-    const formData = new FormData();
-    formData.append('file', new Blob([bytes], { type: match[1] }), filename);
-    const response = await fetch(endpoint, { method: 'POST', body: formData });
-    if (!response.ok) {
-      throw new Error(`Feedback upload failed (${response.status})`);
-    }
-    const result = await response.json();
-    if (!result?.image_url || typeof result.image_url !== 'string') {
-      throw new Error('Invalid feedback upload response');
-    }
-    return result.image_url as string;
-  };
+  // B2: the direct feedback transport enforces the revocation race itself
+  // (AbortController registered before the first await + final policy
+  // re-check before fetch); see feedbackUploadTransport.ts.
+  uploadRemoteFeedbackImage = uploadRemoteFeedbackImageViaTransport;
 
   getCowSwapQuote = (request: Parameters<typeof cowSwapService.getQuote>[0]) =>
     cowSwapService.getQuote(request);
