@@ -10,8 +10,12 @@ const fail = (message) => {
 };
 
 // WalletConnect/Reown project id: read from source, never print the value.
-// Invariant: verification evidence must identify the marker by length/digest
-// and occurrence count only.
+// Invariant (gpt56 round-3 blocker B6): NO raw marker value may EVER reach an
+// exception or any output line, on success or failure paths. Markers are
+// identified by label, expected length, occurrence count, and digest only.
+const digest = (value) =>
+  crypto.createHash('sha256').update(value).digest('hex').slice(0, 16);
+
 const brandSource = fs.readFileSync(
   path.join(repo, 'src/constant/hippo-brand.ts'),
   'utf8'
@@ -21,11 +25,7 @@ const wcMarkerMatch = brandSource.match(
 );
 if (!wcMarkerMatch) fail('WalletConnect project marker not found in source');
 const WC_PROJECT_MARKER = wcMarkerMatch[1];
-const wcMarkerDigest = crypto
-  .createHash('sha256')
-  .update(WC_PROJECT_MARKER)
-  .digest('hex')
-  .slice(0, 16);
+const wcMarkerDigest = digest(WC_PROJECT_MARKER);
 
 if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
   fail(`missing artifact directory: ${root}`);
@@ -108,27 +108,36 @@ for (const { relative } of files) {
 const runtimeFiles = files.filter(({ relative }) =>
   ['.js', '.html', '.css'].includes(path.extname(relative).toLowerCase())
 );
-const requiredMarkers = [
-  WC_PROJECT_MARKER,
-  'https://api.cow.fi/mainnet',
-  'https://api.cow.fi/xdai',
-  'https://api.cow.fi/arbitrum_one',
-  'https://api.cow.fi/base',
-  'https://api.cow.fi/avalanche',
-  'https://api.cow.fi/polygon',
-  'https://api.cow.fi/linea',
-  'https://api.cow.fi/bnb',
-  'https://api.cow.fi/plasma',
-  'https://api.cow.fi/ink',
-  '0x9008d19f58aabd9ed0d60971565aa8510560ab41',
-  '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110',
-  '0xba3cb449bd2b4adddbc894d8697f5170800eadec',
-  'Gnosis Protocol',
-  '1.15.0',
+
+// Required markers, each with a stable non-secret label. The WC project id
+// is labelled `walletconnect#<digest>`; every other marker is a public
+// endpoint/constant string whose value carries no secret, but they are still
+// only ever REPORTED through this registry, never interpolated raw into an
+// error built from collected state (round-3 leaked missing raw WC markers
+// through the `missingMarkers` throw).
+const requiredMarkerDefs = [
+  { label: 'walletconnect#' + wcMarkerDigest, value: WC_PROJECT_MARKER },
+  { label: 'cow-mainnet', value: 'https://api.cow.fi/mainnet' },
+  { label: 'cow-xdai', value: 'https://api.cow.fi/xdai' },
+  { label: 'cow-arbitrum_one', value: 'https://api.cow.fi/arbitrum_one' },
+  { label: 'cow-base', value: 'https://api.cow.fi/base' },
+  { label: 'cow-avalanche', value: 'https://api.cow.fi/avalanche' },
+  { label: 'cow-polygon', value: 'https://api.cow.fi/polygon' },
+  { label: 'cow-linea', value: 'https://api.cow.fi/linea' },
+  { label: 'cow-bnb', value: 'https://api.cow.fi/bnb' },
+  { label: 'cow-plasma', value: 'https://api.cow.fi/plasma' },
+  { label: 'cow-ink', value: 'https://api.cow.fi/ink' },
+  { label: 'cow-settlement-mainnet', value: '0x9008d19f58aabd9ed0d60971565aa8510560ab41' },
+  { label: 'cow-settlement-gnosis', value: '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110' },
+  { label: 'cow-vault-relayer', value: '0xba3cb449bd2b4adddbc894d8697f5170800eadec' },
+  { label: 'cow-sdk-brand', value: 'Gnosis Protocol' },
+  { label: 'cow-sdk-version', value: '1.15.0' },
 ];
-const requiredFound = Object.fromEntries(
-  requiredMarkers.map((item) => [item, false])
+
+const markerCounts = Object.fromEntries(
+  requiredMarkerDefs.map((def) => [def.label, 0])
 );
+
 const retiredName = ['l', 'l', 'a', 'm', 'a', 's', 'w', 'a', 'p'].join('');
 const forbiddenMarkers = [
   ['defi', 'llama'].join(''),
@@ -142,25 +151,58 @@ const forbiddenMarkers = [
   '-----BEGIN OPENSSH PRIVATE KEY-----',
   'sourceMappingURL=data:application/json;base64,ey',
 ];
-let wcMarkerOccurrences = 0;
+
+// Collection errors must not carry marker values either: reads are wrapped
+// and re-thrown with only the offending relative path.
 for (const { absolute, relative } of runtimeFiles) {
-  const text = fs.readFileSync(absolute, 'utf8');
-  const lower = text.toLowerCase();
-  for (const marker of requiredMarkers) {
-    if (lower.includes(marker.toLowerCase())) requiredFound[marker] = true;
+  let text;
+  let lower;
+  try {
+    text = fs.readFileSync(absolute, 'utf8');
+    lower = text.toLowerCase();
+  } catch (e) {
+    fail(`unreadable runtime file: ${relative}`);
   }
-  wcMarkerOccurrences += text.split(WC_PROJECT_MARKER).length - 1;
+  for (const def of requiredMarkerDefs) {
+    markerCounts[def.label] += lower.split(def.value.toLowerCase()).length - 1;
+  }
   for (const marker of forbiddenMarkers) {
     if (lower.includes(marker.toLowerCase())) {
       fail(`forbidden runtime marker in ${relative}`);
     }
   }
 }
-const missingMarkers = Object.entries(requiredFound)
-  .filter(([, found]) => !found)
-  .map(([marker]) => marker);
-if (missingMarkers.length) {
-  fail(`required CoW runtime markers missing: ${missingMarkers.join(', ')}`);
+
+// Missing-marker reporting uses labels ONLY. The raw values of missing
+// markers are never interpolated (round-3: the throw embedded the collected
+// raw strings, leaking the WalletConnect project id into stderr).
+const missingDefs = requiredMarkerDefs.filter(
+  (def) => markerCounts[def.label] === 0
+);
+if (missingDefs.length) {
+  fail(
+    `required CoW runtime markers missing: ${missingDefs
+      .map(
+        (def) =>
+          `${def.label} (length=${def.value.length}, sha256_16=${digest(
+            def.value
+          )})`
+      )
+      .join(', ')}`
+  );
+}
+
+// Cardinality: the WalletConnect project id must appear EXACTLY once in the
+// packaged runtime (round-3: a duplicated-marker mutation exited zero).
+// Public CoW endpoint/contract markers legitimately appear once per bundle
+// chunk that imports them, so their invariant is presence (>=1), asserted by
+// the missing-marker check above; the WC marker is the single-source secret
+// and duplicates of it are a packaging defect.
+const wcOccurrences = markerCounts['walletconnect#' + wcMarkerDigest];
+if (wcOccurrences !== 1) {
+  fail(
+    `walletconnect marker ${'walletconnect#' + wcMarkerDigest} must occur exactly once, found ${wcOccurrences} (length=${WC_PROJECT_MARKER.length})`
+  );
 }
 
 const rules = JSON.parse(
@@ -232,15 +274,12 @@ console.log(
       walletConnectMarker: {
         length: WC_PROJECT_MARKER.length,
         sha256_16: wcMarkerDigest,
-        occurrences: wcMarkerOccurrences,
+        occurrences: wcOccurrences,
+        exactlyOnce: true,
       },
-      requiredCowMarkers: requiredMarkers
-        .filter((item) => item !== WC_PROJECT_MARKER)
-        .concat(
-          requiredFound[WC_PROJECT_MARKER]
-            ? [`walletconnect#${wcMarkerDigest}`]
-            : []
-        ),
+      requiredCowMarkers: requiredMarkerDefs.map(
+        (def) => `${def.label}=${markerCounts[def.label]}`
+      ),
       privacyRuleCount: rules.length,
       sourceMaps: 0,
       symlinks: 0,
