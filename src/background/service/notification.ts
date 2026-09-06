@@ -86,6 +86,24 @@ class NotificationService extends Events {
   bumpApprovalEpoch = () => {
     this.approvalEpoch += 1;
   };
+  /**
+   * Per-origin lifecycle generation for dApp-driven authority transitions
+   * (site-account reassignment, chain switch, disconnect). These boundaries
+   * must invalidate an already-resolved-but-unexecuted request for THAT
+   * origin only, without disturbing other origins' queued approvals, so they
+   * bump this map instead of the global epoch. rpcFlow captures the value at
+   * approval-queue time and rechecks it sink-adjacent.
+   */
+  originApprovalEpoch = new Map<string, number>();
+  bumpOriginApprovalEpoch = (origin: string) => {
+    if (!origin) return;
+    this.originApprovalEpoch.set(
+      origin,
+      this.getOriginApprovalEpoch(origin) + 1
+    );
+  };
+  getOriginApprovalEpoch = (origin: string): number =>
+    this.originApprovalEpoch.get(origin) ?? 0;
   dappManager = new Map<
     string,
     {

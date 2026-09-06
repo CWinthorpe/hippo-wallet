@@ -2057,7 +2057,16 @@ export class WalletController extends BaseController {
     if (data.isConnected && !data.account) {
       data.account = preferenceService.getCurrentAccount();
     }
+    const previousChain = permissionService.getSite(data.origin)?.chain;
     permissionService.setSite(data);
+    // Changing the site's active chain here (dashboard connection settings)
+    // is the same authority transition as wallet_switchEthereumChain: origin
+    // consent rendered against the old chain must not survive it, including
+    // an approval that already resolved but has not reached its sink.
+    if (previousChain && previousChain !== data.chain) {
+      notificationService.rejectApprovalsByOrigin(data.origin);
+      notificationService.bumpOriginApprovalEpoch(data.origin);
+    }
     broadcastChainChanged({
       origin: data.origin,
       chain: chainItem,
@@ -2081,6 +2090,14 @@ export class WalletController extends BaseController {
       ? pick(_account, 'address', 'type', 'brandName')
       : undefined;
     permissionService.setSite(site);
+
+    // Site-account reassignment is an authority transition for this origin:
+    // pending approvals for the origin are rejected, and the origin epoch is
+    // bumped so an approval that already resolved but has not reached the
+    // sign/broadcast sink fails closed (rpcFlow rechecks the epoch and the
+    // bound account sink-adjacent).
+    notificationService.rejectApprovalsByOrigin(origin);
+    notificationService.bumpOriginApprovalEpoch(origin);
 
     if (site?.isConnected) {
       sessionService.broadcastEvent(
@@ -2175,8 +2192,10 @@ export class WalletController extends BaseController {
   removeConnectedSite = (origin: string) => {
     // Disconnecting a site is an authority transition: any consent still
     // pending for this origin (signature, add-chain, watch-asset) must not
-    // survive the revoked connection.
+    // survive the revoked connection, and an already-resolved-but-unexecuted
+    // request must fail closed sink-adjacent, so the origin epoch bumps too.
     notificationService.rejectApprovalsByOrigin(origin);
+    notificationService.bumpOriginApprovalEpoch(origin);
     sessionService.broadcastEvent('accountsChanged', [], origin);
     permissionService.removeConnectedSite(origin);
   };
@@ -3801,14 +3820,14 @@ export class WalletController extends BaseController {
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
-    if (notificationService.currentApproval) {
-      notificationService.rejectAllApprovals();
-      notificationService.clear();
-      // Account switch is a session boundary: invalidate the lifecycle epoch
-      // so an in-flight continuation captured before the switch can never
-      // complete a request after it.
-      notificationService.bumpApprovalEpoch();
-    }
+    // Account switch is a session boundary: invalidate the lifecycle epoch
+    // so an in-flight continuation captured before the switch can never
+    // complete a request after it. The bump is unconditional: a request whose
+    // approval already resolved (so currentApproval may be null) but that has
+    // not reached its sign/broadcast sink is exactly what this guards.
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+    notificationService.bumpApprovalEpoch();
   };
 
   authorizeLedgerHIDPermission = async () => {

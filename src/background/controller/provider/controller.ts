@@ -1514,8 +1514,11 @@ class ProviderController extends BaseController {
     }
 
     // Supported-chain switch is an authority transition for this origin:
-    // consent rendered against the previous chain context must not survive it.
+    // consent rendered against the previous chain context must not survive
+    // it, and an already-resolved-but-unexecuted request must fail closed
+    // sink-adjacent, so the origin epoch bumps alongside the rejection.
     notificationService.rejectApprovalsByOrigin(origin);
+    notificationService.bumpOriginApprovalEpoch(origin);
 
     permissionService.updateConnectSite(
       origin,
@@ -1583,8 +1586,11 @@ class ProviderController extends BaseController {
     }
 
     // No-popup chain switch is an authority transition for this origin:
-    // consent rendered against the previous chain context must not survive it.
+    // consent rendered against the previous chain context must not survive
+    // it, and an already-resolved-but-unexecuted request must fail closed
+    // sink-adjacent, so the origin epoch bumps alongside the rejection.
     notificationService.rejectApprovalsByOrigin(origin);
+    notificationService.bumpOriginApprovalEpoch(origin);
 
     permissionService.updateConnectSite(
       origin,

@@ -58,7 +58,132 @@ const flow = new PromiseFlow<{
   };
   mapMethod: string;
   approvalRes: any;
+  /** Approval-queue epoch captured when this request's approval was queued. */
+  approvalEpochAtRequest?: number;
+  /** Per-origin session-boundary epoch captured alongside it. */
+  originEpochAtRequest?: number;
+  /** Account identity the user approved against (null = none bound). */
+  boundAccount?: {
+    address: string;
+    type?: string;
+    brandName?: string;
+  } | null;
+  /** Origin chain identity bound at approval time (undefined = not bound). */
+  boundChain?: string;
 }>();
+
+/**
+ * Sink-adjacent revalidation shared by the two points immediately before the
+ * privileged handler runs (and before the signing-component wait, and again
+ * right after it resolves). Every trust boundary that can fire between
+ * approval resolution and signature/broadcast execution — lock, site-account
+ * reassignment, account switch, chain switch, permission revocation, worker
+ * teardown — must make the continuation fail closed with a user-rejected
+ * result, never sign with pre-boundary authority.
+ */
+const assertSignContextStillValid = (params: {
+  origin: string;
+  epochAtRequest: number | undefined;
+  originEpochAtRequest: number | undefined;
+  boundAccount:
+    | { address: string; type?: string; brandName?: string }
+    | null
+    | undefined;
+  boundChain: string | undefined;
+  internalOrigin: boolean;
+  /**
+   * Chain-switch/AddChain approvals legitimately mutate the site's chain and
+   * other identity state as PART of resolving their own approval, so the
+   * identity (account/chain) comparison only applies to signing requests.
+   * Session/permission epochs are checked regardless.
+   */
+  checkIdentity: boolean;
+}) => {
+  const {
+    origin,
+    epochAtRequest,
+    originEpochAtRequest,
+    boundAccount,
+    boundChain,
+    internalOrigin,
+    checkIdentity,
+  } = params;
+
+  const rejected = (message: string) => {
+    throw ethErrors.provider.userRejectedRequest({ message });
+  };
+
+  // Wallet lock is the strongest boundary: never sign against a locked vault.
+  if (!keyringService.memStore.getState().isUnlocked) {
+    rejected('Wallet was locked while the request was pending; approve again.');
+  }
+  // Global session boundary (lock, account switch, reset, teardown) bumps the
+  // approval epoch; a resolved-but-unexecuted request dies with it.
+  if (
+    epochAtRequest !== undefined &&
+    notificationService.approvalEpoch !== epochAtRequest
+  ) {
+    rejected(
+      'Session context changed while the request was pending; approve again.'
+    );
+  }
+  // Origin-scoped boundary (site-account reassignment, chain switch,
+  // disconnect) invalidates this origin's consent even though other origins
+  // keep their generation.
+  if (
+    originEpochAtRequest !== undefined &&
+    notificationService.getOriginApprovalEpoch(origin) !== originEpochAtRequest
+  ) {
+    rejected(
+      'Connection context for this site changed while the request was pending; approve again.'
+    );
+  }
+  // The connection that was approved must still exist.
+  if (!permissionService.hasPermission(origin)) {
+    rejected(
+      'Connection for this site was revoked while the request was pending.'
+    );
+  }
+
+  if (internalOrigin || !checkIdentity) {
+    // Internal UI requests carry their account explicitly; global boundaries
+    // above already cover account/lock transitions for them. Non-sign
+    // approvals (chain switch, add-chain) mutate identity as their payload.
+    return;
+  }
+
+  // The account the approval rendered for must still be the effective
+  // account for this origin (dapp-account mode resolves through the site's
+  // account, otherwise the wallet's current account is used).
+  if (boundAccount) {
+    const site = permissionService.getConnectedSite(origin);
+    const liveAccount =
+      (preferenceService.getPreference('isEnabledDappAccount') && site
+        ? site.account || preferenceService.getCurrentAccount()
+        : preferenceService.getCurrentAccount()) || null;
+    if (
+      !liveAccount ||
+      String(liveAccount.address).toLowerCase() !== boundAccount.address ||
+      liveAccount.type !== boundAccount.type ||
+      liveAccount.brandName !== boundAccount.brandName
+    ) {
+      rejected(
+        'The active account changed while the request was pending; approve again.'
+      );
+    }
+  }
+
+  // The origin's active chain must still be the one the approval rendered
+  // against.
+  if (boundChain) {
+    const liveChain = permissionService.getConnectedSite(origin)?.chain;
+    if (liveChain !== boundChain) {
+      rejected(
+        'The active chain for this site changed while the request was pending; approve again.'
+      );
+    }
+  }
+};
 const flowContext = flow
   .use(async (ctx, next) => {
     // check method
@@ -335,10 +460,34 @@ const flowContext = flow
         };
         // Session-boundary checkpoint: capture the approval lifecycle epoch
         // before the request leaves the queue. If a boundary (lock, account
-        // switch, reset, WindowConnect teardown) fires while the approval is
-        // pending, the epoch bump below makes the continuation fail closed
-        // instead of executing with pre-boundary authority.
+        // switch, reset, WindowConnect teardown, site-account reassignment,
+        // chain switch, permission revocation) fires while the approval is
+        // pending OR after it resolved but before the sink, the epoch check
+        // makes the continuation fail closed instead of executing with
+        // pre-boundary authority. The epoch is also stashed on the flow
+        // context so the sink-adjacent recheck (next middleware) can repeat
+        // it after the signing-component wait.
         epochAtRequest = notificationService.approvalEpoch;
+        ctx.approvalEpochAtRequest = epochAtRequest;
+        ctx.originEpochAtRequest = notificationService.getOriginApprovalEpoch(
+          origin
+        );
+        // Bind the identity the user approved against: the request account
+        // and the origin's active chain at approval time. The sink-adjacent
+        // recheck compares live state against this binding. It is kept on the
+        // flow context rather than inside `approvalRes` because approvalRes is
+        // spread into the tx payload downstream — security bindings must not
+        // ride into signed/broadcast data.
+        ctx.boundAccount = ctx.request.account
+          ? {
+              address: String(ctx.request.account.address).toLowerCase(),
+              type: ctx.request.account.type,
+              brandName: ctx.request.account.brandName,
+            }
+          : null;
+        ctx.boundChain = permissionService.isInternalOrigin(origin)
+          ? undefined
+          : permissionService.getConnectedSite(origin)?.chain;
         const approvalPromise = notificationService.requestApproval(
           approvalData,
           { height: windowHeight },
@@ -394,27 +543,20 @@ const flowContext = flow
       }
 
       // Post-approval session-boundary revalidation: the approval resolved
-      // against the epoch captured above. If a boundary (lock, account
-      // switch, reset, teardown, supported-chain switch, permission
-      // revocation) fired between approval and continuation, the request
-      // must fail closed instead of executing with pre-boundary authority.
-      if (notificationService.approvalEpoch !== epochAtRequest) {
-        throw ethErrors.provider.userRejectedRequest({
-          message:
-            'Session context changed while the request was pending; approve again.',
-        });
-      }
-      // A signing request whose origin connection was revoked while the
-      // approval was pending must not continue with stale authority.
-      if (
-        isSignApproval(approvalType) &&
-        !permissionService.hasPermission(origin)
-      ) {
-        throw ethErrors.provider.userRejectedRequest({
-          message:
-            'Connection for this site was revoked while the request was pending.',
-        });
-      }
+      // against the epochs and identity captured above. If any boundary
+      // (lock, account switch, reset, teardown, supported-chain switch,
+      // site-account reassignment, permission revocation) fired between
+      // queuing and continuation, the request must fail closed instead of
+      // executing with pre-boundary authority.
+      assertSignContextStillValid({
+        origin,
+        epochAtRequest,
+        originEpochAtRequest: ctx.originEpochAtRequest,
+        boundAccount: ctx.boundAccount,
+        boundChain: ctx.boundChain,
+        internalOrigin: permissionService.isInternalOrigin(origin),
+        checkIdentity: isSignApproval(approvalType),
+      });
 
       if (isSignApproval(approvalType)) {
         permissionService.updateConnectSite(origin, { isSigned: true }, true);
@@ -453,6 +595,29 @@ const flowContext = flow
         }
 
         return waitSignComponentPromise.then(() => {
+          // Sink-adjacent recheck: the signing-component / hardware-wallet
+          // wait just resolved and the privileged handler executes on this
+          // tick. Any trust boundary that fired DURING the wait (lock, chain
+          // switch, site-account reassignment, revocation, worker teardown)
+          // must reject here with zero handler execution. The rejection is
+          // routed through `reject` so the outer defer promise settles to the
+          // dApp instead of hanging on an unhandled rejection.
+          if (isSignApproval(approvalType)) {
+            try {
+              assertSignContextStillValid({
+                origin,
+                epochAtRequest: ctx.approvalEpochAtRequest,
+                originEpochAtRequest: ctx.originEpochAtRequest,
+                boundAccount: ctx.boundAccount,
+                boundChain: ctx.boundChain,
+                internalOrigin: permissionService.isInternalOrigin(origin),
+                checkIdentity: true,
+              });
+            } catch (boundaryError) {
+              return reject(boundaryError);
+            }
+          }
+
           let _approvalRes = originApprovalRes;
 
           if (
@@ -568,6 +733,12 @@ const flowContext = flow
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
+    // The uiRequestComponent branch below answers the dApp from the approval
+    // loop instead of consuming this deferred promise, so a failure inside
+    // the deferred path (e.g. the sink-adjacent boundary reject) would be an
+    // unhandled rejection on the service worker. Keep the rejection observable
+    // to whoever awaits requestDefer, without crashing the worker.
+    requestDefer.catch(() => undefined);
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
@@ -592,6 +763,22 @@ const flowContext = flow
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      // The UI-component round trip is another window in which boundaries
+      // can fire. The approval queue rejects pending approvals across those
+      // boundaries; this recheck closes the remaining edge where a boundary
+      // and a resolve race each other, so the dApp-facing artifact is never
+      // returned after a transition.
+      if (isSignApproval(approvalType)) {
+        assertSignContextStillValid({
+          origin,
+          epochAtRequest: ctx.approvalEpochAtRequest,
+          originEpochAtRequest: ctx.originEpochAtRequest,
+          boundAccount: ctx.boundAccount,
+          boundChain: ctx.boundChain,
+          internalOrigin: permissionService.isInternalOrigin(origin),
+          checkIdentity: true,
+        });
+      }
       reportStatsData();
       if (rest?.safeMessage) {
         const safeMessage: {
