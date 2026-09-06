@@ -22,7 +22,13 @@ const SortHat = () => {
     void isBootedPromise.catch(() => undefined);
     const approval = await approvalPromise;
     if (isInNotification && !approval) {
-      Browser.runtime.sendMessage({ type: 'closeNotification' });
+      // Echo the per-window close token minted by the background when this
+      // window was created; the background only honours a closeNotification
+      // that carries the token bound to THIS window (see webapi/window.ts).
+      const closeNonce = new URLSearchParams(window.location.search).get(
+        'closeNonce'
+      );
+      Browser.runtime.sendMessage({ type: 'closeNotification', closeNonce });
       window.close();
       return;
     }

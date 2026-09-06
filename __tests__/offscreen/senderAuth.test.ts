@@ -12,7 +12,10 @@ jest.mock('webextension-polyfill', () => ({
 import {
   isTrustedBackgroundSender,
   isTrustedOffscreenSender,
+  isNotificationDocumentSender,
 } from '@/offscreen/scripts/senderAuth';
+
+const EXT = 'chrome-extension://test-extension-id';
 
 describe('offscreen sender authentication', () => {
   test('rejects missing, wrong-id, and tab-bearing senders', () => {
@@ -50,7 +53,7 @@ describe('offscreen sender authentication', () => {
       expect(
         isTrustedBackgroundSender({
           id: 'test-extension-id',
-          url: `chrome-extension://test-extension-id/${page}`,
+          url: `${EXT}/${page}`,
         })
       ).toBe(false);
     }
@@ -70,11 +73,16 @@ describe('reverse offscreen sender authentication (background receivers)', () =>
     ).toBe(false);
   });
 
+  test('REJECTS a URL-less same-extension sender (gpt56 B3)', () => {
+    // The round-2/3 tests pinned URL-less acceptance affirmatively. That
+    // rule collapsed trust zones: a URL-less message cannot be attributed to
+    // the offscreen document, and any same-extension context can omit the
+    // URL. Genuine offscreen messages always carry the document URL, so
+    // fail-closed here is free.
+    expect(isTrustedOffscreenSender({ id: 'test-extension-id' })).toBe(false);
+  });
+
   test('accepts only the exact offscreen document URL for same-extension senders', () => {
-    // UV-less same-extension sender: allowed only as the offscreen broker is
-    // registered by the SW itself without a URL.
-    expect(isTrustedOffscreenSender({ id: 'test-extension-id' })).toBe(true);
-    // The offscreen document is the legitimate reverse-channel sender.
     expect(
       isTrustedOffscreenSender({
         id: 'test-extension-id',
@@ -95,9 +103,89 @@ describe('reverse offscreen sender authentication (background receivers)', () =>
       expect(
         isTrustedOffscreenSender({
           id: 'test-extension-id',
-          url: `chrome-extension://test-extension-id/${page}`,
+          url: `${EXT}/${page}`,
         })
       ).toBe(false);
     }
+  });
+
+  test('rejects URL-mismatched offscreen look-alikes', () => {
+    expect(
+      isTrustedOffscreenSender({
+        id: 'test-extension-id',
+        url: 'chrome-extension://test-extension-id/offscreen.html.evil',
+      })
+    ).toBe(false);
+    expect(
+      isTrustedOffscreenSender({
+        id: 'test-extension-id',
+        url: 'chrome-extension://test-extension-id/sub/offscreen.html',
+      })
+    ).toBe(false);
+  });
+});
+
+describe('notification-document sender authentication (gpt56 B3)', () => {
+  test('accepts exactly the notification document', () => {
+    expect(
+      isNotificationDocumentSender({
+        id: 'test-extension-id',
+        url: `${EXT}/notification.html`,
+      })
+    ).toBe(true);
+    // Query parameters (the per-window close nonce) do not alter document
+    // identity.
+    expect(
+      isNotificationDocumentSender({
+        id: 'test-extension-id',
+        url: `${EXT}/notification.html?closeNonce=abc123`,
+      })
+    ).toBe(true);
+  });
+
+  test('rejects popup, dashboard/desktop, offscreen, service worker, and index documents', () => {
+    for (const page of [
+      'popup.html',
+      'desktop.html',
+      'index.html',
+      'offscreen.html',
+      'sw.js',
+      'background.html',
+      'trezor-usb-permissions.html',
+    ]) {
+      expect(
+        isNotificationDocumentSender({
+          id: 'test-extension-id',
+          url: `${EXT}/${page}`,
+        })
+      ).toBe(false);
+    }
+  });
+
+  test('rejects URL-less, tab-bearing (content script), and foreign senders', () => {
+    expect(isNotificationDocumentSender(undefined)).toBe(false);
+    expect(isNotificationDocumentSender(null)).toBe(false);
+    expect(isNotificationDocumentSender({ id: 'test-extension-id' })).toBe(
+      false
+    );
+    expect(
+      isNotificationDocumentSender({
+        id: 'test-extension-id',
+        tab: { id: 3 },
+        url: `${EXT}/notification.html`,
+      })
+    ).toBe(false);
+    expect(
+      isNotificationDocumentSender({
+        id: 'other-extension',
+        url: 'chrome-extension://other-extension/notification.html',
+      })
+    ).toBe(false);
+    expect(
+      isNotificationDocumentSender({
+        id: 'test-extension-id',
+        url: 'https://evil.test/notification.html',
+      })
+    ).toBe(false);
   });
 });

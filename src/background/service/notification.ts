@@ -144,7 +144,13 @@ class NotificationService extends Events {
   constructor() {
     super();
 
-    winMgr.event.on('closeNotification', () => {
+    winMgr.event.on('closeNotification', (closedWinId?: number) => {
+      // The token-bound handler only reports the window the nonce was minted
+      // for; ignore anything that does not match the live notification
+      // window so a stale or unrelated close cannot drop the tracked id.
+      if (closedWinId !== undefined && closedWinId !== this.notifiWindowId) {
+        return;
+      }
       this.notifiWindowId = null;
     });
 

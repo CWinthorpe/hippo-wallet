@@ -49,7 +49,13 @@ export const isTrustedBackgroundSender = (
  * from the offscreen document (bitbox02/ledger/trezor bridges) must only
  * obey messages whose sender is the offscreen document itself — never a tab,
  * a content script, or another extension page. Mirrors the exact-URL rule
- * used by the Trezor browser proxcy relay in `_raw/sw.js`.
+ * used by the Trezor browser proxy relay in `_raw/sw.js`.
+ *
+ * A missing sender URL is NOT acceptable (gpt56 round-3 blocker B3): a
+ * URL-less same-extension sender is indistinguishable from one relayed by
+ * any other extension context, and every genuine offscreen-document message
+ * carries its document URL. Rejecting URL-less senders here is fail-closed
+ * and collapses no trust zone.
  */
 export const isTrustedOffscreenSender = (
   sender?: SenderLike | null
@@ -64,23 +70,49 @@ export const isTrustedOffscreenSender = (
     return false;
   }
   if (!sender.url) {
-    return true;
+    return false;
   }
   return sender.url === browser.runtime.getURL('offscreen.html');
 };
 
-/** Browser-window shutdown for bio-metric unlock setup. */
-export const isExtensionPageSender = (sender?: SenderLike | null): boolean => {
+/**
+ * Only the notification document itself may act on notification-window
+ * lifecycle (gpt56 round-3 blocker B3). The previous `isExtensionPageSender`
+ * accepted EVERY same-extension page, letting popup/desktop/dashboard — or an
+ * offscreen context — declare the approval window closed and suppress the
+ * manual-close rejection path. Extension pages are distinct trust zones: the
+ * predicate validates the exact expected document path, not membership in
+ * the extension. Query parameters (the per-window close nonce) do not alter
+ * document identity and are ignored by the path comparison.
+ */
+export const isNotificationDocumentSender = (
+  sender?: SenderLike | null
+): boolean => {
   if (!sender || sender.id === undefined) {
     return false;
   }
   if (sender.id !== browser.runtime.id) {
     return false;
   }
-  // Content scripts carry a real web URL; extension pages carry the
-  // extension's own base URL (popup.html, notification.html, ...).
-  if (!sender.url) {
-    return true;
+  // Extension documents never carry a tab.
+  if (sender.tab) {
+    return false;
   }
-  return sender.url.startsWith(browser.runtime.getURL(''));
+  if (!sender.url) {
+    return false;
+  }
+  try {
+    const senderUrl = new URL(sender.url);
+    const expectedUrl = new URL(browser.runtime.getURL('notification.html'));
+    // The document must live at the extension's own origin (a web page or
+    // another extension serving /notification.html is not the notification
+    // document); query parameters — the per-window close nonce — are not
+    // part of document identity.
+    return (
+      senderUrl.origin === expectedUrl.origin &&
+      senderUrl.pathname === expectedUrl.pathname
+    );
+  } catch (e) {
+    return false;
+  }
 };

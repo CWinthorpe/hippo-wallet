@@ -1,8 +1,9 @@
 import * as Sentry from '@sentry/browser';
 import browser, { Windows } from 'webextension-polyfill';
 import { EventEmitter } from 'events';
+import { v4 as uuidv4 } from 'uuid';
 import { IS_WINDOWS } from 'consts';
-import { isExtensionPageSender } from '@/offscreen/scripts/senderAuth';
+import { isNotificationDocumentSender } from '@/offscreen/scripts/senderAuth';
 
 const event = new EventEmitter();
 
@@ -11,20 +12,41 @@ browser.windows.onFocusChanged.addListener((winId) => {
   event.emit('windowFocusChange', winId);
 });
 
-let isManuallyClosed = true;
-browser.runtime.onMessage.addListener(({ type }, sender) => {
-  if (type !== 'closeNotification') return;
-  // Only an extension page's own teardown may declare the notification
-  // window closed by the extension itself; a spoofed message would suppress
-  // the manual-close rejection path. Content scripts and web pages cannot
-  // drive it.
-  if (!isExtensionPageSender(sender)) return;
-  isManuallyClosed = false;
-  event.emit('closeNotification');
+/**
+ * Per-window close tokens (gpt56 round-3 blocker B3). `closeNotification`
+ * decides whether the next removal of a specific notification window counts
+ * as a programmatic (extension-initiated) close or a manual (user) close —
+ * and a manual close is what rejects the captured approvals. Previously ANY
+ * same-extension page could send it and globally disarm the rejection path.
+ * Now the message must (a) come from the notification document path itself,
+ * and (b) carry the nonce that was minted for one specific notification
+ * window and delivered ONLY into that window's URL. Manual-close state is
+ * tracked per window id, so a token can never vouch for another window.
+ */
+const closeNotificationNonces = new Map<string, number>();
+const programmaticCloses = new Set<number>();
+
+browser.runtime.onMessage.addListener((message, sender) => {
+  if (message?.type !== 'closeNotification') return;
+  // Only the notification document itself may declare its own window closed
+  // by the extension; content scripts, web pages, and every other extension
+  // trust zone are rejected (exact-document predicate, not same-extension).
+  if (!isNotificationDocumentSender(sender)) return;
+  const nonce =
+    typeof message.closeNonce === 'string' ? message.closeNonce : '';
+  const winId = nonce ? closeNotificationNonces.get(nonce) : undefined;
+  if (winId === undefined) return;
+  // Single-use: a replayed message cannot re-arm the manual-close state.
+  closeNotificationNonces.delete(nonce);
+  programmaticCloses.add(winId);
+  event.emit('closeNotification', winId);
 });
 browser.windows.onRemoved.addListener((winId) => {
-  event.emit('windowRemoved', winId, isManuallyClosed);
-  isManuallyClosed = true;
+  for (const [nonce, mappedWinId] of closeNotificationNonces) {
+    if (mappedWinId === winId) closeNotificationNonces.delete(nonce);
+  }
+  const isManualClose = !programmaticCloses.delete(winId);
+  event.emit('windowRemoved', winId, isManualClose);
 });
 
 const BROWSER_HEADER = 80;
@@ -113,12 +135,23 @@ const remove = async (winId) => {
   return browser.windows.remove(winId);
 };
 
-const openNotification = ({ route = '', ...rest } = {}): Promise<
+const openNotification = async ({ route = '', ...rest } = {}): Promise<
   number | undefined
 > => {
-  const url = `notification.html${route && `#${route}`}`;
+  // Mint a single-use close token and deliver it ONLY inside this window's
+  // own URL. The closeNotification handler requires it, so only a script
+  // running inside THIS notification window can announce a non-manual close
+  // for it (see the header comment above).
+  const closeNonce = uuidv4();
+  const url = `notification.html?closeNonce=${closeNonce}${
+    route ? `#${route}` : ''
+  }`;
 
-  return create({ url, ...rest });
+  const winId = await create({ url, ...rest });
+  if (winId !== undefined) {
+    closeNotificationNonces.set(closeNonce, winId);
+  }
+  return winId;
 };
 
 export default {
