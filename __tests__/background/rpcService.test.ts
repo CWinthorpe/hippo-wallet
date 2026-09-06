@@ -7,6 +7,9 @@ jest.mock('background/utils', () => ({
 }));
 
 jest.mock('@/utils/chain', () => ({
+  findChain: jest.fn((params: { serverId?: string }) =>
+    params.serverId === 'eth' ? { enum: 'ETH' } : undefined
+  ),
   findChainByEnum: jest.fn(() => ({ enum: 'ETH' })),
   getChainList: jest.fn(() => []),
 }));
@@ -367,6 +370,64 @@ describe('RPC read failover and broadcast routing', () => {
     expect(openapiService.ethRpc).not.toHaveBeenCalled();
   });
 
+  test('requestReadRPC routes reads to the enabled custom RPC, not built-ins', async () => {
+    const service = new RPCService();
+    service.store.customRPC[CHAINS_ENUM.ETH] = {
+      url: primary,
+      fallbackUrls: [fallback],
+      broadcastUrl: broadcast,
+      enable: true,
+    };
+    service.store.defaultRPC = {
+      eth: {
+        chainId: 'eth',
+        rpcUrl: ['https://built-in.example'],
+      } as any,
+    };
+    service.request = jest.fn().mockResolvedValue('0xreceipt') as any;
+
+    await service.requestReadRPC({
+      chainServerId: 'eth',
+      method: 'eth_getTransactionReceipt',
+      params: ['0xdead'],
+    });
+    // The read used the custom endpoint only.
+    expect(service.request).toHaveBeenCalledWith(
+      primary,
+      'eth_getTransactionReceipt',
+      ['0xdead']
+    );
+    expect(
+      (service.request as jest.Mock).mock.calls.some(
+        ([host]) => host === 'https://built-in.example'
+      )
+    ).toBe(false);
+  });
+
+  test('requestReadRPC falls back to built-ins when no custom RPC is enabled', async () => {
+    const service = new RPCService();
+    service.store.defaultRPC = {
+      eth: {
+        chainId: 'eth',
+        rpcUrl: [primary, fallback],
+      } as any,
+    };
+    service.defaultRPCRequest = jest.fn().mockResolvedValue('0xreceipt') as any;
+    service.request = jest.fn() as any;
+
+    await service.requestReadRPC({
+      chainServerId: 'eth',
+      method: 'eth_getTransactionReceipt',
+      params: ['0xdead'],
+    });
+    expect(service.defaultRPCRequest).toHaveBeenCalledWith(
+      primary,
+      'eth_getTransactionReceipt',
+      ['0xdead']
+    );
+    expect(service.request).not.toHaveBeenCalled();
+  });
+
   test('recognizes the documented 1RPC quota error as retryable', () => {
     expect(
       isRetryableRPCError({
@@ -438,7 +499,9 @@ describe('RPC read failover and broadcast routing', () => {
       submissionEndpoint: MEV_BLOCKER_FULL_PRIVACY_RPC,
     });
     expect(service.defaultRPCRequest).toHaveBeenCalledTimes(1);
-    expect(service.defaultRPCRequest).toHaveBeenCalledWith(
+    expect(
+      service.defaultRPCRequest
+    ).toHaveBeenCalledWith(
       MEV_BLOCKER_FULL_PRIVACY_RPC,
       'eth_sendRawTransaction',
       [rawTx]

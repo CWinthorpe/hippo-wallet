@@ -1,6 +1,6 @@
 import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
 import { CUSTOM_RPC_ENABLED } from '@/constant';
 import { keccak256 } from 'viem';
@@ -454,7 +454,6 @@ export class RPCService {
     origin?: string;
   }) => {
     const hostList = this.store.defaultRPC?.[chainServerId]?.rpcUrl || [];
-
     if (!hostList.length) {
       const error = new Error(
         `No built-in privacy RPC is available for ${chainServerId}. Configure a custom RPC for this network.`
@@ -474,6 +473,30 @@ export class RPCService {
 
   getDefaultRPC = (chainServerId: string) => {
     return this.store.defaultRPC?.[chainServerId];
+  };
+
+  /**
+   * Custom-RPC-first selector for replay-safe READS (receipts, gas, quotes).
+   * User custom RPC wins (Hippo invariant); built-in privacy providers are
+   * used only when no custom RPC is enabled for that chain. Background
+   * receipt polling MUST go through this instead of requestDefaultRPC so a
+   * transaction submitted through the user's endpoint is not subsequently
+   * looked up through an endpoint the user explicitly bypassed.
+   */
+  requestReadRPC = async ({
+    chainServerId,
+    method,
+    params,
+  }: {
+    chainServerId: string;
+    method: string;
+    params: any[];
+  }) => {
+    const chainItem = findChain({ serverId: chainServerId });
+    if (chainItem && this.hasCustomRPC(chainItem.enum)) {
+      return this.requestCustomRPC(chainItem.enum, method, params);
+    }
+    return this.requestDefaultRPC({ chainServerId, method, params });
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
