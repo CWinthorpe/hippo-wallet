@@ -135,29 +135,6 @@ const buildMiniSignPreExecTx = (params: {
     : buildTx;
 };
 
-const buildHistoryGasUsedTx = (tx: TxWithTempoExtras<Tx>) => {
-  const shouldUseTempoTx = shouldUseTempoTransaction({
-    tx: (tx as unknown) as Record<string, unknown>,
-    chainServerId: findChain({ id: tx.chainId })?.serverId,
-  });
-
-  if (shouldUseTempoTx) {
-    return {
-      ...tx,
-      nonce: tx.nonce || '0x1',
-      gas: tx.gas || '',
-    };
-  }
-
-  return {
-    ...tx,
-    nonce: tx.nonce || '0x1',
-    data: tx.data,
-    value: tx.value || '0x0',
-    gas: tx.gas || '',
-  };
-};
-
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
   chainId: number;
@@ -610,11 +587,6 @@ export class SignatureSteps {
     const preExecProcess = async (index: number) => {
       const buildTx = tempTxs[index];
 
-      const preparedHistoryGasUsed = wallet.openapi.historyGasUsed({
-        tx: buildHistoryGasUsedTx(buildTx as TxWithTempoExtras<Tx>),
-        user_addr: buildTx.from,
-      });
-
       const preExecResult = await wallet.openapi.preExecTx({
         tx: buildTx,
         origin: INTERNAL_REQUEST_ORIGIN,
@@ -637,7 +609,6 @@ export class SignatureSteps {
         gas: estimateGas,
         tx: buildTx,
         chainId: chain.id,
-        preparedHistoryGasUsed,
       });
       const gas = new BigNumber(gasRaw);
 

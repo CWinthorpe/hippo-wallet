@@ -130,6 +130,17 @@ describe('openapi dispatch allowlist rejects the retired relayer (B4)', () => {
     expect(history).not.toMatch(/retryPushTx\s*=/);
   });
 
+  test('the retired history-gas endpoint is absent from the UI surface and client', () => {
+    const client = read('node_modules/@rabby-wallet/rabby-api/dist/index.js');
+    expect(RETAINED_OPENAPI_METHODS.has('historyGasUsed')).toBe(false);
+    expect(client).not.toContain('/v1/wallet/history_tx_used_gas');
+    expect(client).toContain('Historical gas endpoint is removed from Hippo Wallet');
+    const signatureSteps = read(
+      'src/ui/component/MiniSignV2/services/SignatureSteps.ts'
+    );
+    expect(signatureSteps).not.toMatch(/openapi\.historyGasUsed/);
+  });
+
   test('the installed rabby-api client carries zero retired endpoint strings and fails closed', () => {
     const client = read('node_modules/@rabby-wallet/rabby-api/dist/index.js');
     expect(client).not.toContain('/v1/wallet/transaction/withdraw_tx');

@@ -55,7 +55,6 @@ export const RETAINED_OPENAPI_METHODS: ReadonlySet<string> = new Set([
   'hasInteraction',
   'hasTransfer',
   'hasTransferAllChain',
-  'historyGasUsed',
   'isBlockedAddress',
   'listTxHisotry',
   'mempoolChecks',

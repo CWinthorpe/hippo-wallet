@@ -172,6 +172,7 @@ import {
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { runWithSessionBoundary } from 'background/service/sessionBoundary';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
@@ -5547,30 +5548,17 @@ export class WalletController extends BaseController {
     keyringService.hasUnencryptedKeyringData();
 
   resetPassword = async (password: string) => {
-    await keyringService.resetPassword(password);
-    // Reset is a session boundary for pending consent: reject every queued
-    // approval and invalidate the approval lifecycle epoch. This is the same
-    // boundary treatment as lock, but without emitting LOCK_WALLET — that
-    // event also drives `useAutoLock`, which would redirect the Forgot
-    // Password page to /unlock before it can render its next step. Other
-    // pages still re-gate off the refreshed status.
-    notificationService.rejectAllApprovals();
-    notificationService.clear();
-    notificationService.bumpApprovalEpoch();
-    await remoteDataPolicyService.lock();
+    await runWithSessionBoundary(() => keyringService.resetPassword(password));
+    // Reset is a session boundary for pending consent. The boundary is
+    // revoked before resetPassword's first await; the helper waits for the
+    // asynchronous network-rule cleanup before returning.
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.WALLET_STATUS_CHANGED,
     });
   };
 
   resetBooted = async () => {
-    await keyringService.resetBooted();
-    // booted is cleared without locking; pending consent must still not
-    // survive the re-onboarding boundary.
-    notificationService.rejectAllApprovals();
-    notificationService.clear();
-    notificationService.bumpApprovalEpoch();
-    await remoteDataPolicyService.lock();
+    await runWithSessionBoundary(() => keyringService.resetBooted());
     // This clears `booted` without locking, so the correct destination for
     // other open pages is /welcome -- which PrivateRoute resolves once the
     // status refreshes, unlike LOCK_WALLET's hardcoded /unlock.
