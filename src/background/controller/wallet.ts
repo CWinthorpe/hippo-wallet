@@ -4365,9 +4365,11 @@ export class WalletController extends BaseController {
     return res;
   };
 
-  quickCancelTx = transactionHistoryService.quickCancelTx;
-
-  retryPushTx = transactionHistoryService.retryPushTx;
+  // B4: the retired Rabby push-tx relayer controller shims (cancel/retry)
+  // are deleted outright. There is no controller entry point, and openapi
+  // dispatch is allowlisted in service/openapiMethodAllowlist, so the
+  // retired relayer endpoints are unreachable from any UI context — no
+  // static caller, no dynamic hole.
 
   getTxGroup = transactionHistoryService.getTxGroup;
 

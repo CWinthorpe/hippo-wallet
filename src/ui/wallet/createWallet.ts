@@ -1,6 +1,11 @@
 import type { WalletControllerType } from '../utils/WalletContext';
 import PortMessage from '@/utils/message/portMessage';
 import { BACKGROUND_READY_MESSAGE } from '@/utils/message/constants';
+import {
+  openapiMethodRejectedError,
+  resolveRetainedNamespaceMethod,
+  WalletNamespaceKind,
+} from '@/background/service/openapiMethodAllowlist';
 
 export type WalletRequest = {
   method: PropertyKey;
@@ -41,6 +46,16 @@ const createNamespaceProxy = (
     {
       get(_target, method) {
         if (method === 'then') return undefined;
+        // Deny-by-default (gpt56 B4): retired/unlisted methods (e.g. the
+        // removed relayer APIs) never reach the background at all; the
+        // background enforces the same allowlist independently, so neither
+        // side can be bypassed alone.
+        if (
+          (type === 'openapi' || type === 'fakeTestnetOpenapi') &&
+          !resolveRetainedNamespaceMethod(type as WalletNamespaceKind, method)
+        ) {
+          return () => Promise.reject(openapiMethodRejectedError(type, method));
+        }
         return (...params: unknown[]) => request({ type, method, params });
       },
     }

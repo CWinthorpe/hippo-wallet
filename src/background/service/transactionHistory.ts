@@ -1564,31 +1564,10 @@ class TxHistory {
     return maxLocalOrProcessingNonce + 1;
   }
 
-  quickCancelTx = async (_params: {
-    address: string;
-    chainId: number;
-    nonce: number;
-    reqId: string;
-  }) => {
-    // Hippo: Rabby's push-tx relayer is a removed product. Fail closed at the
-    // service boundary; never reach the retired API.
-    throw new Error(
-      'Rabby push-transaction relayer is not available in Hippo Wallet'
-    );
-  };
-
-  retryPushTx = async (_params: {
-    address: string;
-    chainId: number;
-    nonce: number;
-    reqId: string;
-  }) => {
-    // Hippo: Rabby's push-transaction relayer is a removed product. Fail closed at the
-    // service boundary; never reach the retired API.
-    throw new Error(
-      'Rabby push-transaction relayer is not available in Hippo Wallet'
-    );
-  };
+  // B4: the push-tx cancel/retry service shims are deleted. The Rabby
+  // push-tx relayer is a removed product: Hippo keeps no fail-closed shim
+  // at any layer, so nothing in the packaged runtime can reach the retired
+  // relayer endpoints even if the policy classification were re-opened.
 
   getTxGroup = ({
     address,

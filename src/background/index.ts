@@ -29,6 +29,7 @@ import browser from 'webextension-polyfill';
 import BigNumber from 'bignumber.js';
 import { providerController, walletController } from './controller';
 import createSubscription from './controller/provider/subscriptionManager';
+import { dispatchRetainedNamespaceCall } from './service/openapiMethodAllowlist';
 import {
   contactBookService,
   currencyService,
@@ -238,21 +239,19 @@ browser.runtime.onConnect.addListener((port) => {
             eventBus.emit(data.method, data.params);
             break;
           case 'openapi':
-            if (walletController.openapi[data.method]) {
-              return walletController.openapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
           case 'fakeTestnetOpenapi':
-            if (walletController.fakeTestnetOpenapi[data.method]) {
-              return walletController.fakeTestnetOpenapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
+            // Deny-by-default allowlist dispatch (gpt56 B4): the whole
+            // decision lives in dispatchRetainedNamespaceCall; a retired or
+            // unlisted method fails with an explicit rejection naming it —
+            // never dynamic "whatever exists" dispatch.
+            return dispatchRetainedNamespaceCall(
+              data.type,
+              data.type === 'openapi'
+                ? walletController.openapi
+                : walletController.fakeTestnetOpenapi,
+              data.method,
+              data.params
+            );
           case 'controller':
           default:
             if (data.method) {

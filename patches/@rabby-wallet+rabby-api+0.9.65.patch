@@ -1,0 +1,36 @@
+diff --git a/node_modules/@rabby-wallet/rabby-api/dist/index.js b/node_modules/@rabby-wallet/rabby-api/dist/index.js
+index e8fe84a..9f5d423 100644
+--- a/node_modules/@rabby-wallet/rabby-api/dist/index.js
++++ b/node_modules/@rabby-wallet/rabby-api/dist/index.js
+@@ -1043,17 +1043,20 @@ export class OpenApiService {
+             });
+             return data;
+         });
+-        this.withdrawTx = (reqId) => __awaiter(this, void 0, void 0, function* () {
+-            const { data } = yield this.request.post('/v1/wallet/withdraw_tx', {
+-                id: reqId,
+-            });
+-            return data;
+-        });
+-        this.retryPushTx = (reqId) => __awaiter(this, void 0, void 0, function* () {
+-            const { data } = yield this.request.post('/v1/wallet/retry_push_tx', {
+-                id: reqId,
+-            });
+-            return data;
++        // Hippo (gpt56 B4): the Rabby push-tx relayer is a removed product.
++        // The retired withdrawal/retry endpoint methods are neutralized at the
++        // vendored client itself: their endpoint strings must not exist
++        // anywhere in the packaged runtime, and the methods fail closed with a
++        // plain Error instead of dialing the API.
++        this.withdrawTx = () => __awaiter(this, void 0, void 0, function* () {
++            throw new Error(
++                'Rabby push-transaction relayer is removed from Hippo Wallet'
++            );
++        });
++        this.retryPushTx = () => __awaiter(this, void 0, void 0, function* () {
++            throw new Error(
++                'Rabby push-transaction relayer is removed from Hippo Wallet'
++            );
+         });
+         this.mempoolChecks = (txId, chainId, node_info) => __awaiter(this, void 0, void 0, function* () {
+             const { data } = yield this.request.get('/v1/wallet/mempool_checks', {
