@@ -208,7 +208,7 @@ export const ChainRender = ({
             />
           )}
           <span className={clsx('name')}>
-            {chainInfo?.name || t('page.bridge.Select')}
+            {chainInfo?.name || t('page.sendToken.chainPlaceholder')}
           </span>
         </>
       )}

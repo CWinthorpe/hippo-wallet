@@ -1,5 +1,6 @@
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
 import browser from 'webextension-polyfill';
+import { isTrustedOffscreenSender } from '@/offscreen/scripts/senderAuth';
 import {
   OffscreenCommunicationTarget,
   OffscreenCommunicationEvents,
@@ -30,11 +31,18 @@ function maybeClosePopup() {
 // the listener is registered once per service worker. A per-instance guard used
 // to leak one listener per bridge, and a lock/unlock cycle or a reopened import
 // page builds a new bridge, so every pairing then opened N popups.
-browser.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (
     msg.target !== OffscreenCommunicationTarget.extension ||
     msg.event !== OffscreenCommunicationEvents.bitbox02DeviceConnect
   ) {
+    return;
+  }
+
+  // Only the offscreen document may drive device-bridge side effects
+  // (pairing popup open/close). Tabs, content scripts, and other extension
+  // pages are rejected.
+  if (!isTrustedOffscreenSender(sender)) {
     return;
   }
 

@@ -47,8 +47,6 @@ export const TransactionItem = ({
   item,
   canCancel,
   onComplete,
-  onQuickCancel,
-  onRetry,
   txRequests,
   onClearPending,
   getContainer,
@@ -57,8 +55,6 @@ export const TransactionItem = ({
   canCancel: boolean;
   onComplete?(): void;
   txRequests: Record<string, TxRequest>;
-  onQuickCancel?(): void;
-  onRetry?(): void;
   onClearPending?(): void;
   getContainer?: DrawerProps['getContainer'];
 }) => {
@@ -111,9 +107,6 @@ export const TransactionItem = ({
   };
 
   const handleCancelTx = (mode: CANCEL_TX_TYPE) => {
-    if (mode === CANCEL_TX_TYPE.QUICK_CANCEL) {
-      handleQuickCancel();
-    }
     if (mode === CANCEL_TX_TYPE.ON_CHAIN_CANCEL) {
       handleOnChainCancel();
     }
@@ -122,24 +115,6 @@ export const TransactionItem = ({
     }
     setIsShowCancelPopup(false);
   };
-  const handleQuickCancel = async () => {
-    const maxGasTx = findMaxGasTx(item.txs);
-    if (maxGasTx?.reqId) {
-      try {
-        await wallet.quickCancelTx({
-          reqId: maxGasTx.reqId,
-          chainId: maxGasTx.rawTx.chainId,
-          nonce: +maxGasTx.rawTx.nonce,
-          address: maxGasTx.rawTx.from,
-        });
-        onQuickCancel?.();
-        message.success(t('page.activities.signedTx.message.cancelSuccess'));
-      } catch (e) {
-        message.error(e.message);
-      }
-    }
-  };
-
   const handleRemoveLocalPendingTx = async () => {
     const maxGasTx = findMaxGasTx(item.txs);
     try {
@@ -151,38 +126,6 @@ export const TransactionItem = ({
       message.success(t('page.activities.signedTx.message.deleteSuccess'));
       onClearPending?.();
     } catch (e) {
-      message.error(e.message);
-    }
-  };
-
-  const handleReBroadcast = async (tx: TransactionHistoryItem) => {
-    if (!tx.reqId) {
-      message.error('Can not re-broadcast');
-      return;
-    }
-
-    const isReBroadcast = !!tx.hash;
-    if (isReBroadcast) {
-      // fake toast for re-broadcast, not wait for tx push
-      message.success(t('page.activities.signedTx.message.reBroadcastSuccess'));
-      wallet.retryPushTx({
-        reqId: tx.reqId,
-        chainId: tx.rawTx.chainId,
-        nonce: +tx.rawTx.nonce,
-        address: tx.rawTx.from,
-      });
-      return;
-    }
-    try {
-      await wallet.retryPushTx({
-        reqId: tx.reqId,
-        chainId: tx.rawTx.chainId,
-        nonce: +tx.rawTx.nonce,
-        address: tx.rawTx.from,
-      });
-      message.success(t('page.activities.signedTx.message.broadcastSuccess'));
-    } catch (e) {
-      console.error(e);
       message.error(e.message);
     }
   };
@@ -429,11 +372,7 @@ export const TransactionItem = ({
       })}
     >
       <div className="tx-history__item--main">
-        <TransactionPendingTag
-          item={item}
-          onReBroadcast={handleReBroadcast}
-          txRequests={txRequests}
-        />
+        <TransactionPendingTag item={item} txRequests={txRequests} />
         <div className="tx-id">
           <span>{isPending ? null : sinceTime(item.createdAt / 1000)}</span>
           {!item.isSubmitFailed && (

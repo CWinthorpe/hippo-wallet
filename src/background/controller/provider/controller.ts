@@ -1513,6 +1513,10 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
+    // Supported-chain switch is an authority transition for this origin:
+    // consent rendered against the previous chain context must not survive it.
+    notificationService.rejectApprovalsByOrigin(origin);
+
     permissionService.updateConnectSite(
       origin,
       {
@@ -1577,6 +1581,10 @@ class ProviderController extends BaseController {
         message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
       });
     }
+
+    // No-popup chain switch is an authority transition for this origin:
+    // consent rendered against the previous chain context must not survive it.
+    notificationService.rejectApprovalsByOrigin(origin);
 
     permissionService.updateConnectSite(
       origin,
@@ -1664,6 +1672,10 @@ class ProviderController extends BaseController {
   walletRevokePermissions = ({ session: { origin }, data: { params } }) => {
     if (Wallet.isUnlocked() && Wallet.getSite(origin)) {
       if (params?.[0] && 'eth_accounts' in params[0]) {
+        // Revoking the connection is an authority transition: any consent
+        // still pending for this origin (signature, add-chain, watch-asset)
+        // must not survive it.
+        notificationService.rejectApprovalsByOrigin(origin);
         Wallet.removeConnectedSite(origin);
       }
     }

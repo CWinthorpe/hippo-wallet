@@ -306,6 +306,9 @@ const flowContext = flow
           }) || normalizedSignTx.nonce != null
         : false;
       let signTxPreparationId: string | undefined;
+      // Session boundary checkpoint: captured when this request's approval
+      // enters the queue; revalidated after the approval resolves (below).
+      let epochAtRequest = 0;
       if (
         signTx &&
         normalizedSignTx &&
@@ -330,6 +333,12 @@ const flowContext = flow
           account: ctx.request.account,
           origin,
         };
+        // Session-boundary checkpoint: capture the approval lifecycle epoch
+        // before the request leaves the queue. If a boundary (lock, account
+        // switch, reset, WindowConnect teardown) fires while the approval is
+        // pending, the epoch bump below makes the continuation fail closed
+        // instead of executing with pre-boundary authority.
+        epochAtRequest = notificationService.approvalEpoch;
         const approvalPromise = notificationService.requestApproval(
           approvalData,
           { height: windowHeight },
@@ -382,6 +391,29 @@ const flowContext = flow
         if (signTxPreparationId) {
           cancelSignTxPreparation(signTxPreparationId);
         }
+      }
+
+      // Post-approval session-boundary revalidation: the approval resolved
+      // against the epoch captured above. If a boundary (lock, account
+      // switch, reset, teardown, supported-chain switch, permission
+      // revocation) fired between approval and continuation, the request
+      // must fail closed instead of executing with pre-boundary authority.
+      if (notificationService.approvalEpoch !== epochAtRequest) {
+        throw ethErrors.provider.userRejectedRequest({
+          message:
+            'Session context changed while the request was pending; approve again.',
+        });
+      }
+      // A signing request whose origin connection was revoked while the
+      // approval was pending must not continue with stale authority.
+      if (
+        isSignApproval(approvalType) &&
+        !permissionService.hasPermission(origin)
+      ) {
+        throw ethErrors.provider.userRejectedRequest({
+          message:
+            'Connection for this site was revoked while the request was pending.',
+        });
       }
 
       if (isSignApproval(approvalType)) {

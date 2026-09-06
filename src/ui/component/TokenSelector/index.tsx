@@ -849,8 +849,8 @@ function CommonTokenItem(props: {
                   >
                     <span className="text-[11px] leading-[11px]">
                       {token?.trade_volume_level === 'high'
-                        ? t('component.TokenSelector.bridge.high')
-                        : t('component.TokenSelector.bridge.low')}
+                        ? t('component.TokenSelector.liquidity.high')
+                        : t('component.TokenSelector.liquidity.low')}
                     </span>
                   </div>
                 )

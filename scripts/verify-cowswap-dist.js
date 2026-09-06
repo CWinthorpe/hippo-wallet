@@ -9,6 +9,24 @@ const fail = (message) => {
   throw new Error(`FAIL: ${message}`);
 };
 
+// WalletConnect/Reown project id: read from source, never print the value.
+// Invariant: verification evidence must identify the marker by length/digest
+// and occurrence count only.
+const brandSource = fs.readFileSync(
+  path.join(repo, 'src/constant/hippo-brand.ts'),
+  'utf8'
+);
+const wcMarkerMatch = brandSource.match(
+  /HIPPO_WALLETCONNECT_PROJECT_ID\s*=\s*\n?\s*'([0-9a-fA-F]+)'/
+);
+if (!wcMarkerMatch) fail('WalletConnect project marker not found in source');
+const WC_PROJECT_MARKER = wcMarkerMatch[1];
+const wcMarkerDigest = crypto
+  .createHash('sha256')
+  .update(WC_PROJECT_MARKER)
+  .digest('hex')
+  .slice(0, 16);
+
 if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
   fail(`missing artifact directory: ${root}`);
 }
@@ -91,7 +109,7 @@ const runtimeFiles = files.filter(({ relative }) =>
   ['.js', '.html', '.css'].includes(path.extname(relative).toLowerCase())
 );
 const requiredMarkers = [
-  'fc0e0867d8540f1d7df27c322976534d',
+  WC_PROJECT_MARKER,
   'https://api.cow.fi/mainnet',
   'https://api.cow.fi/xdai',
   'https://api.cow.fi/arbitrum_one',
@@ -124,12 +142,14 @@ const forbiddenMarkers = [
   '-----BEGIN OPENSSH PRIVATE KEY-----',
   'sourceMappingURL=data:application/json;base64,ey',
 ];
+let wcMarkerOccurrences = 0;
 for (const { absolute, relative } of runtimeFiles) {
   const text = fs.readFileSync(absolute, 'utf8');
   const lower = text.toLowerCase();
   for (const marker of requiredMarkers) {
     if (lower.includes(marker.toLowerCase())) requiredFound[marker] = true;
   }
+  wcMarkerOccurrences += text.split(WC_PROJECT_MARKER).length - 1;
   for (const marker of forbiddenMarkers) {
     if (lower.includes(marker.toLowerCase())) {
       fail(`forbidden runtime marker in ${relative}`);
@@ -207,7 +227,20 @@ console.log(
       totalBytes,
       treeSha256,
       runtimeFilesScanned: runtimeFiles.length,
-      requiredCowMarkers: requiredMarkers,
+      // The WalletConnect project id is identified by digest only; the raw
+      // value is never emitted into verification evidence.
+      walletConnectMarker: {
+        length: WC_PROJECT_MARKER.length,
+        sha256_16: wcMarkerDigest,
+        occurrences: wcMarkerOccurrences,
+      },
+      requiredCowMarkers: requiredMarkers
+        .filter((item) => item !== WC_PROJECT_MARKER)
+        .concat(
+          requiredFound[WC_PROJECT_MARKER]
+            ? [`walletconnect#${wcMarkerDigest}`]
+            : []
+        ),
       privacyRuleCount: rules.length,
       sourceMaps: 0,
       symlinks: 0,

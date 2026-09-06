@@ -15,6 +15,9 @@ jest.mock('webextension-polyfill', () => ({
   __esModule: true,
   default: {
     runtime: {
+      id: 'test-extension-id',
+      getURL: (relative: string) =>
+        `chrome-extension://test-extension-id/${relative}`,
       onMessage: {
         addListener: jest.fn(),
       },
@@ -51,7 +54,10 @@ describe('BitBox02OffscreenBridge', () => {
           pairingCode: 'AAAAA BBBBB\nCCCCC DDDDD',
         },
       },
-      {},
+      {
+        id: 'test-extension-id',
+        url: 'chrome-extension://test-extension-id/offscreen.html',
+      },
       jest.fn()
     );
     await Promise.resolve();
@@ -61,6 +67,49 @@ describe('BitBox02OffscreenBridge', () => {
     // the pub key rides on the init response, so it can only land on the
     // bridge that asked for it
     expect(restoredBridge.hdk).toEqual({ key: 'xpub-live' });
+  });
+
+  it('ignores device messages that do not come from the offscreen document', async () => {
+    (browser.windows.create as jest.Mock).mockClear();
+    const addListener = browser.runtime.onMessage.addListener as jest.Mock;
+    const [listener] = addListener.mock.calls[0];
+
+    const payload = {
+      target: OffscreenCommunicationTarget.extension,
+      event: OffscreenCommunicationEvents.bitbox02DeviceConnect,
+      payload: { name: 'open-popup', pairingCode: 'AAAAA BBBBB\nCCCCC DDDDD' },
+    };
+
+    // content-script / tab context: tab-bearing same-extension sender
+    listener(payload, { id: 'test-extension-id', tab: { id: 7 } }, jest.fn());
+    await Promise.resolve();
+    expect(browser.windows.create).not.toHaveBeenCalled();
+
+    // wrong extension id
+    listener(
+      payload,
+      { id: 'other-extension-id', url: 'chrome-extension://x/offscreen.html' },
+      jest.fn()
+    );
+    await Promise.resolve();
+    expect(browser.windows.create).not.toHaveBeenCalled();
+
+    // no sender identity at all
+    listener(payload, {}, jest.fn());
+    await Promise.resolve();
+    expect(browser.windows.create).not.toHaveBeenCalled();
+
+    // legitimate offscreen sender still works
+    listener(
+      payload,
+      {
+        id: 'test-extension-id',
+        url: 'chrome-extension://test-extension-id/offscreen.html',
+      },
+      jest.fn()
+    );
+    await Promise.resolve();
+    expect(browser.windows.create).toHaveBeenCalledTimes(1);
   });
 
   it('rejects init when the offscreen document is unreachable', async () => {

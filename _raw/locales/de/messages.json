@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Vertrag:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "estimatedGas": "Geschätztes Gas: ",
-        "maxGas": "Max Gas: ",
-        "gasCost": "Gaskosten für die Übertragung von Gas an Ihre Adresse: ",
-        "sendGas": "Der Gastransfer für die aktuelle Transaktion an Sie: ",
-        "description": "Gasgebühren werden über den GasAccount bezahlt. Zahlungsdetails:"
-      },
-      "gasAccountForGas": "USD aus meinem GasAccount verwenden, um Gas zu bezahlen"
+      }
     },
     "signFooterBar": {
       "requestFrom": "Anfrage von",
@@ -483,12 +475,7 @@
       "imKeyConnected": "imKey ist verbunden",
       "keystoneConnected": "Keystone ist verbunden",
       "imKeyNotConnected": "imKey ist nicht verbunden",
-      "iGotIt": "Ich hab's.",
-      "gasless": {
-        "customRpcUnavailableTip": "Benutzerdefinierte RPCs werden für Free Gas nicht unterstützt",
-        "watchUnavailableTip": "Watch-only-Adresse wird für Free Gas nicht unterstützt",
-        "walletConnectUnavailableTip": "Über WalletConnect verbundene mobile Wallets werden für Free Gas nicht unterstützt."
-      }
+      "iGotIt": "Ich hab's."
     },
     "signTypedData": {
       "signTypeDataOnChain": "Typisierte Daten auf {{chain}} signieren",
@@ -517,19 +504,7 @@
       "contractCall": {
         "operationDecoded": "Der Vorgang wird aus der Nachricht decodiert"
       },
-      "safeCantSignTypedData": "Dies ist eine Safe-Adresse, und sie unterstützt nur das Signieren von EIP-712-typisierten Daten oder Strings.",
-      "sellNFT": {
-        "title": "NFT-Auftrag",
-        "receiveToken": "Token erhalten",
-        "listNFT": "NFT anbieten",
-        "specificBuyer": "Bestimmter Käufer"
-      },
-      "buyNFT": {
-        "payToken": "Token zahlen",
-        "receiveNFT": "NFT erhalten",
-        "expireTime": "Ablaufzeit",
-        "listOn": "Anbieten auf"
-      }
+      "safeCantSignTypedData": "Dies ist eine Safe-Adresse, und sie unterstützt nur das Signieren von EIP-712-typisierten Daten oder Strings."
     },
     "activities": {
       "title": "Signaturverlauf",
@@ -751,7 +726,8 @@
       },
       "riskAlert": {
         "checkboxText": "Ich verstehe die Risiken und möchte fortfahren."
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "<1>0</1> {{ tokenName }} für Gaskosten reserviert",
@@ -916,8 +892,7 @@
         "revokeWithOneKey": "Widerruf mit OneKey starten",
         "oneKeySended": "Bitte signieren Sie die Anfrage auf OneKey ({{current}}/{{total}})",
         "oneKeySending": "Signieranfrage wird gesendet ({{current}}/{{total}})",
-        "oneKeySigned": "Signiert. Transaktion wird erstellt ({{current}}/{{total}})",
-        "useGasAccount": "Ihr Gasguthaben ist niedrig. Ihr GasAccount übernimmt die Gasgebühren."
+        "oneKeySigned": "Signiert. Transaktion wird erstellt ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3295,21 +3270,6 @@
       "unselectAll": "Auswahl aufheben",
       "selectAll": "Alle auswählen",
       "approvalsCount": "{{count}} Freigaben"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Mehr anzeigen"
-      },
-      "Select": "Auswählen",
-      "pendingItem": {
-        "sendStatus": "Sendestatus",
-        "swapStatus": "Swap-Status"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Gas-Token",
-      "gasFee": "Gas-Gebühr"
     }
   },
   "component": {
@@ -3430,9 +3390,9 @@
         "filterAll": "Alle Netzwerke"
       },
       "noLpTokens": "Keine Liquiditätsanbieter-Token (LP-Token)",
-      "bridge": {
-        "high": "Hohe Liquidität",
-        "low": "Niedrige Liquidität"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

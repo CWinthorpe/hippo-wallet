@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/browser';
 import browser, { Windows } from 'webextension-polyfill';
 import { EventEmitter } from 'events';
 import { IS_WINDOWS } from 'consts';
+import { isExtensionPageSender } from '@/offscreen/scripts/senderAuth';
 
 const event = new EventEmitter();
 
@@ -11,11 +12,15 @@ browser.windows.onFocusChanged.addListener((winId) => {
 });
 
 let isManuallyClosed = true;
-browser.runtime.onMessage.addListener(({ type }) => {
-  if (type === 'closeNotification') {
-    isManuallyClosed = false;
-    event.emit('closeNotification');
-  }
+browser.runtime.onMessage.addListener(({ type }, sender) => {
+  if (type !== 'closeNotification') return;
+  // Only an extension page's own teardown may declare the notification
+  // window closed by the extension itself; a spoofed message would suppress
+  // the manual-close rejection path. Content scripts and web pages cannot
+  // drive it.
+  if (!isExtensionPageSender(sender)) return;
+  isManuallyClosed = false;
+  event.emit('closeNotification');
 });
 browser.windows.onRemoved.addListener((winId) => {
   event.emit('windowRemoved', winId, isManuallyClosed);

@@ -151,7 +151,6 @@ export const PendingTxStatusPopup = ({
                 init();
               }}
               txRequests={txRequests}
-              onQuickCancel={init}
             />
           ))}
         </div>

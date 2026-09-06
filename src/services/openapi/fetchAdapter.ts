@@ -38,11 +38,12 @@ const runFetchAdapter = async (
     requestUrl,
     forceRemoteDataPolicy
   );
-  await remoteDataPolicyService.recordRequestContact(
-    requestUrl,
-    forceRemoteDataPolicy
-  );
 
+  // Register the abort controller BEFORE the awaited contact-log write below.
+  // If a policy change/lock happens while that storage write is pending, the
+  // revocation must find this controller; otherwise fetch would start after
+  // consent was withdrawn. A request that begins after revocation fails closed
+  // against the current policy before doing anything.
   const isRemoteDataRequest =
     forceRemoteDataPolicy || isKnownRabbyOrDeBankUrl(requestUrl);
   const controller = isRemoteDataRequest ? new AbortController() : undefined;
@@ -57,6 +58,25 @@ const runFetchAdapter = async (
         once: true,
       });
     }
+  }
+
+  try {
+    await remoteDataPolicyService.recordRequestContact(
+      requestUrl,
+      forceRemoteDataPolicy
+    );
+    // Revocation may have occurred during the awaited storage write; re-check
+    // and fail closed instead of starting the network request.
+    remoteDataPolicyService.assertRequestAllowed(
+      requestUrl,
+      forceRemoteDataPolicy
+    );
+  } catch (e) {
+    if (controller) {
+      activeRemoteRequestControllers.delete(controller);
+      originalSignal?.removeEventListener('abort', abortFromOriginalSignal);
+    }
+    throw e;
   }
 
   const requestConfig = controller

@@ -87,13 +87,7 @@ const Wrapper = styled.div`
   }
 `;
 
-export const MempoolList = ({
-  tx,
-  onReBroadcast,
-}: {
-  tx: TransactionHistoryItem;
-  onReBroadcast?(): void;
-}) => {
+export const MempoolList = ({ tx }: { tx: TransactionHistoryItem }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, loading } = useRequest(
@@ -140,16 +134,6 @@ export const MempoolList = ({
           <div className="title">
             {t('page.activities.signedTx.MempoolList.empty')}
           </div>
-          {tx.reqId ? (
-            <div
-              className="btn"
-              onClick={() => {
-                onReBroadcast?.();
-              }}
-            >
-              {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
-            </div>
-          ) : null}
         </>
       ) : (
         <>
@@ -195,18 +179,6 @@ export const MempoolList = ({
               );
             })}
           </div>
-          {tx.reqId ? (
-            <div className="mempool-footer">
-              <div
-                className="btn"
-                onClick={() => {
-                  onReBroadcast?.();
-                }}
-              >
-                {t('page.activities.signedTx.MempoolList.reBroadcastBtn')}
-              </div>
-            </div>
-          ) : null}
         </>
       )}
     </Wrapper>

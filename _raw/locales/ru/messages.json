@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Контракт:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "maxGas": "Максимум газа:",
-        "gasCost": "Стоимость газа для перевода газа на ваш адрес:",
-        "sendGas": "Перевод газа для текущей транзакции:",
-        "estimatedGas": "Оценочная комиссия за газ:",
-        "description": "Используя GasAccount для оплаты газовых сборов. Посмотрите детали платежа ниже:"
-      },
-      "gasAccountForGas": "Использовать USD с моего GasAccount для оплаты газа"
+      }
     },
     "signFooterBar": {
       "requestFrom": "Запрос от",
@@ -483,12 +475,7 @@
       "cancelCurrentConnection": "Отменить текущее подключение",
       "imKeyNotConnected": "imKey не подключен",
       "imKeyConnected": "imKey подключен",
-      "iGotIt": "Я понял это",
-      "gasless": {
-        "customRpcUnavailableTip": "Пользовательские RPC не поддерживаются для Free Gas",
-        "walletConnectUnavailableTip": "Мобильный кошелек, подключенный через WalletConnect, не поддерживает Free Gas",
-        "watchUnavailableTip": "Free Gas не поддерживается для адресов только для просмотра"
-      }
+      "iGotIt": "Я понял это"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Подписать Типизированные данные {{chain}}",
@@ -517,19 +504,7 @@
       "contractCall": {
         "operationDecoded": "Операция декодирована из сообщения"
       },
-      "safeCantSignTypedData": "Это адрес Safe, и он поддерживает только подпись данных типа EIP-712 или строки.",
-      "sellNFT": {
-        "title": "Ордер на продажу NFT",
-        "receiveToken": "Получить токен",
-        "listNFT": "Выставить NFT",
-        "specificBuyer": "Конкретный покупатель"
-      },
-      "buyNFT": {
-        "payToken": "Заплатить токеном",
-        "receiveNFT": "Получить NFT",
-        "expireTime": "Время истечения",
-        "listOn": "Выставлен на"
-      }
+      "safeCantSignTypedData": "Это адрес Safe, и он поддерживает только подпись данных типа EIP-712 или строки."
     },
     "activities": {
       "title": "История подписей",
@@ -751,7 +726,8 @@
       },
       "riskAlert": {
         "checkboxText": "Я понимаю риски и хочу продолжить"
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "Резерв <1>0</1> {{ tokenName }} для оплаты газа",
@@ -916,8 +892,7 @@
         "revokeWithOneKey": "Начать отзыв с OneKey",
         "oneKeySended": "Пожалуйста, подпишите запрос на OneKey ({{current}}/{{total}})",
         "oneKeySending": "Отправка запроса на подпись ({{current}}/{{total}})",
-        "oneKeySigned": "Подписано. Создание транзакции ({{current}}/{{total}})",
-        "useGasAccount": "Ваш газовый баланс низкий. Ваш GasAccount покроет комиссию за газ."
+        "oneKeySigned": "Подписано. Создание транзакции ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3297,21 +3272,6 @@
       "unselectAll": "Снять выделение со всех",
       "selectAll": "Выделить все",
       "approvalsCount": "{{count}} одобрений"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Показать больше"
-      },
-      "Select": "Выбрать",
-      "pendingItem": {
-        "sendStatus": "Статус отправки",
-        "swapStatus": "Статус обмена"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Газовый токен",
-      "gasFee": "Комиссия за газ"
     }
   },
   "component": {
@@ -3432,9 +3392,9 @@
         "filterAll": "Все сети"
       },
       "noLpTokens": "Нет токена поставщика ликвидности (LP)",
-      "bridge": {
-        "low": "Низкая ликвидность",
-        "high": "Высокая ликвидность"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

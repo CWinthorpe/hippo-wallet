@@ -3,6 +3,7 @@ import {
   recoverTypedSignature,
   SignTypedDataVersion,
 } from '@metamask/eth-sig-util';
+import { isTrustedOffscreenSender } from '@/offscreen/scripts/senderAuth';
 import {
   toChecksumAddress,
   addHexPrefix,
@@ -204,11 +205,15 @@ const endLedgerOperation = () => {
 };
 
 if (isManifestV3) {
-  Browser.runtime.onMessage.addListener((request) => {
+  Browser.runtime.onMessage.addListener((request, sender) => {
     if (
       request.target === OffscreenCommunicationTarget.extension &&
       request.event === LedgerAction.ledgerDeviceDisconnect
     ) {
+      // Only the offscreen document may report ledger device events.
+      if (!isTrustedOffscreenSender(sender)) {
+        return;
+      }
       void cleanUpLedgerSession();
     }
   });

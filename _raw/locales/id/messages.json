@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Kontrak:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "estimatedGas": "Estimasi Gas: ",
-        "maxGas": "Max Gas: ",
-        "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda: ",
-        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini: ",
-        "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
-      },
-      "gasAccountForGas": "Gunakan USD dari GasAccount saya untuk membayar gas"
+      }
     },
     "signFooterBar": {
       "walletConnect": {
@@ -483,12 +475,7 @@
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
       "imKeyNotConnected": "imKey tidak terhubung",
-      "iGotIt": "Saya Mengerti",
-      "gasless": {
-        "watchUnavailableTip": "Alamat hanya-pantau tidak dapat menggunakan gas gratis",
-        "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Free Gas",
-        "customRpcUnavailableTip": "Custom RPC tidak didukung untuk Free Gas"
-      }
+      "iGotIt": "Saya Mengerti"
     },
     "signTypedData": {
       "permit": {
@@ -517,19 +504,7 @@
       },
       "signTypeDataOnChain": "Tandatangani data terstruktur di {{chain}}",
       "safeCantSignText": "Ini adalah alamat Safe, dan tidak dapat digunakan untuk menandatangani teks.",
-      "safeCantSignTypedData": "Ini adalah alamat Safe, dan hanya mendukung tanda tangan data bertipe EIP-712 atau string.",
-      "sellNFT": {
-        "receiveToken": "Terima token",
-        "specificBuyer": "Pembeli spesifik",
-        "listNFT": "Daftar NFT",
-        "title": "Pesanan NFT"
-      },
-      "buyNFT": {
-        "payToken": "Bayar token",
-        "expireTime": "Waktu Kedaluwarsa",
-        "listOn": "Daftar di",
-        "receiveNFT": "Terima NFT"
-      }
+      "safeCantSignTypedData": "Ini adalah alamat Safe, dan hanya mendukung tanda tangan data bertipe EIP-712 atau string."
     },
     "activities": {
       "signedTx": {
@@ -751,7 +726,8 @@
       },
       "riskAlert": {
         "checkboxText": "Saya memahami risikonya dan ingin melanjutkan"
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "Ditetapkan <1>0</1> {{ tokenName }} untuk biaya gas",
@@ -916,8 +892,7 @@
         "revokeWithOneKey": "Mulai pencabutan dengan OneKey",
         "oneKeySended": "Silakan tanda tangani permintaan di OneKey ({{current}}/{{total}})",
         "oneKeySending": "Mengirim permintaan tanda tangan ({{current}}/{{total}})",
-        "oneKeySigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})",
-        "useGasAccount": "Saldo gas Anda rendah. GasAccount Anda akan menanggung biaya gas."
+        "oneKeySigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3292,21 +3267,6 @@
       "unselectAll": "Batalkan Pilih Semua",
       "selectAll": "Pilih Semua",
       "approvalsCount": "{{count}} persetujuan"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Tampilkan Lebih Banyak"
-      },
-      "Select": "Pilih",
-      "pendingItem": {
-        "sendStatus": "Kirim Status",
-        "swapStatus": "Status Swap"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Token gas",
-      "gasFee": "Biaya gas"
     }
   },
   "component": {
@@ -3427,9 +3387,9 @@
         "filterAll": "Semua Rantai"
       },
       "noLpTokens": "Tidak ada Token Penyedia Likuiditas (LP)",
-      "bridge": {
-        "high": "Likuiditas tinggi",
-        "low": "Likuiditas rendah"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

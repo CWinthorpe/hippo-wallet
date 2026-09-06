@@ -448,6 +448,37 @@ class NotificationService extends Events {
     transactionHistoryService.removeAllSigningTx();
   };
 
+  /**
+   * Origin-scoped approval rejection for dapp-driven authority transitions
+   * (chain switch on a supported chain, permission revocation). Only the
+   * affected origin's pending approvals are rejected and removed; other
+   * origins' queued approvals keep their lifecycle generation.
+   */
+  rejectApprovalsByOrigin = (origin: string) => {
+    if (!origin) {
+      return;
+    }
+    const victims = this.approvals.filter(
+      (approval) => approval.data?.origin === origin
+    );
+    if (victims.length === 0) {
+      return;
+    }
+    victims.forEach((approval) => {
+      approval.reject &&
+        approval.reject(
+          new EthereumProviderError(4001, 'User rejected the request.')
+        );
+    });
+    const remaining = this.approvals.filter(
+      (approval) => !victims.includes(approval)
+    );
+    this.approvals = remaining;
+    if (this.currentApproval && victims.includes(this.currentApproval)) {
+      this.currentApproval = remaining[0] || null;
+    }
+  };
+
   unLock = () => {
     this.isLocked = false;
   };

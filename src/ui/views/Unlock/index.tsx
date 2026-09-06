@@ -93,6 +93,25 @@ const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
   const [getApproval, resolveApproval] = useApproval();
+  // Window/request identity binding: the approval this window rendered is
+  // captured at mount. The global UNLOCK_WALLET event carries no identity,
+  // so a stale window must never resolve an approval it did not render.
+  const renderedApprovalIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    let disposed = false;
+    getApproval()
+      .then((approval) => {
+        if (!disposed) {
+          renderedApprovalIdRef.current = approval?.id;
+        }
+      })
+      .catch(() => {
+        // approval unavailable; routing below fails closed to /approval
+      });
+    return () => {
+      disposed = true;
+    };
+  }, []);
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -191,6 +210,7 @@ const Unlock = () => {
         await routeNotificationAfterUnlock({
           getApproval,
           resolveApproval,
+          expectedApprovalId: renderedApprovalIdRef.current,
           replace: (path) => history.replace(path),
         });
       }

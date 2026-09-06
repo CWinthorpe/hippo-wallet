@@ -16,11 +16,9 @@ import { MempoolList } from './MempoolList';
 
 export const TransactionPendingTag = ({
   item,
-  onReBroadcast,
   txRequests,
 }: {
   item: TransactionGroup;
-  onReBroadcast?(tx: TransactionHistoryItem): void;
   txRequests: Record<string, TxRequest>;
 }) => {
   const { t } = useTranslation();
@@ -47,12 +45,7 @@ export const TransactionPendingTag = ({
         overlayClassName="mempool-list-popover"
         placement="bottomLeft"
         destroyTooltipOnHide
-        content={
-          <MempoolList
-            tx={maxGasTx}
-            onReBroadcast={() => onReBroadcast?.(maxGasTx)}
-          />
-        }
+        content={<MempoolList tx={maxGasTx} />}
       >
         <div className="pending">
           <SvgPendingSpin className="icon icon-pending-spin" />
@@ -84,15 +77,7 @@ export const TransactionPendingTag = ({
             <>
               {t('page.activities.signedTx.tips.pendingBroadcastRetry', {
                 pushAt: sinceTime(pushAt),
-              })}{' '}
-              <span
-                className="cursor-pointer underline"
-                onClick={() => {
-                  onReBroadcast?.(maxGasTx);
-                }}
-              >
-                {t('page.activities.signedTx.tips.pendingBroadcastRetryBtn')}
-              </span>
+              })}
             </>
           }
         >
@@ -117,14 +102,6 @@ export const TransactionPendingTag = ({
             {t('page.activities.signedTx.tips.pendingBroadcast', {
               deadline: deadline,
             })}{' '}
-            <span
-              className="cursor-pointer underline"
-              onClick={() => {
-                onReBroadcast?.(maxGasTx);
-              }}
-            >
-              {t('page.activities.signedTx.tips.pendingBroadcastBtn')}
-            </span>
           </>
         }
       >

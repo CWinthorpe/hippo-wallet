@@ -72,20 +72,13 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
 
   const { getContainer } = usePopupContainer();
 
-  const options = [
-    {
-      title: t(
-        'page.activities.signedTx.CancelTxPopup.options.quickCancel.title'
-      ),
-      desc: t(
-        'page.activities.signedTx.CancelTxPopup.options.quickCancel.desc'
-      ),
-      value: CANCEL_TX_TYPE.QUICK_CANCEL,
-      tips: t(
-        'page.activities.signedTx.CancelTxPopup.options.quickCancel.tips'
-      ),
-      disabled: tx.pushType !== 'low_gas' || tx.hash,
-    },
+  const options: Array<{
+    title: string;
+    desc: string;
+    value: CANCEL_TX_TYPE;
+    disabled?: boolean;
+    tips?: string;
+  }> = [
     {
       title: t(
         'page.activities.signedTx.CancelTxPopup.options.onChainCancel.title'

@@ -2,6 +2,7 @@ import type { TrezorBridgeInterface } from '@rabby-wallet/eth-trezor-keyring/dis
 import EventEmitter from 'events';
 import browser from 'webextension-polyfill';
 
+import { isTrustedOffscreenSender } from '@/offscreen/scripts/senderAuth';
 import {
   OffscreenCommunicationEvents,
   OffscreenCommunicationTarget,
@@ -32,7 +33,7 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
     browser.runtime.onMessage.addListener((msg, sender) => {
       if (
-        sender.id !== browser.runtime.id ||
+        !isTrustedOffscreenSender(sender) ||
         msg.target !== OffscreenCommunicationTarget.extension ||
         msg.event !== OffscreenCommunicationEvents.trezorDeviceEvent
       ) {

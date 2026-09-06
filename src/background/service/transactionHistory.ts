@@ -1564,47 +1564,30 @@ class TxHistory {
     return maxLocalOrProcessingNonce + 1;
   }
 
-  quickCancelTx = async ({
-    address,
-    chainId,
-    nonce,
-    reqId,
-  }: {
+  quickCancelTx = async (_params: {
     address: string;
     chainId: number;
     nonce: number;
     reqId: string;
   }) => {
-    let error: any = null;
-    try {
-      await openapiService.withdrawTx(reqId);
-    } catch (e) {
-      error = e;
-    }
-    this.reloadTxRequest({ address, chainId, nonce });
-    if (error) {
-      throw error;
-    }
+    // Hippo: Rabby's push-tx relayer is a removed product. Fail closed at the
+    // service boundary; never reach the retired API.
+    throw new Error(
+      'Rabby push-transaction relayer is not available in Hippo Wallet'
+    );
   };
 
-  retryPushTx = async ({
-    address,
-    chainId,
-    nonce,
-    reqId,
-  }: {
+  retryPushTx = async (_params: {
     address: string;
     chainId: number;
     nonce: number;
     reqId: string;
   }) => {
-    try {
-      await openapiService.retryPushTx(reqId);
-      this.reloadTxRequest({ address, chainId, nonce });
-    } catch (e) {
-      this.reloadTxRequest({ address, chainId, nonce });
-      throw e;
-    }
+    // Hippo: Rabby's push-transaction relayer is a removed product. Fail closed at the
+    // service boundary; never reach the retired API.
+    throw new Error(
+      'Rabby push-transaction relayer is not available in Hippo Wallet'
+    );
   };
 
   getTxGroup = ({

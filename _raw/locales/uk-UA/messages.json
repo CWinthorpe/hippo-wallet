@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Контракт:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "sendGas": "Газ, який буде переказано вам для поточної транзакції:",
-        "gasCost": "Вартість газу за переказ газу на вашу адресу:",
-        "maxGas": "Максимум газу:",
-        "estimatedGas": "Орієнтовна вартість газу: ",
-        "description": "Використовуючи GasAccount для сплати комісій за газ. Перегляньте деталі платежу нижче:"
-      },
-      "gasAccountForGas": "Використовувати USD з GasAccount для оплати газу"
+      }
     },
     "signFooterBar": {
       "requestFrom": "Запит від",
@@ -484,12 +476,7 @@
       "cancelCurrentConnection": "Скасувати поточне підключення",
       "imKeyConnected": "imKey підключено",
       "blockDappFromSendingRequests": "Заблокувати запит Dapp на 1 хвилину",
-      "iGotIt": "Зрозуміло",
-      "gasless": {
-        "watchUnavailableTip": "Free Gas не підтримується для адрес лише для перегляду",
-        "customRpcUnavailableTip": "Користувацькі RPC не підтримуються для Free Gas",
-        "walletConnectUnavailableTip": "Мобільний гаманець, підключений через WalletConnect, не підтримується для Free Gas"
-      }
+      "iGotIt": "Зрозуміло"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Підписати {{chain}} Типові дані",
@@ -518,19 +505,7 @@
       "contractCall": {
         "operationDecoded": "Операція декодована з повідомлення"
       },
-      "safeCantSignTypedData": "Це адреса Safe, і вона підтримує лише підписування типізованих даних EIP-712 або рядків.",
-      "sellNFT": {
-        "title": "NFT-ордер",
-        "receiveToken": "Отримати токен",
-        "listNFT": "Залістити NFT",
-        "specificBuyer": "Конкретний покупець"
-      },
-      "buyNFT": {
-        "payToken": "Токен для оплати",
-        "receiveNFT": "Отримати NFT",
-        "expireTime": "Час закінчення терміну дії",
-        "listOn": "Увімкнути список"
-      }
+      "safeCantSignTypedData": "Це адреса Safe, і вона підтримує лише підписування типізованих даних EIP-712 або рядків."
     },
     "activities": {
       "title": "Ваші підписи",
@@ -752,7 +727,8 @@
       },
       "riskAlert": {
         "checkboxText": "Я розумію ризики і хочу продовжити."
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "Зарезервовано <1>0</1> {{ tokenName }} для вартості газу",
@@ -918,8 +894,7 @@
         "revokeWithOneKey": "Почати відкликання за допомогою OneKey",
         "oneKeySended": "Будь ласка, підпишіть запит на OneKey ({{current}}/{{total}})",
         "oneKeySending": "Надсилаємо запит на підписання ({{current}}/{{total}})",
-        "oneKeySigned": "Підписано. Створюємо транзакцію ({{current}}/{{total}})",
-        "useGasAccount": "Ваш газовий баланс низький. Ваш GasAccount покриє комісії за газ."
+        "oneKeySigned": "Підписано. Створюємо транзакцію ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3306,21 +3281,6 @@
       "unselectAll": "Зняти виділення з усіх",
       "selectAll": "Виділити всі",
       "approvalsCount": "{{count}} схвалень"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Показати більше"
-      },
-      "Select": "Вибрати",
-      "pendingItem": {
-        "sendStatus": "Відправити статус",
-        "swapStatus": "Статус обміну"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Газовий токен",
-      "gasFee": "Комісія за газ"
     }
   },
   "component": {
@@ -3441,9 +3401,9 @@
         "filterAll": "Усі мережі"
       },
       "noLpTokens": "Немає токена постачальника ліквідності (LP)",
-      "bridge": {
-        "low": "Низька ліквідність",
-        "high": "Висока ліквідність"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

@@ -1625,7 +1625,7 @@ export class KeyringService extends EventEmitter {
 
     this.emit('resetPassword');
     // lock wallet
-    this.setLocked();
+    await this.setLocked();
   }
 
   async resetBooted() {

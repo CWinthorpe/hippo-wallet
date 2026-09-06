@@ -1,3 +1,5 @@
+import { sha256 } from '@noble/hashes/sha256';
+import { bytesToHex } from '@ethereumjs/util';
 import { ethers } from 'ethers';
 import { findChain } from '@/utils/chain';
 import {
@@ -111,6 +113,8 @@ export interface ValidatedCowSwapQuote {
   networkFeeAmount: string;
   protocolFeeBps: number;
   slippageBps: number;
+  sellTokenPriceHasFraction?: boolean;
+  sellTokenPriceSha256?: string;
   approvalSpender: string | null;
   nativeSell: boolean;
   expectedOrderUid: string;
@@ -898,9 +902,15 @@ export class CowSwapService {
     parseUintString(rawQuote.gasPrice, 'quoted gas price', {
       allowZero: true,
     });
-    parsePositiveDecimalString(
+    // The raw sell token price is never exposed to the UI; the packaged smoke
+    // attests fractionality and binds evidence by digest only.
+    const sellTokenPrice = parsePositiveDecimalString(
       rawQuote.sellTokenPrice,
       'quoted sell token price'
+    );
+    const sellTokenPriceHasFraction = sellTokenPrice.includes('.');
+    const sellTokenPriceSha256 = bytesToHex(
+      sha256(new TextEncoder().encode(sellTokenPrice))
     );
     const validTo = parseSafeInteger(
       rawQuote.validTo,
@@ -1033,6 +1043,8 @@ export class CowSwapService {
       networkFeeAmount: networkFee.toString(),
       protocolFeeBps,
       slippageBps,
+      sellTokenPriceHasFraction,
+      sellTokenPriceSha256,
       approvalSpender: nativeSell ? null : config.vaultRelayer,
       nativeSell,
       expectedOrderUid,

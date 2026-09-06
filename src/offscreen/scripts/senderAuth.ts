@@ -43,3 +43,44 @@ export const isTrustedBackgroundSender = (
   // offscreen document URL (they end in .html and are not sign drivers).
   return sender.url === browser.runtime.getURL('sw.js');
 };
+
+/**
+ * Reverse-direction rule: background listeners that receive device events
+ * from the offscreen document (bitbox02/ledger/trezor bridges) must only
+ * obey messages whose sender is the offscreen document itself — never a tab,
+ * a content script, or another extension page. Mirrors the exact-URL rule
+ * used by the Trezor browser proxcy relay in `_raw/sw.js`.
+ */
+export const isTrustedOffscreenSender = (
+  sender?: SenderLike | null
+): boolean => {
+  if (!sender || sender.id === undefined) {
+    return false;
+  }
+  if (sender.id !== browser.runtime.id) {
+    return false;
+  }
+  if (sender.tab) {
+    return false;
+  }
+  if (!sender.url) {
+    return true;
+  }
+  return sender.url === browser.runtime.getURL('offscreen.html');
+};
+
+/** Browser-window shutdown for bio-metric unlock setup. */
+export const isExtensionPageSender = (sender?: SenderLike | null): boolean => {
+  if (!sender || sender.id === undefined) {
+    return false;
+  }
+  if (sender.id !== browser.runtime.id) {
+    return false;
+  }
+  // Content scripts carry a real web URL; extension pages carry the
+  // extension's own base URL (popup.html, notification.html, ...).
+  if (!sender.url) {
+    return true;
+  }
+  return sender.url.startsWith(browser.runtime.getURL(''));
+};

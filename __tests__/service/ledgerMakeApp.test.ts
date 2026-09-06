@@ -15,7 +15,9 @@ const mockSetChain = jest.fn();
 const mockSetBlindSigningReporter = jest.fn();
 const mockContextModuleBuild = jest.fn();
 const mockWithContextModule = jest.fn();
-let mockRuntimeMessageListener: ((request: any) => void) | undefined;
+let mockRuntimeMessageListener:
+  | ((request: any, sender?: any) => void)
+  | undefined;
 const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
   mockRuntimeMessageListener = listener;
 });
@@ -93,6 +95,9 @@ jest.mock(
 
 jest.mock('webextension-polyfill', () => ({
   runtime: {
+    id: 'test-extension-id',
+    getURL: (relative: string) =>
+      `chrome-extension://test-extension-id/${relative}`,
     onMessage: {
       addListener: mockRuntimeOnMessageAddListener,
     },
@@ -623,6 +628,9 @@ describe('LedgerBridgeKeyring makeApp', () => {
     mockRuntimeMessageListener!({
       target: 'extension-offscreen',
       event: 'ledger-device-disconnect',
+    }, {
+      id: 'test-extension-id',
+      url: 'chrome-extension://test-extension-id/offscreen.html',
     });
     await new Promise((resolve) => setTimeout(resolve, 0));
 

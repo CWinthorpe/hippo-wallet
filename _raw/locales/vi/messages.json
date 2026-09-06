@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Hợp đồng:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "maxGas": "Max Gas: ",
-        "estimatedGas": "Dự kiến Gas: ",
-        "sendGas": "Gas chuyển cho bạn cho giao dịch hiện tại: ",
-        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn: ",
-        "description": "Sử dụng GasAccount để thanh toán phí gas. Xem chi tiết thanh toán bên dưới:"
-      },
-      "gasAccountForGas": "Sử dụng USD từ GasAccount của tôi để thanh toán gas"
+      }
     },
     "signFooterBar": {
       "walletConnect": {
@@ -483,12 +475,7 @@
       "cancelCurrentTransaction": "Hủy giao dịch hiện tại",
       "cancelAll": "Hủy tất cả {{count}} yêu cầu từ Dapp",
       "connectButton": "Kết nối",
-      "iGotIt": "Tôi đã hiểu rồi",
-      "gasless": {
-        "customRpcUnavailableTip": "RPC tùy chỉnh không được hỗ trợ cho Free Gas",
-        "walletConnectUnavailableTip": "Ví di động kết nối qua WalletConnect không thể sử dụng gas miễn phí.",
-        "watchUnavailableTip": "Địa chỉ chỉ xem không thể sử dụng gas miễn phí"
-      }
+      "iGotIt": "Tôi đã hiểu rồi"
     },
     "signTypedData": {
       "permit": {
@@ -517,19 +504,7 @@
       },
       "safeCantSignText": "Đây là một địa chỉ Safe, và nó không thể được sử dụng để ký văn bản.",
       "signTypeDataOnChain": "Ký dữ liệu định kiểu trên {{chain}}",
-      "safeCantSignTypedData": "Đây là một địa chỉ Safe, và nó chỉ hỗ trợ ký dữ liệu kiểu EIP-712 hoặc chuỗi.",
-      "sellNFT": {
-        "title": "Đặt hàng NFT",
-        "receiveToken": "Nhận token",
-        "specificBuyer": "Người mua cụ thể",
-        "listNFT": "Danh sách NFT"
-      },
-      "buyNFT": {
-        "payToken": "Thanh toán token",
-        "receiveNFT": "Nhận NFT",
-        "listOn": "Liệt kê trên",
-        "expireTime": "Thời gian hết hạn"
-      }
+      "safeCantSignTypedData": "Đây là một địa chỉ Safe, và nó chỉ hỗ trợ ký dữ liệu kiểu EIP-712 hoặc chuỗi."
     },
     "activities": {
       "signedTx": {
@@ -751,7 +726,8 @@
       },
       "riskAlert": {
         "checkboxText": "Tôi hiểu những rủi ro và muốn tiếp tục"
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "SwitchReserveGas": "Dự trữ Gas <1 />",
@@ -916,8 +892,7 @@
         "revokeWithOneKey": "Bắt đầu thu hồi với OneKey",
         "oneKeySended": "Vui lòng ký yêu cầu trên OneKey ({{current}}/{{total}})",
         "oneKeySending": "Đang gửi yêu cầu ký ({{current}}/{{total}})",
-        "oneKeySigned": "Đã ký. Đang tạo giao dịch ({{current}}/{{total}})",
-        "useGasAccount": "Số dư gas của bạn thấp. GasAccount của bạn sẽ chi trả phí gas."
+        "oneKeySigned": "Đã ký. Đang tạo giao dịch ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3292,21 +3267,6 @@
       "unselectAll": "Bỏ chọn tất cả",
       "selectAll": "Chọn tất cả",
       "approvalsCount": "{{count}} phê duyệt"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Hiển thị thêm"
-      },
-      "Select": "Chọn",
-      "pendingItem": {
-        "sendStatus": "Gửi trạng thái",
-        "swapStatus": "Trạng thái hoán đổi"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Token Gas",
-      "gasFee": "Phí gas"
     }
   },
   "component": {
@@ -3427,9 +3387,9 @@
         "filterAll": "Tất cả các chuỗi"
       },
       "noLpTokens": "Không có Token Nhà cung cấp thanh khoản (LP)",
-      "bridge": {
-        "low": "Thanh khoản thấp",
-        "high": "Thanh khoản cao"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

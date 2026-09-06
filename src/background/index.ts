@@ -185,8 +185,14 @@ async function restoreAppState() {
   await sendReadyMessageToTabs();
   subscribeTxCompleted({ preferenceService });
 
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type !== 'getBackgroundReady') return;
+    // Only extension pages (popup/notification/desktop/tab) may learn that
+    // the background is ready; content scripts and external tabs are ignored.
+    if (!sender || sender.id !== chrome.runtime.id) return;
+    if (sender.tab && !sender.url?.startsWith(chrome.runtime.getURL(''))) {
+      return;
+    }
     sendResponse({ data: { ready: true } });
   });
 

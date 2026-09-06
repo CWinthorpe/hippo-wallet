@@ -426,14 +426,6 @@
       "signMessageTag": {
         "contract": "Contract:",
         "eoa": "EOA:"
-      },
-      "gasAccountForGas": "Use USD from my GasAccount to pay for gas",
-      "gasAccount": {
-        "description": "Using GasAccount to pay for gas fees. View payment details below:",
-        "gasCost": "Gas cost for transferring gas to your address: ",
-        "estimatedGas": "Estimated Gas: ",
-        "maxGas": "Max Gas: ",
-        "sendGas": "The Gas transfer to you for current transaction: "
       }
     },
     "signFooterBar": {
@@ -537,12 +529,7 @@
       "cancelConnection": "Cancel connection",
       "cancelCurrentConnection": "Cancel current connection",
       "imKeyNotConnected": "imKey is not connected",
-      "imKeyConnected": "imKey is connected",
-      "gasless": {
-        "customRpcUnavailableTip": "Custom RPCs are not supported for Free Gas",
-        "walletConnectUnavailableTip": "Mobile wallet connected via WalletConnect is not supported for Free Gas",
-        "watchUnavailableTip": "Watch-only address is not supported for Free Gas"
-      }
+      "imKeyConnected": "imKey is connected"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -571,19 +558,7 @@
       "contractCall": {
         "operationDecoded": "Operation is decoded from message"
       },
-      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string",
-      "sellNFT": {
-        "title": "NFT Order",
-        "receiveToken": "Receive token",
-        "listNFT": "List NFT",
-        "specificBuyer": "Specific buyer"
-      },
-      "buyNFT": {
-        "payToken": "Pay token",
-        "receiveNFT": "Receive NFT",
-        "expireTime": "Expire time",
-        "listOn": "List on"
-      }
+      "safeCantSignTypedData": "This is a Safe address, and it only support sign EIP-712 typed data or string"
     },
     "activities": {
       "title": "Signature Record",
@@ -805,7 +780,8 @@
       },
       "riskAlert": {
         "checkboxText": "I understand the risks and want to continue"
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "lending": {
       "__skip_translation": [
@@ -1389,8 +1365,7 @@
         "revokeWithOneKey": "Start revoke with OneKey",
         "oneKeySended": "Please sign the request on OneKey ({{current}}/{{total}})",
         "oneKeySending": "Sending signing request ({{current}}/{{total}})",
-        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})",
-        "useGasAccount": "Your gas balance is low. Your GasAccount will cover the gas fees."
+        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3322,21 +3297,6 @@
         "notMatched": "Not Matched"
       },
       "approvalsCount": "{{count}} approvals"
-    },
-    "bridge": {
-      "Select": "Select",
-      "showMore": {
-        "title": "Show More"
-      },
-      "pendingItem": {
-        "swapStatus": "Swap Status",
-        "sendStatus": "Send Status"
-      }
-    },
-    "gasAccount": {
-      "gasFee": "Gas fee",
-      "title": "GasAccount",
-      "gasToken": "Gas Token"
     }
   },
   "component": {
@@ -3472,9 +3432,9 @@
       "chainFilterLine": {
         "filterAll": "All Chains"
       },
-      "bridge": {
-        "low": "Low liquidity",
-        "high": "High liquidity"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

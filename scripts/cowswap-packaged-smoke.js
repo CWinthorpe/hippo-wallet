@@ -297,6 +297,8 @@ const smokeExpression = () => `
       approvalSpender: decimalPriceQuote.approvalSpender,
       nativeSell: decimalPriceQuote.nativeSell,
       expectedOrderUid: decimalPriceQuote.expectedOrderUid,
+      sellTokenPriceHasFraction: decimalPriceQuote.sellTokenPriceHasFraction,
+      sellTokenPriceSha256: decimalPriceQuote.sellTokenPriceSha256,
     },
     signatureGate,
     nativeQuote: {
@@ -395,8 +397,21 @@ const assertSmokeResult = (result) => {
   ) {
     throw new Error('Decimal-price CoW minimum exceeds quoted output');
   }
-  if (!decimalPriceQuote.expectedOrderUid.includes(PUBLIC_EOA.slice(2))) {
+  if (
+    !decimalPriceQuote.expectedOrderUid.includes(PUBLIC_EOA.slice(2))
+  ) {
     throw new Error('Decimal-price CoW UID does not encode the expected owner');
+  }
+  if (decimalPriceQuote.sellTokenPriceHasFraction !== true) {
+    throw new Error(
+      'Decimal-price CoW raw quote did not carry a fractional sellTokenPrice'
+    );
+  }
+  if (
+    result.decimalPriceSellTokenDigest === 'missing' ||
+    !/^[0-9a-f]{64}$/.test(result.decimalPriceSellTokenDigest || '')
+  ) {
+    throw new Error('Decimal-price raw sellTokenPrice evidence is not bound');
   }
 
   const native = result.nativeQuote;
@@ -454,6 +469,7 @@ const runOnce = async (
   { chromium, extensionDir, headless, keepProfiles },
   runNumber
 ) => {
+  const startedAt = new Date().toISOString();
   const profile = fs.mkdtempSync(
     path.join(os.tmpdir(), `hippo-cowswap-smoke-${runNumber}-`)
   );
@@ -504,11 +520,13 @@ const runOnce = async (
   });
 
   let client;
+  let browserVersion = '';
   try {
-    await waitFor(
+    const version = await waitFor(
       () => fetchJson(`http://127.0.0.1:${port}/json/version`),
       'Chromium DevTools endpoint'
     );
+    browserVersion = String(version?.Browser || '');
     const targets = await waitFor(async () => {
       const list = await fetchJson(`http://127.0.0.1:${port}/json/list`);
       return list.some((target) => target.type === 'service_worker')
@@ -544,8 +562,15 @@ const runOnce = async (
       run: runNumber,
       profile,
       extensionId,
+      browserVersion,
+      startedAt: startedAt,
+      finishedAt: new Date().toISOString(),
       normalOrderUid: result.normalQuote.expectedOrderUid,
       decimalPriceOrderUid: result.decimalPriceQuote.expectedOrderUid,
+      decimalPriceSellTokenFraction:
+        result.decimalPriceQuote.sellTokenPriceHasFraction,
+      decimalPriceSellTokenDigest:
+        result.decimalPriceQuote.sellTokenPriceSha256,
       nativeOrderUid: result.nativeQuote.expectedOrderUid,
       nativeTransactionTarget: result.nativePrepared.transaction.to,
       knownOrderStatus: result.knownStatus.status,
@@ -574,6 +599,40 @@ const runOnce = async (
   }
 };
 
+const sha256File = (file) =>
+  crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+
+const treeSha256 = (dir) => {
+  const walk = (current) => {
+    const out = [];
+    for (const entry of fs
+      .readdirSync(current, { withFileTypes: true })
+      .sort((a, b) => a.name.localeCompare(b.name))) {
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) out.push(...walk(absolute));
+      else
+        out.push({
+          relative: path.relative(dir, absolute),
+          data: fs.readFileSync(absolute),
+        });
+    }
+    return out;
+  };
+  const leaves = walk(dir).map(({ relative, data }) =>
+    Buffer.concat([
+      Buffer.from(relative),
+      Buffer.from([0]),
+      crypto.createHash('sha256').update(data).digest(),
+    ])
+  );
+  return crypto
+    .createHash('sha256')
+    .update(
+      Buffer.concat(leaves.map((item) => Buffer.concat([item, Buffer.from('\n')])))
+    )
+    .digest('hex');
+};
+
 const main = async () => {
   const options = parseArgs();
   if (
@@ -596,6 +655,22 @@ const main = async () => {
   if (!fs.existsSync(manifest)) {
     throw new Error(`Packaged extension manifest not found: ${manifest}`);
   }
+  const artifactPath = process.env.COWSWAP_SMOKE_ARTIFACT;
+  const swPath = path.join(options.extensionDir, 'sw.js');
+  const binding = {
+    extensionDir: options.extensionDir,
+    extensionTreeSha256: treeSha256(options.extensionDir),
+    manifestSha256: sha256File(manifest),
+    serviceWorkerSha256: fs.existsSync(swPath)
+      ? sha256File(swPath)
+      : null,
+    runnerSha256: sha256File(__filename),
+    artifactPath: artifactPath || null,
+    artifactSha256: artifactPath ? sha256File(artifactPath) : null,
+    artifactSize: artifactPath ? fs.statSync(artifactPath).size : null,
+    startedAt: new Date().toISOString(),
+    finishedAt: null,
+  };
   const results = [];
   for (let run = 1; run <= options.runs; run += 1) {
     let lastError;
@@ -612,7 +687,10 @@ const main = async () => {
     }
     if (lastError) throw lastError;
   }
-  console.log(JSON.stringify({ ok: true, runs: results }, null, 2));
+  binding.finishedAt = new Date().toISOString();
+  console.log(
+    JSON.stringify({ ok: true, binding, runs: results }, null, 2)
+  );
 };
 
 main().catch((error) => {

@@ -2173,6 +2173,10 @@ export class WalletController extends BaseController {
     });
   };
   removeConnectedSite = (origin: string) => {
+    // Disconnecting a site is an authority transition: any consent still
+    // pending for this origin (signature, add-chain, watch-asset) must not
+    // survive the revoked connection.
+    notificationService.rejectApprovalsByOrigin(origin);
     sessionService.broadcastEvent('accountsChanged', [], origin);
     permissionService.removeConnectedSite(origin);
   };
@@ -3800,6 +3804,10 @@ export class WalletController extends BaseController {
     if (notificationService.currentApproval) {
       notificationService.rejectAllApprovals();
       notificationService.clear();
+      // Account switch is a session boundary: invalidate the lifecycle epoch
+      // so an in-flight continuation captured before the switch can never
+      // complete a request after it.
+      notificationService.bumpApprovalEpoch();
     }
   };
 
@@ -5539,9 +5547,16 @@ export class WalletController extends BaseController {
 
   resetPassword = async (password: string) => {
     await keyringService.resetPassword(password);
-    // Not LOCK_WALLET: that event also drives `useAutoLock`, which would
-    // redirect the Forgot Password page to /unlock before it can render its
-    // next step. Other pages still re-gate off the refreshed status.
+    // Reset is a session boundary for pending consent: reject every queued
+    // approval and invalidate the approval lifecycle epoch. This is the same
+    // boundary treatment as lock, but without emitting LOCK_WALLET — that
+    // event also drives `useAutoLock`, which would redirect the Forgot
+    // Password page to /unlock before it can render its next step. Other
+    // pages still re-gate off the refreshed status.
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+    notificationService.bumpApprovalEpoch();
+    await remoteDataPolicyService.lock();
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.WALLET_STATUS_CHANGED,
     });
@@ -5549,6 +5564,12 @@ export class WalletController extends BaseController {
 
   resetBooted = async () => {
     await keyringService.resetBooted();
+    // booted is cleared without locking; pending consent must still not
+    // survive the re-onboarding boundary.
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+    notificationService.bumpApprovalEpoch();
+    await remoteDataPolicyService.lock();
     // This clears `booted` without locking, so the correct destination for
     // other open pages is /welcome -- which PrivateRoute resolves once the
     // status refreshes, unlike LOCK_WALLET's hardcoded /unlock.

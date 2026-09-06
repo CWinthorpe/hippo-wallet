@@ -1144,8 +1144,7 @@
         "revokeWithOneKey": "開始使用 OneKey 撤銷",
         "oneKeySended": "請在 OneKey 上簽署請求 ({{current}}/{{total}})",
         "oneKeySending": "正在發送簽名請求（{{current}}/{{total}}）",
-        "oneKeySigned": "已簽名，正在建立交易（{{current}}/{{total}}）",
-        "useGasAccount": "你的 Gas 結餘不足。你的 GasAccount 將支付 Gas 費用。"
+        "oneKeySigned": "已簽名，正在建立交易（{{current}}/{{total}}）"
       }
     },
     "connect": {
@@ -1407,7 +1406,8 @@
       },
       "riskAlert": {
         "checkboxText": "我明白風險並希望繼續"
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於支付 Gas 費用",
@@ -1514,12 +1514,7 @@
       "blockDappFromSendingRequests": "阻止 Dapp 在 1 分鐘內發送請求",
       "cancelConnection": "取消連接",
       "cancelCurrentConnection": "取消目前連接",
-      "iGotIt": "我明白了",
-      "gasless": {
-        "customRpcUnavailableTip": "自訂 RPC 不支援 Free Gas",
-        "walletConnectUnavailableTip": "透過 WalletConnect 連接的手機錢包不支援 Free Gas",
-        "watchUnavailableTip": "僅觀察地址不支援 Free Gas"
-      }
+      "iGotIt": "我明白了"
     },
     "signText": {
       "createKey": {
@@ -1862,15 +1857,7 @@
       "signMessageTag": {
         "contract": "合約：",
         "eoa": "EOA："
-      },
-      "gasAccount": {
-        "estimatedGas": "預估 Gas：",
-        "sendGas": "本次交易轉入你地址的 Gas：",
-        "maxGas": "最大 Gas：",
-        "gasCost": "將 Gas 轉入你地址所需的 Gas 費用：",
-        "description": "使用 GasAccount 支付 Gas 費用。付款詳情如下："
-      },
-      "gasAccountForGas": "使用我的 GasAccount 中的 USD 支付 Gas 費用"
+      }
     },
     "signTypedData": {
       "contractCall": {
@@ -1899,19 +1886,7 @@
       "verifyAddress": {
         "title": "驗證地址"
       },
-      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型化資料或字串。",
-      "buyNFT": {
-        "expireTime": "過期時間",
-        "listOn": "掛單於",
-        "payToken": "賣出",
-        "receiveNFT": "接收 NFT"
-      },
-      "sellNFT": {
-        "listNFT": "掛出 NFT",
-        "receiveToken": "接收代幣",
-        "specificBuyer": "指定買家",
-        "title": "NFT 掛單"
-      }
+      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型化資料或字串。"
     },
     "swap": {
       "Completed": "已完成",
@@ -3342,21 +3317,6 @@
       "unselectAll": "取消全選",
       "selectAll": "全選",
       "approvalsCount": "{{count}} 項授權"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "顯示更多"
-      },
-      "Select": "選擇",
-      "pendingItem": {
-        "sendStatus": "發送狀態",
-        "swapStatus": "兌換狀態"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Gas 代幣",
-      "gasFee": "Gas 費用"
     }
   },
   "component": {
@@ -3477,9 +3437,9 @@
         "filterAll": "所有鏈"
       },
       "noLpTokens": "無流動性提供者（LP）代幣",
-      "bridge": {
-        "high": "高流動性",
-        "low": "低流動性"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

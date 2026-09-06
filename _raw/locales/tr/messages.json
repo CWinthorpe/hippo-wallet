@@ -372,15 +372,7 @@
       "signMessageTag": {
         "contract": "Sözleşme:",
         "eoa": "EOA:"
-      },
-      "gasAccount": {
-        "sendGas": "Mevcut işlem için size aktarılan gas:",
-        "estimatedGas": "Tahmini gas:",
-        "maxGas": "Maksimum Gaz:",
-        "gasCost": "Adresinize gas aktarımı için gas maliyeti:",
-        "description": "GasAccount kullanarak gaz ücretlerini ödemek. Aşağıdaki ödeme detaylarını görüntüleyin:"
-      },
-      "gasAccountForGas": "Gas ödemesi yapmak için GasAccount'ımdaki USD'yi kullan"
+      }
     },
     "signFooterBar": {
       "requestFrom": "Talep eden",
@@ -483,12 +475,7 @@
       "imKeyNotConnected": "imKey bağlantısı yok",
       "imKeyConnected": "imKey bağlı",
       "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle",
-      "iGotIt": "Anladım",
-      "gasless": {
-        "watchUnavailableTip": "Sadece izleme adresi Free Gas için desteklenmez.",
-        "customRpcUnavailableTip": "Özel RPC'ler Free Gas için desteklenmemektedir.",
-        "walletConnectUnavailableTip": "WalletConnect ile bağlanan mobil cüzdanlar Free Gas için desteklenmez."
-      }
+      "iGotIt": "Anladım"
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}} Yazılmış Veriyi İmzala",
@@ -517,19 +504,7 @@
       "contractCall": {
         "operationDecoded": "İşlem mesajdan çözüldü"
       },
-      "safeCantSignTypedData": "Bu bir Safe adresidir ve yalnızca EIP-712 tipinde verileri veya stringleri imzalamayı destekler.",
-      "sellNFT": {
-        "title": "NFT Emri",
-        "receiveToken": "Tokeni al",
-        "listNFT": "NFT Listele",
-        "specificBuyer": "Belirli alıcı"
-      },
-      "buyNFT": {
-        "payToken": "Token öde",
-        "receiveNFT": "NFT al",
-        "expireTime": "Son geçerlilik süresi",
-        "listOn": "Listele"
-      }
+      "safeCantSignTypedData": "Bu bir Safe adresidir ve yalnızca EIP-712 tipinde verileri veya stringleri imzalamayı destekler."
     },
     "activities": {
       "title": "İmza Kaydı",
@@ -751,7 +726,8 @@
       },
       "riskAlert": {
         "checkboxText": "Riskleri anlıyorum ve devam etmek istiyorum."
-      }
+      },
+      "chainPlaceholder": "Select"
     },
     "sendTokenComponents": {
       "GasReserved": "Gas maliyeti için <1>0</1> {{ tokenName }} ayrıldı",
@@ -916,8 +892,7 @@
         "revokeWithOneKey": "OneKey ile iptal işlemini başlat",
         "oneKeySended": "Lütfen OneKey üzerinde isteği imzalayın ({{current}}/{{total}})",
         "oneKeySending": "İmzalama isteği gönderiliyor ({{current}}/{{total}})",
-        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})",
-        "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır."
+        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})"
       }
     },
     "swap": {
@@ -3298,21 +3273,6 @@
       "unselectAll": "Tüm Seçimleri Kaldır",
       "selectAll": "Tümünü Seç",
       "approvalsCount": "{{count}} onay"
-    },
-    "bridge": {
-      "showMore": {
-        "title": "Daha Fazla Göster"
-      },
-      "Select": "Seç",
-      "pendingItem": {
-        "swapStatus": "Takasta Değiştir",
-        "sendStatus": "Gönderim Durumu"
-      }
-    },
-    "gasAccount": {
-      "title": "GasAccount",
-      "gasToken": "Gaz Token",
-      "gasFee": "Gas ücreti"
     }
   },
   "component": {
@@ -3433,9 +3393,9 @@
         "filterAll": "Tüm Zincirler"
       },
       "noLpTokens": "LP Token Yok",
-      "bridge": {
-        "high": "Yüksek likidite",
-        "low": "Düşük likidite"
+      "liquidity": {
+        "high": "High liquidity",
+        "low": "Low liquidity"
       }
     },
     "ModalPreviewNFTItem": {

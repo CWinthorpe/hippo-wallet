@@ -840,7 +840,7 @@ export const SignMainnetGasSelectorHeader = ({
         {onSignTx ? (
           summaryNodeOnSignTx
         ) : (
-          <span>{t('page.gasAccount.gasFee')}</span>
+          <span>{t('page.manageBatchApprovals.cols.gasFee')}</span>
         )}
         {gasAccountInfoTooltip}
       </span>
