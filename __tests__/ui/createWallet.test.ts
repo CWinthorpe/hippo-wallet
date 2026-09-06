@@ -37,7 +37,10 @@ describe('createWallet', () => {
     });
 
     const controllerRequest = wallet.isUnlocked();
-    const openapiRequest = wallet.openapi.getSupportedDEXList();
+    // getChainList is a retained allowlisted method; the previous probe used
+    // getSupportedDEXList, a swap-support endpoint with zero src/ usage that
+    // the B4 deny-by-default allowlist correctly rejects.
+    const openapiRequest = wallet.openapi.getChainList();
 
     expect(channel.connectedName).toBe('popup');
     expect(channel.requests).toEqual([]);
@@ -46,10 +49,10 @@ describe('createWallet', () => {
     await ready;
 
     await expect(controllerRequest).resolves.toBe('controller:isUnlocked');
-    await expect(openapiRequest).resolves.toBe('openapi:getSupportedDEXList');
+    await expect(openapiRequest).resolves.toBe('openapi:getChainList');
     expect(channel.requests.map(({ method }) => method)).toEqual([
       'isUnlocked',
-      'getSupportedDEXList',
+      'getChainList',
     ]);
   });
 
