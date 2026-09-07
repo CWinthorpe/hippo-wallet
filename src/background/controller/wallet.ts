@@ -3351,9 +3351,20 @@ export class WalletController extends BaseController {
   showAddress = (type: string, address: string) =>
     preferenceService.showAddress(type, address);
   hideAddress = (type: string, address: string, brandName: string) => {
-    preferenceService.hideAddress(type, address, brandName);
+    // Hiding the active account is an account switch: revoke pending and
+    // already-resolved-but-unexecuted consent SYNCHRONOUSLY, BEFORE the
+    // preference write flips the current account, so a stale continuation
+    // can never sign against the new implicit selection.
     const current = preferenceService.getCurrentAccount();
-    if (current?.address === address && current.type === type) {
+    const hidesCurrent =
+      !!current && current.address === address && current.type === type;
+    if (hidesCurrent) {
+      notificationService.rejectAllApprovals();
+      notificationService.clear();
+      notificationService.bumpApprovalEpoch();
+    }
+    preferenceService.hideAddress(type, address, brandName);
+    if (hidesCurrent) {
       this.resetCurrentAccount();
     }
   };
@@ -3397,12 +3408,48 @@ export class WalletController extends BaseController {
     return keyringService.hasAddress(address);
   };
 
+  /**
+   * Approval-authority revocation for account-removal boundaries. Runs with
+   * NO intervening await: when the addressed account is the current account
+   * or is bound to any connected site, every pending approval is rejected,
+   * the queue is cleared, and the global lifecycle epoch is bumped so a
+   * resolved-but-unexecuted rpcFlow continuation fails its sink-adjacent
+   * recheck (rpcFlow.assertSignContextStillValid) instead of signing for a
+   * boundary-crossed account.
+   */
+  private revokeApprovalAuthorityIfAccountAffected = (
+    address: string,
+    type: string,
+    brand?: string
+  ): boolean => {
+    const target = { address, type, brandName: brand || type };
+    const current = preferenceService.getCurrentAccount();
+    const affectsCurrent = !!current && isSameAccount(current, target);
+    const affectsSite = permissionService
+      .getSites()
+      .some((site) => site.account && isSameAccount(site.account, target));
+    if (!affectsCurrent && !affectsSite) {
+      return false;
+    }
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+    notificationService.bumpApprovalEpoch();
+    return true;
+  };
+
   removeAddress = async (
     address: string,
     type: string,
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    // Account removal is a session boundary. Revoke approval authority
+    // SYNCHRONOUSLY, before the first await (the WalletConnect teardown),
+    // whenever this address is the current account or a site-bound account:
+    // a continuation whose approval already resolved must never reach its
+    // signing sink while the account it was authorized for is being removed.
+    this.revokeApprovalAuthorityIfAccountAffected(address, type, brand);
+
     await this.killWalletConnectConnector(address, brand || type, true, true);
 
     if (removeEmptyKeyrings) {
@@ -3474,11 +3521,23 @@ export class WalletController extends BaseController {
   };
 
   resetCurrentAccount = async () => {
+    const previous = preferenceService.getCurrentAccount();
     const [account] = await this.getAccounts();
-    if (account) {
-      preferenceService.setCurrentAccount(account);
-    } else {
-      preferenceService.setCurrentAccount(null);
+    const next: Account | null = account ?? null;
+    const switched = !(
+      previous?.address === next?.address &&
+      previous?.type === next?.type &&
+      previous?.brandName === next?.brandName
+    );
+    preferenceService.setCurrentAccount(next);
+    if (switched) {
+      // Implicit re-selection IS an account switch. Revoke in the same
+      // synchronous turn as the write — no await between the write and the
+      // revocation — so a resolved-but-unexecuted continuation can never
+      // sign against the replaced account.
+      notificationService.rejectAllApprovals();
+      notificationService.clear();
+      notificationService.bumpApprovalEpoch();
     }
   };
 

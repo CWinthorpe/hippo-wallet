@@ -150,6 +150,11 @@ const forbiddenMarkers = [
   '-----BEGIN RSA PRIVATE KEY-----',
   '-----BEGIN OPENSSH PRIVATE KEY-----',
   'sourceMappingURL=data:application/json;base64,ey',
+  // Bare retired endpoint tokens (gpt56 round-5 blocker 2): Hippo-neutralized
+  // client surfaces must not ship even the bare path token. The path is
+  // denied fail-closed as an UNCLASSIFIED remote request, so the deny-regex
+  // no longer carries this literal.
+  'history_tx_used_gas',
 ];
 
 // Collection errors must not carry marker values either: reads are wrapped

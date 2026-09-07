@@ -21,6 +21,40 @@ import {
   openapiMethodRejectedError,
   dispatchRetainedNamespaceCall,
 } from '@/background/service/openapiMethodAllowlist';
+import { REMOVED_ENDPOINT_PATTERNS } from '@/background/service/removedEndpointPatterns';
+import { classifyRemoteDataEndpoint } from '@/background/service/remoteDataPolicy';
+
+/**
+ * Parse the installed rabby-api client: map every `this.<method> = ...`
+ * assignment to the endpoint literals requested inside that assignment's
+ * segment (up to the next assignment). Template-literal prefixes (`${...}`
+ * host/restful segments) normalize to `v1` so /v\d+/ patterns match.
+ */
+const parseClientEndpoints = (clientSource: string): Map<string, string[]> => {
+  const lines = clientSource.split('\n');
+  const assignments: Array<[number, string]> = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/this\.([A-Za-z0-9_$]+) = /);
+    if (m) assignments.push([i, m[1]]);
+  }
+  const map = new Map<string, string[]>();
+  for (let k = 0; k < assignments.length; k++) {
+    const [start, name] = assignments[k];
+    const end =
+      k + 1 < assignments.length ? assignments[k + 1][0] : lines.length;
+    const segment = lines.slice(start, end).join('\n');
+    const endpoints: string[] = [];
+    const re =
+      /request\.(?:get|post|put|delete)\(\s*(?:'([^']+)'|"([^"]+)"|`([^`]+)`)/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(segment))) {
+      const raw = m[1] || m[2] || m[3] || '';
+      endpoints.push(raw.replace(/\$\{[^}]+\}/g, 'v1'));
+    }
+    if (endpoints.length && !map.has(name)) map.set(name, endpoints);
+  }
+  return map;
+};
 
 describe('openapi dispatch allowlist rejects the retired relayer (B4)', () => {
   const RETIRED = ['withdrawTx', 'retryPushTx', 'quickCancelTx'];
@@ -133,12 +167,61 @@ describe('openapi dispatch allowlist rejects the retired relayer (B4)', () => {
   test('the retired history-gas endpoint is absent from the UI surface and client', () => {
     const client = read('node_modules/@rabby-wallet/rabby-api/dist/index.js');
     expect(RETAINED_OPENAPI_METHODS.has('historyGasUsed')).toBe(false);
-    expect(client).not.toContain('/v1/wallet/history_tx_used_gas');
+    // BARE path tokens must not appear anywhere either: the packaged
+    // runtime is scanned for these literals and a policy-regex copy would
+    // ship them into background.js (weaker artifact-level removal proof).
+    expect(client).not.toContain('history_tx_used_gas');
     expect(client).toContain('Historical gas endpoint is removed from Hippo Wallet');
     const signatureSteps = read(
       'src/ui/component/MiniSignV2/services/SignatureSteps.ts'
     );
     expect(signatureSteps).not.toMatch(/openapi\.historyGasUsed/);
+    // Deny-regex/token-list modules carry zero history-gas literals; the
+    // path stays fail-closed as UNCLASSIFIED (assertRequestAllowed denies
+    // anything not capability-classified).
+    const policy = read('src/background/service/remoteDataPolicy.ts');
+    const patterns = read('src/background/service/removedEndpointPatterns.ts');
+    expect(`${policy}\n${patterns}`).not.toContain('history_tx_used_gas');
+    expect(
+      classifyRemoteDataEndpoint('https://api.rabby.io/v1/wallet/history_tx_used_gas')
+    ).toBeNull();
+    expect(REMOVED_ENDPOINT_PATTERNS.length).toBeGreaterThan(10);
+  });
+
+  test('no RETAINED allowlist method maps onto any removed endpoint', () => {
+    // Mechanical completeness (gpt56 round-5 R4-B2 closure): parse every
+    // `this.<name> =` assignment in the installed client up to the next
+    // assignment and collect the endpoint literals it requests; no retained
+    // method may resolve to a REMOVED_ENDPOINT_PATTERNS path. Only the two
+    // host-management methods may have no endpoint at all.
+    const client = read('node_modules/@rabby-wallet/rabby-api/dist/index.js');
+    const endpoints = parseClientEndpoints(client);
+    const LOCAL_ONLY_METHODS = new Set(['getHost', 'setHost']);
+    const offenders: string[] = [];
+    const unmapped: string[] = [];
+    for (const method of RETAINED_OPENAPI_METHODS) {
+      const eps = endpoints.get(method);
+      if (!eps) {
+        if (!LOCAL_ONLY_METHODS.has(method)) unmapped.push(method);
+        continue;
+      }
+      for (const ep of eps) {
+        if (REMOVED_ENDPOINT_PATTERNS.some((pattern) => pattern.test(ep))) {
+          offenders.push(`${method} -> ${ep}`);
+        }
+      }
+    }
+    expect(unmapped).toEqual([]);
+    expect(offenders).toEqual([]);
+    // The parser must actually see retired constructors removed from the
+    // patched client, or the mapping test above is vacuous.
+    expect(endpoints.has('withdrawTx')).toBe(false);
+    expect(endpoints.has('retryPushTx')).toBe(false);
+    expect(endpoints.has('historyGasUsed')).toBe(false);
+    // Positive control: a retained read path IS mapped and clean.
+    expect(endpoints.get('getTxRequests')).toEqual([
+      '/v1/wallet/get_tx_requests',
+    ]);
   });
 
   test('the installed rabby-api client carries zero retired endpoint strings and fails closed', () => {
@@ -147,6 +230,10 @@ describe('openapi dispatch allowlist rejects the retired relayer (B4)', () => {
     expect(client).not.toContain('/v1/wallet/withdraw_tx');
     expect(client).not.toContain('/v1/wallet/transaction/retry_push_tx');
     expect(client).not.toContain('/v1/wallet/retry_push_tx');
+    // Bare path tokens too — the packaged runtime is scanned for these.
+    expect(client).not.toContain('withdraw_tx');
+    expect(client).not.toContain('retry_push_tx');
+    expect(client).not.toContain('history_tx_used_gas');
     // The neutralization must be reproduced on every install: the
     // patch-package file exists and covers the client.
     const patchPath = 'patches/@rabby-wallet+rabby-api+0.9.65.patch';

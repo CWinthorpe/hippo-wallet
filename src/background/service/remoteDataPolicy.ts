@@ -7,6 +7,9 @@ import {
   RemoteDataCapabilityState,
   RemoteDataPolicy,
 } from '@/types/remoteDataPolicy';
+import { REMOVED_ENDPOINT_PATTERNS } from './removedEndpointPatterns';
+
+export { REMOVED_ENDPOINT_PATTERNS };
 
 export {
   EMPTY_REMOTE_DATA_CAPABILITIES,
@@ -33,26 +36,6 @@ const REMOTE_DATA_BLOCK_RULE_ID = 910001;
 const REMOTE_MEDIA_BLOCK_RULE_ID = 910002;
 const REMOTE_PROVIDER_REGEX =
   '^https?://([^/]+\\.)?(rabby\\.io|debank\\.com)(/|$)';
-
-const REMOVED_ENDPOINT_PATTERNS = [
-  /^\/v\d+\/points(?:\/|$)/,
-  /^\/v\d+\/badge(?:\/|$)/,
-  /^\/v\d+\/(?:wallet\/)?gas_account(?:\/|$)/,
-  /^\/v\d+\/(?:wallet\/)?gas_station(?:\/|$)/,
-  /^\/v\d+\/bridge(?:\/|$)/,
-  /^\/v\d+\/user\/dbk\/bridge_/,
-  /^\/v\d+\/staking(?:\/|$)/,
-  /^\/v\d+\/faucet(?:\/|$)/,
-  /^\/v\d+\/wallet\/(?:tx_is_gasless|txs_is_gasless|submit_tx|push_tx|retry_push_tx|withdraw_tx|supported_push_type)(?:\/|$)/,
-  /^\/v\d+\/wallet\/(?:gas_market|gas_price_stats|history_tx_used_gas|estimate_gas)(?:\/|$)/,
-  /^\/v\d+\/wallet\/(?:swap_quote|swap_dex_list|supported_dex_list|swap_trade|swap_trade_list|check_slippage|suggest_slippage)(?:\/|$)/,
-  /^\/v\d+\/nft\/(?:trading_config|order|fee)(?:\/|$)/,
-  /^\/v\d+\/token\/hyperliquid_/,
-  /^\/v\d+\/user\/has_hyperliquid_permission$/,
-  /^\/v\d+\/engine\/action\/log$/,
-  /^\/v\d+\/chainrpc$/,
-  /^\/v\d+\/wallet\/eth_rpc$/,
-] as const;
 
 const ENDPOINT_CAPABILITY_RULES: ReadonlyArray<{
   pattern: RegExp;
