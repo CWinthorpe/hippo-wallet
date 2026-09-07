@@ -91015,6 +91015,7 @@
     "enable": true,
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/background/service/removedEndpointPatterns.ts",
       "src/types/remoteDataPolicy.ts"
     ]
   },
