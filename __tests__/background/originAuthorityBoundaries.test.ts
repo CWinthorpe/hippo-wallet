@@ -37,20 +37,36 @@ describe('B1 origin-authority transition wiring', () => {
     expect(body).toContain('bumpOriginApprovalEpoch(origin)');
   });
 
-  test('wallet lock, account switch, reset, and re-onboarding bump the global epoch unconditionally', () => {
+  test('wallet lock and account switch use the global account/session boundaries', () => {
     const changeAccount = fieldBody(
       walletSrc,
       'changeAccount',
       '\n  authorizeLedgerHIDPermission'
     );
-    // No conditional: the epoch must bump even when no approval is current,
-    // because a resolved-but-unexecuted request is the target.
-    expect(changeAccount).toContain('bumpApprovalEpoch()');
+    expect(changeAccount).toContain('setCurrentAccountWithBoundary(account)');
     expect(changeAccount).not.toMatch(
       /if \(notificationService\.currentApproval\)/
     );
     const lock = fieldBody(walletSrc, 'lockWallet', '\n  setAutoLockTime');
     expect(lock).toContain('bumpApprovalEpoch()');
+    const boundarySrc = read('src/background/service/sessionBoundary.ts');
+    expect(boundarySrc).toContain('notificationService.bumpApprovalEpoch()');
+  });
+
+  test('background identity writes are centralized through the session boundary primitive', () => {
+    const sources = [
+      walletSrc,
+      read('src/background/controller/base.ts'),
+      read('src/background/controller/provider/controller.ts'),
+      read('src/background/controller/provider/internalMethod.ts'),
+      read('src/background/controller/provider/rpcFlow.ts'),
+    ];
+    for (const source of sources) {
+      expect(source).not.toContain('preferenceService.setCurrentAccount(');
+    }
+    expect(read('src/background/service/sessionBoundary.ts')).toContain(
+      'preferenceService.setCurrentAccount(account)'
+    );
   });
 
   test('disconnect bumps the origin epoch', () => {

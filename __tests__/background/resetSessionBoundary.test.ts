@@ -22,13 +22,32 @@ jest.mock('@/background/service/remoteDataPolicy', () => ({
   },
 }));
 
+jest.mock('@/background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getCurrentAccount: jest.fn(() => null),
+    setCurrentAccount: jest.fn(),
+  },
+}));
+
+jest.mock('@/background/service/permission', () => ({
+  __esModule: true,
+  default: {
+    getSites: jest.fn(() => []),
+  },
+}));
+
 import fs from 'fs';
 import path from 'path';
 import notificationService from '@/background/service/notification';
+import permissionService from '@/background/service/permission';
+import preferenceService from '@/background/service/preference';
 import remoteDataPolicyService from '@/background/service/remoteDataPolicy';
 import {
+  revokeAccountBoundaryIfAffected,
   revokeSessionBoundaryConsent,
   runWithSessionBoundary,
+  setCurrentAccountWithBoundary,
 } from '@/background/service/sessionBoundary';
 
 const stripComments = (text: string) =>
@@ -51,6 +70,78 @@ describe('reset session boundary ordering', () => {
     trace.length = 0;
     resolveBoundary = () => undefined;
     jest.clearAllMocks();
+  });
+
+  test('central account setter revokes before writing a changed identity', () => {
+    const accountA = {
+      address: '0xAa',
+      type: 'QR Hardware Wallet Device',
+      brandName: 'Keystone',
+    };
+    const accountB = {
+      address: '0xBb',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(accountA);
+
+    setCurrentAccountWithBoundary(accountB);
+
+    expect(trace).toEqual(['reject', 'clear', 'epoch']);
+    expect(preferenceService.setCurrentAccount).toHaveBeenCalledWith(accountB);
+  });
+
+  test('central account setter does not create a boundary for an identical identity', () => {
+    const account = {
+      address: '0xAa',
+      type: 'QR Hardware Wallet Device',
+      brandName: 'Keystone',
+    };
+    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(account);
+
+    setCurrentAccountWithBoundary({ ...account, address: '0xaa' });
+
+    expect(trace).toEqual([]);
+    expect(preferenceService.setCurrentAccount).toHaveBeenCalledWith({
+      ...account,
+      address: '0xaa',
+    });
+  });
+
+  test('brandless QR removal revokes a site-bound account before a sink continuation', async () => {
+    let epoch = 0;
+    (notificationService.bumpApprovalEpoch as jest.Mock).mockImplementation(
+      () => {
+        epoch += 1;
+        trace.push('epoch');
+      }
+    );
+    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(null);
+    (permissionService.getSites as jest.Mock).mockReturnValue([
+      {
+        account: {
+          address: '0xAa',
+          type: 'QR Hardware Wallet Device',
+          brandName: 'Keystone',
+        },
+      },
+    ]);
+
+    const capturedEpoch = epoch;
+    const affected = revokeAccountBoundaryIfAffected(
+      '0xaa',
+      'QR Hardware Wallet Device'
+    );
+    let sinkRan = false;
+    queueMicrotask(() => {
+      if (epoch === capturedEpoch) sinkRan = true;
+    });
+    await Promise.resolve();
+
+    expect(affected).toBe(true);
+    expect(trace).toEqual(['reject', 'clear', 'epoch']);
+    expect(epoch).toBe(capturedEpoch + 1);
+    expect(sinkRan).toBe(false);
   });
 
   test('revokes approval and remote authority while keyring reset is stalled', async () => {
@@ -176,7 +267,7 @@ describe('reset session boundary ordering', () => {
         'utf8'
       );
 
-    test('removeAddress revokes synchronously before its first await', () => {
+    test('the removal method delegates to the central await-free boundary primitive before its first await', () => {
       const source = stripComments(readController());
       const body = source.slice(
         source.indexOf('removeAddress = async ('),
@@ -188,54 +279,71 @@ describe('reset session boundary ordering', () => {
       const firstAwait = body.indexOf('await ');
       expect(revokeAt).toBeGreaterThanOrEqual(0);
       expect(firstAwait).toBeGreaterThan(revokeAt);
+      expect(source).toContain(
+        'revokeAccountBoundaryIfAffected(address, type, brand)'
+      );
     });
 
-    test('the removal revocation helper is await-free and bumps the global epoch', () => {
-      const source = readController();
+    test('the central removal primitive is await-free, brand-aware, and covers current plus site accounts', () => {
+      const source = stripComments(
+        fs.readFileSync(
+          path.join(process.cwd(), 'src/background/service/sessionBoundary.ts'),
+          'utf8'
+        )
+      );
       const helper = source.slice(
-        source.indexOf(
-          'private revokeApprovalAuthorityIfAccountAffected'
-        ),
-        source.indexOf('removeAddress = async (')
+        source.indexOf('export const revokeAccountBoundaryIfAffected'),
+        source.indexOf('export const revokeSessionBoundaryConsent')
       );
       expect(helper).not.toMatch(/\bawait\b/);
       expect(helper).toContain('notificationService.rejectAllApprovals()');
       expect(helper).toContain('notificationService.clear()');
       expect(helper).toContain('notificationService.bumpApprovalEpoch()');
-      // Covers BOTH the current account and site-bound accounts.
       expect(helper).toContain('getCurrentAccount()');
       expect(helper).toContain('getSites()');
+      expect(source).toContain(
+        '(brand === undefined || account.brandName === brand)'
+      );
     });
 
-    test('hideAddress revokes BEFORE the preference mutation, in one synchronous turn', () => {
+    test('hideAddress delegates revocation BEFORE the preference mutation', () => {
       const source = stripComments(readController());
       const body = source.slice(
         source.indexOf('hideAddress = (type: string'),
         source.indexOf('clearWatchMode =')
       );
-      const revokeAt = body.indexOf('notificationService.bumpApprovalEpoch()');
+      const revokeAt = body.indexOf('revokeAccountBoundaryIfAffected(');
       const writeAt = body.indexOf('preferenceService.hideAddress(');
       expect(revokeAt).toBeGreaterThanOrEqual(0);
       expect(writeAt).toBeGreaterThan(revokeAt);
       expect(body).not.toMatch(/\bawait\b/);
     });
 
-    test('resetCurrentAccount revokes in the same synchronous turn as the account write', () => {
+    test('resetCurrentAccount delegates the identity write to the central boundary primitive', () => {
       const source = stripComments(readController());
       const body = source.slice(
         source.indexOf('resetCurrentAccount = async () => {'),
         source.indexOf('getKeyringByMnemonic = ')
       );
-      const writeAt = body.indexOf('preferenceService.setCurrentAccount(next)');
-      const revokeAt = body.indexOf('notificationService.bumpApprovalEpoch()');
-      expect(writeAt).toBeGreaterThanOrEqual(0);
-      expect(revokeAt).toBeGreaterThan(writeAt);
-      // No await between the write and the revocation.
-      const between = body.slice(writeAt, revokeAt);
-      expect(between).not.toMatch(/\bawait\b/);
-      expect(body).toContain('const switched');
+      expect(body).toContain('setCurrentAccountWithBoundary(account ?? null)');
+      expect(body).not.toContain('preferenceService.setCurrentAccount(');
     });
 
+    test('account-removal matching treats an omitted QR brand as address+type identity', () => {
+      const source = stripComments(
+        fs.readFileSync(
+          path.join(process.cwd(), 'src/background/service/sessionBoundary.ts'),
+          'utf8'
+        )
+      );
+      expect(source).toContain(
+        '(brand === undefined || account.brandName === brand)'
+      );
+      expect(source).toContain(
+        'account.address.toLowerCase() === address.toLowerCase()'
+      );
+      expect(source).toContain('account.type === type');
+    });
     test('clearWatchMode routes through the boundary (removeAddress)', () => {
       const source = readController();
       const body = source.slice(

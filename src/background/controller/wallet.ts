@@ -104,11 +104,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats, { EventParams } from '@/stats';
-import {
-  generateAliasName,
-  isFullVersionAccountType,
-  isSameAccount,
-} from '@/utils/account';
+import { generateAliasName, isFullVersionAccountType } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -172,7 +168,11 @@ import {
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { runWithSessionBoundary } from 'background/service/sessionBoundary';
+import {
+  revokeAccountBoundaryIfAffected,
+  runWithSessionBoundary,
+  setCurrentAccountWithBoundary,
+} from 'background/service/sessionBoundary';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
@@ -3280,7 +3280,7 @@ export class WalletController extends BaseController {
     const lastAccount = accounts[accounts.length - 1];
 
     if (lastAccount) {
-      preferenceService.setCurrentAccount(lastAccount);
+      setCurrentAccountWithBoundary(lastAccount);
     }
 
     return {
@@ -3351,20 +3351,16 @@ export class WalletController extends BaseController {
   showAddress = (type: string, address: string) =>
     preferenceService.showAddress(type, address);
   hideAddress = (type: string, address: string, brandName: string) => {
-    // Hiding the active account is an account switch: revoke pending and
-    // already-resolved-but-unexecuted consent SYNCHRONOUSLY, BEFORE the
-    // preference write flips the current account, so a stale continuation
-    // can never sign against the new implicit selection.
-    const current = preferenceService.getCurrentAccount();
-    const hidesCurrent =
-      !!current && current.address === address && current.type === type;
-    if (hidesCurrent) {
-      notificationService.rejectAllApprovals();
-      notificationService.clear();
-      notificationService.bumpApprovalEpoch();
-    }
+    // Hiding an active or site-bound account is an authority transition:
+    // revoke pending and already-resolved-but-unexecuted consent through the
+    // same boundary primitive used by account removal, before persistence.
+    const affectsAuthority = revokeAccountBoundaryIfAffected(
+      address,
+      type,
+      brandName
+    );
     preferenceService.hideAddress(type, address, brandName);
-    if (hidesCurrent) {
+    if (affectsAuthority) {
       this.resetCurrentAccount();
     }
   };
@@ -3421,21 +3417,7 @@ export class WalletController extends BaseController {
     address: string,
     type: string,
     brand?: string
-  ): boolean => {
-    const target = { address, type, brandName: brand || type };
-    const current = preferenceService.getCurrentAccount();
-    const affectsCurrent = !!current && isSameAccount(current, target);
-    const affectsSite = permissionService
-      .getSites()
-      .some((site) => site.account && isSameAccount(site.account, target));
-    if (!affectsCurrent && !affectsSite) {
-      return false;
-    }
-    notificationService.rejectAllApprovals();
-    notificationService.clear();
-    notificationService.bumpApprovalEpoch();
-    return true;
-  };
+  ): boolean => revokeAccountBoundaryIfAffected(address, type, brand);
 
   removeAddress = async (
     address: string,
@@ -3477,18 +3459,21 @@ export class WalletController extends BaseController {
       this.forceExpireInMemoryAddressBalance(address);
     }
     const current = preferenceService.getCurrentAccount();
-    if (
-      current?.address === address &&
+    const currentIsRemoved =
+      !!current &&
+      current.address.toLowerCase() === address.toLowerCase() &&
       current.type === type &&
-      current.brandName === brand
-    ) {
+      (brand === undefined || current.brandName === brand);
+    if (currentIsRemoved) {
       await this.resetCurrentAccount();
     }
     const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (
         item.account &&
-        isSameAccount(item.account, { address, type, brandName: brand || type })
+        item.account.address.toLowerCase() === address.toLowerCase() &&
+        item.account.type === type &&
+        (brand === undefined || item.account.brandName === brand)
       ) {
         this.setSiteAccount({
           origin: item.origin,
@@ -3521,24 +3506,8 @@ export class WalletController extends BaseController {
   };
 
   resetCurrentAccount = async () => {
-    const previous = preferenceService.getCurrentAccount();
     const [account] = await this.getAccounts();
-    const next: Account | null = account ?? null;
-    const switched = !(
-      previous?.address === next?.address &&
-      previous?.type === next?.type &&
-      previous?.brandName === next?.brandName
-    );
-    preferenceService.setCurrentAccount(next);
-    if (switched) {
-      // Implicit re-selection IS an account switch. Revoke in the same
-      // synchronous turn as the write — no await between the write and the
-      // revocation — so a resolved-but-unexecuted continuation can never
-      // sign against the replaced account.
-      notificationService.rejectAllApprovals();
-      notificationService.clear();
-      notificationService.bumpApprovalEpoch();
-    }
+    setCurrentAccountWithBoundary(account ?? null);
   };
 
   getKeyringByMnemonic = (
@@ -3859,15 +3828,7 @@ export class WalletController extends BaseController {
   };
 
   changeAccount = (account: Account) => {
-    preferenceService.setCurrentAccount(account);
-    // Account switch is a session boundary: invalidate the lifecycle epoch
-    // so an in-flight continuation captured before the switch can never
-    // complete a request after it. The bump is unconditional: a request whose
-    // approval already resolved (so currentApproval may be null) but that has
-    // not reached its sign/broadcast sink is exactly what this guards.
-    notificationService.rejectAllApprovals();
-    notificationService.clear();
-    notificationService.bumpApprovalEpoch();
+    setCurrentAccountWithBoundary(account);
   };
 
   authorizeLedgerHIDPermission = async () => {
@@ -4271,7 +4232,7 @@ export class WalletController extends BaseController {
       type: keyring.type,
       brandName: keyring.type,
     };
-    preferenceService.setCurrentAccount(_account);
+    setCurrentAccountWithBoundary(_account);
   };
 
   unlockHardwareAccount = async (keyring, indexes, keyringId, brand?) => {
@@ -4510,7 +4471,7 @@ export class WalletController extends BaseController {
 
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
     const _account = await this._getAccountFromKeyring(keyring, index);
-    preferenceService.setCurrentAccount(_account);
+    setCurrentAccountWithBoundary(_account);
 
     return [_account];
   }
@@ -5130,7 +5091,7 @@ export class WalletController extends BaseController {
     account;
   }): Promise<Tx> => {
     await preferenceService.saveCurrentCoboSafeAddress();
-    await preferenceService.setCurrentAccount(account);
+    await setCurrentAccountWithBoundary(account);
     const provider = await getWeb3Provider({ chainServerId, account });
     const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
     const res = await coboSafe.execRawTransaction(
@@ -5142,7 +5103,8 @@ export class WalletController extends BaseController {
   };
 
   coboSafeResetCurrentAccount = async () => {
-    preferenceService.resetCurrentCoboSafeAddress();
+    const account = await preferenceService.resetCurrentCoboSafeAddress();
+    setCurrentAccountWithBoundary(account);
   };
 
   coboSafeImport = async ({

@@ -25,24 +25,24 @@ for (const command of Object.values(pkg.scripts as Record<string, string>)) {
   // "npm run X" / plain "X" yarn targets chain to other package.json scripts,
   // already covered by iterating all script values above.
 }
-// Every webpack config the build:pro/build:dev chain can load, plus the
-// shared config they import.
+const collectFiles = (relativeDir: string): string[] => {
+  const absoluteDir = path.join(repo, relativeDir);
+  return fs.readdirSync(absoluteDir, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.join(relativeDir, entry.name);
+    if (entry.isDirectory()) return collectFiles(relativePath);
+    return [relativePath.replaceAll(path.sep, '/')];
+  });
+};
+
+// Scan the complete executable build/package/release surface, not a hand
+// maintained list. This includes webpack.config.js (the implicit root loaded
+// by the webpack CLI) and every local build/scripts child, so a publisher
+// control cannot hide in a transitively required config or helper.
 const BUILD_GRAPH_FILES = [
+  'webpack.config.js',
+  ...collectFiles('build'),
+  ...collectFiles('scripts'),
   ...scriptTargets,
-  'build/webpack.pro.config.js',
-  'build/webpack.dev.config.js',
-  'build/webpack.common.config.js',
-  'build/zip.mjs',
-  'build/release.js',
-  'build/clean.js',
-  'build/paths.js',
-  'build/manifest-utils.js',
-  'build/dev-server.js',
-  'scripts/fns.js',
-  'scripts/fns.sh',
-  'scripts/patch-built-brand.js',
-  'scripts/patch-page-provider-brand.js',
-  'scripts/pack-debug.sh',
 ].filter((rel, i, arr) => fs.existsSync(path.join(repo, rel)) && arr.indexOf(rel) === i);
 
 const FORBIDDEN = [

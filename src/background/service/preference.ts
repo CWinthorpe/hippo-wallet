@@ -578,13 +578,6 @@ class PreferenceService {
         brandName,
       },
     ];
-    if (
-      type === this.store.currentAccount?.type &&
-      address === this.store.currentAccount.address &&
-      brandName === this.store.currentAccount.brandName
-    ) {
-      this.resetCurrentAccount();
-    }
   };
 
   /**
@@ -594,7 +587,7 @@ class PreferenceService {
    */
   resetCurrentAccount = async () => {
     const [account] = await keyringService.getAllVisibleAccountsArray();
-    this.setCurrentAccount(account);
+    return account ?? null;
   };
 
   showAddress = (type: string, address: string) => {
@@ -977,7 +970,7 @@ class PreferenceService {
     this.currentCoboSafeAddress = await this.getCurrentAccount();
   };
   resetCurrentCoboSafeAddress = async () => {
-    this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
+    return this.currentCoboSafeAddress ?? null;
   };
 
   resetAddressSortStoreExpiredValue = () => {

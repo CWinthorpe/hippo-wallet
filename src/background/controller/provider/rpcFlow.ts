@@ -5,6 +5,7 @@ import {
   permissionService,
   preferenceService,
 } from 'background/service';
+import { setCurrentAccountWithBoundary } from 'background/service/sessionBoundary';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import {
   EVENTS,
@@ -295,7 +296,7 @@ const flowContext = flow
           );
 
           if (!isEnabledDappAccount) {
-            preferenceService.setCurrentAccount(defaultAccount!);
+            setCurrentAccountWithBoundary(defaultAccount!);
           }
           connectOrigins.delete(origin);
           permissionService.addConnectedSiteV2({

@@ -34,6 +34,37 @@ jest.mock('@/eventBus', () => {
   };
 });
 
+jest.mock('@/background/service/notification', () => ({
+  __esModule: true,
+  default: {
+    rejectAllApprovals: jest.fn(),
+    clear: jest.fn(),
+    bumpApprovalEpoch: jest.fn(),
+  },
+}));
+
+jest.mock('@/background/service/permission', () => ({
+  __esModule: true,
+  default: {
+    getSites: jest.fn(() => []),
+  },
+}));
+
+jest.mock('@/background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getCurrentAccount: jest.fn(() => null),
+    setCurrentAccount: jest.fn(),
+  },
+}));
+
+jest.mock('@/background/service/remoteDataPolicy', () => ({
+  __esModule: true,
+  default: {
+    lock: jest.fn(() => Promise.resolve()),
+  },
+}));
+
 const state = {
   unlocked: true,
   approvalEpoch: 0,

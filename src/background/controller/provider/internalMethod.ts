@@ -5,6 +5,7 @@ import {
   keyringService,
   preferenceService,
 } from 'background/service';
+import { setCurrentAccountWithBoundary } from 'background/service/sessionBoundary';
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
 import { appIsDev } from '@/utils/env';
@@ -160,10 +161,13 @@ const openInDesktop = async (req: ProviderRequest) => {
     const currentAccount = preferenceService.getCurrentAccount();
     if (
       account &&
-      currentAccount &&
-      account.address?.toLowerCase() !== currentAccount.address.toLowerCase()
+      (!currentAccount ||
+        account.address?.toLowerCase() !==
+          currentAccount.address.toLowerCase() ||
+        account.type !== currentAccount.type ||
+        account.brandName !== currentAccount.brandName)
     ) {
-      preferenceService.setCurrentAccount(account);
+      setCurrentAccountWithBoundary(account);
     }
   }
   wallet.openInDesktop('/desktop/profile?utm_source=debank');

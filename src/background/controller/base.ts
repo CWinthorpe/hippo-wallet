@@ -2,6 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { preferenceService, keyringService } from 'background/service';
 import { Account } from 'background/service/preference';
 import { isSameAddress } from 'background/utils';
+import { setCurrentAccountWithBoundary } from 'background/service/sessionBoundary';
 
 class BaseController {
   @Reflect.metadata('PRIVATE', true)
@@ -18,7 +19,7 @@ class BaseController {
     if (!account) {
       [account] = await this.getAccounts();
       if (!account) return null;
-      preferenceService.setCurrentAccount(account);
+      setCurrentAccountWithBoundary(account);
     }
 
     return cloneDeep(account) as Account;
