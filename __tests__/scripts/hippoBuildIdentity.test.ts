@@ -35,10 +35,12 @@ const collectFiles = (relativeDir: string): string[] => {
 };
 
 // Scan the complete executable build/package/release surface, not a hand
-// maintained list. This includes webpack.config.js (the implicit root loaded
-// by the webpack CLI) and every local build/scripts child, so a publisher
-// control cannot hide in a transitively required config or helper.
+// maintained list. This includes package.json (the command-body root),
+// webpack.config.js (the implicit root loaded by the webpack CLI), and every
+// local build/scripts child, so a publisher control cannot hide in a
+// transitively required config or helper.
 const BUILD_GRAPH_FILES = [
+  'package.json',
   'webpack.config.js',
   ...collectFiles('build'),
   ...collectFiles('scripts'),

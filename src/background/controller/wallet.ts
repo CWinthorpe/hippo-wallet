@@ -170,6 +170,8 @@ import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   revokeAccountBoundaryIfAffected,
+  revokeSiteAccountBoundaries,
+  resetCurrentCoboSafeAccountWithBoundary,
   runWithSessionBoundary,
   setCurrentAccountWithBoundary,
 } from 'background/service/sessionBoundary';
@@ -1768,19 +1770,25 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
     const currentAccount = preferenceService.getCurrentAccount();
     const sites = permissionService.getSites();
-    sites.forEach((site) => {
-      if (enabled) {
-        if (site.isConnected) {
-          permissionService.setSite({
-            ...site,
-            account: currentAccount,
-          });
-        }
-      } else {
-        permissionService.setSite({
+    const nextSites = sites.map((site) => {
+      if (enabled && site.isConnected) {
+        return {
+          ...site,
+          account: currentAccount,
+        };
+      }
+      if (!enabled) {
+        return {
           ...site,
           account: undefined,
-        });
+        };
+      }
+      return site;
+    });
+    revokeSiteAccountBoundaries(sites, nextSites);
+    nextSites.forEach((site, index) => {
+      if (site !== sites[index]) {
+        permissionService.setSite(site);
       }
     });
     sessionService.broadcastEvent(
@@ -1992,6 +2000,7 @@ export class WalletController extends BaseController {
   getConnectedSites = permissionService.getConnectedSites;
   getSites = permissionService.getSites;
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
+    revokeSiteAccountBoundaries(permissionService.getSites(), sites);
     permissionService.setRecentConnectedSites(sites);
   };
   getRecentConnectedSites = () => {
@@ -5103,8 +5112,7 @@ export class WalletController extends BaseController {
   };
 
   coboSafeResetCurrentAccount = async () => {
-    const account = await preferenceService.resetCurrentCoboSafeAddress();
-    setCurrentAccountWithBoundary(account);
+    return resetCurrentCoboSafeAccountWithBoundary();
   };
 
   coboSafeImport = async ({

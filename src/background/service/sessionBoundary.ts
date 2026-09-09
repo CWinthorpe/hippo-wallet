@@ -3,6 +3,11 @@ import permissionService from './permission';
 import preferenceService, { Account } from './preference';
 import remoteDataPolicyService from './remoteDataPolicy';
 
+type SiteAccountSnapshot = {
+  origin: string;
+  account?: Account | null;
+};
+
 const sameAccount = (
   a: Account | undefined | null,
   b: Account | undefined | null
@@ -22,6 +27,38 @@ const accountMatchesBoundaryTarget = (
   account.type === type &&
   (brand === undefined || account.brandName === brand);
 
+const sameSiteAccount = (a: SiteAccountSnapshot, b: SiteAccountSnapshot) =>
+  a.origin === b.origin && sameAccount(a.account, b.account);
+
+/**
+ * Revoke origin-scoped authority for every site whose account changes in a
+ * bulk snapshot. Ordering-only writes are harmless; account replacement,
+ * clearing, and removal are authority transitions and must invalidate both
+ * pending and already-resolved approvals before persistence.
+ */
+export const revokeSiteAccountBoundaries = (
+  previousSites: SiteAccountSnapshot[],
+  nextSites: SiteAccountSnapshot[]
+): string[] => {
+  const previousByOrigin = new Map(
+    previousSites.map((site) => [site.origin, site])
+  );
+  const nextByOrigin = new Map(nextSites.map((site) => [site.origin, site]));
+  const changedOrigins = [
+    ...new Set([...previousByOrigin.keys(), ...nextByOrigin.keys()]),
+  ].filter((origin) => {
+    const previous = previousByOrigin.get(origin) || { origin };
+    const next = nextByOrigin.get(origin) || { origin };
+    return !sameSiteAccount(previous, next);
+  });
+
+  changedOrigins.forEach((origin) => {
+    notificationService.rejectApprovalsByOrigin(origin);
+    notificationService.bumpOriginApprovalEpoch(origin);
+  });
+  return changedOrigins;
+};
+
 /**
  * Set the effective wallet account as one synchronous authority boundary.
  * The invalidation happens before the identity write and has no await between
@@ -36,6 +73,12 @@ export const setCurrentAccountWithBoundary = (account: Account | null) => {
     notificationService.bumpApprovalEpoch();
   }
   preferenceService.setCurrentAccount(account);
+};
+
+export const resetCurrentCoboSafeAccountWithBoundary = async () => {
+  const account = await preferenceService.resetCurrentCoboSafeAddress();
+  setCurrentAccountWithBoundary(account);
+  return account;
 };
 
 /**

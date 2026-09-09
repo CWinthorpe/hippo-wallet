@@ -5,8 +5,14 @@ jest.mock('@/background/service/notification', () => ({
   __esModule: true,
   default: {
     rejectAllApprovals: jest.fn(() => trace.push('reject')),
+    rejectApprovalsByOrigin: jest.fn((origin: string) =>
+      trace.push(`reject-origin:${origin}`)
+    ),
     clear: jest.fn(() => trace.push('clear')),
     bumpApprovalEpoch: jest.fn(() => trace.push('epoch')),
+    bumpOriginApprovalEpoch: jest.fn((origin: string) =>
+      trace.push(`epoch-origin:${origin}`)
+    ),
   },
 }));
 
@@ -27,6 +33,7 @@ jest.mock('@/background/service/preference', () => ({
   default: {
     getCurrentAccount: jest.fn(() => null),
     setCurrentAccount: jest.fn(),
+    resetCurrentCoboSafeAddress: jest.fn(async () => null),
   },
 }));
 
@@ -45,6 +52,8 @@ import preferenceService from '@/background/service/preference';
 import remoteDataPolicyService from '@/background/service/remoteDataPolicy';
 import {
   revokeAccountBoundaryIfAffected,
+  revokeSiteAccountBoundaries,
+  resetCurrentCoboSafeAccountWithBoundary,
   revokeSessionBoundaryConsent,
   runWithSessionBoundary,
   setCurrentAccountWithBoundary,
@@ -106,6 +115,66 @@ describe('reset session boundary ordering', () => {
       ...account,
       address: '0xaa',
     });
+  });
+
+  test('Cobo restoration resets storage before restoring the account boundary', async () => {
+    const delegated = {
+      address: '0xCc',
+      type: 'CoboArgus',
+      brandName: 'Cobo',
+    };
+    const previous = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(
+      delegated
+    );
+    (preferenceService.resetCurrentCoboSafeAddress as jest.Mock).mockResolvedValue(
+      previous
+    );
+
+    await resetCurrentCoboSafeAccountWithBoundary();
+
+    expect(preferenceService.resetCurrentCoboSafeAddress).toHaveBeenCalled();
+    expect(trace).toEqual(['reject', 'clear', 'epoch']);
+    expect(preferenceService.setCurrentAccount).toHaveBeenCalledWith(previous);
+  });
+
+  test('bulk site snapshots invalidate only origins whose effective account changed', () => {
+    const accountA = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    const accountB = {
+      address: '0xBb',
+      type: 'QR Hardware Wallet Device',
+      brandName: 'Keystone',
+    };
+
+    const changed = revokeSiteAccountBoundaries(
+      [
+        { origin: 'https://same.example', account: accountA },
+        { origin: 'https://changed.example', account: accountA },
+      ],
+      [
+        { origin: 'https://same.example', account: { ...accountA } },
+        { origin: 'https://changed.example', account: accountB },
+      ]
+    );
+
+    expect(changed).toEqual(['https://changed.example']);
+    expect(notificationService.rejectApprovalsByOrigin).toHaveBeenCalledWith(
+      'https://changed.example'
+    );
+    expect(notificationService.bumpOriginApprovalEpoch).toHaveBeenCalledWith(
+      'https://changed.example'
+    );
+    expect(notificationService.rejectApprovalsByOrigin).not.toHaveBeenCalledWith(
+      'https://same.example'
+    );
   });
 
   test('brandless QR removal revokes a site-bound account before a sink continuation', async () => {

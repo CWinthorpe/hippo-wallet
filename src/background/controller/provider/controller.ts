@@ -27,6 +27,7 @@ import {
   notificationService,
 } from 'background/service';
 import { Session } from 'background/service/session';
+import { resetCurrentCoboSafeAccountWithBoundary } from 'background/service/sessionBoundary';
 import { TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
@@ -890,7 +891,7 @@ class ProviderController extends BaseController {
         return;
       }
 
-      const onTransactionCreated = (info: {
+      const onTransactionCreated = async (info: {
         hash?: string;
         pushType?: TxPushType;
       }) => {
@@ -961,7 +962,7 @@ class ProviderController extends BaseController {
         }
 
         if (isCoboSafe) {
-          preferenceService.resetCurrentCoboSafeAddress();
+          await resetCurrentCoboSafeAccountWithBoundary();
         }
       };
       const onTransactionSubmitFailed = (e: any) => {
@@ -1015,7 +1016,7 @@ class ProviderController extends BaseController {
       };
 
       if (typeof signedTx === 'string') {
-        onTransactionCreated({
+        await onTransactionCreated({
           hash: signedTx,
           pushType: 'default',
         });
@@ -1093,7 +1094,7 @@ class ProviderController extends BaseController {
           throw new Error('Submit transaction failed');
         }
 
-        onTransactionCreated({
+        await onTransactionCreated({
           hash,
           pushType:
             chain === CHAINS_ENUM.ETH &&
