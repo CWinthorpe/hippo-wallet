@@ -90909,8 +90909,12 @@
       "src/background/service/keyring/eth-onekey-keyring/onekey-bridge.ts",
       "src/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge.ts",
       "src/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge.ts",
+      "src/constant/index.ts",
       "src/constant/offscreen-communication.ts",
-      "src/offscreen/scripts/senderAuth.ts"
+      "src/eventBus.ts",
+      "src/offscreen/scripts/senderAuth.ts",
+      "src/utils/chain.ts",
+      "src/utils/signEvent.ts"
     ]
   },
   "src/background/service/customTestnet.ts": {
@@ -91146,62 +91150,25 @@
   "src/constant/index.ts": {
     "enable": true,
     "require": [
-      "_raw/locales/index.json",
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
+      "node_modules/react/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/ui/assets/rabby-chain-logo.png",
-      "src/ui/assets/sign/security-engine/closed.svg",
       "src/ui/assets/sign/security-engine/danger.svg",
-      "src/ui/assets/sign/security-engine/error.svg",
-      "src/ui/assets/sign/security-engine/forbidden.svg",
-      "src/ui/assets/sign/security-engine/processed.svg",
-      "src/ui/assets/sign/security-engine/safe.svg",
-      "src/ui/assets/sign/security-engine/warning.svg",
       "src/ui/assets/walletlogo/airgap.svg",
-      "src/ui/assets/walletlogo/amber.svg",
-      "src/ui/assets/walletlogo/bitbox.svg",
-      "src/ui/assets/walletlogo/bitkeep.svg",
-      "src/ui/assets/walletlogo/cobo.svg",
       "src/ui/assets/walletlogo/CoboArgus.svg",
-      "src/ui/assets/walletlogo/coinbase.svg",
       "src/ui/assets/walletlogo/coolwallet.svg",
-      "src/ui/assets/walletlogo/defiant.svg",
-      "src/ui/assets/walletlogo/fireblocks.svg",
       "src/ui/assets/walletlogo/gridplus.svg",
-      "src/ui/assets/walletlogo/icon-watch-ink.svg",
-      "src/ui/assets/walletlogo/IconMnemonic-desktop-white.svg",
-      "src/ui/assets/walletlogo/IconMnemonic-white.svg",
-      "src/ui/assets/walletlogo/IconWatch-white.svg",
       "src/ui/assets/walletlogo/imkey.svg",
-      "src/ui/assets/walletlogo/imtoken.svg",
       "src/ui/assets/walletlogo/imTokenOffline.svg",
-      "src/ui/assets/walletlogo/jade.svg",
       "src/ui/assets/walletlogo/keystone.svg",
       "src/ui/assets/walletlogo/ledger.svg",
-      "src/ui/assets/walletlogo/ledgerDisable.svg",
-      "src/ui/assets/walletlogo/math.svg",
-      "src/ui/assets/walletlogo/metamask.svg",
-      "src/ui/assets/walletlogo/mnemonic-desktop-ink.svg",
-      "src/ui/assets/walletlogo/mnemonic-ink.svg",
-      "src/ui/assets/walletlogo/mpcvault.svg",
       "src/ui/assets/walletlogo/ngrave.svg",
       "src/ui/assets/walletlogo/onekey.svg",
-      "src/ui/assets/walletlogo/private-key-desktop-white.svg",
-      "src/ui/assets/walletlogo/private-key-white.svg",
-      "src/ui/assets/walletlogo/privatekey-desktop-ink.svg",
-      "src/ui/assets/walletlogo/privatekey-ink.svg",
-      "src/ui/assets/walletlogo/privatekeylogo.svg",
-      "src/ui/assets/walletlogo/rainbow.svg",
       "src/ui/assets/walletlogo/safe.svg",
-      "src/ui/assets/walletlogo/tp.svg",
       "src/ui/assets/walletlogo/trezor.svg",
-      "src/ui/assets/walletlogo/trust.svg",
-      "src/ui/assets/walletlogo/utila.svg",
       "src/ui/assets/walletlogo/walletconnect.svg",
-      "src/ui/assets/walletlogo/whitelist-dark.svg",
-      "src/ui/assets/walletlogo/whitelist-white.svg",
-      "src/ui/assets/walletlogo/zerion.svg",
       "src/utils/chain.ts"
     ]
   },
@@ -91760,43 +91727,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/sign/security-engine/closed.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/sign/security-engine/danger.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/sign/security-engine/error.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/sign/security-engine/forbidden.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/sign/security-engine/processed.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/sign/security-engine/safe.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/sign/security-engine/warning.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -91934,55 +91865,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/walletlogo/IconMnemonic-desktop-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/IconMnemonic-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/IconWatch-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/walletlogo/airgap.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/amber.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/bitbox.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/bitkeep.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/cobo.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/coinbase.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -91994,25 +91877,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/walletlogo/defiant.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/fireblocks.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/walletlogo/gridplus.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/icon-watch-ink.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -92030,18 +91895,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/walletlogo/imtoken.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/jade.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/walletlogo/keystone.svg": {
     "enable": true,
     "require": [
@@ -92049,42 +91902,6 @@
     ]
   },
   "src/ui/assets/walletlogo/ledger.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/ledgerDisable.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/math.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/metamask.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/mnemonic-desktop-ink.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/mnemonic-ink.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/mpcvault.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -92102,49 +91919,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/walletlogo/private-key-desktop-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/private-key-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/privatekey-desktop-ink.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/privatekey-ink.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/privatekeylogo.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/rainbow.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/walletlogo/safe.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/tp.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -92156,37 +91931,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/walletlogo/trust.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/utila.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/walletlogo/walletconnect.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/whitelist-dark.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/whitelist-white.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/walletlogo/zerion.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -97688,7 +97433,6 @@
     "require": [
       "node_modules/viem/_esm/utils/encoding/toHex.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/default-support-chains.json",
       "src/constant/index.ts",
       "src/eventBus.ts"
     ]
