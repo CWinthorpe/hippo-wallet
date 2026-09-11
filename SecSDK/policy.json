@@ -94068,7 +94068,8 @@
       "src/ui/utils/time.ts",
       "src/ui/utils/uiType.ts",
       "src/ui/utils/WalletContext.tsx",
-      "src/ui/utils/webapi.tsx"
+      "src/ui/utils/webapi.tsx",
+      "src/utils/signEvent.ts"
     ]
   },
   "src/ui/utils/keystone.ts": {
@@ -95631,6 +95632,7 @@
       "src/utils/history.ts",
       "src/utils/index.ts",
       "src/utils/matomo-request.ts",
+      "src/utils/signEvent.ts",
       "src/utils/transaction.ts"
     ]
   },
@@ -97703,6 +97705,13 @@
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/utils/signEvent.ts": {
+    "enable": true,
+    "require": [
+      "src/constant/index.ts",
+      "src/eventBus.ts"
     ]
   },
   "src/utils/tempo.ts": {
