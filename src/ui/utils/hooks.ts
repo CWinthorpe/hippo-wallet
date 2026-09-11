@@ -5,6 +5,7 @@ import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
+import { bindSignEventFromApproval } from '@/utils/signEvent';
 import type { SignEventBinding } from '@/utils/signEvent';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
@@ -25,20 +26,22 @@ export const useApproval = () => {
   // ONCE at mount, and bind every resolve/reject to that exact id. We never
   // re-derive the id from the live queue inside the click handler, so a
   // queue rotation can never make A's event handler resolve approval B.
-  const renderedSignBindingRef = useRef<Partial<SignEventBinding>>({});
+  const renderedApprovalIdRef = useRef<string | undefined>(undefined);
+  // Handshake binding is the PARENT OPERATION identity (approvalId +
+  // component + AuthorityContext), propagated verbatim into waiting-child
+  // params by notificationService. A waiting child resolves its OWN approval
+  // id above but must emit/consume sign events with the operation tuple the
+  // background waiter registered; conflating the two deadlocks the handshake
+  // (gpt56 round-9 blocker 1).
+  const operationBindingRef = useRef<Partial<SignEventBinding>>({});
   useEffect(() => {
     let disposed = false;
     void getApproval()
       .then((approval) => {
         if (!disposed) {
-          renderedSignBindingRef.current = {
-            approvalId: approval?.id,
-            approvalComponent: approval?.data?.approvalComponent,
-            authorityContext:
-              (approval?.data as any)?.params?.$signingContext ||
-              (approval?.data as any)?.params?.__signingContext ||
-              (approval?.data as any)?.__signingContext,
-          };
+          renderedApprovalIdRef.current = approval?.id;
+          operationBindingRef.current =
+            bindSignEventFromApproval(approval) || {};
         }
       })
       .catch(() => {
@@ -61,7 +64,7 @@ export const useApproval = () => {
     // mount — never the live queue. If the queue advanced (or the session
     // epoch changed) meanwhile, the background's exact-id + epoch guard makes
     // the resolve a no-op instead of resolving whatever is current now.
-    const boundId = approvalId ?? renderedSignBindingRef.current.approvalId;
+    const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (!boundId) {
       return;
     }
@@ -93,7 +96,7 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     const approval = await getApproval();
-    const boundId = approvalId ?? renderedSignBindingRef.current.approvalId;
+    const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (approval && boundId) {
       await wallet.rejectApproval(err, stay, isInternal, boundId);
     }
@@ -101,21 +104,19 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-  const getApprovalBinding = (approval?: Approval) => {
+  const getApprovalBinding = (
+    approval?: Approval
+  ): Partial<SignEventBinding> => {
     if (approval) {
-      return {
-        approvalId: approval.id,
-        approvalComponent: approval.data.approvalComponent,
-        authorityContext:
-          (approval.data as any)?.params?.$signingContext ||
-          (approval.data as any)?.__signingContext,
-      };
+      return bindSignEventFromApproval(approval) || {};
     }
-    return {
-      approvalId: renderedSignBindingRef.current.approvalId,
-      approvalComponent: renderedSignBindingRef.current.approvalComponent,
-      authorityContext: renderedSignBindingRef.current.authorityContext,
-    };
+    return renderedApprovalIdRef.current
+      ? {
+          ...operationBindingRef.current,
+          // The mount-time capture already carries the operation tuple; the
+          // own id only guards resolve/reject, never the handshake.
+        }
+      : {};
   };
 
   return [

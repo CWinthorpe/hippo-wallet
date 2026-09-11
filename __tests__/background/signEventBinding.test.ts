@@ -58,6 +58,7 @@ const contextA = {
   boundAccount: { address: '0xaa', type: 'HD', brandName: 'Hippo' },
   boundChain: 'ETH',
   internalOrigin: false,
+  approvalBound: true,
 };
 
 const bindingA = {

@@ -87,6 +87,13 @@ export type AuthorityContext = {
   } | null;
   boundChain?: string;
   internalOrigin: boolean;
+  /**
+   * true when the token was captured by rpcFlow around a user dApp approval
+   * (so the approval result must carry __approvalId/__approvalComponent);
+   * false for internally minted popup/MiniSign capabilities, which by
+   * construction have no dApp approval to bind against.
+   */
+  approvalBound: boolean;
 };
 
 export const captureAuthorityContext = ({
@@ -112,6 +119,7 @@ export const captureAuthorityContext = ({
   requestDigest,
   origin,
   approvalComponent,
+  approvalBound: true,
   boundAccount: boundAccount
     ? {
         address: boundAccount.address.toLowerCase(),
@@ -122,6 +130,48 @@ export const captureAuthorityContext = ({
   boundChain,
   internalOrigin,
 });
+/**
+ * Distinct capability for internal (popup / MiniSign) signing operations.
+ * Popup-initiated flows render no dApp approval through rpcFlow, so they
+ * carry no $signingContext; the sink still must not run with NO authority
+ * token. The caller (UI after its confirmation gesture) requests this
+ * context from the background; it binds the account, chain, lock epoch, and
+ * request digest at confirmation time, with pre/post-await revalidation at
+ * the sink like any other capability. It is NOT a dApp-origin authority:
+ * internalOrigin is fixed true and the origin is the extension's own.
+ */
+export const captureInternalAuthorityContext = ({
+  boundAccount,
+  boundChain,
+  requestDigest,
+  approvalComponent,
+}: {
+  boundAccount: Account | null;
+  boundChain?: string;
+  requestDigest: string;
+  approvalComponent: string;
+}): AuthorityContext => ({
+  ...captureAuthorityContext({
+    // In the background context this equals INTERNAL_REQUEST_ORIGIN
+    // (location.origin); the fallback keeps non-browser test hosts working.
+    origin:
+      (globalThis as any).location?.origin ?? 'self://hippo.internal.origin',
+    boundAccount,
+    boundChain,
+    internalOrigin: true,
+    operationId:
+      typeof globalThis.crypto?.randomUUID === 'function'
+        ? globalThis.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    requestDigest,
+    approvalComponent,
+  }),
+  // Internally minted capability: no dApp approval exists to bind against,
+  // and assertAuthorityContextStillValid enforces the internal-origin
+  // invariants (epochs, lock, account) for it instead.
+  approvalBound: false,
+});
+
 const rejectAuthority = (message: string): never => {
   throw ethErrors.provider.userRejectedRequest({ message });
 };
@@ -177,7 +227,7 @@ export const assertAuthorityContextStillValid = (
     }
   }
 
-  if (context.boundChain) {
+  if (context.boundChain && !context.internalOrigin) {
     const liveChain = permissionService.getConnectedSite(context.origin)?.chain;
     if (liveChain !== context.boundChain) {
       rejectAuthority('Active chain changed; approve again.');

@@ -3,7 +3,10 @@ import stats from '@/stats';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
+import {
+  emitSignComponentAmounted,
+  createSignEventConsumer,
+} from '@/utils/signEvent';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
@@ -186,9 +189,17 @@ const LedgerHardwareWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
+    const signConsumer = createSignEventConsumer(getApprovalBinding);
     const signFinishedHandler = async (data) => {
-      if (!matchesSignEvent(data, getApprovalBinding())) {
+      if (!signConsumer.tryConsume(data)) {
         return;
+      }
+      // Terminal (success) consumption: detach synchronously BEFORE any
+      // await/effect so a duplicated or replayed completion can never run
+      // the irreversible Gnosis/Cobo branch twice (gpt56 round-9 blocker 3).
+      // Failures keep the listener for the legitimate resend flow.
+      if (signConsumer.isTerminal(data)) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
       }
       if (data.success) {
         let sig = data.data;
@@ -203,13 +214,22 @@ const LedgerHardwareWaiting = ({
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
+                authorityContext: data.authorityContext,
               });
             } else {
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  data.authorityContext
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(
+                  account.address,
+                  sig,
+                  data.authorityContext
+                );
+                await wallet.postGnosisTransaction(data.authorityContext);
               }
             }
           }

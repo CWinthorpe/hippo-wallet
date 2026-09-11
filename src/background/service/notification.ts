@@ -41,8 +41,14 @@ export interface Approval {
   reject?(err: EthereumProviderError<any>): void;
 }
 
+// gpt56 round-9 blocker 5: 'Unlock' was upstream-queued for concurrency, but
+// Hippo has no Unlock renderer inside /approval and the second queued Unlock
+// can never render after the first unlock resolves the wallet — a stranded
+// request and blank notification window. Membership means coexistence-safe;
+// Unlock is not, so it is removed. Locked origins now get an explicit
+// rejection while another Unlock is pending (retry after unlock), and the
+// same-origin guard in rpcFlow is unchanged.
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
-  'Unlock',
   'SignTx',
   'SignText',
   'SignTypedData',
@@ -251,14 +257,42 @@ class NotificationService extends Events {
           new EthereumProviderError(4001, 'User Cancel')
         );
     } else {
+      // Operation identity for the SIGN_WAITING handshake (gpt56 round-9
+      // blocker 1). Priority:
+      //  1. data already carries a full binding (loop re-entry) -> keep it;
+      //  2. this approval's params carry an inherited parent binding (this
+      //     is a waiting child) -> propagate the PARENT identity, so a
+      //     nested child still wakes the original operation waiter;
+      //  3. otherwise this is the dApp-facing parent approval -> attach its
+      //     own id/component and the rpcFlow-captured $signingContext.
+      const parentParams: any =
+        (this.currentApproval.data as any)?.params || {};
+      const carried =
+        data && typeof data === 'object' && (data as any).__signingContext
+          ? {
+              __approvalId: (data as any).__approvalId,
+              __approvalComponent: (data as any).__approvalComponent,
+              __signingContext: (data as any).__signingContext,
+            }
+          : null;
+      const inherited =
+        !carried && parentParams.__signingContext
+          ? {
+              __approvalId: parentParams.__approvalId,
+              __approvalComponent: parentParams.__approvalComponent,
+              __signingContext: parentParams.__signingContext,
+            }
+          : null;
+      const own = carried ||
+        inherited || {
+          __approvalId: this.currentApproval.id,
+          __approvalComponent: this.currentApproval.data.approvalComponent,
+          __signingContext:
+            parentParams.$signingContext || parentParams.__signingContext,
+        };
       const boundData =
         data && typeof data === 'object'
-          ? Object.assign(Array.isArray(data) ? [...data] : { ...data }, {
-              __approvalId: this.currentApproval.id,
-              __approvalComponent: this.currentApproval.data.approvalComponent,
-              __signingContext: (this.currentApproval.data as any).params
-                ?.$signingContext,
-            })
+          ? Object.assign(Array.isArray(data) ? [...data] : { ...data }, own)
           : data;
       this.currentApproval?.resolve && this.currentApproval?.resolve(boundData);
     }

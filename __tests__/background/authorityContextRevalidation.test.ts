@@ -426,7 +426,7 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     expect(signTx).not.toMatch(/wallet\.signTypedData\(/);
   });
 
-  test('UI waiting components consume SIGN_FINISHED only through the binding matcher and detach listeners', () => {
+  test('UI waiting components consume SIGN_FINISHED through the one-shot consumer and detach on first terminal event', () => {
     const components = [
       'src/ui/views/Approval/components/CommonWaiting.tsx',
       'src/ui/views/Approval/components/LedgerHardwareWaiting.tsx',
@@ -438,9 +438,162 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     ];
     for (const file of components) {
       const src = stripComments(read(file));
-      expect(src).toContain('matchesSignEvent');
+      expect(src).toContain('createSignEventConsumer');
+      expect(src).toContain('signConsumer.tryConsume(data)');
+      // terminal detach must precede any await inside the handler body
+      expect(src).toContain('signConsumer.isTerminal(data)');
+      const detachAt = src.indexOf(
+        'eventBus.removeEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler)'
+      );
+      const bodyStart = src.indexOf('const signFinishedHandler');
+      expect(detachAt).toBeGreaterThan(bodyStart);
       expect(src).toContain('getApprovalBinding');
-      expect(src).toContain('removeEventListener');
     }
+  });
+
+  test('Gnosis/Cobo irreversible effects receive the live authority context at the sink', () => {
+    const components = [
+      'src/ui/views/Approval/components/CommonWaiting.tsx',
+      'src/ui/views/Approval/components/LedgerHardwareWaiting.tsx',
+      'src/ui/views/Approval/components/ImKeyHardwareWaiting.tsx',
+      'src/ui/views/Approval/components/PrivatekeyWaiting.tsx',
+      'src/ui/views/Approval/components/CoinbaseWaiting/index.tsx',
+      'src/ui/views/Approval/components/WatchAddressWaiting/index.tsx',
+      'src/ui/views/Approval/components/QRHardWareWaiting/QRHardWareWaiting.tsx',
+    ];
+    for (const file of components) {
+      const src = stripComments(read(file));
+      for (const sink of [
+        'gnosisAddConfirmation(',
+        'gnosisAddSignature(',
+        'postGnosisTransaction(',
+        'handleGnosisMessage({',
+      ]) {
+        let idx = src.indexOf(sink);
+        while (idx !== -1) {
+          const seg = src.slice(idx, idx + 260);
+          expect(seg).toContain('authorityContext');
+          idx = src.indexOf(sink, idx + 1);
+        }
+      }
+    }
+    // wallet-side sinks assert before performing the effect
+    const wallet = stripComments(read('src/background/controller/wallet.ts'));
+    const post = wallet.slice(
+      wallet.indexOf('postGnosisTransaction = ('),
+      wallet.indexOf('postGnosisTransaction = (') + 700
+    );
+    expect(post).toContain(
+      'assertAuthorityContextStillValid(authorityContext)'
+    );
+    expect(post.indexOf('assertAuthorityContextStillValid')).toBeLessThan(
+      post.indexOf('keyring.postTransaction()')
+    );
+  });
+
+  test('WatchAddressWaiting initializes WalletConnect on mount, not only on refresh', () => {
+    const src = stripComments(
+      read('src/ui/views/Approval/components/WatchAddressWaiting/index.tsx')
+    );
+    const initBody = src.slice(
+      src.indexOf('const init = async'),
+      src.indexOf('useEffect(() => {')
+    );
+    expect(initBody).toContain('await initWalletConnect()');
+    expect(initBody).toContain('.catch(');
+    // init must run BEFORE the waiting-component announcement
+    expect(initBody.indexOf('await initWalletConnect()')).toBeLessThan(
+      initBody.indexOf('emitSignComponentAmounted(')
+    );
+  });
+
+  test('Unlock is not concurrency-whitelisted (blocker 5)', () => {
+    const src = stripComments(read('src/background/service/notification.ts'));
+    const list = src.slice(
+      src.indexOf('const QUEUE_APPROVAL_COMPONENTS_WHITELIST = ['),
+      src.indexOf(
+        '];',
+        src.indexOf('const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [')
+      )
+    );
+    expect(list).not.toContain("'Unlock'");
+  });
+
+  test('rpcFlow waiter and WithUI wrappers bind the PARENT operation id across child loops and retries', () => {
+    const flow = stripComments(
+      read('src/background/controller/provider/rpcFlow.ts')
+    );
+    // waiter uses parent approvalId from the resolve binding + approvalType
+    expect(flow).toContain('waitSignComponentAmounted({');
+    const notif = stripComments(read('src/background/service/notification.ts'));
+    // identity propagation: carried > inherited > own
+    expect(notif).toContain('parentParams.__approvalId');
+    expect(notif).toContain('inherited');
+    const wallet = stripComments(read('src/background/controller/wallet.ts'));
+    const wrappers = wallet.slice(
+      wallet.indexOf('signPersonalMessageWithUI'),
+      wallet.indexOf('signTransaction = async (')
+    );
+    expect(wrappers).toContain('approvalParams.__approvalId || approval?.id');
+    expect(wrappers).toContain('approvalParams.__approvalComponent ||');
+  });
+
+  test('dapp send/sign sinks mint an internal capability only for internal origins', () => {
+    const src = stripComments(
+      read('src/background/controller/provider/controller.ts')
+    );
+    const mint = src.slice(
+      src.indexOf('const ensureRequestAuthorityContext'),
+      src.indexOf('const convertToHex')
+    );
+    expect(mint).toContain(
+      'if (req.authorityContext) return req.authorityContext;'
+    );
+    expect(mint).toContain('permissionService.isInternalOrigin(origin)');
+    // fail-closed for external origins lacking a context
+    expect(mint).toContain('Missing signing authority context');
+    expect(mint).toContain('captureInternalAuthorityContext');
+    // every gated sink calls the mint BEFORE the asserts
+    for (const handler of [
+      'ethSendTransaction = async (options',
+      'personalSign = async (req',
+      'ethSignTypedDataV1 = async (req',
+      'ethSignTypedDataV3 = async (req',
+      'ethSignTypedDataV4 = async (req',
+    ]) {
+      const at = src.indexOf(handler);
+      expect(at).toBeGreaterThanOrEqual(0);
+      const seg = src.slice(at, at + 1600);
+      const mintAt = seg.indexOf('ensureRequestAuthorityContext(');
+      const assertAt = seg.indexOf('assertSigningApprovalResult(');
+      expect(mintAt).toBeGreaterThanOrEqual(0);
+      expect(assertAt).toBeGreaterThan(mintAt);
+    }
+    // assert requires __approvalId only for approval-bound contexts
+    const assertFn = src.slice(
+      src.indexOf('const assertSigningApprovalResult'),
+      src.indexOf('const ensureRequestAuthorityContext')
+    );
+    expect(assertFn).toContain('authorityContext.approvalBound !== false');
+  });
+
+  test('captureInternalAuthorityContext produces an internal, non-approval-bound token', () => {
+    const { captureInternalAuthorityContext: cap } = jest.requireActual(
+      '@/background/service/sessionBoundary'
+    );
+    const ctx = cap({
+      boundAccount: ACCOUNT_A as any,
+      boundChain: 'BSC',
+      requestDigest: '0xd',
+      approvalComponent: 'SignTx',
+    });
+    expect(ctx.internalOrigin).toBe(true);
+    expect(ctx.approvalBound).toBe(false);
+    expect(ctx.operationId).toBeTruthy();
+    expect(() => assertAuthorityContextStillValid(ctx)).not.toThrow();
+    (notificationService as any).approvalEpoch += 1;
+    expect(() => assertAuthorityContextStillValid(ctx)).toThrow(
+      /approve again/i
+    );
   });
 });

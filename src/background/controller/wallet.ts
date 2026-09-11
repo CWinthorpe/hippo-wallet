@@ -2439,7 +2439,14 @@ export class WalletController extends BaseController {
     }
   };
 
-  postGnosisTransaction = () => {
+  postGnosisTransaction = (
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+  ) => {
+    // gpt56 round-9 blocker 3: posting the safe tx is the irreversible
+    // effect; revalidate immediately before submission when bound.
+    if (authorityContext) {
+      assertAuthorityContextStillValid(authorityContext);
+    }
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -2631,7 +2638,16 @@ export class WalletController extends BaseController {
     return keyring.generateTypedData();
   };
 
-  gnosisAddConfirmation = async (address: string, signature: string) => {
+  gnosisAddConfirmation = async (
+    address: string,
+    signature: string,
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+  ) => {
+    // gpt56 round-9 blocker 3: irreversible external effect — revalidate
+    // live authority immediately before submission.
+    if (authorityContext) {
+      assertAuthorityContextStillValid(authorityContext);
+    }
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
@@ -2649,7 +2665,16 @@ export class WalletController extends BaseController {
     await keyring.addPureSignature(address, signature);
   };
 
-  gnosisAddSignature = async (address: string, signature: string) => {
+  gnosisAddSignature = async (
+    address: string,
+    signature: string,
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+  ) => {
+    // gpt56 round-9 blocker 3: irreversible external effect — revalidate
+    // live authority immediately before submission.
+    if (authorityContext) {
+      assertAuthorityContextStillValid(authorityContext);
+    }
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
@@ -2731,10 +2756,17 @@ export class WalletController extends BaseController {
   handleGnosisMessage = async ({
     signerAddress,
     signature,
+    authorityContext,
   }: {
     signerAddress: string;
     signature: string;
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext;
   }) => {
+    // gpt56 round-9 blocker 3: submitting the safe-message confirmation is
+    // an irreversible external effect; revalidate when a binding is present.
+    if (authorityContext) {
+      assertAuthorityContextStillValid(authorityContext);
+    }
     const sigs = this.getGnosisMessageSignatures();
     if (sigs.length > 0) {
       await wallet.addGnosisMessageSignature({
@@ -4056,17 +4088,24 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const approval = notificationService.getApproval();
+    const approvalParams: any = (approval?.data as any)?.params || {};
     const authorityContext =
-      (approval?.data as any)?.params?.$signingContext ||
-      (approval?.data as any)?.__signingContext;
-    if (!approval?.id || !authorityContext) {
+      approvalParams.$signingContext || approvalParams.__signingContext;
+    // The handshake identity is the PARENT operation. At first mount the
+    // current approval IS the parent; on a resendSign retry it is the
+    // waiting child, whose params carry the parent's __approvalId /
+    // __approvalComponent verbatim (gpt56 round-9 blocker 1).
+    const operationApprovalId = approvalParams.__approvalId || approval?.id;
+    const operationComponent =
+      approvalParams.__approvalComponent || approval?.data?.approvalComponent;
+    if (!operationApprovalId || !authorityContext) {
       throw ethErrors.provider.userRejectedRequest({
         message: 'Missing signing approval; approve again.',
       });
     }
     const binding: SignEventBinding = {
-      approvalId: approval.id,
-      approvalComponent: approval.data.approvalComponent,
+      approvalId: operationApprovalId,
+      approvalComponent: operationComponent,
       authorityContext,
     };
     const fn = () =>
@@ -4134,17 +4173,24 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const approval = notificationService.getApproval();
+    const approvalParams: any = (approval?.data as any)?.params || {};
     const authorityContext =
-      (approval?.data as any)?.params?.$signingContext ||
-      (approval?.data as any)?.__signingContext;
-    if (!approval?.id || !authorityContext) {
+      approvalParams.$signingContext || approvalParams.__signingContext;
+    // The handshake identity is the PARENT operation. At first mount the
+    // current approval IS the parent; on a resendSign retry it is the
+    // waiting child, whose params carry the parent's __approvalId /
+    // __approvalComponent verbatim (gpt56 round-9 blocker 1).
+    const operationApprovalId = approvalParams.__approvalId || approval?.id;
+    const operationComponent =
+      approvalParams.__approvalComponent || approval?.data?.approvalComponent;
+    if (!operationApprovalId || !authorityContext) {
       throw ethErrors.provider.userRejectedRequest({
         message: 'Missing signing approval; approve again.',
       });
     }
     const binding: SignEventBinding = {
-      approvalId: approval.id,
-      approvalComponent: approval.data.approvalComponent,
+      approvalId: operationApprovalId,
+      approvalComponent: operationComponent,
       authorityContext,
     };
     const fn = () =>
