@@ -6,17 +6,21 @@ describe('notification unlock approval isolation', () => {
       id?: string;
       data?: { approvalComponent?: unknown };
     } | null,
-    expectedApprovalId?: string
+    expectedApprovalId?: string,
+    localGesture = true
   ) => {
     const getApproval = jest.fn().mockResolvedValue(approval);
     const resolveApproval = jest.fn().mockResolvedValue(undefined);
+    const rejectApproval = jest.fn().mockResolvedValue(undefined);
     const replace = jest.fn();
 
     return {
       getApproval,
       resolveApproval,
+      rejectApproval,
       replace,
       expectedApprovalId,
+      localGesture,
     };
   };
 
@@ -114,5 +118,41 @@ describe('notification unlock approval isolation', () => {
 
     expect(deps.resolveApproval).not.toHaveBeenCalled();
     expect(deps.replace).toHaveBeenCalledWith('/approval');
+  });
+
+  // gpt56 round-10 blocker 4: a GLOBAL unlock broadcast is transport, not
+  // consent. Only a local password/biometric gesture in this window may
+  // resolve this window's Unlock approval.
+  test('a foreign global unlock never resolves the rendered Unlock approval', async () => {
+    const deps = setup(
+      { id: 'unlock-request', data: { approvalComponent: 'Unlock' } },
+      'unlock-request',
+      false // no local gesture: the event came from another window's unlock
+    );
+
+    await routeNotificationAfterUnlock(deps);
+
+    expect(deps.resolveApproval).not.toHaveBeenCalled();
+    // the approval is explicitly rejected so the dApp gets a definite answer
+    expect(deps.rejectApproval).toHaveBeenCalledWith(
+      expect.stringContaining('another window'),
+      false,
+      false,
+      'unlock-request'
+    );
+    expect(deps.replace).toHaveBeenCalledWith('/');
+  });
+
+  test('local gesture resolves the exact rendered Unlock approval', async () => {
+    const deps = setup(
+      { id: 'unlock-request', data: { approvalComponent: 'Unlock' } },
+      'unlock-request',
+      true
+    );
+
+    await routeNotificationAfterUnlock(deps);
+
+    expect(deps.resolveApproval).toHaveBeenCalledTimes(1);
+    expect(deps.rejectApproval).not.toHaveBeenCalled();
   });
 });

@@ -107,6 +107,13 @@ export const sendPersonalMessage = async ({
   // submit tx
   let hash = '';
   try {
+    const capability = await wallet.mintInternalSigningCapability({
+      request: {
+        data: { params: data },
+        session: INTERNAL_REQUEST_SESSION,
+      },
+      approvalComponent: 'SignText',
+    });
     hash = await wallet.ethPersonalSign({
       data: {
         $ctx: {
@@ -134,6 +141,7 @@ export const sendPersonalMessage = async ({
         address,
         ...currentAccount,
       },
+      authorityContext: capability,
     });
     await handleSendAfter();
   } catch (e) {

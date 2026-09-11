@@ -551,7 +551,9 @@ export const sendTransaction = async ({
   // submit tx
   let hash = '';
   try {
-    hash = await wallet.ethSendTransaction({
+    // gpt56 round-10 blocker 2: mint the capability at the confirmation
+    // gesture against the exact request the sink will receive, then send.
+    const submitRequest = {
       data: {
         $ctx: {
           ga,
@@ -565,6 +567,13 @@ export const sendTransaction = async ({
         ],
       },
       session: session || INTERNAL_REQUEST_SESSION,
+    };
+    const capability = await wallet.mintInternalSigningCapability({
+      request: submitRequest,
+      approvalComponent: 'SignTx',
+    });
+    hash = await wallet.ethSendTransaction({
+      ...submitRequest,
       approvalRes: ({
         ...transactionForSubmit,
         signingTxId,
@@ -580,6 +589,7 @@ export const sendTransaction = async ({
       pushed: false,
       result: undefined,
       account: account!,
+      authorityContext: capability,
     });
     await handleSendAfter();
   } catch (e) {
@@ -924,7 +934,9 @@ export const sendTransactionByMiniSignV2 = async ({
   let hash = '';
   const account = currentAccount;
   try {
-    hash = await wallet.ethSendTransaction({
+    // gpt56 round-10 blocker 2: mint the capability at the confirmation
+    // gesture against the exact request the sink will receive.
+    const submitRequest = {
       data: {
         $ctx: {
           ga,
@@ -938,6 +950,13 @@ export const sendTransactionByMiniSignV2 = async ({
         ],
       },
       session: session || INTERNAL_REQUEST_SESSION,
+    };
+    const capability = await wallet.mintInternalSigningCapability({
+      request: submitRequest,
+      approvalComponent: 'SignTx',
+    });
+    hash = await wallet.ethSendTransaction({
+      ...submitRequest,
       approvalRes: {
         ...transactionForSubmit,
         signingTxId,
@@ -950,6 +969,7 @@ export const sendTransactionByMiniSignV2 = async ({
       pushed: false,
       result: undefined,
       account: account,
+      authorityContext: capability,
     });
     await handleSendAfter();
   } catch (e) {

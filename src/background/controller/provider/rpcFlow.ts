@@ -714,7 +714,8 @@ const flowContext = flow
             if (retryType) {
               if (!approvalRes?.isGnosis) {
                 notificationService.setCurrentRequestDeferFn(
-                  createRequestDeferFn(_approvalRes)
+                  createRequestDeferFn(_approvalRes),
+                  _approvalRes?.__approvalId
                 );
               }
             }
@@ -781,7 +782,12 @@ const flowContext = flow
     const requestDeferFn = createRequestDeferFn(approvalRes);
 
     if (!approvalRes?.isGnosis) {
-      notificationService.setCurrentRequestDeferFn(requestDeferFn);
+      // Defer ownership: revokeSigningOperation clears it when the owning
+      // (parent) approval is rejected/closed (gpt56 round-10 blocker 1).
+      notificationService.setCurrentRequestDeferFn(
+        requestDeferFn,
+        approvalRes?.__approvalId
+      );
     }
     const requestDefer = requestDeferFn();
     // The uiRequestComponent branch below answers the dApp from the approval

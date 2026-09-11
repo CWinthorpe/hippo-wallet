@@ -11,6 +11,8 @@ import {
 } from 'consts';
 import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
+import { createWalletConnectReadinessAck } from '@/ui/utils/wcInitAck';
+import type { WcAckHandle } from '@/ui/utils/wcInitAck';
 import Process from './Process';
 import Scan from './Scan';
 import { message } from 'antd';
@@ -82,7 +84,28 @@ const WatchAddressWaiting = ({
   const { status: sessionStatus } = useSessionStatus(currentAccount!);
   const { t } = useTranslation();
 
-  const initWalletConnect = async () => {
+  // gpt56 round-10 blocker 5: track every WalletConnect listener this
+  // component registers so retry/refresh/unmount can remove them, and hold
+  // the current initialization-acknowledgement handle for abort-on-retry.
+  const wcListenersRef = useRef<
+    Array<{ event: string; handler: (payload: any) => void }>
+  >([]);
+  const ackHandleRef = useRef<WcAckHandle | null>(null);
+  const addTrackedWcListener = (
+    event: string,
+    handler: (payload: any) => void
+  ) => {
+    eventBus.addEventListener(event, handler);
+    wcListenersRef.current.push({ event, handler });
+  };
+  const removeTrackedWcListeners = () => {
+    wcListenersRef.current.forEach(({ event, handler }) =>
+      eventBus.removeEventListener(event, handler)
+    );
+    wcListenersRef.current = [];
+  };
+
+  const initWalletConnect = async (): Promise<boolean> => {
     const account = params.isGnosis ? params.account! : $account;
     const status = await wallet.getWalletConnectStatus(
       account.address,
@@ -93,20 +116,59 @@ const WatchAddressWaiting = ({
         status === null ? WALLETCONNECT_STATUS_MAP.PENDING : status
       );
     }
-    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
+    // Replace (not accumulate) the pairing-URI display listener across
+    // retries/refreshes: remove the previously tracked INITED handler first
+    // so repeated initWalletConnect() calls never stack listeners.
+    wcListenersRef.current
+      .filter(({ event }) => event === EVENTS.WALLETCONNECT.INITED)
+      .forEach(({ event, handler }) =>
+        eventBus.removeEventListener(event, handler)
+      );
+    wcListenersRef.current = wcListenersRef.current.filter(
+      ({ event }) => event !== EVENTS.WALLETCONNECT.INITED
+    );
+    addTrackedWcListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
     const signingTx = await wallet.getSigningTx(params.signingTxId!);
 
     explainRef.current = signingTx?.explain;
     if (
-      status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
-      status !== WALLETCONNECT_STATUS_MAP.SUBMITTED
+      status === WALLETCONNECT_STATUS_MAP.CONNECTED ||
+      status === WALLETCONNECT_STATUS_MAP.SUBMITTED
     ) {
-      eventBus.emit(EVENTS.broadcastToBackground, {
-        method: EVENTS.WALLETCONNECT.INIT,
-        data: account,
-      });
+      // Already paired: the status itself is the readiness acknowledgement.
+      return true;
+    }
+
+    // gpt56 round-10 blocker 5: await an explicit acknowledgement (pairing
+    // URI via INITED, or CONNECTED/SUBMITTED status) before reporting
+    // readiness. Failure or timeout returns false so the caller must NOT
+    // announce the signing component.
+    ackHandleRef.current?.abort();
+    const ack = createWalletConnectReadinessAck({
+      events: {
+        inited: EVENTS.WALLETCONNECT.INITED,
+        statusChanged: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      },
+      statusMap: WALLETCONNECT_STATUS_MAP,
+      addListener: (event, handler) => addTrackedWcListener(event, handler),
+      removeListener: (event, handler) =>
+        eventBus.removeEventListener(event, handler),
+      kickInit: () =>
+        eventBus.emit(EVENTS.broadcastToBackground, {
+          method: EVENTS.WALLETCONNECT.INIT,
+          data: account,
+        }),
+    });
+    ackHandleRef.current = ack;
+    try {
+      await ack.promise;
+      return true;
+    } catch (e: any) {
+      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+      setConnectError({ message: String(e?.message || e) });
+      return false;
     }
   };
 
@@ -115,16 +177,21 @@ const WatchAddressWaiting = ({
   };
 
   const handleRetry = async (retry?: boolean) => {
-    const account = params.isGnosis ? params.account! : $account;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
+    // gpt56 round-10 blocker 5: retry re-initializes the connector BEFORE
+    // re-driving the signing request; a failed re-init never re-announces.
+    const ready = await initWalletConnect();
+    if (!ready) {
+      return;
+    }
     wallet.resendSign(retry);
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
     emitSignComponentAmounted(getApprovalBinding());
   };
 
   const handleRefreshQrCode = () => {
-    initWalletConnect();
+    void initWalletConnect();
   };
 
   const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
@@ -248,7 +315,7 @@ const WatchAddressWaiting = ({
     signFinishedHandlerRef.current = signFinishedHandler;
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    eventBus.addEventListener(
+    addTrackedWcListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
       async ({ status, payload }) => {
         setVisible(true);
@@ -339,16 +406,14 @@ const WatchAddressWaiting = ({
       }
     );
 
-    // gpt56 round-9 blocker 4: mount must initialize the WalletConnect
-    // keyring/session (INIT emit + URI delivery), not only the manual QR
-    // refresh path. Listeners are already registered above; run the init
-    // before announcing the waiting component so a stalled hardware prompt
-    // cannot be shown before the pairing flow starts. Errors surface in
-    // the component's connect-error state instead of killing init().
-    await initWalletConnect().catch((e) => {
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-      setConnectError({ message: String(e?.message || e) });
-    });
+    // gpt56 round-10 blocker 5: announce readiness ONLY after the connector
+    // initialization is acknowledged. A failed/timed-out init keeps the
+    // component in FAILED state (with a working re-init retry) and never
+    // arms the dApp signer.
+    const ready = await initWalletConnect();
+    if (!ready) {
+      return;
+    }
 
     emitSignComponentAmounted(getApprovalBinding(approval));
   };
@@ -361,6 +426,8 @@ const WatchAddressWaiting = ({
       if (handler) {
         eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
       }
+      ackHandleRef.current?.abort();
+      removeTrackedWcListeners();
     };
   }, []);
 

@@ -112,9 +112,9 @@ describe('notificationService origin-scoped rejection (authority transitions)', 
 
     expect(victim.settled).toBe('rejected');
     expect(bystander.settled).toBe('pending');
-    expect(
-      notificationService.approvals.map((a) => a.data.origin)
-    ).toEqual(['https://good.test']);
+    expect(notificationService.approvals.map((a) => a.data.origin)).toEqual([
+      'https://good.test',
+    ]);
 
     notificationService.rejectAllApprovals();
     await bystander.promise;
@@ -162,7 +162,12 @@ describe('notificationService origin-scoped rejection (authority transitions)', 
     const approval = notificationService.approvals[0];
 
     notificationService.bumpApprovalEpoch();
-    await notificationService.resolveApproval(undefined, false, approval.id);
+    await notificationService.resolveApproval(
+      undefined,
+      false,
+      approval.id,
+      approval.data.approvalComponent
+    );
     await flush();
 
     // Resolve must have been a no-op: the request is still queued unpromised.
@@ -174,7 +179,12 @@ describe('notificationService origin-scoped rejection (authority transitions)', 
     matching.approvedEpoch = notificationService.approvalEpoch;
     notificationService.approvals = [matching];
     notificationService.currentApproval = matching;
-    await notificationService.resolveApproval(undefined, false, approval.id);
+    await notificationService.resolveApproval(
+      undefined,
+      false,
+      approval.id,
+      approval.data.approvalComponent
+    );
     await req.promise;
     expect(req.settled).toBe('resolved');
   });

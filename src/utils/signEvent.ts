@@ -120,30 +120,34 @@ export const createSignEventConsumer = (
  * the service-worker context). Exactly one live waiter exists per parent
  * approval id: re-registering (resendSign retry) detaches the previous
  * listener so one AMOUNTED event can never settle two generations of the
- * same operation, and a consumed event is never re-delivered.
+ * same operation, and a consumed event is never re-delivered. Rejection or
+ * teardown of the owning approval CANCELS the waiter with an explicit error
+ * (gpt56 round-10 blocker 1) so a cancelled signing continuation can never
+ * proceed to its sink, and no stale waiter survives to accept a later
+ * matching event.
  */
-const activeWaiters = new Map<
-  string,
-  { listener: (data?: Partial<SignEventBinding>) => void; settled: boolean }
->();
+type WaiterEntry = {
+  listener: (data?: Partial<SignEventBinding>) => void;
+  reject: (err: unknown) => void;
+  settled: boolean;
+};
+
+const activeWaiters = new Map<string, WaiterEntry>();
 
 export const waitSignComponentAmounted = (
   binding: SignEventBinding
 ): Promise<void> =>
-  new Promise<void>((resolve) => {
+  new Promise<void>((resolve, reject) => {
     const key = binding.approvalId;
-    const previous = activeWaiters.get(key);
-    if (previous) {
-      eventBus.removeEventListener(
-        EVENTS.SIGN_WAITING_AMOUNTED,
-        previous.listener
-      );
-      activeWaiters.delete(key);
-    }
-    const entry: {
-      listener: (data?: Partial<SignEventBinding>) => void;
-      settled: boolean;
-    } = { listener: () => undefined, settled: false };
+    cancelSignComponentWait(
+      key,
+      new Error('Superseded by a newer signing generation; approve again.')
+    );
+    const entry: WaiterEntry = {
+      listener: () => undefined,
+      reject: () => undefined,
+      settled: false,
+    };
     entry.listener = (data?: Partial<SignEventBinding>) => {
       if (entry.settled) return;
       if (!matchesSignEvent(data, binding)) return;
@@ -155,21 +159,38 @@ export const waitSignComponentAmounted = (
       if (activeWaiters.get(key) === entry) activeWaiters.delete(key);
       resolve();
     };
+    entry.reject = (err: unknown) => {
+      if (entry.settled) return;
+      entry.settled = true;
+      eventBus.removeEventListener(
+        EVENTS.SIGN_WAITING_AMOUNTED,
+        entry.listener
+      );
+      if (activeWaiters.get(key) === entry) activeWaiters.delete(key);
+      reject(err);
+    };
     activeWaiters.set(key, entry);
     eventBus.addEventListener(EVENTS.SIGN_WAITING_AMOUNTED, entry.listener);
   });
 
-/** Cancel a waiter (approval rejected/closed) without resolving it. */
-export const cancelSignComponentWait = (approvalId: string) => {
+/** Cancel a waiter (approval rejected/closed) with an explicit rejection. */
+export const cancelSignComponentWait = (approvalId: string, err?: unknown) => {
   const previous = activeWaiters.get(approvalId);
   if (previous) {
+    activeWaiters.delete(approvalId);
     eventBus.removeEventListener(
       EVENTS.SIGN_WAITING_AMOUNTED,
       previous.listener
     );
-    activeWaiters.delete(approvalId);
+    previous.reject(
+      err ?? new Error('Signing request was cancelled; approve again.')
+    );
   }
 };
+
+/** Test/inspection only: is a waiter currently registered for this id? */
+export const hasSignComponentWaiter = (approvalId: string) =>
+  activeWaiters.has(approvalId);
 
 // only work in UI
 export const emitSignComponentAmounted = (

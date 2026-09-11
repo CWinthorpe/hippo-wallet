@@ -38,6 +38,7 @@ import {
   CHAINS_ENUM,
   HARDWARE_KEYRING_TYPES,
   INTERNAL_REQUEST_ORIGIN,
+  INTERNAL_REQUEST_SESSION,
   KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
@@ -1505,22 +1506,38 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     } else {
       // it should never go to here
       try {
+        // gpt56 round-10 blocker 2: this direct fallback bypasses the
+        // waiting-component handshake, so it mints its own capability at
+        // the user's confirm gesture and threads it through every sink.
+        const fallbackRequest = {
+          data: { params: [account.address, typedData] },
+          session: INTERNAL_REQUEST_SESSION,
+        };
+        const capability = await wallet.mintInternalSigningCapability({
+          request: fallbackRequest,
+          approvalComponent: 'SignTypedData',
+        });
         let result = await wallet.signTypedDataInternal(
           account.type,
           account.address,
           typedData as any,
           {
             version: 'V4',
-          }
+          },
+          capability
         );
         result = adjustV('eth_signTypedData', result);
 
         const sigs = await wallet.getGnosisTransactionSignatures();
         if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(account.address, result);
+          await wallet.gnosisAddConfirmation(
+            account.address,
+            result,
+            capability
+          );
         } else {
-          await wallet.gnosisAddSignature(account.address, result);
-          await wallet.postGnosisTransaction();
+          await wallet.gnosisAddSignature(account.address, result, capability);
+          await wallet.postGnosisTransaction(capability);
         }
         if (isSend) {
           wallet.clearPageStateCache();

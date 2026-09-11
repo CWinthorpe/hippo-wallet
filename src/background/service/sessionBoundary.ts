@@ -1,4 +1,6 @@
 import { ethErrors } from 'eth-rpc-errors';
+import { sha256 } from '@noble/hashes/sha256';
+import { bytesToHex } from '@ethereumjs/util';
 import notificationService from './notification';
 import permissionService, { ConnectedSite } from './permission';
 import preferenceService, { Account } from './preference';
@@ -177,6 +179,20 @@ const rejectAuthority = (message: string): never => {
 };
 
 /**
+ * Canonical digest binding a capability to one exact request. Computed by
+ * the mint and RE-computed sink-adjacent from the live request; a token
+ * cannot be replayed against a different payload.
+ */
+export const computeRequestDigest = (method: string, params: unknown) =>
+  bytesToHex(
+    sha256(
+      new TextEncoder().encode(
+        JSON.stringify({ method, params: params ?? null })
+      )
+    )
+  );
+
+/**
  * Revalidate the authority token immediately adjacent to a privileged sink.
  * This is intentionally independent of rpcFlow so an async keyring, hardware,
  * or RPC operation cannot outlive the boundary checks at handler entry.
@@ -212,8 +228,16 @@ export const assertAuthorityContextStillValid = (
 
   if (context.boundAccount) {
     const site = permissionService.getConnectedSite(context.origin);
+    // gpt56 round-10 blocker 2: a minted INTERNAL capability (approvalBound
+    // false) must bind to the BACKGROUND live account — a caller-supplied
+    // currentAccount is untrusted stale UI state and is ignored. dApp
+    // approval-captured contexts keep the handler-resolved account (e.g.
+    // request-scoped Cobo delegation), which rpcFlow itself bound under the
+    // user's approval at capture time.
     const liveAccount = context.internalOrigin
-      ? currentAccount || preferenceService.getCurrentAccount()
+      ? context.approvalBound === false
+        ? preferenceService.getCurrentAccount()
+        : currentAccount || preferenceService.getCurrentAccount()
       : preferenceService.getPreference('isEnabledDappAccount') && site
       ? site.account || preferenceService.getCurrentAccount()
       : preferenceService.getCurrentAccount();

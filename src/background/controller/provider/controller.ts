@@ -30,7 +30,7 @@ import {
 import { Session } from 'background/service/session';
 import {
   assertAuthorityContextStillValid,
-  captureInternalAuthorityContext,
+  computeRequestDigest,
 } from 'background/service/sessionBoundary';
 import { TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
@@ -151,52 +151,61 @@ const assertSigningApprovalResult = (
 };
 
 /**
- * gpt56 round-9 blocker 2: internal (popup / MiniSign) send and message-sign
- * flows complete their confirmation INSIDE the popup UI, so they traverse no
- * rpcFlow dApp approval and carry no dApp $signingContext. Mint a distinct
- * background-side capability at handler entry — bound to the confirmed
- * account, chain, live epochs, and a request digest — but only when the
- * request is internal AND supplies no context. dApp requests always carry the
- * approval-captured context (or fail closed in the assert), so external
- * origins can never reach this mint. The round-8 fix weakened nothing:
- * missing/invalid authority still rejects before any keyring call.
+ * gpt56 round-10 blocker 2: internal (popup / MiniSign) signing flows must
+ * carry a capability MINTED AT THE CONFIRMATION GESTURE via
+ * wallet.mintInternalSigningCapability — the sink never mints authority on a
+ * caller's behalf. An internal request that arrives without a context has no
+ * confirmed gesture behind it and fails closed; external (dApp) requests
+ * must carry the approval-captured $signingContext from rpcFlow. The mint is
+ * bound to the background LIVE account/chain/epochs at confirmation time and
+ * to this exact request digest, re-validated below.
  */
-const ensureRequestAuthorityContext = (
+const requireRequestAuthorityContext = (
   req: {
     session?: { origin?: string };
     account?: any;
     authorityContext?: import('background/service/sessionBoundary').AuthorityContext;
     data?: any;
   },
-  approvalComponent: string,
-  boundChain?: string
+  approvalComponent: string
 ) => {
-  if (req.authorityContext) return req.authorityContext;
-  const origin = req.session?.origin;
-  if (!origin || !permissionService.isInternalOrigin(origin)) {
-    // External origins must arrive with the approval-captured context;
-    // minting one here would fabricate consent. Fail closed instead.
+  const context = req.authorityContext;
+  if (!context || !context.operationId || !context.requestDigest) {
     throw ethErrors.provider.userRejectedRequest({
       message: 'Missing signing authority context; approve again.',
     });
   }
-  req.authorityContext = captureInternalAuthorityContext({
-    boundAccount: req.account || preferenceService.getCurrentAccount(),
-    boundChain,
-    requestDigest: bytesToHex(
-      sha256(
-        new TextEncoder().encode(
-          JSON.stringify({
-            internal: approvalComponent,
-            origin,
-            params: req.data?.params,
-          })
-        )
-      )
-    ),
-    approvalComponent,
-  });
-  return req.authorityContext;
+  const origin = req.session?.origin ?? '';
+  // The token must name the exact request origin it was minted/captured for,
+  // and internal (gesture-minted) tokens may never authorize dApp-origin
+  // requests or vice versa.
+  if (context.origin !== origin) {
+    throw ethErrors.provider.userRejectedRequest({
+      message: 'Signing authority origin mismatch; approve again.',
+    });
+  }
+  if (
+    context.approvalBound === false &&
+    !permissionService.isInternalOrigin(origin)
+  ) {
+    throw ethErrors.provider.userRejectedRequest({
+      message: 'Internal signing capability used for a dApp request.',
+    });
+  }
+  // Token can only authorize the exact payload it was minted for:
+  // recompute the canonical digest from the live request and compare.
+  if (context.approvalBound === false) {
+    const expectedDigest = computeRequestDigest(
+      `${context.approvalComponent}:${origin}`,
+      req.data?.params
+    );
+    if (expectedDigest !== context.requestDigest) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Signing capability does not match this request.',
+      });
+    }
+  }
+  return context;
 };
 
 const convertToHex = (data: Buffer | bigint) => {
@@ -632,19 +641,9 @@ class ProviderController extends BaseController {
       approvalRes,
       account,
     } = cloneDeep(options);
-    // gpt56 round-9 blocker 2: internal popup/MiniSign sends carry no dApp
-    // approval context; mint the internal capability BEFORE any assert so
-    // the sink still fails closed for external origins without one.
-    ensureRequestAuthorityContext(
-      options as any,
-      'SignTx',
-      findChain({
-        id:
-          typeof txParams?.chainId === 'string'
-            ? Number(BigInt(txParams.chainId))
-            : txParams?.chainId,
-      })?.enum
-    );
+    // gpt56 round-10 blocker 2: require the capability minted at the
+    // confirmation gesture (popup) or captured by rpcFlow (dApp approval).
+    requireRequestAuthorityContext(options as any, 'SignTx');
     assertSigningApprovalResult(approvalRes, options.authorityContext as any);
     assertAuthorityContextStillValid(options.authorityContext as any, account);
     const currentAccount = account;
@@ -1294,8 +1293,8 @@ class ProviderController extends BaseController {
     assertProviderRequest(req);
     const { data, approvalRes, session, account: currentAccount } = req;
     if (!data.params) return;
-    // gpt56 round-9 blocker 2: mint internal capability before asserts.
-    ensureRequestAuthorityContext(req, 'SignText');
+    // gpt56 round-10 blocker 2: require the gesture-minted capability.
+    requireRequestAuthorityContext(req, 'SignText');
 
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
@@ -1442,8 +1441,8 @@ class ProviderController extends BaseController {
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
   ethSignTypedDataV1 = async (req) => {
     assertProviderRequest(req);
-    // gpt56 round-9 blocker 2: mint internal capability before asserts.
-    ensureRequestAuthorityContext(req, 'SignTypedData');
+    // gpt56 round-10 blocker 2: require the gesture-minted capability.
+    requireRequestAuthorityContext(req, 'SignTypedData');
     const {
       data: {
         params: [data, from],
@@ -1503,8 +1502,8 @@ class ProviderController extends BaseController {
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV3 = async (req) => {
     assertProviderRequest(req);
-    // gpt56 round-9 blocker 2: mint internal capability before asserts.
-    ensureRequestAuthorityContext(req, 'SignTypedData');
+    // gpt56 round-10 blocker 2: require the gesture-minted capability.
+    requireRequestAuthorityContext(req, 'SignTypedData');
     const {
       data: {
         params: [from, data],
@@ -1571,8 +1570,8 @@ class ProviderController extends BaseController {
       account: currentAccount,
     } = req;
     assertProviderRequest(req);
-    // gpt56 round-9 blocker 2: mint internal capability before asserts.
-    ensureRequestAuthorityContext(req, 'SignTypedData');
+    // gpt56 round-10 blocker 2: require the gesture-minted capability.
+    requireRequestAuthorityContext(req, 'SignTypedData');
     if (
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)

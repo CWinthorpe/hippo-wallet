@@ -123,6 +123,8 @@ class NotificationService extends Events {
   notifiWindowId: null | number = null;
   isLocked = false;
   currentRequestDeferFn?: (retry?: boolean) => void;
+  /** Parent approval id owning currentRequestDeferFn (teardown binding). */
+  currentRequestDeferOwnerApprovalId?: string;
   statsData: StatsData | undefined;
 
   get approvals() {
@@ -190,7 +192,8 @@ class NotificationService extends Events {
             undefined,
             false,
             false,
-            this.currentApproval?.id
+            this.currentApproval?.id,
+            this.currentApproval?.data?.approvalComponent
           );
         }
       }
@@ -237,63 +240,67 @@ class NotificationService extends Events {
   resolveApproval = async (
     data?: any,
     forceReject = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: string
   ) => {
-    // Approval identity is mandatory: an approval may only be resolved by the
-    // exact id AND lifecycle epoch that rendered it. Without a matching id
-    // (or after the epoch bumped on lock/session teardown) this is a no-op,
-    // never a blind resolve of whatever is current.
+    // Approval identity is mandatory: an approval may only be resolved by
+    // the exact id AND component that rendered it, at its lifecycle epoch.
+    // Without a matching id/component (or after the epoch bumped on
+    // lock/session teardown) this is a no-op, never a blind resolve of
+    // whatever is current (gpt56 round-10 blocker 3).
     if (
       !approvalId ||
       approvalId !== this.currentApproval?.id ||
+      !approvalComponent ||
+      approvalComponent !== this.currentApproval?.data?.approvalComponent ||
       (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
         this.approvalEpoch
     ) {
       return;
     }
     if (forceReject) {
+      this.revokeSigningOperation(this.currentApproval);
       this.currentApproval?.reject &&
         this.currentApproval?.reject(
           new EthereumProviderError(4001, 'User Cancel')
         );
     } else {
-      // Operation identity for the SIGN_WAITING handshake (gpt56 round-9
-      // blocker 1). Priority:
-      //  1. data already carries a full binding (loop re-entry) -> keep it;
-      //  2. this approval's params carry an inherited parent binding (this
-      //     is a waiting child) -> propagate the PARENT identity, so a
-      //     nested child still wakes the original operation waiter;
-      //  3. otherwise this is the dApp-facing parent approval -> attach its
-      //     own id/component and the rpcFlow-captured $signingContext.
-      const parentParams: any =
+      // Lineage for the SIGN_WAITING handshake is derived EXCLUSIVELY from
+      // background-owned approval state (gpt56 round-10 blocker 3): reserved
+      // __* fields arriving in UI-supplied data are stripped, so a stale or
+      // confused extension context can never forge a parent binding. A
+      // waiting child inherits the parent tuple from its own params (placed
+      // there by the background resolve below); the parent attaches its own.
+      const approvalParams: any =
         (this.currentApproval.data as any)?.params || {};
-      const carried =
-        data && typeof data === 'object' && (data as any).__signingContext
-          ? {
-              __approvalId: (data as any).__approvalId,
-              __approvalComponent: (data as any).__approvalComponent,
-              __signingContext: (data as any).__signingContext,
-            }
-          : null;
-      const inherited =
-        !carried && parentParams.__signingContext
-          ? {
-              __approvalId: parentParams.__approvalId,
-              __approvalComponent: parentParams.__approvalComponent,
-              __signingContext: parentParams.__signingContext,
-            }
-          : null;
-      const own = carried ||
-        inherited || {
-          __approvalId: this.currentApproval.id,
-          __approvalComponent: this.currentApproval.data.approvalComponent,
-          __signingContext:
-            parentParams.$signingContext || parentParams.__signingContext,
-        };
-      const boundData =
-        data && typeof data === 'object'
-          ? Object.assign(Array.isArray(data) ? [...data] : { ...data }, own)
+      const cleanData =
+        data && typeof data === 'object' && !Array.isArray(data)
+          ? (() => {
+              const copy = { ...(data as Record<string, unknown>) };
+              delete copy.__approvalId;
+              delete copy.__approvalComponent;
+              delete copy.__signingContext;
+              return copy;
+            })()
           : data;
+      const lineage = approvalParams.__signingContext
+        ? {
+            __approvalId: approvalParams.__approvalId,
+            __approvalComponent: approvalParams.__approvalComponent,
+            __signingContext: approvalParams.__signingContext,
+          }
+        : {
+            __approvalId: this.currentApproval.id,
+            __approvalComponent: this.currentApproval.data.approvalComponent,
+            __signingContext: approvalParams.$signingContext,
+          };
+      const boundData =
+        cleanData && typeof cleanData === 'object'
+          ? Object.assign(
+              Array.isArray(cleanData) ? [...cleanData] : { ...cleanData },
+              lineage
+            )
+          : cleanData;
       this.currentApproval?.resolve && this.currentApproval?.resolve(boundData);
     }
 
@@ -311,18 +318,68 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
+  /**
+   * gpt56 round-10 blocker 1: cancelling an approval must revoke everything
+   * the signing operation was waiting on:
+   *  - the parent-keyed AMOUNTED waiter (reject so neither the current nor a
+   *    stale generation can settle after Cancel);
+   *  - the deferred continuation closure (resendSign can no longer re-drive
+   *    it);
+   *  - the origin's authority epoch for SIGN operations, so a keyring/hardware
+   *    signature already in flight fails the sink-adjacent revalidations
+   *    instead of completing or broadcasting.
+   * Non-signing approvals (Connect, chain prompts, Unlock) keep the existing
+   * scoped-reject semantics with no epoch transition.
+   */
+  revokeSigningOperation = (approval: Approval | null) => {
+    if (!approval) return;
+    const params: any = (approval.data as any)?.params || {};
+    const parentApprovalId: string | undefined =
+      params.__approvalId || approval.id;
+    const component = approval.data?.approvalComponent;
+    const isSigningOperation =
+      !!(params.$signingContext || params.__signingContext) ||
+      component === 'SignTx' ||
+      component === 'SignText' ||
+      component === 'SignTypedData' ||
+      !!params.__approvalId;
+    try {
+      // Lazy require: signEvent statically imports @/constant (location at
+      // module scope), which must not join the notification service's
+      // import graph; the registry functions themselves are context-agnostic.
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const signEventModule: typeof import('@/utils/signEvent') = require('@/utils/signEvent');
+      if (parentApprovalId) {
+        signEventModule.cancelSignComponentWait(parentApprovalId);
+      }
+    } catch (e) {
+      // registry teardown is best-effort; epoch revocation below still fails
+      // the sink adjacent asserts closed.
+    }
+    if (this.currentRequestDeferOwnerApprovalId === parentApprovalId) {
+      this.currentRequestDeferFn = undefined;
+      this.currentRequestDeferOwnerApprovalId = undefined;
+    }
+    const origin = approval.data?.origin;
+    if (isSigningOperation && origin) {
+      this.bumpOriginApprovalEpoch(origin);
+    }
+  };
+
   rejectApproval = async (
     err?: string,
     stay = false,
     isInternal = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: string
   ) => {
-    // Mandatory identity + epoch: only the matching rendered approval may be
-    // rejected. A missing or stale id/epoch is ignored rather than rejecting
-    // a newer approval (or the same approval after a session boundary).
+    // Mandatory identity: exact id + component + epoch, mirroring
+    // resolveApproval (gpt56 round-10 blocker 3).
     if (
       !approvalId ||
       approvalId !== this.currentApproval?.id ||
+      !approvalComponent ||
+      approvalComponent !== this.currentApproval?.data?.approvalComponent ||
       (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
         this.approvalEpoch
     ) {
@@ -330,6 +387,7 @@ class NotificationService extends Events {
     }
     this.addLastRejectDapp();
     const approval = this.currentApproval;
+    this.revokeSigningOperation(approval);
     if (this.approvals.length <= 1) {
       await this.clear(stay); // TODO: FIXME
     }
@@ -490,6 +548,28 @@ class NotificationService extends Events {
   };
 
   clear = async (stay = false) => {
+    // Teardown without explicit reject (boundary clears): drop every
+    // registered AMOUNTED waiter and defer so nothing can settle after the
+    // queue is gone (gpt56 round-10 blocker 1). Epochs are bumped by the
+    // calling boundary; this only removes in-memory continuations.
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const signEventModule: typeof import('@/utils/signEvent') = require('@/utils/signEvent');
+      [
+        ...this.approvals,
+        ...(this.currentApproval ? [this.currentApproval] : []),
+      ].forEach((approval: any) => {
+        const params: any = approval?.data?.params || {};
+        const waitId = params.__approvalId || approval?.id;
+        if (waitId) {
+          signEventModule.cancelSignComponentWait(waitId);
+        }
+      });
+    } catch (e) {
+      // best-effort teardown
+    }
+    this.currentRequestDeferFn = undefined;
+    this.currentRequestDeferOwnerApprovalId = undefined;
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
@@ -505,6 +585,7 @@ class NotificationService extends Events {
   rejectAllApprovals = () => {
     this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
+      this.revokeSigningOperation(approval);
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')
@@ -512,6 +593,8 @@ class NotificationService extends Events {
     });
     this.approvals = [];
     this.currentApproval = null;
+    this.currentRequestDeferFn = undefined;
+    this.currentRequestDeferOwnerApprovalId = undefined;
     transactionHistoryService.removeAllSigningTx();
   };
 
@@ -532,6 +615,10 @@ class NotificationService extends Events {
       return;
     }
     victims.forEach((approval) => {
+      // Origin authority transitions must also tear down any signing
+      // operation continuation keyed to the rejected approvals
+      // (gpt56 round-10 blocker 1).
+      this.revokeSigningOperation(approval);
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')
@@ -591,8 +678,12 @@ class NotificationService extends Events {
     }
   };
 
-  setCurrentRequestDeferFn = (fn: (retry?: boolean) => void) => {
+  setCurrentRequestDeferFn = (
+    fn: (retry?: boolean) => void,
+    ownerApprovalId?: string
+  ) => {
     this.currentRequestDeferFn = fn;
+    this.currentRequestDeferOwnerApprovalId = ownerApprovalId;
   };
 
   callCurrentRequestDeferFn = (retry?: boolean) => {

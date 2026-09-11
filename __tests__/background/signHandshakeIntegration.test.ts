@@ -183,10 +183,12 @@ describe('parent/child sign handshake integration (blocker 1)', () => {
     });
 
     // User approves; the resolve payload gains identity via the real path.
+    // gpt56 round-10 blocker 3: exact id AND component are mandatory.
     await notificationService.resolveApproval(
       { tx: 'approved', uiRequestComponent: 'LedgerHardwareWaiting' },
       false,
-      A.id
+      A.id,
+      'SignTx'
     );
     const resolved: any = await aPromise;
     expect(resolved.__approvalId).toBe(A.id);
@@ -260,6 +262,89 @@ describe('parent/child sign handshake integration (blocker 1)', () => {
     ).toBe(false);
   });
 
+  test('rejecting the child cancels the parent-keyed waiter (blocker 1 teardown)', async () => {
+    const parentParams = { $signingContext: CONTEXT, data: [{}] };
+    const { approval: A, promise: aPromise } = queueApproval(
+      'SignTx',
+      parentParams
+    );
+    await notificationService.resolveApproval(
+      { tx: 'approved', uiRequestComponent: 'LedgerHardwareWaiting' },
+      false,
+      A.id,
+      'SignTx'
+    );
+    const resolved: any = await aPromise;
+    const { approval: B } = queueApproval('LedgerHardwareWaiting', resolved);
+
+    let waiterState: 'pending' | 'settled' | 'rejected' = 'pending';
+    void waitSignComponentAmounted({
+      approvalId: A.id,
+      approvalComponent: 'SignTx',
+      authorityContext: CONTEXT,
+    })
+      .then(() => {
+        waiterState = 'settled';
+      })
+      .catch(() => {
+        waiterState = 'rejected';
+      });
+    await settle();
+    expect(waiterState).toBe('pending');
+
+    // The user cancels the visible CHILD approval.
+    await notificationService.rejectApproval(
+      'user cancel',
+      false,
+      false,
+      B.id,
+      'LedgerHardwareWaiting'
+    );
+    await settle();
+    // The PARENT-keyed waiter must have been cancelled, not left live.
+    expect(waiterState).toBe('rejected');
+
+    // A late matching AMOUNTED event can no longer settle anything.
+    emitSignComponentAmounted({
+      approvalId: A.id,
+      approvalComponent: 'SignTx',
+      authorityContext: CONTEXT,
+    });
+    await settle();
+    expect(waiterState).toBe('rejected');
+  });
+
+  test('rejecting the child bumps the origin epoch so in-flight sink revalidation fails closed (blocker 1)', async () => {
+    const parentParams = { $signingContext: CONTEXT, data: [{}] };
+    const { approval: A, promise: aPromise } = queueApproval(
+      'SignTx',
+      parentParams
+    );
+    const epochBefore = notificationService.getOriginApprovalEpoch(
+      CONTEXT.origin
+    );
+    await notificationService.resolveApproval(
+      { tx: 'approved', uiRequestComponent: 'LedgerHardwareWaiting' },
+      false,
+      A.id,
+      'SignTx'
+    );
+    const resolved: any = await aPromise;
+    const { approval: B } = queueApproval('LedgerHardwareWaiting', resolved);
+    await notificationService.rejectApproval(
+      'user cancel',
+      false,
+      false,
+      B.id,
+      'LedgerHardwareWaiting'
+    );
+    // The child carries the parent lineage; cancelling it revokes the
+    // operation's origin-scoped authority exactly once.
+    expect(notificationService.getOriginApprovalEpoch(CONTEXT.origin)).toBe(
+      epochBefore + 1
+    );
+  });
+
   test('resend re-registers exactly one live waiter per operation', async () => {
     const { approval: A } = queueApproval('SignTx', {
       $signingContext: CONTEXT,
@@ -270,9 +355,15 @@ describe('parent/child sign handshake integration (blocker 1)', () => {
       approvalId: A.id,
       approvalComponent: 'SignTx',
       authorityContext: CONTEXT,
-    }).then(() => {
-      gen1 += 1;
-    });
+    })
+      .then(() => {
+        gen1 += 1;
+      })
+      // gpt56 round-10 blocker 1: re-registration REJECTS the superseded
+      // generation, so a stale waiter can never settle late.
+      .catch(() => {
+        gen1 += -1; // observe rejection, never a resolve
+      });
     let gen2 = 0;
     const second = waitSignComponentAmounted({
       approvalId: A.id,
@@ -289,6 +380,6 @@ describe('parent/child sign handshake integration (blocker 1)', () => {
     await second;
     await settle();
     expect(gen2).toBe(1);
-    expect(gen1).toBe(0); // superseded generation never settles
+    expect(gen1).toBe(-1); // superseded generation was rejected, never settled
   });
 });

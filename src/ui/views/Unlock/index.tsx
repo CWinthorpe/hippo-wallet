@@ -92,7 +92,7 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  const [getApproval, resolveApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
   // Window/request identity binding: the approval this window rendered is
   // captured at mount. The global UNLOCK_WALLET event carries no identity,
   // so a stale window must never resolve an approval it did not render.
@@ -191,6 +191,11 @@ const Unlock = () => {
   const handleUnlockSuccess = useMemoizedFn(async () => {
     const unlockType = pendingUnlockTypeRef.current;
     pendingUnlockTypeRef.current = null;
+    // gpt56 round-10 blocker 4: pendingUnlockTypeRef is set ONLY by a
+    // password/biometric submission performed in THIS window. A global
+    // UNLOCK_WALLET broadcast with no local gesture is transport, not
+    // consent, and must not resume a queued dApp request from here.
+    const localGesture = !!unlockType;
     if (unlockType) {
       ga4.fireEvent(`Unlock_Act_${unlockType}`, {
         event_category: 'Unlock_Wallet',
@@ -210,7 +215,9 @@ const Unlock = () => {
         await routeNotificationAfterUnlock({
           getApproval,
           resolveApproval,
+          rejectApproval,
           expectedApprovalId: renderedApprovalIdRef.current,
+          localGesture,
           replace: (path) => history.replace(path),
         });
       }

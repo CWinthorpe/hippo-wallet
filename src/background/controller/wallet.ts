@@ -170,6 +170,8 @@ import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   assertAuthorityContextStillValid,
+  captureInternalAuthorityContext,
+  computeRequestDigest,
   revokeAccountBoundaryIfAffected,
   runWithSessionBoundary,
   setCurrentAccountWithBoundary,
@@ -605,13 +607,15 @@ export class WalletController extends BaseController {
     err?: string,
     stay = false,
     isInternal = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: string
   ) => {
     return notificationService.rejectApproval(
       err,
       stay,
       isInternal,
-      approvalId
+      approvalId,
+      approvalComponent
     );
   };
 
@@ -2440,13 +2444,16 @@ export class WalletController extends BaseController {
   };
 
   postGnosisTransaction = (
-    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+    authorityContext: import('background/service/sessionBoundary').AuthorityContext
   ) => {
-    // gpt56 round-9 blocker 3: posting the safe tx is the irreversible
-    // effect; revalidate immediately before submission when bound.
-    if (authorityContext) {
-      assertAuthorityContextStillValid(authorityContext);
+    // gpt56 round-10 blocker 2: posting the safe tx is the irreversible
+    // effect; the capability is mandatory and revalidated pre-submission.
+    if (!authorityContext || !authorityContext.operationId) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority context; approve again.',
+      });
     }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -2641,13 +2648,16 @@ export class WalletController extends BaseController {
   gnosisAddConfirmation = async (
     address: string,
     signature: string,
-    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+    authorityContext: import('background/service/sessionBoundary').AuthorityContext
   ) => {
-    // gpt56 round-9 blocker 3: irreversible external effect — revalidate
-    // live authority immediately before submission.
-    if (authorityContext) {
-      assertAuthorityContextStillValid(authorityContext);
+    // gpt56 round-10 blocker 2: irreversible external effect — a capability
+    // is mandatory and revalidated immediately before submission.
+    if (!authorityContext || !authorityContext.operationId) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority context; approve again.',
+      });
     }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
@@ -2668,13 +2678,16 @@ export class WalletController extends BaseController {
   gnosisAddSignature = async (
     address: string,
     signature: string,
-    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+    authorityContext: import('background/service/sessionBoundary').AuthorityContext
   ) => {
-    // gpt56 round-9 blocker 3: irreversible external effect — revalidate
-    // live authority immediately before submission.
-    if (authorityContext) {
-      assertAuthorityContextStillValid(authorityContext);
+    // gpt56 round-10 blocker 2: irreversible external effect — a capability
+    // is mandatory and revalidated immediately before submission.
+    if (!authorityContext || !authorityContext.operationId) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority context; approve again.',
+      });
     }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
@@ -2760,13 +2773,16 @@ export class WalletController extends BaseController {
   }: {
     signerAddress: string;
     signature: string;
-    authorityContext?: import('background/service/sessionBoundary').AuthorityContext;
+    authorityContext: import('background/service/sessionBoundary').AuthorityContext;
   }) => {
-    // gpt56 round-9 blocker 3: submitting the safe-message confirmation is
-    // an irreversible external effect; revalidate when a binding is present.
-    if (authorityContext) {
-      assertAuthorityContextStillValid(authorityContext);
+    // gpt56 round-10 blocker 2: submitting the safe-message confirmation is
+    // an irreversible external effect; the capability is mandatory.
+    if (!authorityContext || !authorityContext.operationId) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority context; approve again.',
+      });
     }
+    assertAuthorityContextStillValid(authorityContext);
     const sigs = this.getGnosisMessageSignatures();
     if (sigs.length > 0) {
       await wallet.addGnosisMessageSignature({
@@ -4120,7 +4136,7 @@ export class WalletController extends BaseController {
         )
       );
 
-    notificationService.setCurrentRequestDeferFn(fn);
+    notificationService.setCurrentRequestDeferFn(fn, binding.approvalId);
     return fn();
   };
 
@@ -4205,7 +4221,7 @@ export class WalletController extends BaseController {
         );
       });
 
-    notificationService.setCurrentRequestDeferFn(fn);
+    notificationService.setCurrentRequestDeferFn(fn, binding.approvalId);
     return fn();
   };
 
@@ -4230,15 +4246,33 @@ export class WalletController extends BaseController {
     type: string,
     from: string,
     data: Record<string, any>,
-    options?: any
+    options?: any,
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
   ) => {
+    // gpt56 round-10 blocker 2: the capability minted at the confirmation
+    // gesture is MANDATORY here — this path bypasses the provider handler,
+    // so it performs the same pre/post-keyring revalidation. Unlocked-only
+    // checking was insufficient: an internal caller could sign stale UI
+    // payloads with no bound authority.
+    if (!authorityContext || !authorityContext.operationId) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority context; approve again.',
+      });
+    }
     if (!keyringService.memStore.getState().isUnlocked) {
       throw ethErrors.provider.userRejectedRequest({
         message: 'Wallet is locked; approve again.',
       });
     }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    return keyringService.signTypedMessage(keyring, { from, data }, options);
+    const result = await keyringService.signTypedMessage(
+      keyring,
+      { from, data },
+      options
+    );
+    assertAuthorityContextStillValid(authorityContext);
+    return result;
   };
 
   decryptMessage = async ({
@@ -5602,6 +5636,62 @@ export class WalletController extends BaseController {
 
   getRecommendGas = getRecommendGas;
   getRecommendNonce = getRecommendNonce;
+
+  /**
+   * gpt56 round-10 blocker 2: internal popup/MiniSign flows mint their
+   * signing capability AT the confirmation gesture (the popup's own
+   * submit/confirm handler calls this immediately before sending the real
+   * request). The token binds the BACKGROUND live account, the target chain,
+   * the current lock/session epochs, and the exact request digest; the
+   * provider sinks then require this context and revalidate it adjacent to
+   * keyring and broadcast. A stale popup (account switched, locked, epoch
+   * changed) fails closed at the sink even if it holds a token.
+   */
+  mintInternalSigningCapability = async ({
+    request,
+    approvalComponent,
+  }: {
+    request: {
+      data: { params: any };
+      session?: { origin?: string };
+    };
+    approvalComponent: string;
+  }): Promise<
+    import('background/service/sessionBoundary').AuthorityContext
+  > => {
+    const liveAccount = preferenceService.getCurrentAccount();
+    if (!liveAccount) {
+      throw new Error('No active account; confirm again.');
+    }
+    if (!keyringService.memStore.getState().isUnlocked) {
+      throw new Error('Wallet is locked; confirm again.');
+    }
+    const firstParam = request?.data?.params?.[0];
+    const targetChainHex =
+      firstParam && typeof firstParam === 'object'
+        ? firstParam.chainId
+        : undefined;
+    const boundChain = targetChainHex
+      ? findChain({
+          id:
+            typeof targetChainHex === 'string'
+              ? Number(BigInt(targetChainHex))
+              : Number(targetChainHex),
+        })?.enum
+      : undefined;
+    return captureInternalAuthorityContext({
+      boundAccount: liveAccount,
+      boundChain,
+      requestDigest: computeRequestDigest(
+        `${approvalComponent}:${
+          request.session?.origin ?? INTERNAL_REQUEST_SESSION.origin
+        }`,
+        request.data.params
+      ),
+      approvalComponent,
+    });
+  };
+
   ethSendTransaction = async (
     ...args: Parameters<typeof providerController.ethSendTransaction>
   ) => {

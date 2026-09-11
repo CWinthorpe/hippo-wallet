@@ -112,11 +112,29 @@ export const sendSignTypedData = async ({
   try {
     const data1 = data as any;
 
-    hash = await wallet.signTypedDataInternal(account?.type, from, data1, {
-      brandName: currentAccount.brandName,
-      signTextMethod: method,
-      version: version,
+    // gpt56 round-10 blocker 2: the capability is minted HERE (the user
+    // already confirmed this exact payload) against the background live
+    // account and epochs; the sink revalidates it before and after keyring.
+    const request = {
+      data: { params: [from, data1] },
+      session: INTERNAL_REQUEST_SESSION,
+    };
+    const capability = await wallet.mintInternalSigningCapability({
+      request,
+      approvalComponent: 'SignTypedData',
     });
+
+    hash = await wallet.signTypedDataInternal(
+      account?.type,
+      from,
+      data1,
+      {
+        brandName: currentAccount.brandName,
+        signTextMethod: method,
+        version: version,
+      },
+      capability
+    );
 
     await wallet.signTextCreateHistory({
       address: from,

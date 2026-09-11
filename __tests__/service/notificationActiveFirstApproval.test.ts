@@ -133,7 +133,28 @@ describe('notificationService.activeFirstApproval', () => {
     expect(current.resolve).not.toHaveBeenCalled();
 
     // Stale id from a rotated queue must not resolve the current approval.
-    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-B');
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-B',
+      'SignTx'
+    );
+    expect(current.resolve).not.toHaveBeenCalled();
+
+    // gpt56 round-10 blocker 3: the exact id alone is insufficient — the
+    // caller must also present the component that rendered it.
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-A'
+    );
+    expect(current.resolve).not.toHaveBeenCalled();
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-A',
+      'SignTypedData'
+    );
     expect(current.resolve).not.toHaveBeenCalled();
 
     // Matching id resolves the exact approval and advances the queue. The
@@ -142,7 +163,12 @@ describe('notificationService.activeFirstApproval', () => {
     // __approvalId/__approvalComponent/__signingContext to prove the result
     // belongs to THIS approval, so a consumer can never resolve against an
     // unrelated completion.
-    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-A');
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-A',
+      'SignTx'
+    );
     expect(current.resolve).toHaveBeenCalledWith({
       signedTx: '0x',
       __approvalId: 'approval-A',
@@ -159,7 +185,12 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.currentApproval = current;
     notificationService.approvals = [current];
 
-    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-C');
+    await notificationService.resolveApproval(
+      { signedTx: '0x' },
+      false,
+      'approval-C',
+      'SignTx'
+    );
     expect(current.resolve).toHaveBeenCalledWith(
       expect.objectContaining({ __signingContext: ctx })
     );
@@ -171,8 +202,38 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.approvals = [current];
     const payload = { signedTx: '0x' };
 
-    await notificationService.resolveApproval(payload, false, 'approval-D');
+    await notificationService.resolveApproval(
+      payload,
+      false,
+      'approval-D',
+      'SignTx'
+    );
     expect(payload).toEqual({ signedTx: '0x' });
+
+    // gpt56 round-10 blocker 3: reserved lineage fields supplied by the UI
+    // are STRIPPED — the lineage can only come from background state.
+    const forgedPayload = {
+      signedTx: '0x',
+      __approvalId: 'forged-parent',
+      __approvalComponent: 'SignTypedData',
+      __signingContext: { operationId: 'forged-op' },
+    };
+    const currentE = makeApproval('approval-E');
+    notificationService.currentApproval = currentE;
+    notificationService.approvals = [currentE];
+    await notificationService.resolveApproval(
+      forgedPayload,
+      false,
+      'approval-E',
+      'SignTx'
+    );
+    expect(currentE.resolve).toHaveBeenCalledWith({
+      signedTx: '0x',
+      __approvalId: 'approval-E',
+      __approvalComponent: 'SignTx',
+      __signingContext: undefined,
+    });
+    expect(forgedPayload.__approvalId).toBe('forged-parent'); // input untouched
   });
 
   test('rejectApproval with a stale id is ignored; matching id rejects', async () => {
@@ -184,7 +245,17 @@ describe('notificationService.activeFirstApproval', () => {
       'user cancelled',
       false,
       false,
-      'approval-B'
+      'approval-B',
+      'SignTx'
+    );
+    expect(current.reject).not.toHaveBeenCalled();
+
+    // gpt56 round-10 blocker 3: id without the rendered component is ignored.
+    await notificationService.rejectApproval(
+      'user cancelled',
+      false,
+      false,
+      'approval-A'
     );
     expect(current.reject).not.toHaveBeenCalled();
 
@@ -192,7 +263,8 @@ describe('notificationService.activeFirstApproval', () => {
       'user cancelled',
       false,
       false,
-      'approval-A'
+      'approval-A',
+      'SignTx'
     );
     expect(current.reject).toHaveBeenCalled();
   });
@@ -212,7 +284,8 @@ describe('notificationService.activeFirstApproval', () => {
     await notificationService.resolveApproval(
       { signedTx: '0x' },
       false,
-      'approval-A'
+      'approval-A',
+      'SignTx'
     );
     expect(current.resolve).not.toHaveBeenCalled();
   });

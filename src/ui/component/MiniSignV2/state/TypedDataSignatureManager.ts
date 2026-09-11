@@ -49,6 +49,13 @@ class TypedDataSignatureManager {
     resolve: (hashes: string[]) => void;
     reject: (reason: any) => void;
   } | null = null;
+  /**
+   * gpt56 round-10 blocker 2: abortable operation generation. start/retry
+   * capture a token; close/reject/reset revokes it, so an in-flight
+   * runSigningFlow loop stops at the NEXT item after cancellation instead of
+   * continuing to drive signers with a stale confirmation flow.
+   */
+  private operationToken = 0;
 
   private notify() {
     const snapshot = this.state;
@@ -118,6 +125,7 @@ class TypedDataSignatureManager {
     this.lastRequest = request;
     this.resumeIndex = 0;
     this.partialResults = [];
+    const operationId = ++this.operationToken;
     const promise = new Promise<string[]>((resolve, reject) => {
       this.pendingResult = { resolve, reject };
     });
@@ -134,6 +142,7 @@ class TypedDataSignatureManager {
           startIndex: 0,
           existingResults: [],
           getContainer: config.getContainer || request.config.getContainer,
+          operationId,
         });
       });
     }
@@ -145,14 +154,17 @@ class TypedDataSignatureManager {
     startIndex = 0,
     existingResults = [],
     getContainer,
+    operationId = this.operationToken,
   }: {
     request: TypedDataSignatureRequest;
     startIndex?: number;
     existingResults?: string[];
     getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
+    operationId?: number;
   }) {
     const { wallet, txs, config } = request;
     const result: string[] = [...existingResults];
+    const aborted = () => operationId !== this.operationToken;
 
     if (config.account.type === KEYRING_TYPE.HdKeyring) {
       try {
@@ -169,6 +181,13 @@ class TypedDataSignatureManager {
 
     try {
       for (let idx = startIndex; idx < txs.length; idx++) {
+        // gpt56 round-10 blocker 2: cancellation/account/session change
+        // revokes the token; stop before signing the next item.
+        if (aborted()) {
+          this.partialResults = result;
+          this.resumeIndex = idx;
+          return;
+        }
         const item = txs[idx];
         this.setState({
           ...this.state,
@@ -183,6 +202,11 @@ class TypedDataSignatureManager {
           account: request.config.account,
         });
 
+        if (aborted()) {
+          this.partialResults = result;
+          this.resumeIndex = idx + 1;
+          return;
+        }
         result.push(hash);
         this.setState({
           ...this.state,
@@ -190,6 +214,11 @@ class TypedDataSignatureManager {
           request,
           progress: { current: idx + 1, total: txs.length },
         });
+      }
+      if (aborted()) {
+        this.partialResults = result;
+        this.resumeIndex = txs.length;
+        return;
       }
       this.partialResults = [];
       this.resumeIndex = 0;
@@ -245,6 +274,7 @@ class TypedDataSignatureManager {
     }
     const startIndex = this.resumeIndex || 0;
     const existingResults = [...this.partialResults];
+    const operationId = ++this.operationToken;
     this.setState({
       status: 'signing',
       request,
@@ -257,11 +287,14 @@ class TypedDataSignatureManager {
         startIndex,
         existingResults,
         getContainer,
+        operationId,
       });
     });
   }
 
   private reset() {
+    // Revoke any in-flight loop generation (close/reject paths).
+    this.operationToken += 1;
     this.lastRequest = null;
     this.resumeIndex = 0;
     this.partialResults = [];

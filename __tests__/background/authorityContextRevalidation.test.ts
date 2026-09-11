@@ -111,6 +111,7 @@ import notificationService from '@/background/service/notification';
 import {
   assertAuthorityContextStillValid,
   captureAuthorityContext,
+  captureInternalAuthorityContext,
   AuthorityContext,
 } from '@/background/service/sessionBoundary';
 
@@ -264,6 +265,25 @@ describe('authority-context primitive (blocker 3)', () => {
     await expect(signOperation()).rejects.toThrow(/approve again/i);
     expect(sinkRan).toBe(false);
     expect(resultReleased).toBe(false);
+  });
+
+  test('minted internal capability binds the LIVE background account, not caller state (blocker 2)', () => {
+    // accountState.current is the background live account in these mocks.
+    const minted = captureInternalAuthorityContext({
+      boundAccount: accountState.current as any,
+      boundChain: undefined,
+      requestDigest: '0xd1',
+      approvalComponent: 'SignTx',
+    });
+    expect(minted.approvalBound).toBe(false);
+    expect(minted.internalOrigin).toBe(true);
+    // operator switches the live account; the stale token must fail even
+    // when the caller re-supplies the ORIGINAL account identity.
+    accountState.current = ACCOUNT_B as any;
+    expect(() =>
+      assertAuthorityContextStillValid(minted, ACCOUNT_A as any)
+    ).toThrow(/account changed/i);
+    accountState.current = ACCOUNT_A as any;
   });
 
   test('internal origin skips site authority but not global epochs', () => {
@@ -491,20 +511,57 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     );
   });
 
-  test('WatchAddressWaiting initializes WalletConnect on mount, not only on refresh', () => {
+  test('WatchAddressWaiting gates readiness on acknowledged WalletConnect init', () => {
     const src = stripComments(
       read('src/ui/views/Approval/components/WatchAddressWaiting/index.tsx')
     );
     const initBody = src.slice(
       src.indexOf('const init = async'),
-      src.indexOf('useEffect(() => {')
+      src.indexOf('const { stay = false }')
     );
+    // round-11: announce only after the ack resolves
     expect(initBody).toContain('await initWalletConnect()');
-    expect(initBody).toContain('.catch(');
-    // init must run BEFORE the waiting-component announcement
-    expect(initBody.indexOf('await initWalletConnect()')).toBeLessThan(
-      initBody.indexOf('emitSignComponentAmounted(')
+    expect(initBody).toContain('if (!ready)');
+    const gateAt = initBody.indexOf('const ready = await initWalletConnect()');
+    const announceAt = initBody.indexOf(
+      'emitSignComponentAmounted(getApprovalBinding(approval))'
     );
+    expect(gateAt).toBeGreaterThanOrEqual(0);
+    expect(announceAt).toBeGreaterThan(gateAt);
+    // unmount aborts the ack and removes every tracked WC listener
+    expect(initBody).toContain('ackHandleRef.current?.abort()');
+    expect(initBody).toContain('removeTrackedWcListeners()');
+    // retry re-initializes before resending
+    const retry = src.slice(
+      src.indexOf('const handleRetry = async'),
+      src.indexOf('const handleRefreshQrCode')
+    );
+    expect(retry).toContain('await initWalletConnect()');
+    expect(retry.indexOf('await initWalletConnect()')).toBeLessThan(
+      retry.indexOf('wallet.resendSign(')
+    );
+    expect(retry).toContain('if (!ready)');
+  });
+
+  test('Unlock window resolves its approval only from a LOCAL gesture (round-10 blocker 4)', () => {
+    const src = stripComments(read('src/ui/views/Unlock/index.tsx'));
+    // localGesture must be DERIVED from the per-window pendingUnlockTypeRef,
+    // never a constant: the global UNLOCK_WALLET broadcast is transport.
+    expect(src).toContain('const localGesture = !!unlockType;');
+    expect(src).not.toMatch(/const localGesture = (?:true|!0)/);
+    expect(src).toContain('localGesture,');
+    expect(src).toContain('rejectApproval,');
+    const helper = stripComments(
+      read('src/ui/views/Unlock/approvalResolution.ts')
+    );
+    // foreign-unlock branch: explicit reject, never resolve
+    expect(helper).toContain('if (!localGesture)');
+    const branch = helper.slice(
+      helper.indexOf('if (!localGesture)'),
+      helper.indexOf('await resolveApproval(undefined')
+    );
+    expect(branch).toContain('rejectApproval');
+    expect(branch).not.toContain('resolveApproval');
   });
 
   test('Unlock is not concurrency-whitelisted (blocker 5)', () => {
@@ -526,9 +583,15 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     // waiter uses parent approvalId from the resolve binding + approvalType
     expect(flow).toContain('waitSignComponentAmounted({');
     const notif = stripComments(read('src/background/service/notification.ts'));
-    // identity propagation: carried > inherited > own
-    expect(notif).toContain('parentParams.__approvalId');
-    expect(notif).toContain('inherited');
+    // round-11 blocker 3: lineage derives ONLY from background-owned approval
+    // state, and UI-supplied reserved fields are stripped before binding.
+    expect(notif).toContain('approvalParams.__approvalId');
+    expect(notif).toContain('delete copy.__approvalId');
+    expect(notif).toContain('delete copy.__signingContext');
+    // component is part of the mandatory identity now
+    expect(notif).toContain(
+      'approvalComponent !== this.currentApproval?.data?.approvalComponent'
+    );
     const wallet = stripComments(read('src/background/controller/wallet.ts'));
     const wrappers = wallet.slice(
       wallet.indexOf('signPersonalMessageWithUI'),
@@ -538,33 +601,35 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     expect(wrappers).toContain('approvalParams.__approvalComponent ||');
   });
 
-  test('dapp send/sign sinks mint an internal capability only for internal origins', () => {
+  test('dapp send/sign sinks require a capability and never mint at the sink', () => {
     const src = stripComments(
       read('src/background/controller/provider/controller.ts')
     );
     const mint = src.slice(
-      src.indexOf('const ensureRequestAuthorityContext'),
+      src.indexOf('const requireRequestAuthorityContext'),
       src.indexOf('const convertToHex')
     );
     expect(mint).toContain(
-      'if (req.authorityContext) return req.authorityContext;'
+      'if (!context || !context.operationId || !context.requestDigest)'
     );
     expect(mint).toContain('permissionService.isInternalOrigin(origin)');
-    // fail-closed for external origins lacking a context
+    // fail-closed for any request lacking a gesture/approval capability
     expect(mint).toContain('Missing signing authority context');
-    expect(mint).toContain('captureInternalAuthorityContext');
-    // every gated sink calls the mint BEFORE the asserts
+    // the sink never mints authority itself (round-11 blocker 2 closure)
+    expect(mint).not.toContain('captureInternalAuthorityContext');
+    expect(src).not.toContain('ensureRequestAuthorityContext');
+    // every gated sink calls the require-gate BEFORE the asserts
     for (const handler of [
       'ethSendTransaction = async (options',
       'personalSign = async (req',
       'ethSignTypedDataV1 = async (req',
-      'ethSignTypedDataV3 = async (req',
-      'ethSignTypedDataV4 = async (req',
+      'ethSignTypedDataV3 = async (req)',
+      'ethSignTypedDataV4 = async (req)',
     ]) {
       const at = src.indexOf(handler);
       expect(at).toBeGreaterThanOrEqual(0);
-      const seg = src.slice(at, at + 1600);
-      const mintAt = seg.indexOf('ensureRequestAuthorityContext(');
+      const seg = src.slice(at, at + 2200);
+      const mintAt = seg.indexOf('requireRequestAuthorityContext(');
       const assertAt = seg.indexOf('assertSigningApprovalResult(');
       expect(mintAt).toBeGreaterThanOrEqual(0);
       expect(assertAt).toBeGreaterThan(mintAt);
@@ -572,7 +637,7 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
     // assert requires __approvalId only for approval-bound contexts
     const assertFn = src.slice(
       src.indexOf('const assertSigningApprovalResult'),
-      src.indexOf('const ensureRequestAuthorityContext')
+      src.indexOf('const requireRequestAuthorityContext')
     );
     expect(assertFn).toContain('authorityContext.approvalBound !== false');
   });

@@ -27,7 +27,8 @@ export const useApproval = () => {
   // re-derive the id from the live queue inside the click handler, so a
   // queue rotation can never make A's event handler resolve approval B.
   const renderedApprovalIdRef = useRef<string | undefined>(undefined);
-  // Handshake binding is the PARENT OPERATION identity (approvalId +
+  const renderedComponentRef = useRef<string | undefined>(undefined);
+  // Handshake binding is the PARENT operation identity (approvalId +
   // component + AuthorityContext), propagated verbatim into waiting-child
   // params by notificationService. A waiting child resolves its OWN approval
   // id above but must emit/consume sign events with the operation tuple the
@@ -40,6 +41,7 @@ export const useApproval = () => {
       .then((approval) => {
         if (!disposed) {
           renderedApprovalIdRef.current = approval?.id;
+          renderedComponentRef.current = approval?.data?.approvalComponent;
           operationBindingRef.current =
             bindSignEventFromApproval(approval) || {};
         }
@@ -60,10 +62,10 @@ export const useApproval = () => {
   ) => {
     const approval = await getApproval();
 
-    // Bind this resolution to the approval that rendered this UI, captured at
-    // mount — never the live queue. If the queue advanced (or the session
-    // epoch changed) meanwhile, the background's exact-id + epoch guard makes
-    // the resolve a no-op instead of resolving whatever is current now.
+    // Bind this resolution to the approval that rendered this UI, captured
+    // at mount — never the live queue. The background requires the exact id,
+    // component, and epoch (gpt56 round-10 blocker 3); a component that did
+    // not render the current approval cannot resolve it.
     const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (!boundId) {
       return;
@@ -75,7 +77,17 @@ export const useApproval = () => {
     }
 
     if (approval) {
-      wallet.resolveApproval(data, forceReject, boundId);
+      // The component identity is always the one rendered in THIS window.
+      // An explicit approvalId that does not match what we rendered fails the
+      // background's exact id+component+epoch guard (fail-closed), which is
+      // the intended behavior — a component may never resolve an approval it
+      // did not render.
+      wallet.resolveApproval(
+        data,
+        forceReject,
+        boundId,
+        renderedComponentRef.current
+      );
     }
 
     if (stay) {
@@ -98,7 +110,13 @@ export const useApproval = () => {
     const approval = await getApproval();
     const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (approval && boundId) {
-      await wallet.rejectApproval(err, stay, isInternal, boundId);
+      await wallet.rejectApproval(
+        err,
+        stay,
+        isInternal,
+        boundId,
+        renderedComponentRef.current
+      );
     }
     if (!stay) {
       history.push('/');
