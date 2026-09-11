@@ -1505,7 +1505,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     } else {
       // it should never go to here
       try {
-        let result = await wallet.signTypedData(
+        let result = await wallet.signTypedDataInternal(
           account.type,
           account.address,
           typedData as any,
@@ -1570,7 +1570,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         account,
       });
     } catch (e) {
-      wallet.coboSafeResetCurrentAccount();
       let content = e.message || JSON.stringify(e);
       if (content.includes('E48')) {
         content = t('page.signTx.coboSafeNotPermission');
@@ -1585,19 +1584,22 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
     const approval = await getApproval();
 
-    wallet.sendRequest({
-      $ctx: params.$ctx,
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          gas: tx.gas,
-          gasPrice: tx.gasPrice,
-          chainId: tx.chainId,
-          ...newTx,
-          isCoboSafe: true,
-        },
-      ],
-    });
+    wallet.sendRequest(
+      {
+        $ctx: params.$ctx,
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            gas: tx.gas,
+            gasPrice: tx.gasPrice,
+            chainId: tx.chainId,
+            ...newTx,
+            isCoboSafe: true,
+          },
+        ],
+      },
+      { account }
+    );
     resolveApproval({
       ...tx,
       nonce: realNonce || tx.nonce,

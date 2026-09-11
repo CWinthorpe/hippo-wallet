@@ -169,9 +169,8 @@ import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
+  assertAuthorityContextStillValid,
   revokeAccountBoundaryIfAffected,
-  revokeSiteAccountBoundaries,
-  resetCurrentCoboSafeAccountWithBoundary,
   runWithSessionBoundary,
   setCurrentAccountWithBoundary,
 } from 'background/service/sessionBoundary';
@@ -198,6 +197,7 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
+import type { SignEventBinding } from '@/utils/signEvent';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -1785,7 +1785,6 @@ export class WalletController extends BaseController {
       }
       return site;
     });
-    revokeSiteAccountBoundaries(sites, nextSites);
     nextSites.forEach((site, index) => {
       if (site !== sites[index]) {
         permissionService.setSite(site);
@@ -2000,7 +1999,6 @@ export class WalletController extends BaseController {
   getConnectedSites = permissionService.getConnectedSites;
   getSites = permissionService.getSites;
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
-    revokeSiteAccountBoundaries(permissionService.getSites(), sites);
     permissionService.setRecentConnectedSites(sites);
   };
   getRecentConnectedSites = () => {
@@ -2047,16 +2045,7 @@ export class WalletController extends BaseController {
     if (data.isConnected && !data.account) {
       data.account = preferenceService.getCurrentAccount();
     }
-    const previousChain = permissionService.getSite(data.origin)?.chain;
     permissionService.setSite(data);
-    // Changing the site's active chain here (dashboard connection settings)
-    // is the same authority transition as wallet_switchEthereumChain: origin
-    // consent rendered against the old chain must not survive it, including
-    // an approval that already resolved but has not reached its sink.
-    if (previousChain && previousChain !== data.chain) {
-      notificationService.rejectApprovalsByOrigin(data.origin);
-      notificationService.bumpOriginApprovalEpoch(data.origin);
-    }
     broadcastChainChanged({
       origin: data.origin,
       chain: chainItem,
@@ -4025,19 +4014,36 @@ export class WalletController extends BaseController {
     type: string,
     from: string,
     data: string,
-    options?: any
+    options?: any,
+    binding?: SignEventBinding,
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
   ) => {
+    if (!binding || !authorityContext) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority binding; approve again.',
+      });
+    }
+    if (!keyringService.memStore.getState().isUnlocked) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Wallet is locked; approve again.',
+      });
+    }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
       options
     );
+    assertAuthorityContextStillValid(authorityContext);
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
       params: {
         success: true,
         data: res,
+        approvalId: binding.approvalId,
+        approvalComponent: binding.approvalComponent,
+        authorityContext: binding.authorityContext,
       },
     });
     return res;
@@ -4049,10 +4055,31 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
-    const fn = () =>
-      waitSignComponentAmounted().then(() => {
-        this.signPersonalMessage(type, from, data as any, options);
+    const approval = notificationService.getApproval();
+    const authorityContext =
+      (approval?.data as any)?.params?.$signingContext ||
+      (approval?.data as any)?.__signingContext;
+    if (!approval?.id || !authorityContext) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing approval; approve again.',
       });
+    }
+    const binding: SignEventBinding = {
+      approvalId: approval.id,
+      approvalComponent: approval.data.approvalComponent,
+      authorityContext,
+    };
+    const fn = () =>
+      waitSignComponentAmounted(binding).then(() =>
+        this.signPersonalMessage(
+          type,
+          from,
+          data as any,
+          options,
+          binding,
+          authorityContext
+        )
+      );
 
     notificationService.setCurrentRequestDeferFn(fn);
     return fn();
@@ -4062,19 +4089,36 @@ export class WalletController extends BaseController {
     type: string,
     from: string,
     data: Record<string, any>,
-    options?: any
+    options?: any,
+    binding?: SignEventBinding,
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext
   ) => {
+    if (!binding || !authorityContext) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing authority binding; approve again.',
+      });
+    }
+    if (!keyringService.memStore.getState().isUnlocked) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Wallet is locked; approve again.',
+      });
+    }
+    assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
       options
     );
+    assertAuthorityContextStillValid(authorityContext);
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
       params: {
         success: true,
         data: res,
+        approvalId: binding.approvalId,
+        approvalComponent: binding.approvalComponent,
+        authorityContext: binding.authorityContext,
       },
     });
     return res;
@@ -4089,9 +4133,30 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
+    const approval = notificationService.getApproval();
+    const authorityContext =
+      (approval?.data as any)?.params?.$signingContext ||
+      (approval?.data as any)?.__signingContext;
+    if (!approval?.id || !authorityContext) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Missing signing approval; approve again.',
+      });
+    }
+    const binding: SignEventBinding = {
+      approvalId: approval.id,
+      approvalComponent: approval.data.approvalComponent,
+      authorityContext,
+    };
     const fn = () =>
-      waitSignComponentAmounted().then(() => {
-        return this.signTypedData(type, from, data as any, options);
+      waitSignComponentAmounted(binding).then(() => {
+        return this.signTypedData(
+          type,
+          from,
+          data as any,
+          options,
+          binding,
+          authorityContext
+        );
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
@@ -4106,6 +4171,28 @@ export class WalletController extends BaseController {
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
     return keyringService.signTransaction(keyring, data, from, options);
+  };
+
+  /**
+   * Internal (non-dApp) typed-data signing for MiniSign and safe-wallet
+   * fallback flows: the caller consumes the returned signature directly.
+   * Emits NO SIGN_FINISHED broadcast — that handshake is approval-bound only
+   * (gpt56 round-8 blocker 4), so an internal completion can never satisfy a
+   * dApp waiting component and an internal caller never needs the binding.
+   */
+  signTypedDataInternal = async (
+    type: string,
+    from: string,
+    data: Record<string, any>,
+    options?: any
+  ) => {
+    if (!keyringService.memStore.getState().isUnlocked) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Wallet is locked; approve again.',
+      });
+    }
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    return keyringService.signTypedMessage(keyring, { from, data }, options);
   };
 
   decryptMessage = async ({
@@ -5099,8 +5186,9 @@ export class WalletController extends BaseController {
     coboSafeAddress: string;
     account;
   }): Promise<Tx> => {
-    await preferenceService.saveCurrentCoboSafeAddress();
-    await setCurrentAccountWithBoundary(account);
+    // Cobo delegation is request-scoped. Never switch the global current
+    // account while the parent approval is live: that revokes its own consent
+    // and lets overlapping completions restore the wrong account.
     const provider = await getWeb3Provider({ chainServerId, account });
     const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
     const res = await coboSafe.execRawTransaction(
@@ -5109,10 +5197,6 @@ export class WalletController extends BaseController {
       chainServerId
     );
     return res as any;
-  };
-
-  coboSafeResetCurrentAccount = async () => {
-    return resetCurrentCoboSafeAccountWithBoundary();
   };
 
   coboSafeImport = async ({

@@ -27,7 +27,7 @@ import {
   notificationService,
 } from 'background/service';
 import { Session } from 'background/service/session';
-import { resetCurrentCoboSafeAccountWithBoundary } from 'background/service/sessionBoundary';
+import { assertAuthorityContextStillValid } from 'background/service/sessionBoundary';
 import { TxPushType } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
@@ -120,11 +120,25 @@ const reportSignText = (params: {
  * the classic optional-chaining fail-open. Companion to the exact-id guard in
  * `notificationService.resolveApproval`/`rejectApproval`.
  */
-const assertSigningApprovalResult = (approvalRes: unknown) => {
+const assertSigningApprovalResult = (
+  approvalRes: unknown,
+  authorityContext?: import('background/service/sessionBoundary').AuthorityContext
+) => {
   if (approvalRes === undefined || approvalRes === null) {
     throw ethErrors.provider.userRejectedRequest({
       message: 'Signing approval result is missing; request rejected',
     });
+  }
+  if (authorityContext) {
+    const result = approvalRes as Record<string, unknown>;
+    if (
+      !result.__approvalId ||
+      result.__approvalComponent !== authorityContext.approvalComponent
+    ) {
+      throw ethErrors.provider.userRejectedRequest({
+        message: 'Signing approval binding is invalid; request rejected',
+      });
+    }
   }
 };
 
@@ -541,6 +555,7 @@ class ProviderController extends BaseController {
     };
     session: typeof INTERNAL_REQUEST_SESSION;
     approvalRes: ApprovalRes;
+    authorityContext?: import('background/service/sessionBoundary').AuthorityContext;
     pushed: boolean;
     result: any;
     account: Account;
@@ -560,6 +575,8 @@ class ProviderController extends BaseController {
       approvalRes,
       account,
     } = cloneDeep(options);
+    assertSigningApprovalResult(approvalRes, options.authorityContext as any);
+    assertAuthorityContextStillValid(options.authorityContext as any, account);
     const currentAccount = account;
     const keyring = await this._checkAddress(txParams.from, options);
     const isSend = !!txParams.isSend;
@@ -567,7 +584,6 @@ class ProviderController extends BaseController {
     const isCancel = !!txParams.isCancel;
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
-    const isCoboSafe = !!txParams.isCoboSafe;
     const pushType = approvalRes.pushType || 'default';
 
     const eip7702Revoke = options?.data?.$ctx?.eip7702Revoke || false;
@@ -596,6 +612,9 @@ class ProviderController extends BaseController {
     delete approvalRes.isGasAccount;
     delete approvalRes.sig;
     delete approvalRes.$account;
+    delete (approvalRes as any).__approvalId;
+    delete (approvalRes as any).__approvalComponent;
+    delete (approvalRes as any).__signingContext;
 
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);
@@ -657,6 +676,10 @@ class ProviderController extends BaseController {
       txData.type = '0x4';
 
       if (!isSpeedUp) {
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
         const authorizationList = [] as AuthorizationListItem[];
 
         for (const authorization of eip7702RevokeAuthorization) {
@@ -680,6 +703,10 @@ class ProviderController extends BaseController {
             yParity: removeLeadingZeroes(yParity),
           } as any);
         }
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
         txData.authorizationList = authorizationList;
         approvalRes.authorizationList = authorizationList;
       }
@@ -774,6 +801,10 @@ class ProviderController extends BaseController {
     let signedTx;
     let tempoSerializedRawTx: `0x${string}` | undefined;
     try {
+      assertAuthorityContextStillValid(
+        options.authorityContext as any,
+        currentAccount
+      );
       if (isTempoTx) {
         const typedApprovalRes = approvalRes as any;
         const shouldUseFeePayerPlaceholder =
@@ -839,10 +870,18 @@ class ProviderController extends BaseController {
           opts
         );
       }
+      assertAuthorityContextStillValid(
+        options.authorityContext as any,
+        currentAccount
+      );
       await fixKeyringAccountOnSigned({
         keyring,
         address: txParams.from,
       });
+      assertAuthorityContextStillValid(
+        options.authorityContext as any,
+        currentAccount
+      );
     } catch (e) {
       console.error(e);
       const signingCarrier = takeSigningCarrier(e);
@@ -960,10 +999,6 @@ class ProviderController extends BaseController {
             }
           );
         }
-
-        if (isCoboSafe) {
-          await resetCurrentCoboSafeAccountWithBoundary();
-        }
       };
       const onTransactionSubmitFailed = (e: any) => {
         if (
@@ -1043,6 +1078,10 @@ class ProviderController extends BaseController {
 
       try {
         validateGasPriceRange(approvalRes);
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
         let hash: string | undefined;
         const chainData = findChain({ enum: chain })!;
         const chainServerId = chainData.serverId;
@@ -1093,6 +1132,10 @@ class ProviderController extends BaseController {
         if (!hash) {
           throw new Error('Submit transaction failed');
         }
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
 
         await onTransactionCreated({
           hash,
@@ -1186,9 +1229,17 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       return approvalRes;
     }
-    assertSigningApprovalResult(approvalRes);
+    assertSigningApprovalResult(approvalRes, req.authorityContext as any);
+    assertAuthorityContextStillValid(
+      req.authorityContext as any,
+      currentAccount
+    );
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
@@ -1196,7 +1247,11 @@ class ProviderController extends BaseController {
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
-        approvalRes?.extra
+        approvalRes.extra
+      );
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
       );
 
       signTextHistoryService.createHistory({
@@ -1236,6 +1291,7 @@ class ProviderController extends BaseController {
     },
     req: ProviderRequest
   ) => {
+    assertAuthorityContextStillValid(req.authorityContext as any, req.account);
     const keyring = await this._checkAddress(from, req);
     let _data = data;
     if (version !== 'V1') {
@@ -1244,11 +1300,13 @@ class ProviderController extends BaseController {
       }
     }
 
-    return keyringService.signTypedMessage(
+    const result = await keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
       { version, ...(extra || {}) }
     );
+    assertAuthorityContextStillValid(req.authorityContext as any, req.account);
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
@@ -1266,9 +1324,17 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       return approvalRes;
     }
-    assertSigningApprovalResult(approvalRes);
+    assertSigningApprovalResult(approvalRes, req.authorityContext as any);
+    assertAuthorityContextStillValid(
+      req.authorityContext as any,
+      currentAccount
+    );
     try {
       const result = await this._signTypedData(
         {
@@ -1317,9 +1383,17 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       return approvalRes;
     }
-    assertSigningApprovalResult(approvalRes);
+    assertSigningApprovalResult(approvalRes, req.authorityContext as any);
+    assertAuthorityContextStillValid(
+      req.authorityContext as any,
+      currentAccount
+    );
     try {
       const result = await this._signTypedData(
         {
@@ -1367,9 +1441,17 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       return approvalRes;
     }
-    assertSigningApprovalResult(approvalRes);
+    assertSigningApprovalResult(approvalRes, req.authorityContext as any);
+    assertAuthorityContextStillValid(
+      req.authorityContext as any,
+      currentAccount
+    );
     try {
       const result = await this._signTypedData(
         {
@@ -1417,9 +1499,17 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       return approvalRes;
     }
-    assertSigningApprovalResult(approvalRes);
+    assertSigningApprovalResult(approvalRes, req.authorityContext as any);
+    assertAuthorityContextStillValid(
+      req.authorityContext as any,
+      currentAccount
+    );
     try {
       const result = await this._signTypedData(
         {
@@ -1514,13 +1604,6 @@ class ProviderController extends BaseController {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
 
-    // Supported-chain switch is an authority transition for this origin:
-    // consent rendered against the previous chain context must not survive
-    // it, and an already-resolved-but-unexecuted request must fail closed
-    // sink-adjacent, so the origin epoch bumps alongside the rejection.
-    notificationService.rejectApprovalsByOrigin(origin);
-    notificationService.bumpOriginApprovalEpoch(origin);
-
     permissionService.updateConnectSite(
       origin,
       {
@@ -1585,13 +1668,6 @@ class ProviderController extends BaseController {
         message: `Unrecognized chain ID "${chainId}". Try adding the chain using wallet_switchEthereumChain first.`,
       });
     }
-
-    // No-popup chain switch is an authority transition for this origin:
-    // consent rendered against the previous chain context must not survive
-    // it, and an already-resolved-but-unexecuted request must fail closed
-    // sink-adjacent, so the origin epoch bumps alongside the rejection.
-    notificationService.rejectApprovalsByOrigin(origin);
-    notificationService.bumpOriginApprovalEpoch(origin);
 
     permissionService.updateConnectSite(
       origin,

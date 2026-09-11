@@ -33,7 +33,6 @@ jest.mock('@/background/service/preference', () => ({
   default: {
     getCurrentAccount: jest.fn(() => null),
     setCurrentAccount: jest.fn(),
-    resetCurrentCoboSafeAddress: jest.fn(async () => null),
   },
 }));
 
@@ -53,7 +52,6 @@ import remoteDataPolicyService from '@/background/service/remoteDataPolicy';
 import {
   revokeAccountBoundaryIfAffected,
   revokeSiteAccountBoundaries,
-  resetCurrentCoboSafeAccountWithBoundary,
   revokeSessionBoundaryConsent,
   runWithSessionBoundary,
   setCurrentAccountWithBoundary,
@@ -92,7 +90,9 @@ describe('reset session boundary ordering', () => {
       type: 'PrivateKey',
       brandName: 'PrivateKey',
     };
-    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(accountA);
+    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(
+      accountA
+    );
 
     setCurrentAccountWithBoundary(accountB);
 
@@ -115,31 +115,6 @@ describe('reset session boundary ordering', () => {
       ...account,
       address: '0xaa',
     });
-  });
-
-  test('Cobo restoration resets storage before restoring the account boundary', async () => {
-    const delegated = {
-      address: '0xCc',
-      type: 'CoboArgus',
-      brandName: 'Cobo',
-    };
-    const previous = {
-      address: '0xAa',
-      type: 'PrivateKey',
-      brandName: 'PrivateKey',
-    };
-    (preferenceService.getCurrentAccount as jest.Mock).mockReturnValue(
-      delegated
-    );
-    (preferenceService.resetCurrentCoboSafeAddress as jest.Mock).mockResolvedValue(
-      previous
-    );
-
-    await resetCurrentCoboSafeAccountWithBoundary();
-
-    expect(preferenceService.resetCurrentCoboSafeAddress).toHaveBeenCalled();
-    expect(trace).toEqual(['reject', 'clear', 'epoch']);
-    expect(preferenceService.setCurrentAccount).toHaveBeenCalledWith(previous);
   });
 
   test('bulk site snapshots invalidate only origins whose effective account changed', () => {
@@ -172,8 +147,127 @@ describe('reset session boundary ordering', () => {
     expect(notificationService.bumpOriginApprovalEpoch).toHaveBeenCalledWith(
       'https://changed.example'
     );
-    expect(notificationService.rejectApprovalsByOrigin).not.toHaveBeenCalledWith(
-      'https://same.example'
+    expect(
+      notificationService.rejectApprovalsByOrigin
+    ).not.toHaveBeenCalledWith('https://same.example');
+  });
+
+  // gpt56 round-8 blocker 2: chain and connection state are authority
+  // dimensions of a site snapshot, not just the account. Two stale writers
+  // must never be able to perform account/chain/disconnect ABA without each
+  // real transition advancing that origin's epoch.
+  test('chain-only change revokes origin consent (stale full-snapshot ABA)', () => {
+    (notificationService.rejectApprovalsByOrigin as jest.Mock).mockClear();
+    (notificationService.bumpOriginApprovalEpoch as jest.Mock).mockClear();
+    const accountA = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    const changed = revokeSiteAccountBoundaries(
+      [{ origin: 'https://x.example', account: accountA, chain: 'ETH' } as any],
+      [{ origin: 'https://x.example', account: accountA, chain: 'BSC' } as any]
+    );
+    expect(changed).toEqual(['https://x.example']);
+    expect(notificationService.rejectApprovalsByOrigin).toHaveBeenCalledWith(
+      'https://x.example'
+    );
+
+    // ABA: X→Y→X across two stale writes bumps the epoch on EVERY real
+    // transition; the restored final state does not undo the bumps.
+    (notificationService.bumpOriginApprovalEpoch as jest.Mock).mockClear();
+    revokeSiteAccountBoundaries(
+      [{ origin: 'https://x.example', account: accountA, chain: 'BSC' } as any],
+      [{ origin: 'https://x.example', account: accountA, chain: 'ETH' } as any]
+    );
+    expect(notificationService.bumpOriginApprovalEpoch).toHaveBeenCalledTimes(
+      1
+    );
+  });
+
+  test('isConnected restore after disconnect revokes origin consent', () => {
+    (notificationService.rejectApprovalsByOrigin as jest.Mock).mockClear();
+    const accountA = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    const changed = revokeSiteAccountBoundaries(
+      [
+        {
+          origin: 'https://disc.example',
+          account: accountA,
+          chain: 'ETH',
+          isConnected: false,
+        } as any,
+      ],
+      [
+        {
+          origin: 'https://disc.example',
+          account: accountA,
+          chain: 'ETH',
+          isConnected: true,
+        } as any,
+      ]
+    );
+    expect(changed).toEqual(['https://disc.example']);
+    expect(notificationService.rejectApprovalsByOrigin).toHaveBeenCalledWith(
+      'https://disc.example'
+    );
+  });
+
+  test('ordering/metadata-only snapshots do not create boundaries', () => {
+    (notificationService.rejectApprovalsByOrigin as jest.Mock).mockClear();
+    const accountA = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    const changed = revokeSiteAccountBoundaries(
+      [
+        {
+          origin: 'https://m.example',
+          account: accountA,
+          chain: 'ETH',
+          isConnected: true,
+          isFavorite: false,
+        } as any,
+      ],
+      [
+        {
+          origin: 'https://m.example',
+          account: { ...accountA },
+          chain: 'ETH',
+          isConnected: true,
+          isFavorite: true,
+        } as any,
+      ]
+    );
+    expect(changed).toEqual([]);
+    expect(notificationService.rejectApprovalsByOrigin).not.toHaveBeenCalled();
+  });
+
+  test('site removal in a bulk snapshot revokes the removed origin', () => {
+    (notificationService.rejectApprovalsByOrigin as jest.Mock).mockClear();
+    const accountA = {
+      address: '0xAa',
+      type: 'PrivateKey',
+      brandName: 'PrivateKey',
+    };
+    const changed = revokeSiteAccountBoundaries(
+      [
+        {
+          origin: 'https://gone.example',
+          account: accountA,
+          chain: 'ETH',
+          isConnected: true,
+        } as any,
+      ],
+      []
+    );
+    expect(changed).toEqual(['https://gone.example']);
+    expect(notificationService.rejectApprovalsByOrigin).toHaveBeenCalledWith(
+      'https://gone.example'
     );
   });
 
@@ -235,7 +329,14 @@ describe('reset session boundary ordering', () => {
     await Promise.resolve();
 
     // Single ordered trace proves ordering AND zero-sink together.
-    expect(trace).toEqual(['reject', 'clear', 'epoch', 'lock', 'reset-start', 'sink']);
+    expect(trace).toEqual([
+      'reject',
+      'clear',
+      'epoch',
+      'lock',
+      'reset-start',
+      'sink',
+    ]);
     // The revocation itself happened synchronously, before the operation
     // began: reset-start could only be appended after all four.
     expect(notificationService.rejectAllApprovals).toHaveBeenCalledTimes(1);
@@ -311,7 +412,9 @@ describe('reset session boundary ordering', () => {
       source.indexOf('export const revokeSessionBoundaryConsent'),
       source.indexOf('export const runWithSessionBoundary')
     );
-    expect(revokeBody).toMatch(/rejectAllApprovals\(\);\s*\n?\s*notificationService\.clear\(\);\s*\n?\s*notificationService\.bumpApprovalEpoch\(\);\s*\n?\s*return remoteDataPolicyService\.lock\(\);/);
+    expect(revokeBody).toMatch(
+      /rejectAllApprovals\(\);\s*\n?\s*notificationService\.clear\(\);\s*\n?\s*notificationService\.bumpApprovalEpoch\(\);\s*\n?\s*return remoteDataPolicyService\.lock\(\);/
+    );
     // No await anywhere in the revoke helper.
     expect(revokeBody).not.toMatch(/\bawait\b/);
   });

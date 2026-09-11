@@ -5,7 +5,11 @@ import {
   permissionService,
   preferenceService,
 } from 'background/service';
-import { setCurrentAccountWithBoundary } from 'background/service/sessionBoundary';
+import {
+  captureAuthorityContext,
+  setCurrentAccountWithBoundary,
+} from 'background/service/sessionBoundary';
+import type { AuthorityContext } from 'background/service/sessionBoundary';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import {
   EVENTS,
@@ -20,7 +24,13 @@ import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
-import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
+import { sha256 } from '@noble/hashes/sha256';
+import {
+  addHexPrefix,
+  bytesToHex,
+  intToHex,
+  stripHexPrefix,
+} from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
@@ -448,6 +458,17 @@ const flowContext = flow
         signTxPreparationId = uuidv4();
       }
       try {
+        const operationId = uuidv4();
+        const requestDigest = bytesToHex(
+          sha256(
+            new TextEncoder().encode(
+              JSON.stringify({
+                method,
+                params: ctx.request.data.params,
+              })
+            )
+          )
+        );
         const approvalData = {
           approvalComponent: approvalType,
           params: {
@@ -489,6 +510,17 @@ const flowContext = flow
         ctx.boundChain = permissionService.isInternalOrigin(origin)
           ? undefined
           : permissionService.getConnectedSite(origin)?.chain;
+        const authorityContext = captureAuthorityContext({
+          origin,
+          boundAccount: ctx.request.account || null,
+          boundChain: ctx.boundChain,
+          internalOrigin: permissionService.isInternalOrigin(origin),
+          operationId,
+          requestDigest,
+          approvalComponent: approvalType,
+        });
+        ctx.request.authorityContext = authorityContext;
+        (approvalData.params as any).$signingContext = authorityContext;
         const approvalPromise = notificationService.requestApproval(
           approvalData,
           { height: windowHeight },
@@ -585,7 +617,19 @@ const flowContext = flow
         let waitSignComponentPromise = Promise.resolve();
 
         if (isSignApproval(approvalType) && uiRequestComponent) {
-          waitSignComponentPromise = waitSignComponentAmounted();
+          const approvalId = originApprovalRes?.__approvalId;
+          if (!approvalId) {
+            return reject(
+              ethErrors.provider.userRejectedRequest({
+                message: 'Missing approval binding; approve again.',
+              })
+            );
+          }
+          waitSignComponentPromise = waitSignComponentAmounted({
+            approvalId,
+            approvalComponent: approvalType,
+            authorityContext: ctx.request.authorityContext!,
+          });
         }
 
         // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
@@ -689,6 +733,9 @@ const flowContext = flow
                   params: {
                     success: true,
                     data: result,
+                    approvalId: originApprovalRes?.__approvalId,
+                    approvalComponent: approvalType,
+                    authorityContext: ctx.request.authorityContext,
                   },
                 });
               }
@@ -702,6 +749,9 @@ const flowContext = flow
                 params: {
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
+                  approvalId: originApprovalRes?.__approvalId,
+                  approvalComponent: approvalType,
+                  authorityContext: ctx.request.authorityContext,
                 },
               };
               if (e.method) {

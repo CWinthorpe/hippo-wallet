@@ -313,7 +313,12 @@ const queueApproval = (approvalResult: Record<string, unknown>) => {
   }).requestApproval.mockImplementationOnce(
     () =>
       new Promise((resolve) => {
-        pendingApprovalResolve = () => resolve(approvalResult);
+        pendingApprovalResolve = () =>
+          resolve({
+            ...approvalResult,
+            __approvalId: 'test-approval-id',
+            __approvalComponent: 'SignTx',
+          });
       })
   );
 };
@@ -464,6 +469,8 @@ describe('rpcFlow post-approval / sign-wait trust boundaries (B1)', () => {
         gasPrice: '0x1',
         uiRequestComponent: 'LedgerHardwareWaiting',
         $account: APPROVED_ACCOUNT,
+        __approvalId: 'test-approval-id',
+        __approvalComponent: 'SignTx',
       })
     );
     ((notificationService as unknown) as {
@@ -506,6 +513,8 @@ describe('rpcFlow post-approval / sign-wait trust boundaries (B1)', () => {
         gasPrice: '0x1',
         uiRequestComponent: 'LedgerHardwareWaiting',
         $account: APPROVED_ACCOUNT,
+        __approvalId: 'test-approval-id',
+        __approvalComponent: 'SignTx',
       })
     );
     ((notificationService as unknown) as {
@@ -540,6 +549,8 @@ describe('rpcFlow post-approval / sign-wait trust boundaries (B1)', () => {
         gasPrice: '0x1',
         uiRequestComponent: 'LedgerHardwareWaiting',
         $account: APPROVED_ACCOUNT,
+        __approvalId: 'test-approval-id',
+        __approvalComponent: 'SignTx',
       })
     );
     ((notificationService as unknown) as {

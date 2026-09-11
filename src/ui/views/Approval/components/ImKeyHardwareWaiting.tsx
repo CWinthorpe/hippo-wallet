@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -28,7 +28,7 @@ import {
 import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
@@ -75,7 +75,12 @@ export const ImKeyHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const chain = findChain({
     id: params.chainId || 1,
   });
@@ -111,7 +116,7 @@ export const ImKeyHardwareWaiting = ({
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding());
   };
 
   // const handleClickResult = () => {
@@ -119,6 +124,9 @@ export const ImKeyHardwareWaiting = ({
   //   openInTab(url);
   // };
 
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
@@ -181,7 +189,10 @@ export const ImKeyHardwareWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -231,9 +242,11 @@ export const ImKeyHardwareWaiting = ({
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding(approval));
   };
 
   React.useEffect(() => {
@@ -261,6 +274,12 @@ export const ImKeyHardwareWaiting = ({
     setHeight('fit-content');
     init();
     mountedRef.current = true;
+    return () => {
+      const handler = signFinishedHandlerRef.current;
+      if (handler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
+      }
+    };
   }, []);
 
   React.useEffect(() => {

@@ -5,6 +5,7 @@ import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
+import type { SignEventBinding } from '@/utils/signEvent';
 import { useApprovalPopup } from './approval-popup';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
@@ -24,13 +25,20 @@ export const useApproval = () => {
   // ONCE at mount, and bind every resolve/reject to that exact id. We never
   // re-derive the id from the live queue inside the click handler, so a
   // queue rotation can never make A's event handler resolve approval B.
-  const renderedApprovalIdRef = useRef<string | undefined>(undefined);
+  const renderedSignBindingRef = useRef<Partial<SignEventBinding>>({});
   useEffect(() => {
     let disposed = false;
     void getApproval()
       .then((approval) => {
         if (!disposed) {
-          renderedApprovalIdRef.current = approval?.id;
+          renderedSignBindingRef.current = {
+            approvalId: approval?.id,
+            approvalComponent: approval?.data?.approvalComponent,
+            authorityContext:
+              (approval?.data as any)?.params?.$signingContext ||
+              (approval?.data as any)?.params?.__signingContext ||
+              (approval?.data as any)?.__signingContext,
+          };
         }
       })
       .catch(() => {
@@ -53,7 +61,7 @@ export const useApproval = () => {
     // mount — never the live queue. If the queue advanced (or the session
     // epoch changed) meanwhile, the background's exact-id + epoch guard makes
     // the resolve a no-op instead of resolving whatever is current now.
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
+    const boundId = approvalId ?? renderedSignBindingRef.current.approvalId;
     if (!boundId) {
       return;
     }
@@ -85,11 +93,7 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     const approval = await getApproval();
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
-    if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
-      wallet.coboSafeResetCurrentAccount();
-    }
-
+    const boundId = approvalId ?? renderedSignBindingRef.current.approvalId;
     if (approval && boundId) {
       await wallet.rejectApproval(err, stay, isInternal, boundId);
     }
@@ -97,7 +101,29 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-  return [getApproval, resolveApproval, rejectApproval] as const;
+  const getApprovalBinding = (approval?: Approval) => {
+    if (approval) {
+      return {
+        approvalId: approval.id,
+        approvalComponent: approval.data.approvalComponent,
+        authorityContext:
+          (approval.data as any)?.params?.$signingContext ||
+          (approval.data as any)?.__signingContext,
+      };
+    }
+    return {
+      approvalId: renderedSignBindingRef.current.approvalId,
+      approvalComponent: renderedSignBindingRef.current.approvalComponent,
+      authorityContext: renderedSignBindingRef.current.authorityContext,
+    };
+  };
+
+  return [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] as const;
 };
 
 export const useSelectOption = <T>({

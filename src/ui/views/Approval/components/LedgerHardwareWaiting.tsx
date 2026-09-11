@@ -3,12 +3,12 @@ import stats from '@/stats';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
 import { EVENTS, KEYRING_CATEGORY_MAP, WALLETCONNECT_STATUS_MAP } from 'consts';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
 import {
@@ -72,7 +72,12 @@ const LedgerHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const chain = findChain({
     id: params.chainId || 1,
   });
@@ -109,7 +114,7 @@ const LedgerHardwareWaiting = ({
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding());
   };
 
   // const handleClickResult = () => {
@@ -117,6 +122,9 @@ const LedgerHardwareWaiting = ({
   //   openInTab(url);
   // };
 
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
@@ -178,7 +186,10 @@ const LedgerHardwareWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -225,9 +236,11 @@ const LedgerHardwareWaiting = ({
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding(approval));
   };
 
   React.useEffect(() => {
@@ -256,6 +269,12 @@ const LedgerHardwareWaiting = ({
 
     init();
     mountedRef.current = true;
+    return () => {
+      const handler = signFinishedHandlerRef.current;
+      if (handler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
+      }
+    };
   }, []);
 
   React.useEffect(() => {

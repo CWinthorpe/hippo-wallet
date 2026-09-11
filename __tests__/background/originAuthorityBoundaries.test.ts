@@ -79,15 +79,23 @@ describe('B1 origin-authority transition wiring', () => {
     expect(body).toContain('bumpOriginApprovalEpoch(origin)');
   });
 
-  test('dashboard setSite chain change bumps the origin epoch', () => {
+  test('dashboard setSite chain change crosses the authority boundary', () => {
+    // gpt56 round-8 blocker 2: revocation is no longer per-caller. Every
+    // persisted site write must route through a permissionService mutation
+    // that synchronously invokes the installed boundary before persistence
+    // (proved behaviourally in permissionAuthorityBoundary.test.ts).
     const body = fieldBody(walletSrc, 'setSite', '\n  setSiteAccount');
-    expect(body).toContain('bumpOriginApprovalEpoch(data.origin)');
-    // Only on an actual chain change, so routine metadata writes are not
-    // blanket rejections.
-    expect(body).toMatch(/previousChain !== data\.chain/);
+    expect(body).toContain('permissionService.setSite(data)');
+    const permissionSrc = read('src/background/service/permission.ts');
+    expect(permissionSrc).toMatch(
+      /setSite = \(site: ConnectedSite\) => \{\s*if \(!this\.lruCache\) return;\s*this\.beforeAuthorityMutation\(this\._getSite\(site\.origin\), site\);\s*this\.lruCache\.set/
+    );
+    // Chain identity is part of the boundary comparison.
+    const boundarySrc = read('src/background/service/sessionBoundary.ts');
+    expect(boundarySrc).toContain('a.chain === b.chain');
   });
 
-  test('both chain-switch RPC paths bump the origin epoch', () => {
+  test('both chain-switch RPC paths persist through the boundary-enforcing service primitive', () => {
     const addChain = controllerSrc.slice(
       controllerSrc.indexOf('walletAddEthereumChain ='),
       controllerSrc.indexOf('walletSwitchEthereumChain =')
@@ -96,7 +104,19 @@ describe('B1 origin-authority transition wiring', () => {
       controllerSrc.indexOf('walletSwitchEthereumChain ='),
       controllerSrc.indexOf("@Reflect.metadata('APPROVAL', [\n    'AddAsset'")
     );
-    expect(addChain).toContain('bumpOriginApprovalEpoch(origin)');
-    expect(switchChain).toContain('bumpOriginApprovalEpoch(origin)');
+    expect(addChain).toContain('permissionService.updateConnectSite');
+    expect(switchChain).toContain('permissionService.updateConnectSite');
+    // The service primitive itself must revoke before persisting.
+    const permissionSrc = read('src/background/service/permission.ts');
+    const update = permissionSrc.slice(
+      permissionSrc.indexOf('updateConnectSite = ('),
+      permissionSrc.indexOf('hasPermission = ')
+    );
+    const revokeAt = update.indexOf(
+      'this.beforeAuthorityMutation(previous, next)'
+    );
+    const writeAt = update.indexOf('this.lruCache.set(origin, next)');
+    expect(revokeAt).toBeGreaterThanOrEqual(0);
+    expect(writeAt).toBeGreaterThan(revokeAt);
   });
 });

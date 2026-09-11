@@ -187,7 +187,8 @@ class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
   hasOtherProvider = false;
-  currentCoboSafeAddress?: Account | null;
+  // Cobo delegation is request-scoped; no mutable account handoff is stored
+  // here. The delegated account travels on the child request itself.
 
   init = async () => {
     let defaultLang = 'en';
@@ -965,12 +966,6 @@ class PreferenceService {
   };
   setDesktopTokensAllMode = (value: boolean) => {
     this.store.desktopTokensAllMode = value;
-  };
-  saveCurrentCoboSafeAddress = async () => {
-    this.currentCoboSafeAddress = await this.getCurrentAccount();
-  };
-  resetCurrentCoboSafeAddress = async () => {
-    return this.currentCoboSafeAddress ?? null;
   };
 
   resetAddressSortStoreExpiredValue = () => {

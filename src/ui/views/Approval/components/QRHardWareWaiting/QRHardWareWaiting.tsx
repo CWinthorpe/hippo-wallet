@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import stats from '@/stats';
 import Player from './Player';
 import Reader from './Reader';
@@ -25,7 +25,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -56,7 +56,12 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
@@ -86,6 +91,12 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     findChain({
       id: params.chainId || 1,
     })?.enum || CHAINS_ENUM.ETH;
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
+  const acquireMemStoreHandlerRef = useRef<
+    ((data: { request: any }) => Promise<void>) | null
+  >(null);
   const init = useCallback(async () => {
     const approval = await getApproval();
     if (!account) return;
@@ -107,29 +118,33 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
 
-    eventBus.addEventListener(
-      EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      async ({ request }) => {
-        let currentSignId = null;
-        if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
-          currentSignId = await wallet.requestKeyring(
-            KEYSTONE_TYPE,
-            'exportCurrentSignRequestIdIfExist',
-            null
-          );
-        }
+    const acquireMemStoreHandler = async ({ request }) => {
+      let currentSignId = null;
+      if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
+        currentSignId = await wallet.requestKeyring(
+          KEYSTONE_TYPE,
+          'exportCurrentSignRequestIdIfExist',
+          null
+        );
+      }
 
-        if (currentSignId) {
-          if (currentSignId === request.requestId) {
-            setSignPayload(request);
-          }
-          return;
-        } else {
+      if (currentSignId) {
+        if (currentSignId === request.requestId) {
           setSignPayload(request);
         }
+        return;
       }
+      setSignPayload(request);
+    };
+    acquireMemStoreHandlerRef.current = acquireMemStoreHandler;
+    eventBus.addEventListener(
+      EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+      acquireMemStoreHandler
     );
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       if (data.success) {
         let sig = data.data;
         try {
@@ -166,19 +181,28 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         setErrorMessage(data.errorMsg);
         // rejectApproval(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding(approval));
     wallet.acquireKeystoneMemStoreData();
   }, []);
 
   React.useEffect(() => {
     init();
     return () => {
-      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
-      eventBus.removeAllEventListeners(
-        EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED
-      );
+      const signHandler = signFinishedHandlerRef.current;
+      if (signHandler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, signHandler);
+      }
+      const acquireHandler = acquireMemStoreHandlerRef.current;
+      if (acquireHandler) {
+        eventBus.removeEventListener(
+          EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+          acquireHandler
+        );
+      }
     };
   }, [init]);
 

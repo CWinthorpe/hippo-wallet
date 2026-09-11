@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   isSameAddress,
@@ -28,7 +28,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useAsync } from 'react-use';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
@@ -70,7 +70,12 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -105,7 +110,7 @@ export const PrivatekeyWaiting = ({
     await wallet.resendSign(autoRetryUpdate);
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding());
   };
   const isSignText = /personalSign|SignTypedData/.test(
     params?.extra?.signTextMethod
@@ -140,6 +145,9 @@ export const PrivatekeyWaiting = ({
 
   const account = params.isGnosis ? params.account! : $account;
 
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
 
@@ -187,7 +195,10 @@ export const PrivatekeyWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -235,9 +246,11 @@ export const PrivatekeyWaiting = ({
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding(approval));
   };
 
   React.useEffect(() => {
@@ -260,6 +273,12 @@ export const PrivatekeyWaiting = ({
       }
       init();
     })();
+    return () => {
+      const handler = signFinishedHandlerRef.current;
+      if (handler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
+      }
+    };
   }, []);
 
   React.useEffect(() => {

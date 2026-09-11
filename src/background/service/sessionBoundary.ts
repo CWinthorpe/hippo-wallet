@@ -1,11 +1,14 @@
+import { ethErrors } from 'eth-rpc-errors';
 import notificationService from './notification';
-import permissionService from './permission';
+import permissionService, { ConnectedSite } from './permission';
 import preferenceService, { Account } from './preference';
 import remoteDataPolicyService from './remoteDataPolicy';
 
-type SiteAccountSnapshot = {
+type SiteAuthoritySnapshot = {
   origin: string;
   account?: Account | null;
+  chain?: ConnectedSite['chain'];
+  isConnected?: boolean;
 };
 
 const sameAccount = (
@@ -27,18 +30,24 @@ const accountMatchesBoundaryTarget = (
   account.type === type &&
   (brand === undefined || account.brandName === brand);
 
-const sameSiteAccount = (a: SiteAccountSnapshot, b: SiteAccountSnapshot) =>
-  a.origin === b.origin && sameAccount(a.account, b.account);
+const sameSiteAuthority = (
+  a: SiteAuthoritySnapshot,
+  b: SiteAuthoritySnapshot
+) =>
+  a.origin === b.origin &&
+  sameAccount(a.account, b.account) &&
+  a.chain === b.chain &&
+  a.isConnected === b.isConnected;
 
 /**
- * Revoke origin-scoped authority for every site whose account changes in a
- * bulk snapshot. Ordering-only writes are harmless; account replacement,
- * clearing, and removal are authority transitions and must invalidate both
- * pending and already-resolved approvals before persistence.
+ * Revoke origin-scoped authority for every site whose account, chain, or
+ * connection state changes in a bulk snapshot. Ordering-only writes are
+ * harmless; authority transitions invalidate pending and already-resolved
+ * approvals before persistence.
  */
 export const revokeSiteAccountBoundaries = (
-  previousSites: SiteAccountSnapshot[],
-  nextSites: SiteAccountSnapshot[]
+  previousSites: SiteAuthoritySnapshot[],
+  nextSites: SiteAuthoritySnapshot[]
 ): string[] => {
   const previousByOrigin = new Map(
     previousSites.map((site) => [site.origin, site])
@@ -49,7 +58,7 @@ export const revokeSiteAccountBoundaries = (
   ].filter((origin) => {
     const previous = previousByOrigin.get(origin) || { origin };
     const next = nextByOrigin.get(origin) || { origin };
-    return !sameSiteAccount(previous, next);
+    return !sameSiteAuthority(previous, next);
   });
 
   changedOrigins.forEach((origin) => {
@@ -59,9 +68,126 @@ export const revokeSiteAccountBoundaries = (
   return changedOrigins;
 };
 
+// Install the callback after both services have been constructed. This avoids
+// a permission -> notification -> permission module cycle while making every
+// permission mutation boundary-aware, including callers outside WalletController.
+permissionService.setAuthorityBoundary?.(revokeSiteAccountBoundaries);
+
+export type AuthorityContext = {
+  approvalEpoch: number;
+  originEpoch: number;
+  operationId: string;
+  requestDigest: string;
+  origin: string;
+  approvalComponent: string;
+  boundAccount: {
+    address: string;
+    type?: string;
+    brandName?: string;
+  } | null;
+  boundChain?: string;
+  internalOrigin: boolean;
+};
+
+export const captureAuthorityContext = ({
+  origin,
+  boundAccount,
+  boundChain,
+  internalOrigin,
+  operationId,
+  requestDigest,
+  approvalComponent,
+}: {
+  origin: string;
+  boundAccount: Account | null;
+  boundChain?: string;
+  internalOrigin: boolean;
+  operationId: string;
+  requestDigest: string;
+  approvalComponent: string;
+}): AuthorityContext => ({
+  approvalEpoch: notificationService.approvalEpoch ?? 0,
+  originEpoch: notificationService.getOriginApprovalEpoch?.(origin) ?? 0,
+  operationId,
+  requestDigest,
+  origin,
+  approvalComponent,
+  boundAccount: boundAccount
+    ? {
+        address: boundAccount.address.toLowerCase(),
+        type: boundAccount.type,
+        brandName: boundAccount.brandName,
+      }
+    : null,
+  boundChain,
+  internalOrigin,
+});
+const rejectAuthority = (message: string): never => {
+  throw ethErrors.provider.userRejectedRequest({ message });
+};
+
 /**
- * Set the effective wallet account as one synchronous authority boundary.
- * The invalidation happens before the identity write and has no await between
+ * Revalidate the authority token immediately adjacent to a privileged sink.
+ * This is intentionally independent of rpcFlow so an async keyring, hardware,
+ * or RPC operation cannot outlive the boundary checks at handler entry.
+ */
+export const assertAuthorityContextStillValid = (
+  context: AuthorityContext,
+  currentAccount?: Account | null
+) => {
+  if (
+    !context ||
+    !Number.isInteger(context.approvalEpoch) ||
+    !context.operationId ||
+    !context.requestDigest
+  ) {
+    rejectAuthority('Missing signing authority context; approve again.');
+  }
+  if (!preferenceService.getCurrentAccount() && !currentAccount) {
+    rejectAuthority('No active account; approve again.');
+  }
+  if (
+    notificationService.approvalEpoch !== context.approvalEpoch ||
+    notificationService.getOriginApprovalEpoch(context.origin) !==
+      context.originEpoch
+  ) {
+    rejectAuthority('Session context changed; approve again.');
+  }
+  if (
+    !context.internalOrigin &&
+    !permissionService.hasPermission(context.origin)
+  ) {
+    rejectAuthority('Connection for this site was revoked; approve again.');
+  }
+
+  if (context.boundAccount) {
+    const site = permissionService.getConnectedSite(context.origin);
+    const liveAccount = context.internalOrigin
+      ? currentAccount || preferenceService.getCurrentAccount()
+      : preferenceService.getPreference('isEnabledDappAccount') && site
+      ? site.account || preferenceService.getCurrentAccount()
+      : preferenceService.getCurrentAccount();
+    if (
+      !liveAccount ||
+      liveAccount.address.toLowerCase() !== context.boundAccount.address ||
+      liveAccount.type !== context.boundAccount.type ||
+      liveAccount.brandName !== context.boundAccount.brandName
+    ) {
+      rejectAuthority('Active account changed; approve again.');
+    }
+  }
+
+  if (context.boundChain) {
+    const liveChain = permissionService.getConnectedSite(context.origin)?.chain;
+    if (liveChain !== context.boundChain) {
+      rejectAuthority('Active chain changed; approve again.');
+    }
+  }
+};
+
+/**
+ * Set the effective wallet account as one synchronous boundary. The
+ * invalidation happens before the identity write and has no await between
  * revocation and persistence, so resolved-but-unexecuted continuations cannot
  * observe a new account while retaining old approval authority.
  */
@@ -73,12 +199,6 @@ export const setCurrentAccountWithBoundary = (account: Account | null) => {
     notificationService.bumpApprovalEpoch();
   }
   preferenceService.setCurrentAccount(account);
-};
-
-export const resetCurrentCoboSafeAccountWithBoundary = async () => {
-  const account = await preferenceService.resetCurrentCoboSafeAddress();
-  setCurrentAccountWithBoundary(account);
-  return account;
 };
 
 /**

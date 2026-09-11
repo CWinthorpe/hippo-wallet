@@ -1,3 +1,4 @@
+import type { AuthorityContext } from 'background/service/sessionBoundary';
 import { Account } from '@/background/service/preference';
 
 type InternalMethods = keyof typeof import('./internalMethod')['default'];
@@ -17,6 +18,7 @@ export type ProviderRequest<
     isFromRabby?: boolean;
   } | null;
   account?: Account;
+  authorityContext?: AuthorityContext;
   origin?: string;
   requestedApproval?: boolean;
   sourceFrameId?: number;

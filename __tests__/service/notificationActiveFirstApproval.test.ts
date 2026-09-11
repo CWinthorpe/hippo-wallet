@@ -136,10 +136,43 @@ describe('notificationService.activeFirstApproval', () => {
     await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-B');
     expect(current.resolve).not.toHaveBeenCalled();
 
-    // Matching id resolves the exact approval and advances the queue.
+    // Matching id resolves the exact approval and advances the queue. The
+    // resolved payload now carries the server-side approval binding
+    // (gpt56 round-8 blocker 4): the signing sink consumes
+    // __approvalId/__approvalComponent/__signingContext to prove the result
+    // belongs to THIS approval, so a consumer can never resolve against an
+    // unrelated completion.
     await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-A');
-    expect(current.resolve).toHaveBeenCalledWith({ signedTx: '0x' });
+    expect(current.resolve).toHaveBeenCalledWith({
+      signedTx: '0x',
+      __approvalId: 'approval-A',
+      __approvalComponent: 'SignTx',
+      __signingContext: undefined,
+    });
     expect(notificationService.currentApproval).toBeNull();
+  });
+
+  test('resolve binds $signingContext from the approval params when present', async () => {
+    const current = makeApproval('approval-C');
+    const ctx = { operationId: 'op-9', approvalEpoch: 0 };
+    current.data.params = { $signingContext: ctx };
+    notificationService.currentApproval = current;
+    notificationService.approvals = [current];
+
+    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-C');
+    expect(current.resolve).toHaveBeenCalledWith(
+      expect.objectContaining({ __signingContext: ctx })
+    );
+  });
+
+  test('binding attachment does not mutate the caller payload object', async () => {
+    const current = makeApproval('approval-D');
+    notificationService.currentApproval = current;
+    notificationService.approvals = [current];
+    const payload = { signedTx: '0x' };
+
+    await notificationService.resolveApproval(payload, false, 'approval-D');
+    expect(payload).toEqual({ signedTx: '0x' });
   });
 
   test('rejectApproval with a stale id is ignored; matching id rejects', async () => {

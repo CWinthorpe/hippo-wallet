@@ -36,11 +36,36 @@ export type PermissionStore = {
   dumpCache: ReadonlyArray<LRU.Entry<string, ConnectedSite>>;
 };
 
+type AuthorityBoundary = (
+  previousSites: ConnectedSite[],
+  nextSites: ConnectedSite[]
+) => void;
+
 class PermissionService {
   store: PermissionStore = {
     dumpCache: [],
   };
   lruCache: LRU<string, ConnectedSite> | undefined;
+  private authorityBoundary?: AuthorityBoundary;
+
+  /**
+   * Installed by sessionBoundary without importing notificationService here;
+   * permissionService is imported by notificationService during startup.
+   * Every authority-bearing mutation calls this synchronously before writing.
+   */
+  setAuthorityBoundary = (boundary: AuthorityBoundary) => {
+    this.authorityBoundary = boundary;
+  };
+
+  private beforeAuthorityMutation = (
+    previous: ConnectedSite | undefined,
+    next: ConnectedSite | undefined
+  ) => {
+    if (!this.authorityBoundary) return;
+    const origin = previous?.origin || next?.origin;
+    if (!origin) return;
+    this.authorityBoundary(previous ? [previous] : [], next ? [next] : []);
+  };
 
   init = async () => {
     const storage = await createPersistStore<PermissionStore>({
@@ -103,6 +128,7 @@ class PermissionService {
 
   setSite = (site: ConnectedSite) => {
     if (!this.lruCache) return;
+    this.beforeAuthorityMutation(this._getSite(site.origin), site);
     this.lruCache.set(site.origin, site);
     this.sync();
   };
@@ -126,7 +152,7 @@ class PermissionService {
   ) => {
     if (!this.lruCache) return;
 
-    this.lruCache.set(origin, {
+    this.setSite({
       origin,
       name,
       icon,
@@ -135,7 +161,6 @@ class PermissionService {
       isTop: false,
       isConnected: true,
     });
-    this.sync();
   };
 
   addConnectedSiteV2 = ({
@@ -157,7 +182,7 @@ class PermissionService {
 
     const site = this._getSite(origin);
 
-    this.lruCache.set(origin, {
+    this.setSite({
       ...site,
       origin,
       name,
@@ -168,7 +193,6 @@ class PermissionService {
       account: defaultAccount,
       isConnected: true,
     });
-    this.sync();
   };
 
   touchConnectedSite = (origin) => {
@@ -190,12 +214,12 @@ class PermissionService {
       return;
     }
 
-    if (partialUpdate) {
-      const _value = this._getSite(origin);
-      this.lruCache.set(origin, { ..._value, ...value } as ConnectedSite);
-    } else {
-      this.lruCache.set(origin, value as ConnectedSite);
-    }
+    const previous = this._getSite(origin);
+    const next = (partialUpdate
+      ? { ...previous, ...value }
+      : value) as ConnectedSite;
+    this.beforeAuthorityMutation(previous, next);
+    this.lruCache.set(origin, next);
 
     this.sync();
   };
@@ -209,22 +233,18 @@ class PermissionService {
   };
 
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
+    const nextSites = sites.concat(
+      (this.lruCache?.values() || []).filter((item) => !item.isConnected)
+    );
+    if (this.authorityBoundary) {
+      this.authorityBoundary(this.getSites(), nextSites);
+    }
     this.lruCache?.load(
-      sites
-        .map((item) => ({
-          e: 0,
-          k: item.origin,
-          v: item,
-        }))
-        .concat(
-          (this.lruCache?.values() || [])
-            .filter((item) => !item.isConnected)
-            .map((item) => ({
-              e: 0,
-              k: item.origin,
-              v: item,
-            }))
-        )
+      nextSites.map((item) => ({
+        e: 0,
+        k: item.origin,
+        v: item,
+      }))
     );
     this.sync();
   };

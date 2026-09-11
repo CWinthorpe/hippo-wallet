@@ -112,7 +112,7 @@ export const sendSignTypedData = async ({
   try {
     const data1 = data as any;
 
-    hash = await wallet.signTypedData(account?.type, from, data1, {
+    hash = await wallet.signTypedDataInternal(account?.type, from, data1, {
       brandName: currentAccount.brandName,
       signTextMethod: method,
       version: version,

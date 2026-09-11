@@ -17,7 +17,7 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
@@ -58,7 +58,12 @@ const WatchAddressWaiting = ({
   }>(null);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const chain =
     findChain({
       id: params.chainId || 1,
@@ -112,13 +117,16 @@ const WatchAddressWaiting = ({
     setConnectError(null);
     wallet.resendSign(retry);
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding());
   };
 
   const handleRefreshQrCode = () => {
     initWalletConnect();
   };
 
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
   const init = async () => {
     const approval = await getApproval();
     const account = params.isGnosis ? params.account! : $account;
@@ -131,7 +139,10 @@ const WatchAddressWaiting = ({
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
 
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -213,7 +224,9 @@ const WatchAddressWaiting = ({
         }
         rejectApproval(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
@@ -305,13 +318,19 @@ const WatchAddressWaiting = ({
         }
       }
     );
-    await initWalletConnect();
-    emitSignComponentAmounted();
+
+    emitSignComponentAmounted(getApprovalBinding(approval));
   };
 
   useEffect(() => {
     init();
     setHeight('fit-content');
+    return () => {
+      const handler = signFinishedHandlerRef.current;
+      if (handler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
+      }
+    };
   }, []);
 
   const { stay = false } = params || {};

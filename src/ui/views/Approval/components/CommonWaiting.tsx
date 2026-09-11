@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   openInternalPageInTab,
@@ -26,7 +26,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSignComponentAmounted, matchesSignEvent } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
@@ -65,7 +65,12 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [
+    getApproval,
+    resolveApproval,
+    rejectApproval,
+    getApprovalBinding,
+  ] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
   const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
@@ -103,7 +108,7 @@ export const CommonWaiting = ({
     await wallet.resendSign(autoRetryUpdate);
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding());
   };
 
   const handleCancel = () => {
@@ -125,6 +130,9 @@ export const CommonWaiting = ({
     }
   }, [brandName]);
 
+  const signFinishedHandlerRef = useRef<((data: any) => Promise<void>) | null>(
+    null
+  );
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
@@ -182,7 +190,10 @@ export const CommonWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const signFinishedHandler = async (data) => {
+      if (!matchesSignEvent(data, getApprovalBinding())) {
+        return;
+      }
       console.log('finished', data);
       if (data.success) {
         let sig = data.data;
@@ -230,9 +241,11 @@ export const CommonWaiting = ({
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
-    });
+    };
+    signFinishedHandlerRef.current = signFinishedHandler;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, signFinishedHandler);
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(getApprovalBinding(approval));
   };
 
   React.useEffect(() => {
@@ -251,6 +264,12 @@ export const CommonWaiting = ({
       setHeight('fit-content');
       init();
     })();
+    return () => {
+      const handler = signFinishedHandlerRef.current;
+      if (handler) {
+        eventBus.removeEventListener(EVENTS.SIGN_FINISHED, handler);
+      }
+    };
   }, []);
 
   React.useEffect(() => {

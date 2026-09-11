@@ -251,7 +251,16 @@ class NotificationService extends Events {
           new EthereumProviderError(4001, 'User Cancel')
         );
     } else {
-      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
+      const boundData =
+        data && typeof data === 'object'
+          ? Object.assign(Array.isArray(data) ? [...data] : { ...data }, {
+              __approvalId: this.currentApproval.id,
+              __approvalComponent: this.currentApproval.data.approvalComponent,
+              __signingContext: (this.currentApproval.data as any).params
+                ?.$signingContext,
+            })
+          : data;
+      this.currentApproval?.resolve && this.currentApproval?.resolve(boundData);
     }
 
     const approval = this.currentApproval;
