@@ -14,13 +14,48 @@ import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 
-export const useApproval = () => {
+export interface ApprovalBinding {
+  approvalId?: string;
+  approvalComponent: Approval['data']['approvalComponent'];
+  canResolve?: () => boolean;
+}
+
+export const useApproval = (binding?: ApprovalBinding) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
+  const mounted = useRef(true);
+  const bindingRef = useRef(binding);
+  bindingRef.current = binding;
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const matchesBinding = (approval?: Approval, approvalId?: string) => {
+    if (!approval || (approvalId && approval.id !== approvalId)) return false;
+    if (!binding) return true;
+    return (
+      mounted.current &&
+      !!binding.approvalId &&
+      binding.approvalId === bindingRef.current?.approvalId &&
+      binding.approvalComponent === bindingRef.current?.approvalComponent &&
+      approval.id === binding.approvalId &&
+      approval.data.approvalComponent === binding.approvalComponent
+    );
+  };
+
+  const canResolve = () =>
+    !binding ||
+    (mounted.current &&
+      binding.canResolve?.() !== false &&
+      bindingRef.current?.canResolve?.() !== false);
 
   // Capability binding: capture the approval this component actually rendered
   // ONCE at mount, and bind every resolve/reject to that exact id. We never
@@ -60,7 +95,9 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    if (!canResolve()) return false;
     const approval = await getApproval();
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
 
     // Bind this resolution to the approval that rendered this UI, captured
     // at mount — never the live queue. The background requires the exact id,
@@ -68,59 +105,79 @@ export const useApproval = () => {
     // not render the current approval cannot resolve it.
     const boundId = approvalId ?? renderedApprovalIdRef.current;
     if (!boundId) {
-      return;
+      return false;
     }
 
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
-      return;
+      return false;
     }
 
-    if (approval) {
-      // The component identity is always the one rendered in THIS window.
-      // An explicit approvalId that does not match what we rendered fails the
-      // background's exact id+component+epoch guard (fail-closed), which is
-      // the intended behavior — a component may never resolve an approval it
-      // did not render.
-      wallet.resolveApproval(
-        data,
-        forceReject,
-        boundId,
-        renderedComponentRef.current
-      );
-    }
+    // Re-check after the async deviceConnect hop (upstream #4083 contract:
+    // binding must still hold immediately before the resolve leaves this
+    // window). The COMPONENT identity is always the one rendered in THIS
+    // window — never the live queue's component (Hippo, stronger than
+    // #4083): a component may never resolve an approval it did not render,
+    // and the background fails closed on any id/component/epoch mismatch.
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
+    const resolved = await wallet.resolveApproval(
+      data,
+      forceReject,
+      boundId,
+      renderedComponentRef.current
+    );
+    if (!resolved) return false;
 
     if (stay) {
-      return;
+      return true;
     }
     setTimeout(() => {
+      if (binding && !mounted.current) return;
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
       history.replace('/');
     }, 0);
+    return true;
   };
 
   const rejectApproval = async (
     err?,
     stay = false,
     isInternal = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: string
   ) => {
     const approval = await getApproval();
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
-    if (approval && boundId) {
-      await wallet.rejectApproval(
-        err,
-        stay,
-        isInternal,
-        boundId,
-        renderedComponentRef.current
-      );
+    if (
+      !matchesBinding(approval, approvalId) ||
+      (approvalComponent &&
+        approval.data?.approvalComponent !== approvalComponent)
+    ) {
+      return false;
     }
-    if (!stay) {
+    // Hippo binds rejects to the mount-rendered id + component exactly like
+    // resolves (#4083 passes live-queue values; the background guard makes
+    // those unenforceable against queue rotation, so Hippo keeps the mount
+    // capture). No Cobo global restore: round 9 made delegation
+    // request-scoped (the background restore slot no longer exists).
+    const boundId = approvalId ?? renderedApprovalIdRef.current;
+    if (!approval || !boundId) {
+      return false;
+    }
+
+    const rejected = await wallet.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      boundId,
+      renderedComponentRef.current
+    );
+    if (!rejected) return false;
+    if (!stay && (!binding || mounted.current)) {
       history.push('/');
     }
+    return true;
   };
   const getApprovalBinding = (
     approval?: Approval

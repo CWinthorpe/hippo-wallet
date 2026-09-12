@@ -243,11 +243,12 @@ class NotificationService extends Events {
     approvalId?: string,
     approvalComponent?: string
   ) => {
-    // Approval identity is mandatory: an approval may only be resolved by
-    // the exact id AND component that rendered it, at its lifecycle epoch.
-    // Without a matching id/component (or after the epoch bumped on
-    // lock/session teardown) this is a no-op, never a blind resolve of
-    // whatever is current (gpt56 round-10 blocker 3).
+    // Approval identity is mandatory (Hippo, gpt56 round-10 blocker 3): an
+    // approval may only be resolved by the exact id AND component that
+    // rendered it, at its lifecycle epoch. Upstream #4083's optional-binding
+    // form stays rejected as strictly weaker; Hippo adopts only the #4083
+    // boolean contract: guard-miss returns FALSE (never a silent undefined
+    // that a caller could misread as success), success returns TRUE.
     if (
       !approvalId ||
       approvalId !== this.currentApproval?.id ||
@@ -256,7 +257,7 @@ class NotificationService extends Events {
       (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
         this.approvalEpoch
     ) {
-      return;
+      return false;
     }
     if (forceReject) {
       this.revokeSigningOperation(this.currentApproval);
@@ -316,6 +317,7 @@ class NotificationService extends Events {
     }
 
     this.emit('resolve', data);
+    return true;
   };
 
   /**
@@ -365,7 +367,6 @@ class NotificationService extends Events {
       this.bumpOriginApprovalEpoch(origin);
     }
   };
-
   rejectApproval = async (
     err?: string,
     stay = false,
@@ -373,8 +374,11 @@ class NotificationService extends Events {
     approvalId?: string,
     approvalComponent?: string
   ) => {
-    // Mandatory identity: exact id + component + epoch, mirroring
-    // resolveApproval (gpt56 round-10 blocker 3).
+    // Mandatory identity (Hippo, mirrors resolveApproval, gpt56 round-10
+    // blocker 3): exact id + component + epoch. Upstream #4083's optional-
+    // binding form stays rejected as strictly weaker; Hippo adopts only the
+    // #4083 boolean contract: guard-miss returns FALSE so a caller can never
+    // misread a silent undefined as a successful reject.
     if (
       !approvalId ||
       approvalId !== this.currentApproval?.id ||
@@ -383,7 +387,7 @@ class NotificationService extends Events {
       (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
         this.approvalEpoch
     ) {
-      return;
+      return false;
     }
     this.addLastRejectDapp();
     const approval = this.currentApproval;
@@ -391,7 +395,6 @@ class NotificationService extends Events {
     if (this.approvals.length <= 1) {
       await this.clear(stay); // TODO: FIXME
     }
-
     if (isInternal) {
       approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
     } else {
@@ -410,6 +413,7 @@ class NotificationService extends Events {
       await this.clear(stay);
     }
     this.emit('reject', err);
+    return true;
   };
 
   requestApproval = async (

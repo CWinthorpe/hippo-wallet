@@ -19,8 +19,12 @@ import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { findChain } from '@/utils/chain';
 
+// Hippo keeps the retired-gas-account compatibility types (no runtime
+// GasLess/GasAccount surface); the shared security gate predicate from #4083
+// IS adopted — it is dependency-free.
 type GasLessConfig = Record<string, unknown>;
 type GasAccountCheckResult = Record<string, unknown>;
+import { isApprovalProcessDisabled } from './securityGate';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -30,6 +34,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   origin?: string;
   originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
+  securityBlocked?: boolean;
   hasShadow?: boolean;
   isTestnet?: boolean;
   engineResults?: Result[];
@@ -153,6 +158,7 @@ export const FooterBar: React.FC<Props> = ({
   securityLevel,
   engineResults = [],
   hasUnProcessSecurityResult,
+  securityBlocked = false,
   hasShadow = false,
   onIgnoreAllRules,
   Header,
@@ -238,7 +244,21 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           {...props}
           gasLess={false}
-          disabledProcess={props.disabledProcess}
+          disabledProcess={isApprovalProcessDisabled({
+            securityBlocked,
+            hasUnprocessedSecurityResult:
+              !!securityLevel && !!hasUnProcessSecurityResult,
+            // Hippo: gas-account sponsorship is a removed product, so the
+            // alternate-payment arms are permanently false — but the
+            // security-block arms of the shared gate hold exactly as
+            // upstream intends: an ERROR-level security result or a
+            // not-yet-acknowledged risk can never be cleared by a gas
+            // payment method.
+            payGasByGasAccount: false,
+            gasAccountCanPay: false,
+            useGasLess: false,
+            disabledProcess: props.disabledProcess,
+          })}
           enableTooltip={props.enableTooltip}
         />
         {securityLevel && hasUnProcessSecurityResult && (

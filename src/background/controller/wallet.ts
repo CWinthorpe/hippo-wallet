@@ -11,6 +11,7 @@ import {
   groupBy,
   isEqual,
   last,
+  omit,
   pick,
   sortBy,
   truncate,
@@ -194,6 +195,10 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import {
+  assertApprovalSigningBinding,
+  waitForApprovalSigning,
+} from './walletUtils/approvalSigning';
 import {
   cancelAllSignTxPreparations,
   getSignTxPreparationGas,
@@ -4160,10 +4165,19 @@ export class WalletController extends BaseController {
     }
     assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertApprovalSigningBinding(notificationService.getApproval(), {
+      type,
+      from,
+      data,
+      options,
+    });
+    const signingOptions = options
+      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      : options;
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     assertAuthorityContextStillValid(authorityContext);
     eventBus.emit(EVENTS.broadcastToUI, {
@@ -4210,7 +4224,14 @@ export class WalletController extends BaseController {
       authorityContext,
     };
     const fn = () =>
-      waitSignComponentAmounted(binding).then(() => {
+      waitForApprovalSigning({
+        type,
+        from,
+        data,
+        options,
+        getApproval: notificationService.getApproval,
+        waitForUI: () => waitSignComponentAmounted(binding),
+      }).then(() => {
         return this.signTypedData(
           type,
           from,
