@@ -93787,6 +93787,23 @@
       "node_modules/@ethereumjs/util/dist/esm/index.js"
     ]
   },
+  "src/ui/utils/hooks.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/ConnectStatus/useImKeyStatus.ts",
+      "src/ui/component/ConnectStatus/useLedgerStatus.ts",
+      "src/ui/state/exchange.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/WalletContext.tsx",
+      "src/utils/signEvent.ts"
+    ]
+  },
   "src/ui/utils/imKey.ts": {
     "enable": true,
     "require": [
@@ -93799,25 +93816,17 @@
   "src/ui/utils/index.ts": {
     "enable": true,
     "require": [
-      "node_modules/@ethereumjs/util/dist/esm/index.js",
       "node_modules/@ledgerhq/devices/lib-es/index.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "src/constant/index.ts",
-      "src/ui/component/ConnectStatus/useImKeyStatus.ts",
-      "src/ui/component/ConnectStatus/useLedgerStatus.ts",
-      "src/ui/state/exchange.ts",
-      "src/ui/store.ts",
+      "src/ui/utils/hooks.ts",
       "src/ui/utils/imKey.ts",
-      "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
       "src/ui/utils/os.ts",
       "src/ui/utils/time.ts",
       "src/ui/utils/uiType.ts",
       "src/ui/utils/WalletContext.tsx",
-      "src/ui/utils/webapi.tsx",
-      "src/utils/signEvent.ts"
+      "src/ui/utils/webapi.tsx"
     ]
   },
   "src/ui/utils/keystone.ts": {
@@ -95333,6 +95342,7 @@
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/gnosis.ts",
+      "src/ui/utils/hooks.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/keystone.ts",
       "src/ui/utils/ledger-dmk.ts",
