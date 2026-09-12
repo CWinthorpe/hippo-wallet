@@ -313,13 +313,17 @@ const LedgerHardwareWaiting = ({
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
+      // gpt56 round-12 blocker 2: the success popup may close only on
+      // PROVEN settlement (backend boolean true). On a false return the
+      // approval is stale/rotated and the explicit review UI must stay.
+      void resolveApproval(
         signFinishedData.data,
         stay,
         false,
         signFinishedData.approvalId
-      );
+      ).then((settled) => {
+        if (settled) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

@@ -1,5 +1,6 @@
 /**
- * gpt56 round-10 blocker 5: WalletConnect readiness acknowledgement helper.
+ * gpt56 round-10 blocker 5 + round-12 blocker 5: WalletConnect readiness
+ * acknowledgement helper.
  *
  * The waiting-component UI must not announce readiness (SIGN_WAITING_AMOUNTED)
  * before the keyring initialization is actually acknowledged, and every
@@ -7,12 +8,21 @@
  * unmounts cannot leave stale consumers behind. This module keeps the
  * acknowledgement state machine out of the React component so it can be
  * exercised behaviorally.
+ *
+ * Round-12 hardening: the raw broadcasts are GLOBAL — a parallel
+ * WalletConnect/Coinbase init from anywhere else, another window, or a late
+ * event from an aborted/retried attempt used to settle the current
+ * acknowledgement. Every accepted signal must now correlate with THIS
+ * attempt: the INITED broadcast echoes the attemptId the UI stamped on its
+ * kick, and CONNECTED/SUBMITTED status transitions must match the expected
+ * account. Uncorrelated events are ignored (fail closed; the timeout still
+ * fails the ack if no correlated event ever arrives).
  */
 
 export type WcAckEvents = {
-  /** Fires with { uri } once the connector produced a pairing URI. */
+  /** Fires with { uri, attemptId } once the connector produced a pairing URI. */
   inited: string;
-  /** Fires with { status, payload } on connector status transitions. */
+  /** Fires with { status, account, payload } on connector status transitions. */
   statusChanged: string;
 };
 
@@ -26,24 +36,49 @@ export type WcAckStatus = {
   [k: string]: string | number | undefined;
 };
 
+export type WcAckAccount = {
+  address?: string;
+  brandName?: string;
+};
+
 export type WcAckDeps = {
   events: WcAckEvents;
   statusMap: WcAckStatus;
   addListener: (event: string, handler: (payload: any) => void) => void;
   removeListener: (event: string, handler: (payload: any) => void) => void;
   /** Kick the background initialization; called exactly once per attempt. */
-  kickInit: () => void;
+  kickInit: (attemptId: string) => void;
+  /**
+   * Unpredictable attempt id stamped on this ack's kick. Only INITED
+   * broadcasts carrying the SAME id correlate to this attempt.
+   */
+  attemptId: string;
+  /**
+   * The account this attempt drives. CONNECTED/SUBMITTED transitions for a
+   * different account are another session's traffic and are ignored.
+   */
+  expectedAccount?: WcAckAccount;
   timeoutMs?: number;
   setTimer?: (cb: () => void, ms: number) => ReturnType<typeof setTimeout>;
   clearTimer?: (handle: ReturnType<typeof setTimeout>) => void;
 };
 
 export type WcAckHandle = {
-  /** Resolves 'ready' on INITED-uri / CONNECTED / SUBMITTED acknowledgement. */
+  /** Resolves 'ready' on correlated INITED-uri / CONNECTED / SUBMITTED ack. */
   promise: Promise<'ready'>;
   /** Remove listeners + timer and reject. Safe to call after settlement. */
   abort: (reason?: string) => void;
   isSettled: () => boolean;
+};
+
+const sameAccount = (a: any, b?: WcAckAccount) => {
+  if (!b) return true;
+  const addrA = typeof a?.address === 'string' ? a.address.toLowerCase() : '';
+  const addrB =
+    typeof b.address === 'string' ? b.address.toLowerCase() : undefined;
+  if (addrB !== undefined && addrA !== addrB) return false;
+  if (b.brandName !== undefined && a?.brandName !== b.brandName) return false;
+  return true;
 };
 
 export const createWalletConnectReadinessAck = (
@@ -55,6 +90,8 @@ export const createWalletConnectReadinessAck = (
     addListener,
     removeListener,
     kickInit,
+    attemptId,
+    expectedAccount,
     timeoutMs = 30_000,
     setTimer = (cb, ms) => setTimeout(cb, ms),
     clearTimer = (handle) => clearTimeout(handle),
@@ -96,7 +133,10 @@ export const createWalletConnectReadinessAck = (
     rejectPromise = reject;
 
     initedHandler = (payload: any) => {
-      // A pairing URI is the explicit success acknowledgement.
+      // Only THIS attempt's pairing URI counts. A broadcast from another
+      // init (different attempt id, or an uncorrelated legacy emitter)
+      // neither succeeds nor fails this ack — it stays pending.
+      if (payload?.attemptId !== attemptId) return;
       if (payload && typeof payload.uri === 'string' && payload.uri) {
         succeed();
       } else {
@@ -105,10 +145,19 @@ export const createWalletConnectReadinessAck = (
     };
     statusHandler = (payload: any) => {
       const status = payload?.status;
-      if (status === statusMap.CONNECTED || status === statusMap.SUBMITTED) {
+      // CONNECTING / WAITING are transitional, not failures.
+      const isTerminalSuccess =
+        status === statusMap.CONNECTED || status === statusMap.SUBMITTED;
+      const isTerminalFailure =
+        status === statusMap.FAILED || status === statusMap.REJECTED;
+      if (!isTerminalSuccess && !isTerminalFailure) return;
+      // Account-scoped transitions only (gpt56 round-12 blocker 5): a
+      // CONNECTED for a different session account is another surface's
+      // traffic and must never settle this ack.
+      if (!sameAccount(payload?.account, expectedAccount)) return;
+      if (isTerminalSuccess) {
         succeed();
-      } else if (status === statusMap.FAILED || status === statusMap.REJECTED) {
-        // CONNECTING/ WAITING are transitional, not failures.
+      } else {
         fail('WalletConnect initialization failed.');
       }
     };
@@ -121,7 +170,7 @@ export const createWalletConnectReadinessAck = (
     );
 
     try {
-      kickInit();
+      kickInit(attemptId);
     } catch (e: any) {
       fail(`WalletConnect initialization error: ${e?.message || e}`);
     }

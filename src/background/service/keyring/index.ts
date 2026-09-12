@@ -1237,10 +1237,17 @@ export class KeyringService extends EventEmitter {
           );
     await keyring.deserialize(data);
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
+      // gpt56 round-12 blocker 5: remember the attempt id from the kick so
+      // the 'inited' broadcast this keyring emits can be correlated by the
+      // waiting component; uncorrelated acks are ignored (fail closed).
+      (keyring as any)._lastWcInitAttemptId = null;
       eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, (props) => {
-        const { address, brandName, type } = props;
+        const { address, brandName, type, attemptId } = props;
         if (type !== KEYRING_CLASS.WALLETCONNECT) {
           return;
+        }
+        if (attemptId) {
+          (keyring as any)._lastWcInitAttemptId = attemptId;
         }
         (keyring as WalletConnectKeyring).init(
           address,
@@ -1251,7 +1258,11 @@ export class KeyringService extends EventEmitter {
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
+          params: {
+            uri,
+            attemptId: (keyring as any)._lastWcInitAttemptId ?? null,
+            connectorType: 'WalletConnect',
+          },
         });
       });
 
@@ -1303,7 +1314,7 @@ export class KeyringService extends EventEmitter {
       const coinbaseKeyring = keyring as CoinbaseKeyring;
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, type }) => {
+        ({ address, type, attemptId }) => {
           if (type !== KEYRING_CLASS.Coinbase) {
             return;
           }
@@ -1311,9 +1322,16 @@ export class KeyringService extends EventEmitter {
             address,
           });
 
+          // gpt56 round-12 blocker 5: stamp the kick's attempt id onto the
+          // broadcast; a missing id is uncorrelated and must not settle any
+          // waiting acknowledgement.
           eventBus.emit(EVENTS.broadcastToUI, {
             method: EVENTS.WALLETCONNECT.INITED,
-            params: { uri },
+            params: {
+              uri,
+              attemptId: attemptId ?? null,
+              connectorType: KEYRING_CLASS.Coinbase,
+            },
           });
         }
       );

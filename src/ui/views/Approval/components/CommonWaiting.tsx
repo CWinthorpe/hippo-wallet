@@ -299,13 +299,18 @@ export const CommonWaiting = ({
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
+      // gpt56 round-12 blocker 2: the popup may close only on PROVEN
+      // settlement. The background returns false when the id/component/
+      // epoch no longer matches; on false the approval UI stays mounted
+      // (explicit review, no silent success).
+      void resolveApproval(
         signFinishedData.data,
         stay,
         false,
         signFinishedData.approvalId
-      );
+      ).then((settled) => {
+        if (settled) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

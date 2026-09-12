@@ -146,6 +146,14 @@ const WatchAddressWaiting = ({
     // readiness. Failure or timeout returns false so the caller must NOT
     // announce the signing component.
     ackHandleRef.current?.abort();
+    // gpt56 round-12 blocker 5: a fresh unpredictable id per attempt. The
+    // background echoes it on the INITED broadcast; the ack ignores every
+    // event that does not carry THIS id (a late ack from an aborted/older
+    // attempt or a parallel init can no longer settle us), and terminal
+    // status transitions must match this attempt's account.
+    const attemptId = `${Date.now()}-${
+      globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)
+    }`;
     const ack = createWalletConnectReadinessAck({
       events: {
         inited: EVENTS.WALLETCONNECT.INITED,
@@ -155,10 +163,15 @@ const WatchAddressWaiting = ({
       addListener: (event, handler) => addTrackedWcListener(event, handler),
       removeListener: (event, handler) =>
         eventBus.removeEventListener(event, handler),
-      kickInit: () =>
+      attemptId,
+      expectedAccount: {
+        address: account.address,
+        brandName: account.brandName,
+      },
+      kickInit: (id) =>
         eventBus.emit(EVENTS.broadcastToBackground, {
           method: EVENTS.WALLETCONNECT.INIT,
-          data: account,
+          data: { ...account, attemptId: id },
         }),
     });
     ackHandleRef.current = ack;
@@ -434,13 +447,17 @@ const WatchAddressWaiting = ({
   const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
+      // gpt56 round-12 blocker 2: the success popup may close only on
+      // PROVEN settlement (backend boolean true). On a false return the
+      // approval is stale/rotated and the explicit review UI must stay.
+      void resolveApproval(
         signFinishedData.data,
         stay,
         false,
         signFinishedData.approvalId
-      );
+      ).then((settled) => {
+        if (settled) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

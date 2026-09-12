@@ -752,6 +752,13 @@ class ProviderController extends BaseController {
         const authorizationList = [] as AuthorizationListItem[];
 
         for (const authorization of eip7702RevokeAuthorization) {
+          // gpt56 round-12 blocker 3: batched signer — authority is
+          // revalidated before EVERY keyring invocation, not just around
+          // the loop.
+          assertAuthorityContextStillValid(
+            options.authorityContext as any,
+            currentAccount
+          );
           const signature: string = await keyringService.signEip7702Authorization(
             keyring,
             {
@@ -919,6 +926,10 @@ class ProviderController extends BaseController {
             'tempo transaction is only supported for private key and mnemonic keyrings'
           );
         }
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
         signedTx = await keyringService.signTransaction(
           keyring,
           tempoTxData,
@@ -930,6 +941,10 @@ class ProviderController extends BaseController {
           throw new Error('tempo transaction serialize failed');
         }
       } else {
+        assertAuthorityContextStillValid(
+          options.authorityContext as any,
+          currentAccount
+        );
         signedTx = await keyringService.signTransaction(
           keyring,
           tx,
@@ -1313,6 +1328,12 @@ class ProviderController extends BaseController {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from, req);
+      // gpt56 round-12 blocker 3: _checkAddress awaits keyring.getAccounts()
+      // per keyring; revalidate before the signer can be reached.
+      assertAuthorityContextStillValid(
+        req.authorityContext as any,
+        currentAccount
+      );
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
@@ -1369,6 +1390,9 @@ class ProviderController extends BaseController {
       }
     }
 
+    // gpt56 round-12 blocker 3: revalidate after the async keyring lookup,
+    // immediately before the sign call.
+    assertAuthorityContextStillValid(req.authorityContext as any, req.account);
     const result = await keyringService.signTypedMessage(
       keyring,
       { from, data: _data },

@@ -308,13 +308,16 @@ export const PrivatekeyWaiting = ({
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
+      // gpt56 round-12 blocker 2: close only on proven settlement (see
+      // CommonWaiting for the full contract note).
+      void resolveApproval(
         signFinishedData.data,
         stay,
         false,
         signFinishedData.approvalId
-      );
+      ).then((settled) => {
+        if (settled) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

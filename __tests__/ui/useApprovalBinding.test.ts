@@ -1,6 +1,10 @@
 import React, { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import { useApproval, ApprovalBinding } from '@/ui/utils/hooks';
+import {
+  useApproval,
+  ApprovalBinding,
+  RenderedApprovalIdentityContext,
+} from '@/ui/utils/hooks';
 
 const mockWallet = {
   getApproval: jest.fn(),
@@ -39,6 +43,20 @@ describe('approval gesture binding', () => {
   };
   const mount = (binding?: ApprovalBinding) => {
     act(() => root.render(React.createElement(Probe, { binding })));
+  };
+  const mountInWindow = (
+    identity: { approvalId: string; approvalComponent: any } | null,
+    binding?: ApprovalBinding
+  ) => {
+    act(() =>
+      root.render(
+        React.createElement(
+          RenderedApprovalIdentityContext.Provider,
+          { value: identity },
+          React.createElement(Probe, { binding })
+        )
+      )
+    );
   };
 
   beforeEach(() => {
@@ -156,6 +174,74 @@ describe('approval gesture binding', () => {
     );
     jest.runAllTimers();
     expect(mockHistory.replace).not.toHaveBeenCalled();
+  });
+
+  // gpt56 round-12 blocker 1: the approval window passes the parent-rendered
+  // tuple via context; settlement must use THAT tuple even when the async
+  // live-queue capture would return a different (rotated) approval.
+  test('in-window settlement uses the parent-rendered identity even when the live queue already rotated', async () => {
+    // The rendered approval is A; getApproval() (mount capture AND the
+    // in-call live read) now returns B.
+    const rotated = {
+      id: 'rotated-request',
+      data: {
+        approvalComponent: 'SignTypedData',
+        account: { address: '0xother' },
+      },
+    };
+    mockWallet.getApproval.mockResolvedValue(rotated);
+    mockWallet.resolveApproval.mockImplementation(async () => true);
+
+    mountInWindow({
+      approvalId: approval.id,
+      approvalComponent: 'SignTx',
+    });
+
+    expect(await approvalHook[1]({}, false)).toBe(true);
+    expect(mockWallet.resolveApproval).toHaveBeenCalledWith(
+      {},
+      false,
+      approval.id, // the RENDERED tuple, never the rotated live id
+      'SignTx'
+    );
+    expect(mockWallet.resolveApproval).not.toHaveBeenCalledWith(
+      {},
+      false,
+      'rotated-request',
+      expect.anything()
+    );
+
+    expect(await approvalHook[2]('user cancel', false)).toBe(true);
+    expect(mockWallet.rejectApproval).toHaveBeenCalledWith(
+      'user cancel',
+      false,
+      false,
+      approval.id,
+      'SignTx'
+    );
+  });
+
+  test('binding identity wins over the live queue for in-window resolves', async () => {
+    // SignTx-style: the component passes its binding; the queue rotated.
+    const rotated = {
+      id: 'rotated-request',
+      data: {
+        approvalComponent: 'SignTypedData',
+        account: { address: '0xother' },
+      },
+    };
+    mockWallet.getApproval.mockResolvedValue(rotated);
+    mockWallet.resolveApproval.mockImplementation(async () => true);
+
+    mountInWindow(
+      { approvalId: approval.id, approvalComponent: 'SignTx' },
+      { approvalId: approval.id, approvalComponent: 'SignTx' as any }
+    );
+
+    // matchesBinding checks the LIVE approval against the binding; the live
+    // queue is B while the binding is A, so settlement fails closed.
+    expect(await approvalHook[1]({}, false)).toBe(false);
+    expect(mockWallet.resolveApproval).not.toHaveBeenCalled();
   });
 
   test('legacy callers also bind their captured request when resolving or rejecting', async () => {

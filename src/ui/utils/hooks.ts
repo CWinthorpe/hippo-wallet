@@ -1,5 +1,12 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
@@ -20,7 +27,35 @@ export interface ApprovalBinding {
   canResolve?: () => boolean;
 }
 
+/**
+ * gpt56 round-12 blocker 1: settlement identity inside the approval window
+ * must be the IMMUTABLE tuple the parent (Approval/index) rendered — consumed
+ * synchronously from context, never re-fetched from the live queue. The
+ * mount-time async capture (renderedApprovalIdRef) exists ONLY for surfaces
+ * rendered outside the approval window (standalone popups/routes), where no
+ * parent tuple exists. Inside the window, any settlement path without the
+ * tuple fails closed.
+ */
+export interface RenderedApprovalIdentity {
+  approvalId: string;
+  approvalComponent: Approval['data']['approvalComponent'];
+  /**
+   * SIGN handshake tuple (parent approval id + component + authority
+   * context) derived synchronously from the SAME approval object the parent
+   * rendered. Undefined for non-signing approvals, matching
+   * bindSignEventFromApproval semantics.
+   */
+  operationBinding?: Partial<SignEventBinding>;
+}
+
+export const RenderedApprovalIdentityContext = createContext<RenderedApprovalIdentity | null>(
+  null
+);
+
 export const useApproval = (binding?: ApprovalBinding) => {
+  // In-window surfaces hold the parent-rendered tuple synchronously
+  // (gpt56 round-12 blocker 1).
+  const windowIdentity = useContext(RenderedApprovalIdentityContext);
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
@@ -71,6 +106,10 @@ export const useApproval = (binding?: ApprovalBinding) => {
   // (gpt56 round-9 blocker 1).
   const operationBindingRef = useRef<Partial<SignEventBinding>>({});
   useEffect(() => {
+    // gpt56 round-12 blocker 1: inside the approval window the immutable
+    // parent-rendered tuple already exists; capturing the live queue here
+    // would (re)introduce the rotation race.
+    if (windowIdentity) return;
     let disposed = false;
     void getApproval()
       .then((approval) => {
@@ -103,8 +142,18 @@ export const useApproval = (binding?: ApprovalBinding) => {
     // at mount — never the live queue. The background requires the exact id,
     // component, and epoch (gpt56 round-10 blocker 3); a component that did
     // not render the current approval cannot resolve it.
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
-    if (!boundId) {
+    const boundId =
+      approvalId ??
+      (windowIdentity
+        ? binding?.approvalId ?? windowIdentity.approvalId
+        : renderedApprovalIdRef.current);
+    const boundComponent = windowIdentity
+      ? binding?.approvalComponent ?? windowIdentity.approvalComponent
+      : renderedComponentRef.current;
+    // Settlement requires an identity. Inside the window one always exists;
+    // outside it the mount capture must have completed. Either way a missing
+    // identity fails closed (gpt56 round-12 blocker 1).
+    if (!boundId || !boundComponent) {
       return false;
     }
 
@@ -124,7 +173,7 @@ export const useApproval = (binding?: ApprovalBinding) => {
       data,
       forceReject,
       boundId,
-      renderedComponentRef.current
+      boundComponent
     );
     if (!resolved) return false;
 
@@ -161,8 +210,15 @@ export const useApproval = (binding?: ApprovalBinding) => {
     // those unenforceable against queue rotation, so Hippo keeps the mount
     // capture). No Cobo global restore: round 9 made delegation
     // request-scoped (the background restore slot no longer exists).
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
-    if (!approval || !boundId) {
+    const boundId =
+      approvalId ??
+      (windowIdentity
+        ? binding?.approvalId ?? windowIdentity.approvalId
+        : renderedApprovalIdRef.current);
+    const boundComponent = windowIdentity
+      ? binding?.approvalComponent ?? windowIdentity.approvalComponent
+      : renderedComponentRef.current;
+    if (!approval || !boundId || !boundComponent) {
       return false;
     }
 
@@ -171,7 +227,7 @@ export const useApproval = (binding?: ApprovalBinding) => {
       stay,
       isInternal,
       boundId,
-      renderedComponentRef.current
+      boundComponent
     );
     if (!rejected) return false;
     if (!stay && (!binding || mounted.current)) {
@@ -184,6 +240,11 @@ export const useApproval = (binding?: ApprovalBinding) => {
   ): Partial<SignEventBinding> => {
     if (approval) {
       return bindSignEventFromApproval(approval) || {};
+    }
+    if (windowIdentity) {
+      // Handshake identity comes from the object the parent rendered — no
+      // live-queue capture involved (gpt56 round-12 blocker 1).
+      return windowIdentity.operationBinding || {};
     }
     return renderedApprovalIdRef.current
       ? {

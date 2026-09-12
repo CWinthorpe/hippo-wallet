@@ -3021,8 +3021,13 @@ export class WalletController extends BaseController {
   initWalletConnect = async (
     brandName: string,
     curStashId?: number | null,
-    chainId = 1
+    chainId = 1,
+    attemptId?: string
   ) => {
+    // gpt56 round-12 blocker 5: every kick carries the UI attempt id; the
+    // resulting INITED broadcast echoes it so only THIS attempt's ack can
+    // settle the waiting component.
+    this._lastWcInitAttemptId = attemptId ?? null;
     if (!curStashId && this._currentWalletConnectStashId) {
       curStashId = this._currentWalletConnectStashId;
     }
@@ -3047,23 +3052,36 @@ export class WalletController extends BaseController {
     let stashId = curStashId;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
-      eventBus.addEventListener(
-        EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName, type }) => {
-          if (type !== KEYRING_CLASS.WALLETCONNECT) {
-            return;
-          }
-          (keyring as WalletConnectKeyring).init(
-            address,
-            brandName,
-            allChainIds
-          );
+      const wcInitListener = ({ address, brandName, type, attemptId }: any) => {
+        if (type !== KEYRING_CLASS.WALLETCONNECT) {
+          return;
         }
-      );
+        if (attemptId) this._lastWcInitAttemptId = attemptId;
+        (keyring as WalletConnectKeyring).init(address, brandName, allChainIds);
+      };
+      // gpt56 round-12 blocker 5: one listener per keyring instance —
+      // re-adding on every stash recreate would let one INIT kick fire
+      // multiple keyring.init() calls (stacked listeners, competing URIs).
+      if (this._wcInitListener) {
+        eventBus.removeEventListener(
+          EVENTS.WALLETCONNECT.INIT,
+          this._wcInitListener
+        );
+      }
+      this._wcInitListener = wcInitListener;
+      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, wcInitListener);
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
+          params: {
+            uri,
+            // gpt56 round-12 blocker 5: the broadcast echoes the attempt id
+            // of the kick that (re)initialized THIS keyring. The id is
+            // replaced on every new kick, so a late 'inited' from an
+            // abandoned attempt can never carry the current attempt's id.
+            attemptId: this._lastWcInitAttemptId ?? null,
+            connectorType: 'WalletConnect',
+          },
         });
       });
 
@@ -4083,6 +4101,11 @@ export class WalletController extends BaseController {
     }
     assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    // gpt56 round-12 blocker 3: the lookup above is asynchronous. Re-check
+    // IMMEDIATELY before the sign call so an account switch / lock /
+    // disconnect that lands mid-lookup cannot reach the signer at all (the
+    // post-sign assert only suppresses delivery, not the signing effect).
+    assertAuthorityContextStillValid(authorityContext);
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
@@ -4174,6 +4197,9 @@ export class WalletController extends BaseController {
     const signingOptions = options
       ? omit(options, ['sourceApprovalId', 'approvalComponent'])
       : options;
+    // gpt56 round-12 blocker 3: revalidate after the async keyring lookup
+    // and immediately before the signer runs.
+    assertAuthorityContextStillValid(authorityContext);
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
@@ -4287,6 +4313,10 @@ export class WalletController extends BaseController {
     }
     assertAuthorityContextStillValid(authorityContext);
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    // gpt56 round-12 blocker 3: post-lookup revalidation — the internal
+    // capability path has no provider-handler assert between lookup and
+    // signer otherwise.
+    assertAuthorityContextStillValid(authorityContext);
     const result = await keyringService.signTypedMessage(
       keyring,
       { from, data },
@@ -5413,6 +5443,13 @@ export class WalletController extends BaseController {
     return notificationService.getStatsData();
   };
 
+  _wcInitListener?: (props: any) => void;
+  /** gpt56 round-12 blocker 5: last attempt id observed on a WC/Coinbase
+   * INIT kick; stamped onto the resulting INITED broadcast so the waiting
+   * component can reject acknowledgements from other/older attempts. */
+  _lastWcInitAttemptId?: string | null;
+  _coinbaseInitListener?: (props: any) => void;
+
   _currentCoinbaseStashId?: undefined | null | number;
 
   connectCoinbase = async () => {
@@ -5438,22 +5475,33 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
 
-      eventBus.addEventListener(
-        EVENTS.WALLETCONNECT.INIT,
-        ({ address, type }) => {
-          if (type !== KEYRING_CLASS.Coinbase) {
-            return;
-          }
-          const uri = keyring.connect({
-            address,
-          });
-
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.WALLETCONNECT.INITED,
-            params: { uri },
-          });
+      const cbInitListener = ({ address, type, attemptId }: any) => {
+        if (type !== KEYRING_CLASS.Coinbase) {
+          return;
         }
-      );
+        if (attemptId) this._lastWcInitAttemptId = attemptId;
+        const uri = keyring.connect({
+          address,
+        });
+
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.INITED,
+          params: {
+            uri,
+            attemptId: this._lastWcInitAttemptId ?? null,
+            connectorType: KEYRING_CLASS.Coinbase,
+          },
+        });
+      };
+      // gpt56 round-12 blocker 5: single Coinbase INIT listener (no stacking).
+      if (this._coinbaseInitListener) {
+        eventBus.removeEventListener(
+          EVENTS.WALLETCONNECT.INIT,
+          this._coinbaseInitListener
+        );
+      }
+      this._coinbaseInitListener = cbInitListener;
+      eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, cbInitListener);
 
       keyring.on('message', (data) => {
         if (data.status === 'CHAIN_CHANGED') {

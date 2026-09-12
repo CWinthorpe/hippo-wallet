@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
+import {
+  RenderedApprovalIdentityContext,
+  RenderedApprovalIdentity,
+} from '@/ui/utils/hooks';
+import { bindSignEventFromApproval } from '@/utils/signEvent';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
@@ -63,19 +68,31 @@ const Approval: React.FC<{
   const { approvalComponent, params, origin, account } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
+  // gpt56 round-12 blocker 1: the settlement identity children bind to is
+  // the tuple rendered HERE, derived synchronously from this exact approval
+  // object (keyed remount per id). Nothing downstream ever re-reads the
+  // live queue for settlement identity.
+  const renderedIdentity: RenderedApprovalIdentity = {
+    approvalId: approval.id,
+    approvalComponent,
+    operationBinding: bindSignEventFromApproval(approval),
+  };
+
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalUtilsProvider>
-          <CurrentApprovalComponent
-            key={approval.id}
-            approvalId={approval.id}
-            params={params}
-            origin={origin}
-            account={account}
-            // requestDefer={requestDefer}
-          />
-        </ApprovalUtilsProvider>
+        <RenderedApprovalIdentityContext.Provider value={renderedIdentity}>
+          <ApprovalUtilsProvider>
+            <CurrentApprovalComponent
+              key={approval.id}
+              approvalId={approval.id}
+              params={params}
+              origin={origin}
+              account={account}
+              // requestDefer={requestDefer}
+            />
+          </ApprovalUtilsProvider>
+        </RenderedApprovalIdentityContext.Provider>
       )}
     </div>
   );

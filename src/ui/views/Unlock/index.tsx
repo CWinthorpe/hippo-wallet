@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, Form, Button, InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import { createWindowUnlockAttempt } from '@/ui/utils/unlockAttempt';
 import {
   useWallet,
   useApproval,
@@ -115,7 +116,11 @@ const Unlock = () => {
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
-  const pendingUnlockTypeRef = useRef<UnlockType | null>(null);
+  // gpt56 round-12 blocker 4: settlement consent is the LOCAL wallet.unlock
+  // promise settling its own registered attempt (nonce-bound, one-shot
+  // proof). The global UNLOCK_WALLET broadcast can only set display state.
+  const windowUnlockAttemptRef = useRef(createWindowUnlockAttempt());
+  const attemptNonceRef = useRef<number | null>(null);
   const UiType = getUiType();
   const { t } = useTranslation();
   const history = useHistory();
@@ -188,14 +193,19 @@ const Unlock = () => {
     };
   }, []);
 
-  const handleUnlockSuccess = useMemoizedFn(async () => {
-    const unlockType = pendingUnlockTypeRef.current;
-    pendingUnlockTypeRef.current = null;
-    // gpt56 round-10 blocker 4: pendingUnlockTypeRef is set ONLY by a
-    // password/biometric submission performed in THIS window. A global
-    // UNLOCK_WALLET broadcast with no local gesture is transport, not
-    // consent, and must not resume a queued dApp request from here.
-    const localGesture = !!unlockType;
+  /**
+   * @param settledLocally true ONLY when invoked from the success callback
+   * of THIS window's own wallet.unlock call, with the settlement proof
+   * still unconsumed (gpt56 round-12 blocker 4). A foreign window's global
+   * broadcast reaches this with false and can never settle an approval.
+   */
+  const handleUnlockSuccess = useMemoizedFn(async (settledLocally = false) => {
+    const attempt = windowUnlockAttemptRef.current;
+    const proof = settledLocally ? attempt.consumeProof() : null;
+    const unlockType: UnlockType | null = proof ? proof.type : null;
+    // gpt56 round-10 blocker 4 (carried): the global broadcast is transport,
+    // not consent. localGesture now requires an unconsumed LOCAL proof.
+    const localGesture = !!proof;
     if (unlockType) {
       ga4.fireEvent(`Unlock_Act_${unlockType}`, {
         event_category: 'Unlock_Wallet',
@@ -250,8 +260,24 @@ const Unlock = () => {
   });
 
   const [run] = useWalletRequest(wallet.unlock, {
+    // gpt56 round-12 blocker 4: consent is derived from THIS promise's
+    // resolution settling its own nonce-bound attempt. Only then may the
+    // approval settlement path run.
+    onSuccess() {
+      const nonce = attemptNonceRef.current;
+      attemptNonceRef.current = null;
+      if (nonce === null) return;
+      windowUnlockAttemptRef.current.settleAttempt(nonce, true);
+      void handleUnlockSuccess(true);
+    },
     onError(err) {
-      pendingUnlockTypeRef.current = null;
+      const nonce = attemptNonceRef.current;
+      attemptNonceRef.current = null;
+      if (nonce !== null) {
+        // Failed local attempt drops pending state; a later global event
+        // or a stale success cannot settle anything.
+        windowUnlockAttemptRef.current.settleAttempt(nonce, false);
+      }
       console.log('error', err);
       setInputError(err?.message || t('page.unlock.password.error'));
     },
@@ -260,13 +286,19 @@ const Unlock = () => {
   const handleSubmit = async ({ password }: { password: string }) => {
     if (isUnlockingRef.current) return;
     isUnlockingRef.current = true;
-    pendingUnlockTypeRef.current = 'Password';
+    attemptNonceRef.current = windowUnlockAttemptRef.current.beginAttempt(
+      'Password'
+    );
     await run(password);
     isUnlockingRef.current = false;
   };
 
+  // Global unlock = display state only (gpt56 round-12 blocker 4): routes
+  // with settledLocally=false so any Unlock approval this window rendered
+  // is explicitly REJECTED (stale) rather than resolved on foreign consent.
   useEventBusListener(EVENTS.UNLOCK_WALLET, () => {
-    handleUnlockSuccess();
+    windowUnlockAttemptRef.current.noteGlobalUnlock();
+    handleUnlockSuccess(false);
   });
 
   const biometricConfigured =
@@ -304,10 +336,13 @@ const Unlock = () => {
         encryptedPassword: biometricUnlockEncryptedPassword!,
         iv: biometricUnlockIv!,
       });
-      pendingUnlockTypeRef.current = 'Biometrics';
+      attemptNonceRef.current = windowUnlockAttemptRef.current.beginAttempt(
+        'Biometrics'
+      );
       await run(password);
     } catch (error: any) {
-      pendingUnlockTypeRef.current = null;
+      attemptNonceRef.current = null;
+      windowUnlockAttemptRef.current.clearProof();
       const errorMessage = error?.message || t('page.unlock.biometricFailed');
       if (!String(errorMessage).toLowerCase().includes('canceled')) {
         setInputError(errorMessage);

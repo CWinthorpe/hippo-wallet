@@ -541,14 +541,40 @@ describe('approval-bound vs internal signing separation (blocker 4)', () => {
       retry.indexOf('wallet.resendSign(')
     );
     expect(retry).toContain('if (!ready)');
+    // gpt56 round-12 blocker 5: the ack must be attempt-correlated — a
+    // fresh unpredictable id per attempt rides the kick and the ack's
+    // expectedAccount binds the transition stream to this approval's
+    // account.
+    const ackCfg = src.slice(
+      src.indexOf('createWalletConnectReadinessAck({'),
+      src.indexOf('ackHandleRef.current = ack')
+    );
+    expect(ackCfg.length).toBeGreaterThan(50);
+    expect(ackCfg).toContain('attemptId');
+    expect(ackCfg).toContain('expectedAccount');
+    expect(ackCfg).toContain('kickInit: (id)');
+    expect(ackCfg).toContain('attemptId: id');
   });
 
   test('Unlock window resolves its approval only from a LOCAL gesture (round-10 blocker 4)', () => {
     const src = stripComments(read('src/ui/views/Unlock/index.tsx'));
-    // localGesture must be DERIVED from the per-window pendingUnlockTypeRef,
-    // never a constant: the global UNLOCK_WALLET broadcast is transport.
-    expect(src).toContain('const localGesture = !!unlockType;');
+    // gpt56 round-12 blocker 4: localGesture must be DERIVED from an
+    // unconsumed, nonce-bound LOCAL settlement proof (this window's own
+    // wallet.unlock promise), never a latch the global broadcast can pair
+    // with. The global UNLOCK_WALLET listener routes with an explicit
+    // settledLocally=false.
+    expect(src).toContain('const localGesture = !!proof;');
+    expect(src).toContain('attempt.consumeProof()');
+    expect(src).toContain('handleUnlockSuccess(false)');
     expect(src).not.toMatch(/const localGesture = (?:true|!0)/);
+    expect(src).not.toContain('pendingUnlockTypeRef');
+    // the proof state machine lives in a dedicated, testable module
+    const attemptMod = stripComments(
+      read('src/ui/utils/unlockAttempt.ts')
+    );
+    expect(attemptMod).toContain('beginAttempt');
+    expect(attemptMod).toContain('settleAttempt');
+    expect(attemptMod).toContain('consumeProof');
     expect(src).toContain('localGesture,');
     expect(src).toContain('rejectApproval,');
     const helper = stripComments(

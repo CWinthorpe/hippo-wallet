@@ -10,8 +10,10 @@ describe('notification unlock approval isolation', () => {
     localGesture = true
   ) => {
     const getApproval = jest.fn().mockResolvedValue(approval);
-    const resolveApproval = jest.fn().mockResolvedValue(undefined);
-    const rejectApproval = jest.fn().mockResolvedValue(undefined);
+    // gpt56 round-12 blocker 2: settlement hooks now return booleans that
+    // callers MUST consume; defaults are successful settlements (true).
+    const resolveApproval = jest.fn().mockResolvedValue(true);
+    const rejectApproval = jest.fn().mockResolvedValue(true);
     const replace = jest.fn();
 
     return {
@@ -141,6 +143,119 @@ describe('notification unlock approval isolation', () => {
       'unlock-request'
     );
     expect(deps.replace).toHaveBeenCalledWith('/');
+  });
+
+  // gpt56 round-12 blocker 2: navigation away after a foreign unlock may
+  // only happen when the stale approval provably went away.
+  test('foreign unlock keeps the review path when the reject did not settle', async () => {
+    const deps = setup(
+      { id: 'unlock-request', data: { approvalComponent: 'Unlock' } },
+      'unlock-request',
+      false
+    );
+    deps.rejectApproval.mockResolvedValue(false);
+
+    await routeNotificationAfterUnlock(deps);
+
+    expect(deps.rejectApproval).toHaveBeenCalledTimes(1);
+    // the approval is still pending (id mismatch): stay, do not claim exit
+    expect(deps.replace).not.toHaveBeenCalledWith('/');
+  });
+
+  test('local gesture keeps the review path when the resolve did not settle', async () => {
+    const deps = setup(
+      { id: 'unlock-request', data: { approvalComponent: 'Unlock' } },
+      'unlock-request',
+      true
+    );
+    deps.resolveApproval.mockResolvedValue(false);
+
+    await routeNotificationAfterUnlock(deps);
+
+    expect(deps.resolveApproval).toHaveBeenCalledTimes(1);
+    expect(deps.replace).not.toHaveBeenCalled();
+  });
+
+  // gpt56 round-12 blocker 4: the latch design raced a slow LOCAL attempt
+  // against a FOREIGN window's global unlock. The state machine must not
+  // produce settlement proof from that interleaving, ever.
+  describe('window unlock attempt state machine (r12-B4)', () => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const {
+      createWindowUnlockAttempt,
+      // eslint-disable-next-line import/first
+    } = require('@/ui/utils/unlockAttempt');
+
+    test('global unlock note alone NEVER yields settlement proof', () => {
+      const attempt = createWindowUnlockAttempt();
+      const nonce = attempt.beginAttempt('Password');
+      attempt.noteGlobalUnlock(); // foreign window unlocked while we were pending
+      // local attempt later FAILS: no proof possible, ever
+      expect(attempt.settleAttempt(nonce, false)).toBeNull();
+      expect(attempt.consumeProof()).toBeNull();
+      expect(attempt.globalUnlockSeen()).toBe(true); // display state only
+    });
+
+    test('a success for an abandoned (already-failed) nonce cannot settle', () => {
+      const attempt = createWindowUnlockAttempt();
+      const nonce = attempt.beginAttempt('Biometrics');
+      expect(attempt.settleAttempt(nonce, false)).toBeNull();
+      // late duplicate success callback for the same nonce:
+      expect(attempt.settleAttempt(nonce, true)).toBeNull();
+      expect(attempt.consumeProof()).toBeNull();
+    });
+
+    test('a superseded attempt cannot settle after retry replaces it', () => {
+      const attempt = createWindowUnlockAttempt();
+      const oldNonce = attempt.beginAttempt('Password');
+      const newNonce = attempt.beginAttempt('Password');
+      expect(attempt.settleAttempt(oldNonce, true)).toBeNull();
+      const proof = attempt.settleAttempt(newNonce, true);
+      expect(proof).toEqual({ nonce: newNonce, type: 'Password' });
+    });
+
+    test('proof is one-shot: consumed once, gone after', () => {
+      const attempt = createWindowUnlockAttempt();
+      const nonce = attempt.beginAttempt('Password');
+      attempt.settleAttempt(nonce, true);
+      expect(attempt.consumeProof()).not.toBeNull();
+      expect(attempt.consumeProof()).toBeNull();
+    });
+
+    test('end-to-end race: deferred local attempt + foreign global unlock + eventual local failure settles NOTHING', async () => {
+      // Drives routeNotificationAfterUnlock with the exact interleaving the
+      // auditor described: window A submits (pending), window B's global
+      // UNLOCK_WALLET arrives (settledLocally=false path), then A's own
+      // unlock promise fails. The rendered Unlock approval must never be
+      // resolved; the foreign path rejects it, and the failure produces no
+      // later settlement either.
+      const attempt = createWindowUnlockAttempt();
+      const nonce = attempt.beginAttempt('Password');
+
+      // foreign broadcast -> settledLocally=false: consumeProof is NOT called
+      // with a real proof; route with localGesture false.
+      expect(attempt.consumeProof()).toBeNull();
+
+      const approval = {
+        id: 'unlock-request',
+        data: { approvalComponent: 'Unlock' },
+      };
+      const deps = {
+        getApproval: jest.fn().mockResolvedValue(approval),
+        resolveApproval: jest.fn().mockResolvedValue(true),
+        rejectApproval: jest.fn().mockResolvedValue(true),
+        replace: jest.fn(),
+        expectedApprovalId: 'unlock-request',
+        localGesture: false, // settledLocally=false path
+      };
+      await routeNotificationAfterUnlock(deps);
+      expect(deps.resolveApproval).not.toHaveBeenCalled();
+      expect(deps.rejectApproval).toHaveBeenCalledTimes(1);
+
+      // local attempt finally fails: still no proof, no late resolution.
+      expect(attempt.settleAttempt(nonce, false)).toBeNull();
+      expect(attempt.consumeProof()).toBeNull();
+    });
   });
 
   test('local gesture resolves the exact rendered Unlock approval', async () => {

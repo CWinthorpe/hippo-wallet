@@ -91,16 +91,26 @@ export const routeNotificationAfterUnlock = async ({
     // can retry now that the wallet is unlocked) instead of resolving on a
     // broadcast it never earned.
     if (rejectApproval) {
-      await rejectApproval(
+      const rejected = await rejectApproval(
         'Wallet was unlocked in another window; please retry the request.',
         false,
         false,
         approvalId
       );
+      // gpt56 round-12 blocker 2: navigate away only when the stale
+      // approval provably went away; otherwise the (foreign-unlock)
+      // approval is still pending and this window must keep showing the
+      // explicit review path instead of a misleading home screen.
+      if (!rejected) {
+        return;
+      }
     }
     replace('/');
     return;
   }
 
-  await resolveApproval(undefined, false, false, approvalId);
+  const settled = await resolveApproval(undefined, false, false, approvalId);
+  // gpt56 round-12 blocker 2: a false settlement means this window's Unlock
+  // approval was not the one cleared — do not claim success by navigating.
+  if (!settled) return;
 };

@@ -375,8 +375,15 @@ const SignText = ({
                     type="primary"
                     block
                     onClick={() => {
-                      modal.destroy();
-                      resolveApproval(res.safeMessage.preparedSignature);
+                      // gpt56 round-12 blocker 2: the prepared-signature
+                      // modal may be destroyed only on PROVEN settlement;
+                      // a false return means the approval rotated/aged and
+                      // the explicit sign UI must remain actionable.
+                      void resolveApproval(
+                        res.safeMessage.preparedSignature
+                      ).then((settled) => {
+                        if (settled) modal.destroy();
+                      });
                     }}
                     className="text-[15px] h-[40px] rounded-[6px]"
                   >
