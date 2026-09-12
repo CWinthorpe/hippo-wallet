@@ -43,8 +43,8 @@ const buildFixture = (): string => {
     'manifest.json',
     JSON.stringify({
       manifest_version: 3,
-      version: '0.94.7',
-      version_name: '0.94.7-hippo.13',
+      version: '0.94.8',
+      version_name: '0.94.8-hippo.13',
       action: { default_title: 'Hippo Wallet' },
       homepage_url: 'https://github.com/CWinthorpe/hippo-wallet',
       externally_connectable: { ids: [] },
