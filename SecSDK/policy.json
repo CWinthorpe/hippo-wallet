@@ -95424,6 +95424,7 @@
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
       "src/ui/views/Approval/components/TxComponents/GasMenuButton.tsx",
+      "src/ui/views/Approval/components/TxComponents/GasSelector/approvalGasDisplay.ts",
       "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.ts",
       "src/utils/chain.ts",
       "src/utils/matomo-request.ts",
@@ -97645,18 +97646,13 @@
   "src/ui/wallet/index.ts": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/rabby-api/dist/index.js",
-      "node_modules/@rabby-wallet/rabby-api/dist/plugins/web-sign.js",
       "node_modules/eth-rpc-errors/dist/index.js",
       "node_modules/events/events.js",
       "node_modules/nanoid/index.browser.js",
       "node_modules/p-queue/dist/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "node_modules/zod/v4/classic/schemas.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
-      "src/services/openapi/fetchAdapter.ts",
-      "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/uiType.ts"
     ]
   },
