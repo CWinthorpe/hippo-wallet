@@ -1,7 +1,7 @@
 const mockLegacyOpenapiStore = {
   host: 'https://api.example.com',
   testnetHost: 'https://legacy-testnet.example.com',
-  apiKey: 'key',
+  apiKey: 'persisted-id',
   apiTime: 1,
 };
 const mockReconfigure = jest.fn().mockResolvedValue(undefined);
@@ -38,33 +38,36 @@ describe('background OpenAPI store', () => {
     mockReconfigure.mockClear();
   });
 
-  test('removes the legacy testnet host during initialization', async () => {
+  test('removes the legacy testnet host and keeps installation identity out of the UI-shared half', async () => {
     await initializeOpenapiStore();
 
     expect(mockLegacyOpenapiStore).not.toHaveProperty('testnetHost');
+    // Hippo: apiKey/apiTime are never exposed to UI pages and are forced null
+    // by the background store itself (no persistent installation identifier).
     expect(getOpenapiStore()).toEqual({
       host: 'https://api.example.com',
-      apiKey: 'key',
-      apiTime: 1,
     });
+    expect(mockLegacyOpenapiStore.apiKey).toBeNull();
+    expect(mockLegacyOpenapiStore.apiTime).toBeNull();
     expect(createPersistStore).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'openapi',
-        broadcastKeys: ['host', 'apiKey', 'apiTime'],
+        broadcastKeys: ['host'],
       })
     );
   });
 
-  test('reconfigures the background client for UI identity updates', async () => {
+  test('host updates reconfigure the background client; identity writes are dropped', async () => {
     await patchOpenapiStore({
-      apiKey: 'next-key',
+      apiKey: 'new-id',
       apiTime: 2,
-    });
+    } as never);
 
-    expect(mockReconfigure).toHaveBeenCalledTimes(1);
-    expect(getOpenapiStore()).toMatchObject({
-      apiKey: 'next-key',
-      apiTime: 2,
-    });
+    // Identity-only patches never reach the store or the client config.
+    expect(mockReconfigure).not.toHaveBeenCalled();
+    expect(mockLegacyOpenapiStore.apiKey).toBeNull();
+
+    await patchOpenapiStore({ host: 'https://api.example.com' });
+    expect(getOpenapiStore()).toEqual({ host: 'https://api.example.com' });
   });
 });
