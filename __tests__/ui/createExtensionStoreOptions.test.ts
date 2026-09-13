@@ -54,9 +54,9 @@ describe('createExtensionStoreOptions', () => {
       previousState: { ...swapState, slippage: '0.1' },
       state: { ...swapState, slippage: '0.5' },
     });
-    expect(getStorageSnapshot).toHaveBeenCalledWith('swap');
+    expect(getStorageSnapshot).toHaveBeenCalledWith('whitelist');
     expect(setStorageItem).toHaveBeenCalledWith(
-      'swap',
+      'whitelist',
       { slippage: '0.5' },
       []
     );
@@ -64,7 +64,7 @@ describe('createExtensionStoreOptions', () => {
     const listener = jest.fn();
     const dispose = options.sync!.engine.subscribe(listener);
     eventBus.emit(BROADCAST_TO_UI_EVENTS.storeChanged, {
-      bgStoreName: 'swap',
+      bgStoreName: 'whitelist',
       changedKey: 'slippage',
       changedKeys: ['slippage'],
       partials: { slippage: '1' },
@@ -122,7 +122,7 @@ describe('createExtensionStoreOptions', () => {
     eventBus.emit(
       BROADCAST_TO_UI_EVENTS.storeChanged,
       overWire({
-        bgStoreName: 'swap',
+        bgStoreName: 'whitelist',
         changedKey: 'selectedChain',
         changedKeys: ['selectedChain', 'selectedFromToken'],
         partials: { selectedChain: 'BSC', selectedFromToken: undefined },
