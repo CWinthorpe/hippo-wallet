@@ -41,6 +41,15 @@
       "title": "{{count}} rantai Terintegrasi"
     },
     "signTx": {
+      "gasAccount": {
+        "estimatedGas": "Estimasi Gas: ",
+        "currentTxCost": "Jumlah gas yang dikirim ke alamat Anda: ",
+        "totalCost": "Total biaya: ",
+        "maxGas": "Max Gas: ",
+        "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda: ",
+        "sendGas": "Gas transfer ke Anda untuk transaksi saat ini: ",
+        "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
+      },
       "balanceChange": {
         "tokenIn": "Token masuk",
         "tokenOut": "Token keluar",
@@ -270,6 +279,7 @@
       "safeAddressNotSupportChain": "Alamat Safe saat ini tidak didukung di rantai {{0}}",
       "nftIn": "NFT di",
       "gasLimitModifyOnlyNecessaryAlert": "Modifikasi hanya jika diperlukan",
+      "gasAccountForGas": "Gunakan USD dari GasAccount saya untuk membayar gas",
       "nonceTitle": "Nonce",
       "gasPriceTitle": "Harga Gas (Gwei)",
       "gasLimitTitle": "Gas Limit",
@@ -375,6 +385,29 @@
       }
     },
     "signFooterBar": {
+      "gasless": {
+        "unavailable": "Saldo Gas Anda tidak cukup",
+        "notEnough": "Saldo gas tidak cukup",
+        "watchUnavailableTip": "Alamat hanya-pantau tidak dapat menggunakan gas gratis",
+        "rabbyPayGas": "Hippo akan membayar untuk gas yang diperlukan – cukup tandatangani.",
+        "GetFreeGasToSign": "Dapatkan gas gratis",
+        "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Free Gas",
+        "customRpcUnavailableTip": "Custom RPC tidak didukung untuk Free Gas"
+      },
+      "gasAccount": {
+        "WalletConnectTips": "WalletConnect tidak didukung oleh GasAccount",
+        "login": "Masuk",
+        "deposit": "Setor",
+        "gotIt": "Mengerti",
+        "customRPC": "Tidak didukung saat menggunakan RPC kustom",
+        "loginFirst": "Silakan masuk ke GasAccount terlebih dahulu",
+        "useGasAccount": "Gunakan GasAccount",
+        "loginTips": "Untuk menyelesaikan login GasAccount, transaksi ini akan dibuang. Anda perlu membuat ulang setelah login.",
+        "chainNotSupported": "Rantai ini tidak didukung oleh GasAccount",
+        "depositTips": "Untuk menyelesaikan setoran GasAccount, transaksi ini akan dibatalkan. Anda perlu membuatnya kembali setelah setoran.",
+        "notEnough": "Gas tidak cukup. Saldo Gas: {{usd}}",
+        "signWithHardwareWalletToUse": "Anda perlu menandatangani dengan {{brand}} untuk menggunakan"
+      },
       "walletConnect": {
         "requestSuccessToast": "Permintaan berhasil dikirim",
         "connected": "Terhubung dan siap untuk menandatangani",
@@ -490,6 +523,12 @@
       "swapTokenOrder": {
         "title": "Pesanan Token"
       },
+      "sellNFT": {
+        "receiveToken": "Terima token",
+        "specificBuyer": "Pembeli spesifik",
+        "listNFT": "Daftar NFT",
+        "title": "Pesanan NFT"
+      },
       "signMultiSig": {
         "title": "Konfirmasi Transaksi"
       },
@@ -498,6 +537,12 @@
       },
       "verifyAddress": {
         "title": "Verifikasi Alamat"
+      },
+      "buyNFT": {
+        "payToken": "Bayar token",
+        "expireTime": "Waktu Kedaluwarsa",
+        "listOn": "Daftar di",
+        "receiveNFT": "Terima NFT"
       },
       "contractCall": {
         "operationDecoded": "Operasi di-decode dari pesan"
@@ -876,6 +921,7 @@
         "connectLedger": "Sambungkan Ledger",
         "simulationFailed": "Simulasi Gagal",
         "ledgerSigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})",
+        "useGasAccount": "Saldo gas Anda rendah. GasAccount Anda akan menanggung biaya gas.",
         "waitInQueue": "Tunggu dalam antrean",
         "paused": "Dihentikan",
         "pause": "Jeda",
@@ -899,8 +945,18 @@
         "button": "Mengerti",
         "wallet": "Dompet",
         "rate": "Tarif biaya",
+        "bridgeDesc": "Hippo Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Hippo mengenakan biaya 0,25% yang otomatis disertakan dalam penawaran harga.",
         "title": "Biaya Hippo",
-        "swapDesc": "Hippo Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Hippo mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga."
+        "swapDesc": "Hippo Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Hippo mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga.",
+        "discountTitle": "Diskon Biaya Hippo",
+        "free": "Gratis",
+        "cases": {
+          "wrap": "Bungkus/buka bungkus token asli",
+          "stablecoins": "Stablecoin",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volume $1M+",
+          "hundredThousand": "Volume $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Token ini memiliki nilai kredit yang rendah",
@@ -935,13 +991,14 @@
       "hidden-no-quote-rates_one": "{{count}} tarif tidak tersedia",
       "security-verification-failed": "Verifikasi keamanan gagal",
       "approve-tips": "1. Setujui → 2. Tukar",
-      "preferMEV": "Suka MEV Guarded",
       "unlimited-allowance": "Izin tak terbatas",
       "there-is-no-fee-and-slippage-for-this-trade": "Tidak ada slippage untuk perdagangan ini.",
       "get-quotes": "Dapatkan penawaran harga",
       "from": "Dari",
       "search-by-name-address": "Cari berdasarkan Nama / Alamat",
       "minimum-received": "Jumlah minimum diterima",
+      "preferMEV": "Suka MEV Guarded",
+      "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk swap Ethereum guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "fail-to-simulate-transaction": "Gagal mensimulasikan transaksi",
       "to": "Untuk",
       "this-exchange-is-not-enabled-to-trade-by-you": "Anda tidak dapat berdagang melalui bursa ini.",
@@ -957,6 +1014,7 @@
       "est-difference": "Est. Perbedaan:",
       "rates-from-cex": "Tarif dari CEX",
       "the-following-swap-rates-are-found": "Ditemukan tarif berikut",
+      "quotes": "Penawaran harga",
       "view-quotes": "Lihat penawaran harga",
       "wrap-contract": "Kontrak pembungkus",
       "confirm": "Konfirmasi",
@@ -966,7 +1024,6 @@
       "enable-trading": "Aktifkan Perdagangan",
       "trade": "Perdagangan",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Slippage rendah dapat menyebabkan transaksi gagal akibat volatilitas tinggi",
-      "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk swap Ethereum guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "est-payment": "Est. Pembayaran:",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Penawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
       "tradingSettingTip2": "2. Hippo tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
@@ -1060,21 +1117,30 @@
         "panel": {
           "swap": "Tukar",
           "nft": "NFT",
+          "rabbyPoints": "Hippo Points",
           "transactions": "Transaksi",
           "receive": "Terima",
+          "gasTopUp": "Isi Gas",
           "more": "Lebih banyak",
+          "ecology": "Ekosistem",
           "feedback": "Umpan Balik",
           "manageAddress": "Kelola Alamat",
           "queue": "Antrian",
+          "bridge": "Jembatan",
           "send": "Kirim",
           "approvals": "Persetujuan",
           "mobile": "Sinkronisasi seluler",
+          "perps": "Perps",
+          "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "searchDapp": "Cari Dapp",
           "setting": "Pengaturan",
           "settings": "Pengaturan",
-          "lending": "Peminjaman",
-          "dragTip": "Fitur tekan lama untuk mengurutkan ulang"
+          "perpsPositions_other": "{{count}} Posisi",
+          "perpsPositions_one": "{{count}} Posisi",
+          "dragTip": "Fitur tekan lama untuk mengurutkan ulang",
+          "convertDust": "Konversi Dust",
+          "staking": "Staking"
         },
         "queue": {
           "title": "Antrian",
@@ -1100,7 +1166,15 @@
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
         "appChainTips": "Akun Hyperliquid tidak termasuk",
-        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk"
+        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk",
+        "stablecoinSwapPopup": {
+          "title": "Biaya Swap 0%",
+          "supportPrefix": "Mendukung",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin di 40+ jaringan",
+          "goToSwap": "Pergi ke Swap",
+          "close": "Tutup"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {
@@ -1204,9 +1278,12 @@
           "searchDapps": "Cari Dapps",
           "lockWallet": "Kunci Dompet",
           "manageAddress": "Kelola Alamat",
+          "rabbyPoints": "Hippo Points",
+          "gasTopUp": "Isi Gas",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
-          "signatureRecord": "Rekaman Tanda Tangan"
+          "signatureRecord": "Rekaman Tanda Tangan",
+          "ecosystem": "Ekosistem"
         },
         "settings": {
           "toggleThemeMode": "Mode Tema",
@@ -1224,6 +1301,7 @@
           "biometricUnlock": "Buka dengan Biometrik",
           "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
           "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+          "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
           "dataAnalysis": "Analisis Data"
@@ -1318,6 +1396,7 @@
         "noIssuer": "Tidak ada informasi penerbit yang tersedia",
         "TokenName": "Nama Token",
         "AddToMyTokenList": "Tambahkan ke daftar token saya",
+        "BridgeProvider": "Penyedia Jembatan",
         "verifyScamTips": "Ini adalah token penipuan",
         "customizedListTitle": "token kustom",
         "IssuerWebsite": "Website Penerbit",
@@ -1326,6 +1405,7 @@
         "SupportedExchanges": "Bursa yang Didukung",
         "blockedListTitles": "token yang diblokir",
         "NoListedBy": "Tidak ada informasi daftar yang tersedia",
+        "BridgeIssue": "Token yang dijembatani oleh pihak ketiga",
         "maybeScamTips": "Ini adalah token berkualitas rendah dan mungkin merupakan penipuan",
         "blockedTips": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
         "NoSupportedExchanges": "Tidak ada bursa yang didukung tersedia",
@@ -1334,7 +1414,9 @@
         "Chain": "Rantai",
         "ContractAddress": "Alamat Kontrak",
         "myBalance": "Saldo Saya",
-        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan."
+        "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan.",
+        "bridge": "Jembatan",
+        "bridgeToEth": "Jembatan ke Rantai Ethereum"
       },
       "assets": {
         "portfolio": {
@@ -1410,8 +1492,8 @@
         "addTokenEntryText": "Token",
         "noTestnetAssets": "Tidak ada Aset Jaringan Kustom",
         "noAssets": "Tidak ada aset",
-        "unfoldChain": "Buka 1 jaringan",
-        "unfoldChainPlural": "Buka {{moreLen}} rantai",
+        "unfoldChain": "1 jaringan lagi",
+        "unfoldChainPlural": "{{moreLen}} jaringan lagi",
         "searchPlaceholder": "Tokens",
         "blockDescription": "Token yang diblokir oleh Anda akan ditampilkan di sini",
         "blockLinkText": "Cari alamat untuk memblokir token",
@@ -1480,6 +1562,11 @@
       "recentConnectionGuide": {
         "button": "Mengerti",
         "title": "Ganti alamat untuk koneksi Dapp di sini"
+      },
+      "rabbyPointsPopup": {
+        "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
+        "desc": "Periksa poin Anda di Hippo Mobile.",
+        "title": "Hippo Points"
       },
       "noData": "Tidak ada mata uang yang cocok",
       "ZeroAssets": {
@@ -1666,6 +1753,7 @@
         "connectedSuccessfully": "Terhubung dengan sukses",
         "url": "URL",
         "qrCode": "QR kode",
+        "changeBridgeServer": "Ubah server bridge",
         "connectYour": "Sambungkan dompet Anda",
         "viaWalletConnect": "melalui Wallet Connect",
         "qrCodeError": "Silakan periksa jaringan Anda atau segarkan kode QR",
@@ -2051,6 +2139,7 @@
       "desc": "Setelah dimodifikasi, RPC kustom akan menggantikan node Hippo. Untuk terus menggunakan node Hippo, hapus RPC kustom."
     },
     "requestDebankTestnetGasToken": {
+      "claimBadgeBtn": "Klaim Lencana Hippo",
       "requestBtn": "Permintaan",
       "title": "Minta Token Gas DeBank Testnet",
       "mintedTip": "Pemegang Hippo Badge dapat melakukan permintaan sekali sehari",
@@ -2715,6 +2804,7 @@
       },
       "button": {
         "swap": "Tukar",
+        "bridge": "Jembatan",
         "send": "Kirim",
         "queue": "Antrian",
         "pending": "{{pendingTxCount}} Menunggu"
@@ -2819,339 +2909,6 @@
       "networkErrorDescription": "{{site}} secara tiba-tiba menutup koneksi. Silakan periksa jaringan Anda.",
       "opening": "Membuka {{name}}...",
       "serviceNotSupported": "Layanan tidak didukung di wilayah Anda saat ini."
-    },
-    "lending": {
-      "availableCard": {
-        "canBorrow": "Anda dapat meminjam berdasarkan jaminan yang Anda berikan, hingga batas maksimal pinjaman.",
-        "emodeNoAssets": "Kami tidak dapat menemukan aset yang terkait dengan pencarian Anda. Cobalah lagi dengan kategori yang berbeda.",
-        "needSupply": "Untuk meminjam, Anda perlu menyediakan aset sebagai jaminan.",
-        "singleAssetUnavailableForEmode": "Tidak tersedia untuk dipinjam. Keluar dari E-Mode untuk mengakses.",
-        "emode": "Beberapa aset tidak tersedia untuk dipinjam dalam E-Mode. Keluar dari E-Mode untuk mengakses semua aset.",
-        "isolated": "Kapasitas pinjaman dan aset dibatasi karena mode Isolasi."
-      },
-      "list": {
-        "headers": {
-          "totalBorrowed": "Total dipinjam",
-          "my_assets": "Aset Saya",
-          "myBorrows": "Pinjaman saya",
-          "token_balance": "Token/Saldo",
-          "my_balance": "Saldo Saya",
-          "token": "Token",
-          "mySupplies": "Persediaan saya",
-          "token_tvl": "Token/TVL"
-        },
-        "item": {
-          "wrapperToken": "Token terbungkus untuk {{name}}"
-        }
-      },
-      "repayDetail": {
-        "tabs": {
-          "wallet": "Saldo dompet",
-          "collateral": "Jaminan"
-        },
-        "amountTitle": "Saldo: ",
-        "repayWith": "Lunasi dengan",
-        "actions": "Lunasi",
-        "approveAndRepay": "Setujui dan Bayar Kembali"
-      },
-      "supplyDetail": {
-        "unavailable": "Tidak Tersedia",
-        "supplyBalance": "Saldo Pasokan",
-        "collateralization": "Kolateralisasi",
-        "supplyAPY": "Pasokan APY",
-        "enabled": "Diaktifkan",
-        "amountTitle": "Tersedia: ",
-        "availableToBorrow": "Tersedia untuk dipinjam",
-        "actions": "Setor",
-        "isolatedTips": "Aset pinjaman/peminjaman Anda yang ada tidak didukung.",
-        "supplied": "Disuplai",
-        "approveAndSupply": "Setujui dan Pasok"
-      },
-      "withdrawDetail": {
-        "actions": "Tarik",
-        "remainingSupply": "Sisa pasokan",
-        "amountTitle": "Saldo: "
-      },
-      "toggleCollateralDetail": {
-        "disable": "Nonaktifkan {{asset}} sebagai Jaminan",
-        "actions": "Alihkan Jaminan {{asset}}",
-        "enable": "Aktifkan {{asset}} sebagai Jaminan",
-        "error": "Ada beberapa kesalahan dengan layanan AAVE. Silakan coba lagi nanti."
-      },
-      "toggleCollateralModal": {
-        "toggleRiskTexts": {
-          "doNotHaveSuppliesInThisCurrency": "Anda tidak memiliki setoran dalam aset ini",
-          "canNotUseThisCurrencyAsCollateral": "Anda tidak dapat menggunakan mata uang ini sebagai jaminan.",
-          "canNotSwitchUsageAsCollateralMode": "Aset ini tidak dapat dijadikan jaminan karena akan memicu risiko likuidasi.",
-          "zeroLTVWithdrawBlocked": "Aset dengan LTV nol ({{assets}}) harus ditarik atau dinonaktifkan sebagai jaminan untuk melakukan tindakan ini."
-        },
-        "enableIsolationModeTitle": "Aktifkan Mode Isolasi",
-        "openTitle": "Tinjau Pengaktifan",
-        "closeTitle": "Tinjau Menonaktifkan",
-        "riskToLiquidationText": "Aset ini tidak dapat dijadikan jaminan karena akan memicu risiko likuidasi.",
-        "exitIsolationModeTitle": "Keluar dari Mode Isolasi",
-        "closeDesc": "Menonaktifkan aset ini sebagai jaminan akan memengaruhi kapasitas pinjaman dan Faktor Kesehatan Anda.",
-        "exitIsolationModeDesc": "Anda akan keluar dari mode Isolasi dan token lainnya sekarang dapat digunakan sebagai jaminan.",
-        "openDesc": "Mengaktifkan aset ini sebagai jaminan akan meningkatkan kapasitas pinjaman dan Faktor Kesehatan. Namun, posisi dapat dilikuidasi jika Faktor Kesehatan turun di bawah 1.",
-        "enableIsolationModeDesc": "Anda akan memasuki mode Isolasi. Dalam mode ini, Anda tidak dapat menyediakan aset lain sebagai jaminan. Batas utang keseluruhan membatasi kapasitas pinjaman aset terisolasi. Untuk keluar, nonaktifkan CRV sebagai jaminan sebelum meminjam aset lain."
-      },
-      "borrowDetail": {
-        "actions": "Meminjam",
-        "swapDebt": "Tukar",
-        "approveAndBorrow": "Setujui dan Pinjam",
-        "amountTitle": "Tersedia: ",
-        "borrowed": "Dipinjam",
-        "almostReachedWarning": "Batas pinjaman protokol adalah 100% untuk aset ini. Peminjaman lebih lanjut tidak tersedia.",
-        "almostReachedError": "Jumlah maksimum yang tersedia untuk dipinjam dibatasi karena batas pinjaman protokol hampir tercapai."
-      },
-      "popup": {
-        "amount": "Jumlah",
-        "remainingDebt": "Sisa utang",
-        "available": "tersedia",
-        "title": "Ikhtisar Transaksi",
-        "liquidationAt": "Likuidasi di < 1.0"
-      },
-      "borrowOverview": {
-        "myBorrow": "Pinjaman Saya",
-        "liquidityPenalty": "Penalti Likuidasi",
-        "totalBorrowed": "Total Dipinjam",
-        "availableToBorrow": "Tersedia untuk dipinjam",
-        "borrowCap": "Batas Pinjam",
-        "reachCapTip": "Aset ini telah mencapai batas pinjaman. ",
-        "title": "Detail Peminjaman"
-      },
-      "supplyOverview": {
-        "walletBalance": "Saldo Dompet",
-        "availableToSupply": "Tersedia untuk Dipasok",
-        "mySupply": "Pasokan Saya",
-        "title": "Detail Setoran",
-        "totalSupplied": "Total Dipasok",
-        "noBalance": "Tidak ada saldo",
-        "collateral": "Jaminan",
-        "reachCap": "Aset ini telah mencapai batas pasokannya. Tidak ada yang tersedia untuk dipasok dari pasar ini.",
-        "almostCap": "Aset ini hampir mencapai batas pinjamannya. Hanya ada {{available}} yang tersedia untuk dipinjam dari pasar ini.",
-        "useAsCollateral": "Gunakan sebagai jaminan"
-      },
-      "risk": {
-        "withdrawWarning": "Menarik jumlah ini akan menurunkan Faktor Kesehatan Anda ke tingkat berisiko untuk likuidasi.",
-        "warning": "Meminjam jumlah ini akan menurunkan Faktor Kesehatan Anda ke tingkat berisiko untuk likuidasi.",
-        "toggleCollateralWarning": "Menonaktifkan aset ini sebagai jaminan akan menurunkan Faktor Kesehatan Anda ke level berisiko untuk likuidasi.",
-        "checkbox": "Saya mengerti peringatannya dan ingin melanjutkan.",
-        "blockEmodeWarning": "Anda tidak dapat menonaktifkan E-Mode karena itu dapat menyebabkan likuidasi. Untuk keluar dari E-Mode, suplai atau lunasi posisi yang dipinjam.",
-        "emodeBlockWarning": "Menonaktifkan E-mode akan menurunkan Faktor Kesehatan Anda ke tingkat berisiko untuk likuidasi."
-      },
-      "lqDescription": {
-        "liquidationTitle": "Likuidasi:",
-        "desc": "Nilai likuidasi",
-        "risky": "Berisiko",
-        "over3title": "Faktor kesehatan > 3.0:",
-        "over3desc": "Posisi Anda aman",
-        "below1title": "Faktor kesehatan ≤ 1.0:",
-        "below1desc": "Posisi Anda berisiko dilikuidasi.",
-        "warningText": "Faktor Kesehatan Anda terlalu rendah. Untuk menghindari likuidasi:\n1. Lunasi sebagian atau seluruh pinjaman Anda\n2. Tambahkan lebih banyak jaminan",
-        "introText": " Faktor Kesehatan menunjukkan tingkat keamanan posisi pinjaman Anda. Jika terlalu rendah, jaminan dapat dilikuidasi.",
-        "liquidation": "Jika Faktor Kesehatan turun di bawah 1,0, sebagian jaminan dapat dijual secara otomatis untuk melunasi utang. Penalti likuidasi akan berlaku sehingga Anda kehilangan sebagian jaminan."
-      },
-      "modalDesc": {
-        "availableToBorrow": "Tersedia untuk dipinjam",
-        "isolatedSupplyDesc": "Penggunaan jaminan dibatasi karena mode isolasi.",
-        "isolatedDesc": "Aset ini hanya dapat digunakan sebagai jaminan dalam mode isolasi, di mana Anda tidak dapat menyediakan jaminan aset lain untuk meminjam. Aset yang digunakan sebagai jaminan dalam mode isolasi hanya dapat dipinjam hingga batas utang tertentu.",
-        "maxLTV": "Rasio LTV Maksimum menunjukkan kapasitas pinjaman maksimum dari jaminan tertentu. Misalnya, jika jaminan memiliki LTV 75%, pengguna dapat meminjam hingga senilai 0,75 ETH dalam mata uang utama untuk setiap jaminan senilai 1 ETH.",
-        "globalIsolatedDesc": "Dalam mode Isolasi, Anda tidak dapat menyediakan aset lain sebagai jaminan. Batas utang keseluruhan membatasi kapasitas pinjaman aset terisolasi. Untuk keluar dari mode Isolasi, nonaktifkan UNI sebagai jaminan sebelum meminjam aset lain. ",
-        "availableToBorrowDesc": "Anda dapat meminjam berdasarkan jaminan yang Anda berikan dan sampai batas pinjaman tercapai.",
-        "lqDesc": "Saat likuidasi terjadi, likuidator membayar hingga 50% dari jumlah pinjaman yang belum dibayar atas nama peminjam. Sebagai imbalannya, mereka dapat membeli jaminan dengan potongan harga dan menyimpan selisihnya (penalti likuidasi) sebagai bonus.",
-        "maxAmount": "Ini adalah jumlah maksimum yang dapat Anda pinjam berdasarkan semua jaminan yang Anda berikan. Total kapasitas pinjaman dihitung dengan mengalikan nilai pasar setiap aset jaminan dengan Max LTV-nya, lalu menjumlahkan hasilnya.",
-        "isolatedTitle": "Aset tidak dapat digunakan sebagai jaminan"
-      },
-      "repayWithAToken": {
-        "header": {
-          "assets": "Token",
-          "balance": "Saldo"
-        },
-        "title": "Pilih Token Pembayaran kembali",
-        "zeroLtvCollateralTips": "Anda memiliki aset jaminan berikut dengan LTV = 0. Sesuai aturan pelunasan dengan jaminan, Anda harus melunasi terlebih dahulu menggunakan aset-aset ini. "
-      },
-      "manageEmode": {
-        "actions": {
-          "disable": "Nonaktifkan E-Mode",
-          "enable": "Aktifkan E-Mode"
-        },
-        "guide": {
-          "buttonTitle": "Kelola E-Mode",
-          "title": "Mode Efisiensi (E-Mode)",
-          "description": "E-Mode meningkatkan LTV Anda untuk kategori aset yang dipilih."
-        },
-        "categorySelector": {
-          "header": {
-            "asset": "Aset"
-          },
-          "placeholder": "Pilih",
-          "label": "Kategori aset",
-          "desc": "Semua posisi pinjaman di luar kategori ini harus ditutup untuk mengaktifkan kategori ini."
-        },
-        "debtSwapSelector": {
-          "header": {
-            "assets": "Token/Saldo",
-            "borrow": "Peminjaman saya",
-            "apy": "APY"
-          },
-          "title": "Pilih Token Pinjaman"
-        },
-        "collateralSwapSelector": {
-          "header": {
-            "assets": "Token",
-            "collateral": "Jaminan saya"
-          },
-          "title": "Pilih Token Jaminan"
-        },
-        "overview": {
-          "row": {
-            "collateral": "Jaminan",
-            "asset": "Aset",
-            "borrowable": "Dapat Dipinjam"
-          },
-          "title": "Kategori aset"
-        },
-        "disableTitle": "Nonaktifkan",
-        "unavailable": "• Tidak Tersedia",
-        "enabled": "• Diaktifkan",
-        "unavailableTips": "Aset pinjaman/peminjaman Anda yang ada tidak didukung.",
-        "title": "Kelola E-Mode",
-        "description": "Mengaktifkan E-Mode memungkinkan Anda memaksimalkan kapasitas pinjaman. Namun, peminjaman dibatasi pada aset dalam kategori yang dipilih."
-      },
-      "debtSwap": {
-        "actions": {
-          "select": "Pilih",
-          "borrowed": "Dipinjam",
-          "title": "Pertukaran Utang",
-          "swapTo": "Tukar ke",
-          "amount": "Jumlah"
-        },
-        "overview": {
-          "title": "Ikhtisar Transaksi",
-          "borrowAPY": "APY Pinjaman",
-          "borrowValueAfter": "Saldo pinjaman setelah swap"
-        },
-        "button": {
-          "swap": "Tukar"
-        },
-        "borrowBalance": "Saldo pinjaman",
-        "title": "Tukar Posisi Pinjaman",
-        "entryTips": "Satu klik untuk menukar aset yang Anda pinjam, mengurangi langkah dan biaya.",
-        "priceImpactTips": "Dampak harga tinggi ({{lostValue}}). Rute ini mungkin memberikan lebih banyak karena likuiditas rendah atau ukuran pesanan kecil.",
-        "lpDangerWarning": "Faktor Kesehatan setelah swap ini akan sangat rendah dan dapat mengakibatkan likuidasi. Pilih aset lain atau kurangi jumlah swap agar tetap aman.",
-        "lpRiskWarning": "Faktor Kesehatan rendah setelah swap. Posisi Anda akan menghadapi risiko likuidasi yang lebih tinggi.",
-        "maxLtvWarning": "Jaminan tidak cukup untuk menutupi posisi pinjaman baru. Dompet harus memiliki sisa kapasitas pinjaman untuk melakukan pertukaran utang."
-      },
-      "repayWithCollateral": {
-        "action": {
-          "title": "Lunasi dengan {{collateral}}"
-        },
-        "overview": {
-          "borrowValueAfter": "Saldo pinjaman setelah melunasi",
-          "title": "Ikhtisar Transaksi",
-          "collateralValueAfter": "Saldo jaminan setelah pelunasan"
-        },
-        "button": {
-          "repay": "Lunasi"
-        },
-        "toRepay": "Jumlah yang diharapkan untuk dibayar kembali",
-        "repayWith": "Jaminan yang digunakan untuk melunasi",
-        "collateralNotEnough": "Saldo jaminan Anda lebih rendah dari jumlah yang dipilih."
-      },
-      "hfTips": {
-        "more": "Lebih banyak",
-        "desc": "Jika turun di bawah 1.0, jaminan Anda mungkin akan dilikuidasi."
-      },
-      "disableBorrowTip": {
-        "noSupply": "Setorkan aset terlebih dahulu agar dapat meminjam.",
-        "desc": "Tidak ada pasokan: Untuk meminjam, Anda perlu menyediakan aset sebagai jaminan."
-      },
-      "type": {
-        "borrowed": "Dipinjam",
-        "supplied": "Disuplai"
-      },
-      "actions": {
-        "supply": "Pasokan",
-        "borrow": "Meminjam",
-        "swap": "Tukar",
-        "repay": "Lunasi",
-        "withdraw": "Tarik uang"
-      },
-      "summary": {
-        "empty": {
-          "description": "Ditenagai oleh AAVE. Aman dan bebas biaya.",
-          "title": "Dapatkan Bunga dengan aset Anda",
-          "endDesc": "Anda belum memiliki setoran. Lihat aset yang direkomendasikan di bawah ini untuk mulai menghasilkan bunga."
-        },
-        "totalBorrowed": "Total dipinjam",
-        "eMode": "E-Mode",
-        "totalSupplied": "Total Dipasok",
-        "healthFactorTip": "Faktor kesehatan menunjukkan keamanan posisi Anda",
-        "healthFactor": "Faktor Kesehatan",
-        "netWorth": "Kekayaan Bersih",
-        "healthy": "Sehat",
-        "more": "Lebih banyak",
-        "risky": "Risiko",
-        "estDailyEarnings": "Est Pendapatan Harian",
-        "lq": "Jika Faktor Kesehatan turun di bawah 1, likuidasi dapat dipicu.",
-        "netApy": "Net APY",
-        "ethCorrelatedTip": "Aset yang berkorelasi dengan ETH"
-      },
-      "market": {
-        "core": "Pasar Inti"
-      },
-      "accountActions": {
-        "supply": "Pasokan",
-        "both": "Keduanya",
-        "borrow": "Meminjam"
-      },
-      "table": {
-        "myAssets": "Aset saya",
-        "token": "Token",
-        "actions": "Tindakan",
-        "type": "Tipe",
-        "collateral": "Jaminan",
-        "apy": "APY"
-      },
-      "supplyList": {
-        "collapse": "Ciutkan",
-        "more": "Lebih banyak token untuk disuplai"
-      },
-      "borrowList": {
-        "collapse": "Ciutkan",
-        "more": "Lebih banyak token untuk dipinjam"
-      },
-      "supplyApy": "APY suplai",
-      "gotIt": "Mengerti",
-      "title": "Peminjaman",
-      "supplied": "Disuplai",
-      "totalBorrowed": "Total dipinjam",
-      "netApy": "Net APY",
-      "supplyBalance": "Saldo Pasokan",
-      "isolate": "terisolasi",
-      "totalSupply": "Total suplai",
-      "borrowApy": "APY pinjaman",
-      "borrowBalance": "Saldo Peminjaman",
-      "noData": "Tidak ada data",
-      "netWorth": "Kekayaan bersih",
-      "estNetApy": "Est. net APY",
-      "totalBorrow": "Total pinjaman",
-      "submitted": "dikirimkan",
-      "borrowed": "Dipinjam",
-      "totalSupplied": "Total Dipasok",
-      "estDailyEarning": "Est.Pendapatan Harian",
-      "isolateTip": "Ini adalah pasar terisolasi",
-      "searchMarket": "Cari Pasar",
-      "disabled": "DINONAKTIF",
-      "enterAmount": "Masukkan Jumlah",
-      "selectChain": "Pilih Rantai",
-      "hfTitle": "Faktor Kesehatan",
-      "hf": "Faktor kesehatan",
-      "selectMarket": "Pilih Pasar",
-      "signFallback": {
-        "preExecFailedUseFullSign": "Simulasi Gagal. Transaksi ini kemungkinan besar akan gagal karena kesalahan AAVE."
-      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -3261,7 +3018,9 @@
       "revoke": "Batalkan",
       "approvals": "persetujuan",
       "unselectAll": "Batalkan Pilih Semua",
-      "selectAll": "Pilih Semua"
+      "selectAll": "Pilih Semua",
+      "approvalsCount": "{{count}} persetujuan",
+      "approvalsCount_one": "{{count}} persetujuan"
     }
   },
   "component": {
@@ -3364,6 +3123,14 @@
           "title": "NILAI USD"
         }
       },
+      "bridge": {
+        "liquidity": "Likuiditas",
+        "token": "Token",
+        "liquidityTips": "Semakin tinggi volume perdagangan historis, semakin besar kemungkinan jembatan akan berhasil.",
+        "value": "Nilai",
+        "high": "Likuiditas tinggi",
+        "low": "Likuiditas rendah"
+      },
       "searchInput": {
         "placeholder": "Cari berdasarkan Nama / Alamat",
         "placeholder1": "Cari Nama Token / Alamat"
@@ -3422,6 +3189,7 @@
       "thirdPartyDappToProceed": "Silakan gunakan Dapp pihak ketiga untuk melanjutkan",
       "chainNotSupported": "Tidak didukung di rantai ini",
       "selectADapp": "Pilih Dapp",
+      "bridgeOnDapp": "Bridge di Dapp",
       "noDapps": "Tidak ada Dapp yang tersedia di rantai ini",
       "swapOnDapp": "Swap di DApp"
     },
@@ -3447,9 +3215,9 @@
       "allChains": "Semua Rantai"
     },
     "DesktopNav": {
+      "perps": "Perps",
       "portfolio": "Portofolio",
-      "comingSoon": "Segera Hadir",
-      "lending": "Peminjaman"
+      "comingSoon": "Segera Hadir"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat",

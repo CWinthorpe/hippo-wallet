@@ -90,10 +90,10 @@ const ChainWrapper = styled.div`
   &.swap {
     gap: 8px;
     padding: 0 16px;
-    border: 0.5px solid transparent;
+    border: 1px solid transparent;
     background: var(--r-neutral-card1, #fff);
-    border-radius: 8px;
-    height: 44px;
+    border-radius: 8px 8px 0 0;
+    height: 52px;
     position: relative;
     &::before {
       content: '';
@@ -117,9 +117,32 @@ const ChainWrapper = styled.div`
       color: var(--r-neutral-title-1, #192945);
       font-size: 15px;
     }
+
+    & > .down {
+      width: 16px;
+      height: 16px;
+    }
   }
   &:hover {
     background: var(--r-blue-light2, #eaf2ff);
+  }
+
+  &.swap:hover {
+    background: var(--r-blue-light1, #edf0ff);
+    border: 1px solid var(--r-blue-default, #4c65ff);
+    border-radius: 8px;
+
+    & > .name {
+      color: var(--r-blue-default, #4c65ff);
+    }
+
+    & > .down {
+      color: var(--r-blue-default, #4c65ff) !important;
+
+      path {
+        stroke: var(--r-blue-default, #4c65ff) !important;
+      }
+    }
   }
   & > {
     .down {

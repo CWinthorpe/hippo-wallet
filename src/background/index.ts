@@ -5,7 +5,7 @@ import { appIsDev } from '@/utils/env';
 
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
 import Safe from '@rabby-wallet/gnosis-sdk';
-import fetchAdapter from 'background/utils/fetchAdapter';
+import fetchAdapter from '@/services/openapi/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
 import {
   APPCHAIN_SYNC_SCENE,
@@ -52,13 +52,9 @@ import {
   feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
-import {
-  initializeOpenapiStore,
-  testnetOpenapiService,
-} from './service/openapi';
+import { initializeOpenapiStore } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
-import lendingService from './service/lending';
 import {
   BACKGROUND_READY_EVENT,
   BACKGROUND_READY_MESSAGE,
@@ -98,7 +94,6 @@ async function restoreAppState() {
   }
   await initializeOpenapiStore();
   await openapiService.init();
-  await testnetOpenapiService.init();
 
   // Init keyring and openapi first since this two service will not be migrated
   await migrateData();
@@ -123,7 +118,6 @@ async function restoreAppState() {
   await OfflineChainsService.init();
   await syncChainService.init();
   await transactionsService.init();
-  await lendingService.init();
   await feedbackService.init();
 
   await walletController.tryUnlock();
@@ -240,14 +234,6 @@ browser.runtime.onConnect.addListener((port) => {
           case 'openapi':
             if (walletController.openapi[data.method]) {
               return walletController.openapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
-          case 'testnetOpenapi':
-            if (walletController.testnetOpenapi[data.method]) {
-              return walletController.testnetOpenapi[data.method].apply(
                 null,
                 data.params
               );
@@ -386,6 +372,7 @@ browser.runtime.onConnect.addListener((port) => {
       data,
       session,
       origin,
+      sourceFrameId: port.sender.frameId,
     };
     if (!session?.origin) {
       const tabInfo = await browser.tabs.get(sessionId);

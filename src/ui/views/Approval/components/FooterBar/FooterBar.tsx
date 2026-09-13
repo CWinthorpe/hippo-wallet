@@ -21,6 +21,7 @@ import { findChain } from '@/utils/chain';
 
 type GasLessConfig = Record<string, unknown>;
 type GasAccountCheckResult = Record<string, unknown>;
+import { isApprovalProcessDisabled } from './securityGate';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -30,6 +31,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   origin?: string;
   originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
+  securityBlocked?: boolean;
   hasShadow?: boolean;
   isTestnet?: boolean;
   engineResults?: Result[];
@@ -153,6 +155,7 @@ export const FooterBar: React.FC<Props> = ({
   securityLevel,
   engineResults = [],
   hasUnProcessSecurityResult,
+  securityBlocked = false,
   hasShadow = false,
   onIgnoreAllRules,
   Header,
@@ -238,7 +241,16 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           {...props}
           gasLess={false}
-          disabledProcess={props.disabledProcess}
+          disabledProcess={isApprovalProcessDisabled({
+            securityBlocked,
+            hasUnprocessedSecurityResult:
+              !!securityLevel && !!hasUnProcessSecurityResult,
+            // Hippo has no Gas Account / gasless surfaces; upstream #4083
+            // security gate applies with those inputs fixed to off.
+            payGasByGasAccount: false,
+            useGasLess: false,
+            disabledProcess: props.disabledProcess,
+          })}
           enableTooltip={props.enableTooltip}
         />
         {securityLevel && hasUnProcessSecurityResult && (

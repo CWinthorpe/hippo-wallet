@@ -6,7 +6,7 @@ import { useApproval, useWallet } from 'ui/utils';
 
 import clsx from 'clsx';
 import Connect from '.';
-import { ApprovalUtilsProvider } from '../../hooks/useApprovalUtils';
+import { ApprovalUtilsProvider } from '@/ui/views/Approval/hooks/useApprovalUtils';
 import '../../style.less';
 
 export const ConnectApproval: React.FC<{

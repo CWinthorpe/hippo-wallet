@@ -225,6 +225,15 @@
       "importedDelegatedAddress": "インポートされた委任アドレス",
       "noDelegatedAddress": "インポートされた委任アドレスがありません",
       "coboSafeNotPermission": "この委任アドレスは、このトランザクションを開始する権限がありません",
+      "gasAccount": {
+        "currentTxCost": "送金されたガス量： ",
+        "totalCost": "総コスト: ",
+        "estimatedGas": "推定Gas： ",
+        "sendGas": "現在のトランザクションに対するGasの送金: ",
+        "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト： ",
+        "maxGas": "最大Gas： ",
+        "description": "GasAccountを使用してガス料金を支払います。支払いの詳細は以下をご覧ください："
+      },
       "customRPCErrorModal": {
         "title": "カスタム RPC エラー",
         "button": "カスタムRPCを無効にする",
@@ -322,6 +331,7 @@
         "descTipWarningPrivacy": "署名によりアドレス所有権を検証できます。",
         "descTipWarningBoth": "署名は資産の変更を引き起こす可能性があり、アドレスの所有権を確認します。"
       },
+      "gasAccountForGas": "GasAccount の USD を使用してガス代を支払う",
       "nativeTokenForGas": "{{chainName}}でのガス料金の支払いに{{tokenName}}トークンを使用",
       "chain": "チェーン",
       "decodedTooltip": "この署名は Hippo Wallet によってデコードされます。",
@@ -451,6 +461,29 @@
       "submitTx": "トランザクションを送信",
       "testnet": "テストネット",
       "mainnet": "メインネット",
+      "gasless": {
+        "GetFreeGasToSign": "Free Gas を受け取る",
+        "watchUnavailableTip": "閲覧専用アドレスでは無料ガスを利用できません",
+        "unavailable": "Gas 残高が不足しています",
+        "walletConnectUnavailableTip": "モバイルウォレットがWalletConnectを通じて接続されている場合、Free Gasはサポートされていません。",
+        "notEnough": "Gas残高が足りません",
+        "rabbyPayGas": "Hippoが必要なガス料金を支払います– 署名するだけ",
+        "customRpcUnavailableTip": "カスタムRPCはFree Gasをサポートしていません。"
+      },
+      "gasAccount": {
+        "gotIt": "了解しました",
+        "chainNotSupported": "このチェーンはGasAccountでサポートされていません。",
+        "login": "ログイン",
+        "customRPC": "カスタムRPCを使用する場合はサポートされていません",
+        "useGasAccount": "GasAccountを使用する",
+        "loginFirst": "GasAccount にまずログインしてください。",
+        "notEnough": "Gasが不足しています。Gas残高: {{usd}}",
+        "WalletConnectTips": "GasAccountではWalletConnectはサポートされていません。",
+        "deposit": "入金",
+        "loginTips": "GasAccountログインを完了するために、このトランザクションは破棄されます。ログイン後に再作成する必要があります。",
+        "depositTips": "GasAccountの入金を完了するためには、この取引は破棄されます。入金後に再度作成する必要があります。",
+        "signWithHardwareWalletToUse": "{{brand}}でサインインする必要があります"
+      },
       "keystone": {
         "txRejected": "トランザクションが拒否されました",
         "mismatchedWalletError": "ウォレットが一致しません。",
@@ -492,6 +525,12 @@
       "swapTokenOrder": {
         "title": "トークンオーダー"
       },
+      "sellNFT": {
+        "title": "NFTオーダー",
+        "receiveToken": "トークンを受け取る",
+        "listNFT": "NFTをリストする",
+        "specificBuyer": "特定の購入者"
+      },
       "signMultiSig": {
         "title": "トランザクションを確認"
       },
@@ -500,6 +539,12 @@
       },
       "verifyAddress": {
         "title": "アドレスを検証"
+      },
+      "buyNFT": {
+        "payToken": "トークンを支払う",
+        "receiveNFT": "NFTを受け取る",
+        "expireTime": "有効期限",
+        "listOn": "リストオン"
       },
       "contractCall": {
         "operationDecoded": "操作はメッセージからデコードされました"
@@ -885,6 +930,7 @@
         "revokeWithLedger": "Ledgerで取り消しを開始",
         "waitInQueue": "キューで待機",
         "ledgerSigned": "署名済み。トランザクションを作成中 ({{current}}/{{total}})",
+        "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
         "simulationFailed": "シミュレーション失敗",
         "gasNotEnough": "Gasが不足しているため、送信できません",
         "ledgerConfirmTitle": "Ledgerでバッチ取り消し",
@@ -922,6 +968,8 @@
       "insufficient-balance": "残高が不足しています",
       "rabby-fee": "Hippo 手数料",
       "minimum-received": "最低受取額",
+      "preferMEV": "MEV保護を優先",
+      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "there-is-no-fee-and-slippage-for-this-trade": "この取引には手数料とスリッページはありません",
       "approve-tips": "1. 承認 → 2. スワップ",
       "best": "ベスト",
@@ -940,6 +988,7 @@
       "edit": "編集",
       "tradingSettingTips": "{{viewCount}} つの取引所が見積もりを提供し、{{tradeCount}} つで取引が有効です",
       "the-following-swap-rates-are-found": "以下のスワップレートが見つかりました",
+      "quotes": "見積もり",
       "est-payment": "推定支払い:",
       "est-receiving": "推定受け取り:",
       "est-difference": "推定差額:",
@@ -969,7 +1018,17 @@
         "rate": "手数料率",
         "title": "Hippo 手数料",
         "wallet": "ウォレット",
-        "swapDesc": "Hippo Wallet は常にトップアグリゲーターから最適なレートを見つけ、オファーの信頼性を検証します。Hippo は 0.25% の手数料（Wrap は 0%）を請求し、これは見積もりに自動的に含まれます。"
+        "bridgeDesc": "Hippo Walletは常にトップアグリゲーターから可能な限り最良のレートを見つけ、それらのオファーの信頼性を検証します。Hippoは0.25%の手数料を請求し、この手数料は見積もりに自動的に含まれます。",
+        "swapDesc": "Hippo Wallet は常にトップアグリゲーターから最適なレートを見つけ、オファーの信頼性を検証します。Hippo は 0.25% の手数料（Wrap は 0%）を請求し、これは見積もりに自動的に含まれます。",
+        "discountTitle": "Hippo 手数料割引",
+        "free": "無料",
+        "cases": {
+          "wrap": "ネイティブトークンのラップ/アンラップ",
+          "stablecoins": "ステーブルコイン",
+          "lstLrt": "LST/LRT トークン",
+          "million": "取引量 $1M+",
+          "hundredThousand": "取引量 $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "desc": "低い信用価値は、ハニーポットトークンや非常に低い流動性のような高いリスクを示すことが多いです。",
@@ -984,7 +1043,6 @@
       "approve-and-swap": "{{name}} で承認してスワップする",
       "no-slippage-for-wrap": "Wrap にスリッページはありません",
       "no-fee-for-wrap": "Wrap に Hippo 手数料はかかりません",
-      "preferMEV": "MEV保護を優先",
       "hidden-no-quote-rates_one": "{{count}} 件のレートは利用できません",
       "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
       "process-with-two-step-approve": "2段階承認を進める",
@@ -998,7 +1056,6 @@
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}の損失が発生します。流動性の低い市場では、金額を減らしてお試しください。",
-      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
       "search-by-token-name-address": "トークン名 / アドレスを検索",
@@ -1062,6 +1119,7 @@
           "swap": "スワップ",
           "send": "送信",
           "receive": "受信",
+          "gasTopUp": "ガス補充",
           "queue": "キュー",
           "transactions": "トランザクション",
           "approvals": "承認",
@@ -1069,13 +1127,21 @@
           "more": "詳細",
           "manageAddress": "アドレス管理",
           "nft": "NFT",
+          "ecology": "エコシステム",
+          "rabbyPoints": "Hippo Points",
+          "bridge": "ブリッジ",
           "mobile": "モバイル同期",
+          "perps": "Perps",
+          "gasAccount": "GasAccount",
           "dapps": "DApp",
           "setting": "設定",
           "searchDapp": "Dappを検索",
           "settings": "設定",
-          "lending": "レンディング",
-          "dragTip": "長押しで並び替え"
+          "perpsPositions_other": "{{count}} ポジション",
+          "perpsPositions_one": "{{count}} ポジション",
+          "dragTip": "長押しで並び替え",
+          "convertDust": "ダストを変換",
+          "staking": "ステーキング"
         },
         "comingSoon": "近日公開",
         "soon": "まもなく",
@@ -1100,7 +1166,15 @@
         "chain": " チェーン， ",
         "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
         "appChainTips": "HyperliquidとPolymarketのアカウントは含まれません",
-        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません"
+        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません",
+        "stablecoinSwapPopup": {
+          "title": "スワップ手数料 0%",
+          "supportPrefix": "対応：",
+          "supportCount": "30+",
+          "supportSuffix": "のステーブルコイン（40以上のチェーン）",
+          "goToSwap": "スワップに進む",
+          "close": "閉じる"
+        }
       },
       "recentConnection": {
         "disconnected": "切断済み",
@@ -1230,7 +1304,10 @@
           "signatureRecord": "署名レコード",
           "manageAddress": "アドレスを管理",
           "connectedDapp": "接続されたDapp",
-          "searchDapps": "Dappsを検索"
+          "gasTopUp": "ガス補充",
+          "searchDapps": "Dappsを検索",
+          "rabbyPoints": "Hippo Points",
+          "ecosystem": "エコシステム"
         },
         "settings": {
           "label": "設定",
@@ -1248,6 +1325,7 @@
           "biometricUnlock": "生体認証でロック解除",
           "biometricUnlockHint": "このデバイスでバイオメトリクスを使用してロックを解除します。",
           "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。",
+          "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
           "searchCurrency": "通貨を検索",
           "dataAnalysis": "データ分析"
@@ -1324,7 +1402,9 @@
         "NoListedBy": "リスティング情報は利用できません。",
         "OriginalToken": "オリジナルトークン",
         "customizedHasAddedTips": "トークンはHippoによってリストされていません。手動でトークンリストに追加しました。",
+        "BridgeProvider": "ブリッジプロバイダー",
         "blockedListTitles": "ブロックされたトークン",
+        "BridgeIssue": "第三者によってブリッジされたトークン",
         "OriginIssue": "このブロックチェーン上でネイティブに発行されています",
         "maybeScamTips": "これは低品質のトークンであり、詐欺である可能性があります。",
         "myBalance": "私の残高",
@@ -1334,7 +1414,9 @@
         "blockedTips": "ブロックされたトークンはトークンリストに表示されません。",
         "TokenName": "トークン名",
         "ListedBy": "掲載元",
-        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。"
+        "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。",
+        "bridgeToEth": "Ethereumチェーンへのブリッジ",
+        "bridge": "ブリッジ"
       },
       "assets": {
         "usdValue": "USD換算額",
@@ -1384,10 +1466,10 @@
           "lowValueDefis": "{{count}} 低価値のDeFiアセット"
         },
         "noAssets": "アセットなし",
+        "unfoldChain": "他1件のチェーン",
+        "unfoldChainPlural": "他{{moreLen}}件のチェーン",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
         "blockDescription": "ユーザーによってブロックされたトークンがここに表示されます",
-        "unfoldChain": "1つのチェーンを展開",
-        "unfoldChainPlural": "{{moreLen}}のチェーンを展開",
         "customLinkText": "カスタムトークンを追加するためのアドレスを検索",
         "customDescription": "ユーザーによって追加されたカスタムトークンがここに表示されます",
         "comingSoon": "近日公開...",
@@ -1483,6 +1565,11 @@
       "recentConnectionGuide": {
         "button": "了解しました",
         "title": "こちらでDapp接続のためのアドレスを切り替えます"
+      },
+      "rabbyPointsPopup": {
+        "title": "Hippoポイント",
+        "desc": "Hippo Mobileでポイントを確認してください。",
+        "downloadIntro": "アプリをまだお持ちではありませんか？今すぐダウンロードしてください。"
       },
       "noData": "一致する通貨がありません",
       "ZeroAssets": {
@@ -1632,6 +1719,7 @@
         "qrCodeError": "ネットワークを確認するか、QRコードを更新してください",
         "qrCode": "QRコード",
         "url": "URL",
+        "changeBridgeServer": "ブリッジサーバーを変更",
         "status": {
           "received": "スキャンが成功し、確認待ちです",
           "rejected": "接続がキャンセルされました。QRコードを再スキャンして再試行してください。",
@@ -2057,6 +2145,7 @@
       "title": "DeBankテストネットガストークンのリクエスト",
       "mintedTip": "Hippoバッジの所有者は1日に1回リクエストできます",
       "notMintedTip": "リクエストはHippoバッジの所有者のみ利用可能です",
+      "claimBadgeBtn": "Hippoバッジを受け取る",
       "time": "1日あたり",
       "requested": "本日リクエストしました",
       "requestBtn": "リクエスト"
@@ -2720,7 +2809,8 @@
         "send": "送信",
         "swap": "スワップ",
         "queue": "キュー",
-        "pending": "{{pendingTxCount}} 保留中"
+        "pending": "{{pendingTxCount}} 保留中",
+        "bridge": "ブリッジ"
       },
       "tabs": {
         "transactions": "取引",
@@ -2822,339 +2912,6 @@
       "networkErrorDescriptionFallback": "サイトが予期せず接続を閉じました。ネットワークを確認してください。",
       "opening": "{{name}}を開いています...",
       "serviceNotSupported": "このサービスは現在の地域ではサポートされていません。"
-    },
-    "lending": {
-      "availableCard": {
-        "needSupply": "借り入れるには、担保として資産を提供する必要があります。",
-        "canBorrow": "あなたは提供した担保に基づいて、借入上限まで借りることができます。",
-        "singleAssetUnavailableForEmode": "借入できません。利用するには E-Mode を終了してください。",
-        "emode": "E-Modeでは一部の資産は借りることができません。すべての資産にアクセスするにはE-Modeを終了してください。",
-        "emodeNoAssets": "関連する資産が見つかりませんでした。別のカテゴリで再度お試しください。",
-        "isolated": "分離モードのため、借入可能額と資産が制限されています。"
-      },
-      "list": {
-        "headers": {
-          "token": "トークン",
-          "token_balance": "トークン/残高",
-          "mySupplies": "私の供給",
-          "my_balance": "私の残高",
-          "my_assets": "私の資産",
-          "token_tvl": "トークン/TVL",
-          "totalBorrowed": "総借入額",
-          "myBorrows": "私の借り入れ"
-        },
-        "item": {
-          "wrapperToken": "{{name}}のラップトークン"
-        }
-      },
-      "repayDetail": {
-        "tabs": {
-          "wallet": "ウォレット残高",
-          "collateral": "担保"
-        },
-        "repayWith": "返済するには",
-        "amountTitle": "残高： ",
-        "actions": "返済",
-        "approveAndRepay": "承認と返済"
-      },
-      "supplyDetail": {
-        "amountTitle": "利用可能: ",
-        "actions": "供給",
-        "supplied": "供給済み",
-        "enabled": "有効",
-        "availableToBorrow": "借入可能",
-        "supplyAPY": "供給APY",
-        "unavailable": "利用できません",
-        "supplyBalance": "供給残高",
-        "collateralization": "担保化",
-        "isolatedTips": "あなたの既存の貸し出し/借入資産はサポートされていません。",
-        "approveAndSupply": "承認と供給"
-      },
-      "withdrawDetail": {
-        "remainingSupply": "残りの供給",
-        "amountTitle": "残高: ",
-        "actions": "引き出す"
-      },
-      "toggleCollateralDetail": {
-        "disable": "{{asset}}を担保として無効にする",
-        "enable": "{{asset}}を担保として有効にする",
-        "actions": "{{asset}} の担保を切り替える",
-        "error": "AAVEサービスにエラーが発生しました。後でもう一度お試しください。"
-      },
-      "toggleCollateralModal": {
-        "toggleRiskTexts": {
-          "doNotHaveSuppliesInThisCurrency": "この資産には預け入れがありません。",
-          "canNotUseThisCurrencyAsCollateral": "この通貨を担保として使用することはできません",
-          "zeroLTVWithdrawBlocked": "LTVがゼロの資産（{{assets}}）は、このアクションを実行するために引き出すか、担保として無効にする必要があります。",
-          "canNotSwitchUsageAsCollateralMode": "清算リスクが生じるため、この資産を担保に切り替えることはできません。"
-        },
-        "closeTitle": "レビュー無効化",
-        "openTitle": "レビューの有効化",
-        "exitIsolationModeTitle": "分離モードを終了",
-        "exitIsolationModeDesc": "分離モードを終了すると、他のトークンを担保として使用できるようになります。",
-        "closeDesc": "この資産を担保から外すと、借入余力とヘルスファクターに影響します。",
-        "riskToLiquidationText": "清算リスクが生じるため、この資産を担保に切り替えることはできません。",
-        "enableIsolationModeTitle": "分離モードを有効にする",
-        "openDesc": "この資産を担保として有効にすると、借入余力とヘルスファクターが向上します。ただし、ヘルスファクターが1未満に下がると清算される可能性があります。",
-        "enableIsolationModeDesc": "分離モードでは、他の資産を担保として提供できません。全体の負債上限により、分離資産の借入可能額が制限されます。分離モードを終了するには、他の資産を借りる前にCRVを担保から外してください。"
-      },
-      "borrowDetail": {
-        "actions": "借りる",
-        "swapDebt": "スワップ",
-        "amountTitle": "利用可能: ",
-        "borrowed": "借入",
-        "approveAndBorrow": "承認して借りる",
-        "almostReachedError": "プロトコルの借入上限に近づいているため、借入可能な最大額が制限されています。",
-        "almostReachedWarning": "この資産のプロトコル借入上限は100％です。これ以上の借入はできません。"
-      },
-      "popup": {
-        "amount": "金額",
-        "remainingDebt": "残りの借金",
-        "liquidationAt": "1.0未満の清算",
-        "available": "利用可能",
-        "title": "取引概要"
-      },
-      "borrowOverview": {
-        "availableToBorrow": "借入可能",
-        "title": "借入詳細情報",
-        "liquidityPenalty": "清算ペナルティ",
-        "totalBorrowed": "総借入額",
-        "myBorrow": "私の借入",
-        "borrowCap": "借入上限",
-        "reachCapTip": "この資産は借入上限に達しました。 "
-      },
-      "supplyOverview": {
-        "collateral": "担保",
-        "availableToSupply": "提供可能性",
-        "mySupply": "私の供給",
-        "walletBalance": "ウォレット残高",
-        "noBalance": "残高がありません",
-        "useAsCollateral": "担保として使用",
-        "title": "供給の詳細",
-        "totalSupplied": "供給総量",
-        "almostCap": "この資産は、ほぼ借入上限に達しています。この市場から借りられるのは、{{available}} のみです。",
-        "reachCap": "この資産は供給上限に達しました。この市場から供給できるものはありません。"
-      },
-      "risk": {
-        "warning": "この金額を借りると、あなたのヘルスファクターが清算のリスクがあるレベルに下がります。",
-        "toggleCollateralWarning": "この資産を担保として無効にすると、あなたのヘルスファクターは清算のリスクがあるレベルに低下します。",
-        "withdrawWarning": "この金額を引き出すと、ヘルスファクターが清算リスクの高い水準まで低下します。",
-        "checkbox": "アラートを理解しましたので、続行します。",
-        "emodeBlockWarning": "Eモードを無効にすると、清算のリスクがあるレベルまでヘルスファクターが低下します。",
-        "blockEmodeWarning": "Eモードを無効にすることはできません。それは清算を引き起こす可能性があります。Eモードを終了するには、供給または借入ポジションを返済してください。"
-      },
-      "lqDescription": {
-        "desc": "清算価値",
-        "below1title": "ヘルスファクター ≤ 1.0:",
-        "risky": "リスキー",
-        "over3desc": "あなたのポジションは安全です",
-        "below1desc": "あなたのポジションは清算のリスクにさらされています。",
-        "over3title": "ヘルスファクター > 3.0:",
-        "liquidationTitle": "清算:",
-        "introText": " ヘルスファクターは借入ポジションの安全性を示します。低くなりすぎると、担保が清算される可能性があります。",
-        "warningText": "ヘルスファクターが低すぎます。清算を避けるには：\n1. 借入の一部または全額を返済する\n2. 担保を追加する",
-        "liquidation": "あなたのヘルスファクターが1.0未満になると、債務を返済するために一部の担保が自動的に売却される可能性があります。清算ペナルティが適用され、担保の一部が失われることになります。"
-      },
-      "modalDesc": {
-        "availableToBorrow": "借りられる金額",
-        "isolatedTitle": "資産は担保として使用できません",
-        "availableToBorrowDesc": "担保資産に基づいて借り入れることができ、借入上限に達するまで可能です。",
-        "isolatedSupplyDesc": "担保の使用は、隔離モードのため制限されています。",
-        "maxAmount": "提供した担保に基づく最大借入額です。借入余力の合計は、各担保資産の市場価値に最大LTVを掛けた値の合計で算出されます。",
-        "globalIsolatedDesc": "分離モードでは、他の資産を担保として提供できません。全体の借入上限により、分離資産の借入余力が制限されます。分離モードを終了するには、他の資産を借りる前にUNIを担保から外してください。 ",
-        "isolatedDesc": "この資産はアイソレーションモードでのみ担保として使用できます。このモードでは、借入に他の資産担保を供給することはできません。アイソレーションモードで担保として使用される資産は、特定の借入上限までしか借りることができません。",
-        "maxLTV": "最大LTV比率は、特定の担保の最大借入可能額を示します。例えば、担保のLTVが75%の場合、ユーザーは1 ETHの担保に対して0.75に相当するETHを主通貨で借りることができます。",
-        "lqDesc": "清算が発生すると、清算者は借入者に代わって未返済の借入金額の最大50%を返済します。その見返りに、彼らは担保を割引価格で購入でき、差額（清算ペナルティ）をボーナスとして保持することができます。"
-      },
-      "repayWithAToken": {
-        "header": {
-          "balance": "残高",
-          "assets": "トークン"
-        },
-        "title": "返済トークンを選択",
-        "zeroLtvCollateralTips": "以下のLTVが0の担保があるため、担保返済ルールに従って、まずこれらの担保で返済する必要があります。 "
-      },
-      "manageEmode": {
-        "actions": {
-          "enable": "E-Modeを有効にする",
-          "disable": "Eモードを無効にする"
-        },
-        "guide": {
-          "buttonTitle": "E-Modeを管理する",
-          "title": "効率モード (E-Mode)",
-          "description": "E-Modeは選択した資産のカテゴリーに対するLTVを増加させます。"
-        },
-        "categorySelector": {
-          "header": {
-            "asset": "資産"
-          },
-          "placeholder": "選択",
-          "label": "資産カテゴリ",
-          "desc": "このカテゴリを有効にするには、このカテゴリの外にあるすべての借り入れポジションを閉じる必要があります。"
-        },
-        "debtSwapSelector": {
-          "header": {
-            "borrow": "私の借入",
-            "assets": "トークン/残高",
-            "apy": "APY"
-          },
-          "title": "借入トークンを選択"
-        },
-        "collateralSwapSelector": {
-          "header": {
-            "collateral": "私の担保",
-            "assets": "トークン"
-          },
-          "title": "担保トークンを選択してください"
-        },
-        "overview": {
-          "row": {
-            "borrowable": "借入可能",
-            "collateral": "担保",
-            "asset": "資産"
-          },
-          "title": "資産カテゴリ"
-        },
-        "disableTitle": "無効にする",
-        "unavailable": "• 利用不可",
-        "title": "E-Modeを管理する",
-        "enabled": "• 有効化",
-        "unavailableTips": "現在の貸付・借入資産はサポートされていません。",
-        "description": "E-Modeを有効にすると借入余力を最大化できます。ただし、借入は選択したカテゴリ内の資産に限られます。"
-      },
-      "debtSwap": {
-        "actions": {
-          "amount": "金額",
-          "borrowed": "借入した",
-          "select": "選択してください",
-          "swapTo": "スワップする",
-          "title": "債務スワップ"
-        },
-        "overview": {
-          "title": "取引概要",
-          "borrowAPY": "借入年利率",
-          "borrowValueAfter": "スワップ後の借入残高"
-        },
-        "button": {
-          "swap": "スワップ"
-        },
-        "borrowBalance": "借入残高",
-        "title": "借入ポジションをスワップ",
-        "entryTips": "ワンクリックで借りた資産をスワップし、ステップと手数料を削減します。",
-        "lpRiskWarning": "スワップ後のヘルスファクターが低く、ポジションの清算リスクが高まります。",
-        "priceImpactTips": "高い価格影響 ({{lostValue}})。このルートは流動性が低いか注文サイズが小さいために、より多くのリターンを得られる場合があります。",
-        "lpDangerWarning": "このスワップ後はヘルスファクターが非常に低くなり、清算される可能性があります。別の資産を選ぶか、スワップ額を減らしてください。",
-        "maxLtvWarning": "新しい借入ポジションをカバーする担保が不足しています。デットスワップを行うには借入余力が必要です。"
-      },
-      "repayWithCollateral": {
-        "action": {
-          "title": "{{collateral}}で返済"
-        },
-        "overview": {
-          "collateralValueAfter": "返済後の担保残高",
-          "borrowValueAfter": "返済後の借入残高",
-          "title": "取引概要"
-        },
-        "button": {
-          "repay": "返済"
-        },
-        "toRepay": "返済予定額",
-        "repayWith": "返済に使用する担保",
-        "collateralNotEnough": "あなたの担保残高は選択した金額よりも少なくなっています。"
-      },
-      "hfTips": {
-        "more": "もっと見る",
-        "desc": "1.0を下回ると、あなたの担保が清算される可能性があります。"
-      },
-      "disableBorrowTip": {
-        "noSupply": "資産を供給して、借入を可能にします。",
-        "desc": "供給なし：借りるには資産を担保として供給する必要があります。"
-      },
-      "type": {
-        "supplied": "供給済み",
-        "borrowed": "借りた"
-      },
-      "actions": {
-        "repay": "返済",
-        "borrow": "借りる",
-        "swap": "スワップ",
-        "supply": "供給",
-        "withdraw": "引き出す"
-      },
-      "summary": {
-        "empty": {
-          "description": "AAVEによって提供されます。安全で手数料ゼロ。",
-          "title": "資産で利息を得る",
-          "endDesc": "まだ預金はありません。下記の推奨資産をチェックして、利息を得るために始めましょう。"
-        },
-        "netWorth": "ネット資産",
-        "healthFactor": "ヘルスファクター",
-        "eMode": "E-モード",
-        "totalBorrowed": "総借入額",
-        "totalSupplied": "供給合計",
-        "healthFactorTip": "ヘルスファクターは、あなたのポジションの安全性を示します。",
-        "risky": "リスキー",
-        "more": "もっと",
-        "ethCorrelatedTip": "ETH相関資産",
-        "netApy": "ネットAPY",
-        "estDailyEarnings": "推定日収入",
-        "healthy": "健康",
-        "lq": "ヘルスファクターが1を下回ると、清算される可能性があります。"
-      },
-      "market": {
-        "core": "コアマーケット"
-      },
-      "accountActions": {
-        "supply": "供給",
-        "both": "両方",
-        "borrow": "借りる"
-      },
-      "table": {
-        "token": "トークン",
-        "type": "タイプ",
-        "actions": "アクション",
-        "myAssets": "私の資産",
-        "collateral": "担保",
-        "apy": "APY"
-      },
-      "supplyList": {
-        "more": "より多くのトークンを供給",
-        "collapse": "折りたたむ"
-      },
-      "borrowList": {
-        "collapse": "折りたたむ",
-        "more": "借りるためのトークンがさらに多くあります"
-      },
-      "noData": "データがありません",
-      "borrowed": "借入",
-      "supplyApy": "供給APY",
-      "submitted": "提出されました",
-      "totalSupplied": "総供給量",
-      "gotIt": "了解しました",
-      "borrowApy": "借入APY",
-      "isolateTip": "これは隔離市場です",
-      "estNetApy": "推定ネットAPY",
-      "estDailyEarning": "推定日収益",
-      "totalSupply": "総供給量",
-      "totalBorrowed": "合計借入額",
-      "title": "貸出",
-      "supplied": "供給済み",
-      "supplyBalance": "供給残高",
-      "netWorth": "純資産",
-      "isolate": "隔離型",
-      "borrowBalance": "借入残高",
-      "totalBorrow": "合計借入",
-      "netApy": "ネットAPY",
-      "disabled": "無効",
-      "hf": "ヘルスファクター",
-      "enterAmount": "金額を入力してください",
-      "hfTitle": "ヘルスファクター",
-      "selectMarket": "マーケットを選択",
-      "searchMarket": "マーケットを検索",
-      "selectChain": "チェーンを選択",
-      "signFallback": {
-        "preExecFailedUseFullSign": "シミュレーションに失敗しました。このトランザクションは、AAVE エラーのため、おそらく失敗します。"
-      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -3264,7 +3021,9 @@
       "revoke": "取り消し",
       "approvals": "承認",
       "unselectAll": "すべて選択解除",
-      "selectAll": "すべて選択"
+      "selectAll": "すべて選択",
+      "approvalsCount": "{{count}} 件の承認",
+      "approvalsCount_one": "{{count}} 件の承認"
     }
   },
   "component": {
@@ -3377,6 +3136,14 @@
       "noTokens": "トークンがありません",
       "noMatch": "一致するものがありません",
       "noMatchSuggestion": "{{ chainName }}の契約アドレスを検索してみてください",
+      "bridge": {
+        "value": "値",
+        "token": "トークン",
+        "liquidity": "流動性",
+        "liquidityTips": "過去の取引量が多いほど、ブリッジが成功する可能性が高くなります。",
+        "high": "高い流動性",
+        "low": "流動性が低い"
+      },
       "hot": "ホット",
       "recent": "最近",
       "common": "一般",
@@ -3426,6 +3193,7 @@
       "thirdPartyDappToProceed": "サードパーティのDappを使用して進めてください",
       "viewDappOptions": "Dappオプションを見る",
       "noDapps": "このチェーンには利用可能なDappがありません",
+      "bridgeOnDapp": "Dapp上のブリッジ",
       "swapOnDapp": "DAppでスワップ"
     },
     "AccountSelectorModal": {
@@ -3450,7 +3218,7 @@
       "allChains": "すべてのチェーン"
     },
     "DesktopNav": {
-      "lending": "レンディング",
+      "perps": "Perps",
       "portfolio": "ポートフォリオ",
       "comingSoon": "近日公開予定"
     },

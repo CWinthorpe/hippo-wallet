@@ -30,7 +30,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { ga4 } from '@/utils/ga4';
-import { routeNotificationAfterUnlock } from './approvalResolution';
+import { useWalletStatusStore } from '@/ui/state/walletStatus';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -124,8 +124,8 @@ const Unlock = () => {
   const unlockPreferredMethod = useRabbySelector(
     (state) => state.preference.unlockPreferredMethod
   );
-  const hasUnlockedOnce = useRabbySelector(
-    (state) => state.app.hasUnlockedOnce
+  const hasUnlockedOnce = useWalletStatusStore(
+    (state) => state.hasUnlockedOnce
   );
   const query = useMemo(() => {
     return qs.parse(location.search, {
@@ -180,18 +180,24 @@ const Unlock = () => {
       );
     }
 
-    dispatch.app.setField({
+    useWalletStatusStore.setState({
       hasUnlockedOnce: true,
     });
     if (UiType.isNotification) {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        await routeNotificationAfterUnlock({
-          getApproval,
-          resolveApproval,
-          replace: (path) => history.replace(path),
-        });
+        const approval = await getApproval();
+        if (!approval) {
+          history.replace('/');
+        } else if (String(approval.data.approvalComponent) === 'Unlock') {
+          // Only resolve the Unlock approval itself, bound by id. A pending
+          // SignText/SignTypedData/SignTx must never be resolved by a
+          // password entry — hand control back to its own approval screen.
+          resolveApproval(undefined, false, false, approval.id);
+        } else {
+          history.replace('/approval');
+        }
       }
     } else if (UiType.isTab || UiType.isDesktop) {
       const account = query.address

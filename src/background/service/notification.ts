@@ -24,8 +24,6 @@ type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
 export interface Approval {
   id: string;
-  /** Lifecycle generation at creation time; see `approvalEpoch`. */
-  approvedEpoch: number;
   taskId: number | null;
   signingTxId?: string;
   data: {
@@ -76,16 +74,6 @@ export type StatsData = {
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
-  /**
-   * Lifecycle generation for approvals. Bumped on session boundaries (lock,
-   * window teardown): approvals created in an earlier generation can never be
-   * resolved/rejected afterwards, so a pre-boundary async continuation cannot
-   * finish the request after the session changed.
-   */
-  approvalEpoch = 0;
-  bumpApprovalEpoch = () => {
-    this.approvalEpoch += 1;
-  };
   dappManager = new Map<
     string,
     {
@@ -156,12 +144,7 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval(
-            undefined,
-            false,
-            false,
-            this.currentApproval?.id
-          );
+          this.rejectApproval();
         }
       }
     });
@@ -207,19 +190,17 @@ class NotificationService extends Events {
   resolveApproval = async (
     data?: any,
     forceReject = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: Approval['data']['approvalComponent']
   ) => {
-    // Approval identity is mandatory: an approval may only be resolved by the
-    // exact id AND lifecycle epoch that rendered it. Without a matching id
-    // (or after the epoch bumped on lock/session teardown) this is a no-op,
-    // never a blind resolve of whatever is current.
     if (
-      !approvalId ||
-      approvalId !== this.currentApproval?.id ||
-      (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
-        this.approvalEpoch
+      !this.currentApproval ||
+      (approvalId && approvalId !== this.currentApproval.id) ||
+      (approvalComponent &&
+        (!approvalId ||
+          approvalComponent !== this.currentApproval.data.approvalComponent))
     ) {
-      return;
+      return false;
     }
     if (forceReject) {
       this.currentApproval?.reject &&
@@ -242,30 +223,27 @@ class NotificationService extends Events {
     }
 
     this.emit('resolve', data);
+    return true;
   };
 
   rejectApproval = async (
     err?: string,
     stay = false,
     isInternal = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: Approval['data']['approvalComponent']
   ) => {
-    // Mandatory identity + epoch: only the matching rendered approval may be
-    // rejected. A missing or stale id/epoch is ignored rather than rejecting
-    // a newer approval (or the same approval after a session boundary).
     if (
-      !approvalId ||
-      approvalId !== this.currentApproval?.id ||
-      (this.currentApproval as { approvedEpoch?: number })?.approvedEpoch !==
-        this.approvalEpoch
+      !this.currentApproval ||
+      (approvalId && approvalId !== this.currentApproval.id) ||
+      (approvalComponent &&
+        (!approvalId ||
+          approvalComponent !== this.currentApproval.data.approvalComponent))
     ) {
-      return;
+      return false;
     }
     this.addLastRejectDapp();
     const approval = this.currentApproval;
-    if (this.approvals.length <= 1) {
-      await this.clear(stay); // TODO: FIXME
-    }
 
     if (isInternal) {
       approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
@@ -285,6 +263,7 @@ class NotificationService extends Events {
       await this.clear(stay);
     }
     this.emit('reject', err);
+    return true;
   };
 
   requestApproval = async (
@@ -351,7 +330,6 @@ class NotificationService extends Events {
         signingTxId,
         data,
         winProps,
-        approvedEpoch: this.approvalEpoch,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);
@@ -466,9 +444,25 @@ class NotificationService extends Events {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = null;
     }
-    winMgr.openNotification(winProps).then((winId) => {
-      this.notifiWindowId = winId!;
-    });
+    winMgr
+      .openNotification(winProps)
+      .then((winId) => {
+        if (winId == null) {
+          if (this.notifiWindowId === null) {
+            this.unLock();
+          }
+          return;
+        }
+        this.notifiWindowId = winId;
+      })
+      .catch((e) => {
+        if (this.notifiWindowId === null) {
+          this.unLock();
+        }
+        Sentry.captureException(e, {
+          tags: { function: 'openNotification' },
+        });
+      });
   };
 
   updateNotificationWinProps = (winProps: Windows.UpdateUpdateInfoType) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
+import { QueryClientProvider } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import Views from './views';
 import { getUiType } from 'ui/utils';
@@ -9,16 +9,17 @@ import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
-import store from './store';
 import {
   initializeWalletStatusStore,
   useWalletStatusStore,
 } from './state/walletStatus';
+import { initializeChainsStore, useChainsStore } from './state/chains';
 
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { Button } from 'antd';
 import { wallet } from './wallet';
+import { queryClient } from './query';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -40,26 +41,10 @@ function initAppMeta() {
 
 initAppMeta();
 
-store.dispatch.app.initWallet({ wallet });
-
 eventBus.addEventListener('syncChainList', (params) => {
-  store.dispatch.chains.setField(params);
+  useChainsStore.getState().setField(params);
   updateChainStore(params);
 });
-
-const compensateUnlockedOnceFlag = () => {
-  try {
-    if (store.getState().app.hasUnlockedOnce) return;
-    const isUnlocked = useWalletStatusStore.getState().isUnlocked;
-    if (isUnlocked) {
-      store.dispatch.app.setField({
-        hasUnlockedOnce: true,
-      });
-    }
-  } catch (e) {
-    console.log('[compensateUnlockedOnceFlag] failed', e);
-  }
-};
 
 const rootContainer = document.getElementById('root');
 const root = rootContainer ? createRoot(rootContainer) : null;
@@ -94,7 +79,7 @@ const main = async () => {
     }
   );
   await walletStatusInitialization;
-  compensateUnlockedOnceFlag();
+
   if (getUiType().isPop) {
     wallet
       .tryOpenOrActiveUserGuide()
@@ -125,9 +110,9 @@ const main = async () => {
         scope.setTag('error_boundary', 'root');
       }}
     >
-      <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
         <Views wallet={wallet} />
-      </Provider>
+      </QueryClientProvider>
     </Sentry.ErrorBoundary>
   );
 };

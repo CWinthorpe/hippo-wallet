@@ -56,7 +56,6 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.approvals = [];
     notificationService.currentApproval = null;
     notificationService.notifiWindowId = null;
-    notificationService.approvalEpoch = 0;
     mockGetAll.mockReset();
     mockOpenNotification.mockReset();
     mockCaptureException.mockReset();
@@ -72,7 +71,6 @@ describe('notificationService.activeFirstApproval', () => {
     notificationService.approvals = [
       {
         id: 'approval-id',
-        approvedEpoch: 0,
         taskId: null,
         data: {
           approvalComponent: 'SignTx',
@@ -104,83 +102,5 @@ describe('notificationService.activeFirstApproval', () => {
     expect(mockCaptureException).toHaveBeenCalledWith(error, {
       tags: { function: 'activeFirstApproval' },
     });
-  });
-
-  const makeApproval = (id: string, approvedEpoch = 0): any => ({
-    id,
-    approvedEpoch,
-    taskId: null,
-    data: {
-      approvalComponent: 'SignTx',
-      account: {
-        type: 'PrivateKey',
-        address: '0xaccount',
-        brandName: '私钥',
-      },
-    },
-    winProps: {},
-    resolve: jest.fn(),
-    reject: jest.fn(),
-  });
-
-  test('resolveApproval without a matching approval id is a no-op', async () => {
-    const current = makeApproval('approval-A');
-    notificationService.currentApproval = current;
-    notificationService.approvals = [current];
-
-    // Missing id must NOT resolve "whatever is current".
-    await notificationService.resolveApproval({ signedTx: '0x' }, false);
-    expect(current.resolve).not.toHaveBeenCalled();
-
-    // Stale id from a rotated queue must not resolve the current approval.
-    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-B');
-    expect(current.resolve).not.toHaveBeenCalled();
-
-    // Matching id resolves the exact approval and advances the queue.
-    await notificationService.resolveApproval({ signedTx: '0x' }, false, 'approval-A');
-    expect(current.resolve).toHaveBeenCalledWith({ signedTx: '0x' });
-    expect(notificationService.currentApproval).toBeNull();
-  });
-
-  test('rejectApproval with a stale id is ignored; matching id rejects', async () => {
-    const current = makeApproval('approval-A');
-    notificationService.currentApproval = current;
-    notificationService.approvals = [current];
-
-    await notificationService.rejectApproval(
-      'user cancelled',
-      false,
-      false,
-      'approval-B'
-    );
-    expect(current.reject).not.toHaveBeenCalled();
-
-    await notificationService.rejectApproval(
-      'user cancelled',
-      false,
-      false,
-      'approval-A'
-    );
-    expect(current.reject).toHaveBeenCalled();
-  });
-
-  test('a session-epoch bump invalidates in-flight resolve/reject continuations', async () => {
-    const current = makeApproval('approval-A', 0);
-    notificationService.currentApproval = current;
-    notificationService.approvals = [current];
-
-    // Simulate a lock: the epoch bumps and the queue is cleared.
-    notificationService.bumpApprovalEpoch();
-    notificationService.currentApproval = null;
-    notificationService.approvals = [];
-
-    // A pre-lock continuation that still holds the old id can no longer
-    // resolve anything, because the current approval is gone.
-    await notificationService.resolveApproval(
-      { signedTx: '0x' },
-      false,
-      'approval-A'
-    );
-    expect(current.resolve).not.toHaveBeenCalled();
   });
 });

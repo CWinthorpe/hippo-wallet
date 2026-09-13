@@ -225,6 +225,15 @@
       "importedDelegatedAddress": "Endereço Delegado Importado",
       "noDelegatedAddress": "Sem endereço delegado importado",
       "coboSafeNotPermission": "Este endereço delegado não tem permissão para iniciar esta transação",
+      "gasAccount": {
+        "gasCost": "Custo para transferir gas ao seu endereço:",
+        "estimatedGas": "Gás Estimado:",
+        "totalCost": "Custo total: ",
+        "maxGas": "Máximo Gas:",
+        "sendGas": "A transferência de Gas para você na transação atual:",
+        "currentTxCost": "Quantidade de Gas enviada para o seu endereço:",
+        "description": "Usando GasAccount para pagar as taxas de gás. Veja os detalhes do pagamento abaixo:"
+      },
       "customRPCErrorModal": {
         "title": "Erro RPC Personalizado",
         "content": "Seu RPC personalizado está indisponível no momento. Você pode desativá-lo e continuar assinando usando o RPC oficial do Hippo.",
@@ -323,6 +332,7 @@
         "descTipSafe": "A assinatura não causa alteração de ativos nem verifica a propriedade do endereço"
       },
       "nativeTokenForGas": "Use {{tokenName}} token em {{chainName}} para pagar pelo gas",
+      "gasAccountForGas": "Usar USD da minha GasAccount para pagar o gás",
       "chain": "Cadeia",
       "decodedTooltip": "Esta assinatura é decodificada pelo Hippo Wallet",
       "trustValueTitle": "Valor de confiança",
@@ -451,6 +461,29 @@
       "submitTx": "Enviar Transação",
       "testnet": "Rede de Teste",
       "mainnet": "Rede Principal",
+      "gasless": {
+        "watchUnavailableTip": "Endereço de visualização não é compatível com Free Gas",
+        "unavailable": "Seu saldo de Gas não é suficiente",
+        "walletConnectUnavailableTip": "Carteira móvel conectada via WalletConnect não é suportada para Free Gas",
+        "GetFreeGasToSign": "Obter Free Gas",
+        "rabbyPayGas": "Hippo cuidará do gás necessário – é só assinar",
+        "notEnough": "O saldo de Gas não é suficiente",
+        "customRpcUnavailableTip": "Os RPCs personalizados não são suportados para Free Gas"
+      },
+      "gasAccount": {
+        "gotIt": "Entendi",
+        "WalletConnectTips": "WalletConnect não é suportado pelo GasAccount",
+        "notEnough": "Gas insuficiente. Saldo de gas: {{usd}}",
+        "customRPC": "Não é suportado ao usar RPC personalizado",
+        "deposit": "Depósito",
+        "chainNotSupported": "Esta cadeia não é suportada pelo GasAccount",
+        "useGasAccount": "Usar GasAccount",
+        "login": "Entrar",
+        "loginFirst": "Por favor, faça login no GasAccount primeiro",
+        "loginTips": "Para concluir o login no GasAccount, esta transação será descartada. Você precisará refazê-la após o login.",
+        "depositTips": "Para concluir o depósito do GasAccount, esta transação será descartada. Você precisará refazê-la após o depósito.",
+        "signWithHardwareWalletToUse": "Você precisa assinar com {{brand}} para usar"
+      },
       "keystone": {
         "siging": "Enviando solicitação de assinatura",
         "txRejected": "Transação rejeitada",
@@ -492,6 +525,12 @@
       "swapTokenOrder": {
         "title": "Ordem de Token"
       },
+      "sellNFT": {
+        "title": "Ordem de NFT",
+        "receiveToken": "Receber token",
+        "listNFT": "Listar NFT",
+        "specificBuyer": "Comprador específico"
+      },
       "signMultiSig": {
         "title": "Confirmar Transação"
       },
@@ -500,6 +539,12 @@
       },
       "verifyAddress": {
         "title": "Verificar Endereço"
+      },
+      "buyNFT": {
+        "payToken": "Pagar token",
+        "receiveNFT": "Receber NFT",
+        "expireTime": "Tempo de expiração",
+        "listOn": "Listado em"
       },
       "contractCall": {
         "operationDecoded": "Operação decodificada da mensagem"
@@ -887,6 +932,7 @@
         "simulationFailed": "Simulação falhou",
         "ledgerSigned": "Assinado. Criando transação ({{current}}/{{total}})",
         "cancelBody": "Se você fechar esta página, as revogações restantes não serão executadas.",
+        "useGasAccount": "Seu saldo de gás está baixo. Seu GasAccount cobrirá as taxas de gás.",
         "ledgerConfirmTitle": "Revogação em Lote com Ledger",
         "revokeWithOneKey": "Iniciar revogação com OneKey",
         "oneKeySended": "Por favor, assine a solicitação no OneKey ({{current}}/{{total}})",
@@ -922,6 +968,8 @@
       "insufficient-balance": "Saldo insuficiente",
       "rabby-fee": "Taxa Hippo",
       "minimum-received": "Mínimo Recebido",
+      "preferMEV": "Preferir MEV Guardado",
+      "preferMEVTip": "Ative o recurso \"MEV Guarded\" para trocas de Ethereum a fim de reduzir os riscos de ataques sandwich. Nota: este recurso não é compatível se você usar um RPC personalizado ou endereço de conexão de carteira",
       "there-is-no-fee-and-slippage-for-this-trade": "Não há slippage nesta troca",
       "approve-tips": "1. Aprovar → 2. Trocar",
       "best": "Melhor",
@@ -940,6 +988,7 @@
       "edit": "Editar",
       "tradingSettingTips": "{{viewCount}} exchanges oferecem cotações, e {{tradeCount}} habilitam negociação",
       "the-following-swap-rates-are-found": "As seguintes taxas de troca foram encontradas",
+      "quotes": "Cotações",
       "est-payment": "Pagamento Estimado:",
       "est-receiving": "Recebimento Estimado:",
       "est-difference": "Diferença Estimada:",
@@ -968,8 +1017,18 @@
         "title": "Taxa Hippo",
         "rate": "Taxa de fee",
         "wallet": "Carteira",
+        "bridgeDesc": "A Hippo Wallet sempre encontrará a melhor taxa possível dos principais agregadores e verificará a confiabilidade de suas ofertas. Hippo cobra uma taxa de 0,25%, que é automaticamente incluída na cotação.",
         "button": "Entendi",
-        "swapDesc": "Hippo Wallet sempre encontrará a melhor taxa possível a partir dos principais agregadores e verificará a confiabilidade de suas ofertas. Hippo cobra uma taxa de 0,25% (0% para Wrap), que é automaticamente incluída na cotação."
+        "swapDesc": "Hippo Wallet sempre encontrará a melhor taxa possível a partir dos principais agregadores e verificará a confiabilidade de suas ofertas. Hippo cobra uma taxa de 0,25% (0% para Wrap), que é automaticamente incluída na cotação.",
+        "discountTitle": "Desconto na taxa Hippo",
+        "free": "Grátis",
+        "cases": {
+          "wrap": "Encapsular/desencapsular token nativo",
+          "stablecoins": "Stablecoins",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volume $1M+",
+          "hundredThousand": "Volume $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Este token tem um baixo valor de crédito",
@@ -979,7 +1038,6 @@
       "No-available-quote": "Sem cotação disponível",
       "fetch-best-quote": "Buscando a melhor cotação",
       "from": "De",
-      "preferMEV": "Preferir MEV Guardado",
       "no-slippage-for-wrap": "Sem slippage para Wrap",
       "source": "Fonte",
       "Auto": "Auto",
@@ -993,7 +1051,6 @@
       "no-fees-for-wrap": "Sem taxa Hippo para Wrap",
       "sort-with-gas": "Ordenar com gas",
       "process-with-two-step-approve": "Prossiga com a aprovação em duas etapas",
-      "preferMEVTip": "Ative o recurso \"MEV Guarded\" para trocas de Ethereum a fim de reduzir os riscos de ataques sandwich. Nota: este recurso não é compatível se você usar um RPC personalizado ou endereço de conexão de carteira",
       "price-impact": "Impacto no Preço",
       "approve-and-swap": "Aprovar e Trocar via {{name}}",
       "two-step-approve-details": "O token USDT requer 2 transações para alterar a permissão. Primeiro, você precisará redefinir a permissão para zero e, somente então, definir um novo valor de permissão.",
@@ -1062,6 +1119,7 @@
           "swap": "Troca",
           "send": "Enviar",
           "receive": "Receber",
+          "gasTopUp": "Recarga de gás",
           "queue": "Fila",
           "transactions": "Transações",
           "approvals": "Aprovações",
@@ -1069,13 +1127,21 @@
           "more": "Mais",
           "manageAddress": "Gerenciar Endereço",
           "nft": "NFT",
+          "ecology": "Ecossistema",
+          "rabbyPoints": "Hippo Points",
+          "bridge": "Ponte",
           "mobile": "Sincronização móvel",
+          "perps": "Perps",
+          "gasAccount": "GasAccount",
           "searchDapp": "Pesquisar Dapp",
           "setting": "Configurações",
           "dapps": "Dapps",
           "settings": "Configurações",
-          "lending": "Empréstimo",
-          "dragTip": "Recurso de pressionar longamente para reordenar"
+          "perpsPositions_other": "{{count}} Posições",
+          "perpsPositions_one": "{{count}} Posição",
+          "dragTip": "Recurso de pressionar longamente para reordenar",
+          "convertDust": "Converter Poeira",
+          "staking": "Staking"
         },
         "comingSoon": "Em breve",
         "soon": "Em breve",
@@ -1100,7 +1166,15 @@
         "chain": "cadeia,",
         "missingDataTooltip": "O saldo pode não estar atualizado devido a problemas atuais na rede com {{text}}.",
         "appChainTips": "Contas Hyperliquid e Polymarket não incluídas",
-        "slotAppChainTips": "{{appChainNames}} Conta não incluída"
+        "slotAppChainTips": "{{appChainNames}} Conta não incluída",
+        "stablecoinSwapPopup": {
+          "title": "0% de taxa de swap",
+          "supportPrefix": "Suporte a",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins em mais de 40 redes",
+          "goToSwap": "Ir para a Troca",
+          "close": "Fechar"
+        }
       },
       "recentConnection": {
         "disconnected": "Desconectado",
@@ -1230,7 +1304,10 @@
           "signatureRecord": "Registro de Assinaturas",
           "manageAddress": "Gerenciar Endereço",
           "connectedDapp": "Dapp Conectado",
-          "searchDapps": "Pesquisar Dapps"
+          "gasTopUp": "Recarga de gás",
+          "searchDapps": "Pesquisar Dapps",
+          "rabbyPoints": "Hippo Points",
+          "ecosystem": "Ecossistema"
         },
         "settings": {
           "label": "Configurações",
@@ -1248,6 +1325,7 @@
           "biometricUnlockHint": "Use biometria para desbloquear neste dispositivo.",
           "biometricUnlock": "Desbloquear com Biométricos",
           "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
+          "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
           "dataAnalysis": "Análise de Dados"
@@ -1315,6 +1393,7 @@
         "blockedButtons": "tokens bloqueados",
         "blockedListTitle": "token bloqueado",
         "ListedBy": "Listados por",
+        "BridgeIssue": "Token bridged por um terceiro",
         "customizedListTitles": "tokens personalizados",
         "NoSupportedExchanges": "Nenhuma exchange suportada disponível",
         "OriginalToken": "Token Original",
@@ -1334,7 +1413,10 @@
         "customizedHasAddedTips": "O token não está listado pelo Hippo. Você o adicionou manualmente à lista de tokens.",
         "OriginIssue": "Nativamente emitido nesta blockchain",
         "fdvTips": "A capitalização de mercado se o fornecimento máximo estivesse em circulação. Avaliação Totalmente Dilucionada (FDV) = Preço x Fornecimento Máximo. Se o Fornecimento Máximo for nulo, FDV = Preço x Fornecimento Total. Se nem o Fornecimento Máximo nem o Fornecimento Total forem definidos ou forem infinitos, o FDV não é exibido.",
-        "myBalance": "Meu Saldo"
+        "myBalance": "Meu Saldo",
+        "BridgeProvider": "Provedor de Bridge",
+        "bridge": "Ponte",
+        "bridgeToEth": "Ponte para a rede Ethereum"
       },
       "assets": {
         "usdValue": "VALOR EM USD",
@@ -1384,10 +1466,10 @@
           "noLpTokens": "Nenhum Token de Provedor de Liquidez (LP)"
         },
         "noAssets": "Sem ativos",
+        "unfoldChain": "Mais 1 rede",
+        "unfoldChainPlural": "Mais {{moreLen}} redes",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
         "blockDescription": "Os tokens bloqueados por você serão exibidos aqui",
-        "unfoldChain": "Expandir 1 rede",
-        "unfoldChainPlural": "Expandir {{moreLen}} redes",
         "customLinkText": "Pesquise o endereço para adicionar um token personalizado",
         "customDescription": "Os tokens personalizados adicionados por você serão exibidos aqui",
         "comingSoon": "Em Breve...",
@@ -1483,6 +1565,11 @@
       "recentConnectionGuide": {
         "title": "Alterar o endereço para conexão com o Dapp aqui",
         "button": "Entendido"
+      },
+      "rabbyPointsPopup": {
+        "title": "Hippo Points",
+        "desc": "Verifique seus pontos no Hippo Mobile.",
+        "downloadIntro": "Ainda não tem o app? Baixe agora."
       },
       "noData": "Nenhuma moeda encontrada",
       "ZeroAssets": {
@@ -1632,6 +1719,7 @@
         "qrCodeError": "Por favor, verifique sua rede ou atualize o código QR",
         "qrCode": "Código QR",
         "url": "URL",
+        "changeBridgeServer": "Alterar servidor bridge",
         "status": {
           "received": "Leitura bem-sucedida. Aguardando confirmação",
           "rejected": "Conexão cancelada. Por favor, escaneie o código QR para tentar novamente.",
@@ -2057,6 +2145,7 @@
       "title": "Solicitar Token de Gás de Testnet DeBank",
       "mintedTip": "Titulares do Hippo Badge podem solicitar uma vez por dia",
       "notMintedTip": "Solicitação disponível apenas para titulares do Hippo Badge",
+      "claimBadgeBtn": "Reivindicar Hippo Badge",
       "time": "Por dia",
       "requested": "Você já solicitou hoje",
       "requestBtn": "Solicitar"
@@ -2720,6 +2809,7 @@
         "swap": "Trocar",
         "queue": "Fila",
         "send": "Enviar",
+        "bridge": "Ponte",
         "pending": "{{pendingTxCount}} Pendente"
       },
       "tabs": {
@@ -2824,339 +2914,6 @@
       "networkErrorDescription": "{{site}} fechou a conexão inesperadamente. Por favor, verifique sua rede.",
       "serviceNotSupported": "O serviço não é suportado na sua região atual.",
       "opening": "Abrindo {{name}}..."
-    },
-    "lending": {
-      "availableCard": {
-        "emodeNoAssets": "Não conseguimos encontrar nenhum ativo relacionado à sua busca. Tente novamente com uma categoria diferente.",
-        "canBorrow": "Você pode pegar emprestado com base na garantia fornecida, até o limite de empréstimo.",
-        "singleAssetUnavailableForEmode": "Indisponível para pegar emprestado. Saia do E-Mode para acessar.",
-        "emode": "Alguns ativos não estão disponíveis para empréstimo no E-Mode. Saia do E-Mode para acessar todos os ativos.",
-        "needSupply": "Para pegar emprestado, você precisa fornecer ativos como colateral.",
-        "isolated": "O poder de empréstimo e os ativos estão limitados devido ao modo de Isolamento."
-      },
-      "list": {
-        "headers": {
-          "token": "Token",
-          "token_tvl": "Token/TVL",
-          "mySupplies": "Meus depósitos",
-          "my_balance": "Meu Saldo",
-          "my_assets": "Meus Ativos",
-          "token_balance": "Token/Saldo",
-          "totalBorrowed": "Total Emprestado",
-          "myBorrows": "Meus empréstimos"
-        },
-        "item": {
-          "wrapperToken": "Wrapped token para {{name}}"
-        }
-      },
-      "repayDetail": {
-        "tabs": {
-          "collateral": "Garantia",
-          "wallet": "Saldo da carteira"
-        },
-        "amountTitle": "Saldo:",
-        "repayWith": "Reembolsar com",
-        "actions": "Reembolsar",
-        "approveAndRepay": "Aprovar e Reembolsar"
-      },
-      "supplyDetail": {
-        "actions": "Depositar",
-        "supplied": "Fornecido",
-        "amountTitle": "Disponível:",
-        "unavailable": "Indisponível",
-        "availableToBorrow": "Disponível para pegar emprestado",
-        "supplyAPY": "APY do depósito",
-        "approveAndSupply": "Aprovar e Fornecer",
-        "supplyBalance": "Saldo depositado",
-        "collateralization": "Colateralização",
-        "isolatedTips": "Os ativos que você forneceu ou tomou emprestados não são compatíveis.",
-        "enabled": "Habilitado"
-      },
-      "withdrawDetail": {
-        "actions": "Retirar",
-        "amountTitle": "Saldo:",
-        "remainingSupply": "Saldo depositado restante"
-      },
-      "toggleCollateralDetail": {
-        "enable": "Habilitar {{asset}} como Colateral",
-        "disable": "Desabilitar {{asset}} como Colateral",
-        "actions": "Alternar Colateral de {{asset}}",
-        "error": "Houve um erro com o serviço AAVE. Por favor, tente novamente mais tarde."
-      },
-      "toggleCollateralModal": {
-        "toggleRiskTexts": {
-          "doNotHaveSuppliesInThisCurrency": "Você não possui depósitos neste ativo",
-          "canNotUseThisCurrencyAsCollateral": "Você não pode usar esta moeda como garantia",
-          "canNotSwitchUsageAsCollateralMode": "Você não pode alterar o uso para o modo de colateral para esta moeda, porque isso irá causar uma chamada de colateral.",
-          "zeroLTVWithdrawBlocked": "Ativos com LTV zero ({{assets}}) devem ser retirados ou desabilitados como garantia para realizar esta ação."
-        },
-        "enableIsolationModeTitle": "Habilitar Modo de Isolamento",
-        "exitIsolationModeTitle": "Sair do Modo de Isolamento",
-        "openTitle": "Revisar Habilitação",
-        "closeTitle": "Revisão de Desativação",
-        "exitIsolationModeDesc": "Você sairá do modo de Isolamento e outros tokens agora podem ser usados como colateral.",
-        "closeDesc": "Desabilitar esse ativo como colateral afeta seu poder de empréstimo e o Fator de Saúde.",
-        "riskToLiquidationText": "Você não pode alternar o uso para o modo de colateral para esta moeda, pois isso causará uma chamada de colateral.",
-        "openDesc": "Habilitar este ativo como colateral aumenta seu poder de empréstimo e o Fator de Saúde. No entanto, ele pode ser liquidado se seu fator de saúde cair abaixo de 1.",
-        "enableIsolationModeDesc": "Você está entrando no modo de isolamento. Nesse modo, não pode fornecer outros ativos como garantia. Um teto global de dívida limita a capacidade de endividamento do ativo isolado. Para sair, desative o CRV como garantia antes de pegar outro ativo emprestado."
-      },
-      "borrowDetail": {
-        "swapDebt": "Trocar",
-        "actions": "Pegar emprestado",
-        "amountTitle": "Disponível:",
-        "approveAndBorrow": "Aprovar e pegar emprestado",
-        "borrowed": "Empréstimo",
-        "almostReachedWarning": "O limite de empréstimo do protocolo está em 100% para este ativo. Empréstimos adicionais indisponíveis.",
-        "almostReachedError": "O valor máximo disponível para empréstimo é limitado porque o limite de empréstimo do protocolo está quase alcançado."
-      },
-      "popup": {
-        "amount": "Quantidade",
-        "title": "Visão Geral da Transação",
-        "available": "disponível",
-        "remainingDebt": "Dívida restante",
-        "liquidationAt": "Liquidação em < 1,0"
-      },
-      "borrowOverview": {
-        "availableToBorrow": "Disponível para pegar emprestado",
-        "totalBorrowed": "Total Emprestado",
-        "liquidityPenalty": "Multa de Liquidação",
-        "myBorrow": "Meu Empréstimo",
-        "title": "Detalhes do Empréstimo",
-        "reachCapTip": "Este ativo atingiu o limite de empréstimo.",
-        "borrowCap": "Limite de Empréstimo"
-      },
-      "supplyOverview": {
-        "collateral": "Colateral",
-        "noBalance": "Sem saldo",
-        "title": "Detalhes do depósito",
-        "totalSupplied": "Total Fornecido",
-        "availableToSupply": "Disponível para Fornecer",
-        "mySupply": "Meu Suprimento",
-        "useAsCollateral": "Use como colateral",
-        "walletBalance": "Saldo da Carteira",
-        "reachCap": "Este ativo atingiu seu limite de suprimento. Nada está disponível para ser fornecido a partir deste mercado.",
-        "almostCap": "Este ativo está quase no limite de empréstimo. Apenas {{available}} permanecem disponíveis para empréstimo neste mercado."
-      },
-      "risk": {
-        "warning": "Tomar emprestado essa quantia diminuirá seu Fator de Saúde para um nível arriscado de liquidação.",
-        "withdrawWarning": "Retirar essa quantia irá reduzir seu Fator de Saúde para um nível arriscado para liquidação.",
-        "toggleCollateralWarning": "Desabilitar este ativo como colateral reduzirá seu Fator de Saúde para um nível arriscado de liquidação.",
-        "checkbox": "Eu entendo o alerta e quero continuar.",
-        "blockEmodeWarning": "Você não pode desativar o E-Mode porque isso pode causar liquidação. Para sair do E-Mode, forneça ou reembolse posições emprestadas.",
-        "emodeBlockWarning": "Desativar o modo E fará com que seu Fator de Saúde caia para um nível arriscado para liquidação."
-      },
-      "lqDescription": {
-        "desc": "Valor de liquidação",
-        "risky": "Arriscado",
-        "below1desc": "Sua posição está em risco de liquidação.",
-        "over3desc": "Suas posições estão seguras",
-        "liquidationTitle": "Liquidação:",
-        "below1title": "Fator de Saúde ≤ 1.0:",
-        "over3title": "Fator de saúde > 3.0:",
-        "introText": "Seu Fator de Saúde mostra quão segura está sua posição de empréstimo. Se cair muito baixo, seu colateral pode ser liquidado.",
-        "warningText": "Seu Fator de Saúde está muito baixo. Para evitar liquidação:\n1. Quite parte ou toda a sua dívida\n2. Adicione mais colateral",
-        "liquidation": "Se o seu Fator de Saúde cair abaixo de 1,0, parte da sua garantia pode ser vendida automaticamente para quitar a dívida. Uma penalidade de liquidação será aplicada, resultando em uma perda parcial da sua garantia."
-      },
-      "modalDesc": {
-        "availableToBorrow": "Disponível para pegar emprestado",
-        "isolatedTitle": "O ativo não pode ser usado como colateral.",
-        "isolatedSupplyDesc": "O uso de colateral é limitado devido ao modo de isolamento.",
-        "availableToBorrowDesc": "Você pode pegar emprestado com base na garantia fornecida até atingir o limite de empréstimo.",
-        "isolatedDesc": "Este ativo pode ser usado apenas como colateral no modo de isolamento, onde você não pode fornecer outros ativos como colateral para empréstimos. Ativos usados como colateral no modo de isolamento só podem ser emprestados até um teto de dívida específico.",
-        "globalIsolatedDesc": "No modo de isolamento, você não pode fornecer outros ativos como garantia. Um teto global de dívida limita a capacidade de endividamento do ativo isolado. Para sair, desative o UNI como garantia antes de pegar outro ativo emprestado.",
-        "maxAmount": "Este é o valor máximo que você pode pegar emprestado com base em todas as garantias fornecidas. A capacidade total de endividamento é calculada multiplicando o valor de mercado de cada garantia pelo respectivo LTV máximo e somando os resultados.",
-        "maxLTV": "O LTV máximo representa a capacidade máxima de endividamento de uma garantia específica. Por exemplo, com LTV de 75%, o usuário pode pegar emprestado até 0,75 ETH na moeda principal para cada 1 ETH em garantia.",
-        "lqDesc": "Quando uma liquidação ocorre, os liquidadores pagam até 50% do valor total emprestado em nome do tomador. Em troca, eles podem comprar a garantia com desconto e manter a diferença (penalidade de liquidação) como um bônus."
-      },
-      "repayWithAToken": {
-        "header": {
-          "balance": "Saldo",
-          "assets": "Token"
-        },
-        "title": "Selecionar Token de Reembolso",
-        "zeroLtvCollateralTips": "Você tem o seguinte LTV = 0 colaterais e, portanto, só pode pagar com esses colaterais primeiro, de acordo com as regras de pagamento de colaterais."
-      },
-      "manageEmode": {
-        "actions": {
-          "enable": "Ativar E-Mode",
-          "disable": "Desativar E-Mode"
-        },
-        "guide": {
-          "title": "Modo de eficiência (E-Mode)",
-          "buttonTitle": "Gerenciar E-Mode",
-          "description": "O E-Mode aumenta seu LTV para uma categoria selecionada de ativos."
-        },
-        "categorySelector": {
-          "header": {
-            "asset": "Ativos"
-          },
-          "label": "Categoria de ativo",
-          "placeholder": "Selecionar",
-          "desc": "Todas as posições de empréstimo fora desta categoria devem ser fechadas para habilitar esta categoria."
-        },
-        "debtSwapSelector": {
-          "header": {
-            "assets": "Token/Saldo",
-            "borrow": "Meus empréstimos",
-            "apy": "APY"
-          },
-          "title": "Selecionar Token para Empréstimo"
-        },
-        "collateralSwapSelector": {
-          "header": {
-            "assets": "Token",
-            "collateral": "Meu colateral"
-          },
-          "title": "Selecionar Token de Colateral"
-        },
-        "overview": {
-          "row": {
-            "borrowable": "Emprestável",
-            "collateral": "Colateral",
-            "asset": "Ativo"
-          },
-          "title": "Categoria de ativo"
-        },
-        "enabled": "• Ativado",
-        "unavailable": "• Indisponível",
-        "title": "Gerenciar E-Mode",
-        "disableTitle": "Desabilitar",
-        "unavailableTips": "Os ativos que você forneceu ou tomou emprestados não são compatíveis.",
-        "description": "Habilitar o E-Mode permite que você maximize seu poder de empréstimo. No entanto, o empréstimo é restrito a ativos dentro da categoria selecionada."
-      },
-      "debtSwap": {
-        "actions": {
-          "title": "Troca de Dívida",
-          "borrowed": "Emprestado",
-          "amount": "Quantidade",
-          "select": "Selecionar",
-          "swapTo": "Trocar para"
-        },
-        "overview": {
-          "borrowAPY": "Empréstimo apy",
-          "title": "Visão Geral da Transação",
-          "borrowValueAfter": "Saldo de empréstimo após a troca"
-        },
-        "button": {
-          "swap": "Trocar"
-        },
-        "borrowBalance": "Saldo de empréstimo",
-        "title": "Trocar Posição de Empréstimo",
-        "entryTips": "Uma clique para trocar seu ativo emprestado, reduzindo etapas e taxas.",
-        "lpRiskWarning": "Fator de saúde baixo após a troca. Sua posição terá um risco maior de liquidação.",
-        "priceImpactTips": "Alto impacto no preço ({{lostValue}}). Esta rota pode retornar mais devido à baixa liquidez ou ao pequeno volume da ordem.",
-        "lpDangerWarning": "Seu fator de saúde após esta troca ficará criticamente baixo e pode resultar em liquidação. Por favor, escolha um ativo diferente ou reduza o montante da troca para se manter seguro.",
-        "maxLtvWarning": "Colateral insuficiente para cobrir a nova posição de empréstimo. A carteira deve ter poder de empréstimo restante para realizar a troca de dívida."
-      },
-      "repayWithCollateral": {
-        "action": {
-          "title": "Reembolso com {{collateral}}"
-        },
-        "overview": {
-          "borrowValueAfter": "Saldo emprestado após reembolso",
-          "collateralValueAfter": "Saldo de colateral após reembolso",
-          "title": "Visão Geral da Transação"
-        },
-        "button": {
-          "repay": "Reembolsar"
-        },
-        "repayWith": "Colateral para reembolso com",
-        "toRepay": "Quantidade esperada a ser paga",
-        "collateralNotEnough": "Seu saldo de colateral é menor que o valor selecionado."
-      },
-      "hfTips": {
-        "more": "Mais",
-        "desc": "Se cair abaixo de 1.0, seu colateral pode ser liquidado."
-      },
-      "disableBorrowTip": {
-        "desc": "Sem depósitos: para pegar emprestado, você precisa depositar ativos como garantia.",
-        "noSupply": "Forneça ativos primeiro para habilitar o empréstimo."
-      },
-      "type": {
-        "borrowed": "Emprestado",
-        "supplied": "Fornecido"
-      },
-      "actions": {
-        "swap": "Trocar",
-        "withdraw": "Retirar",
-        "repay": "Reembolsar",
-        "supply": "Depositar",
-        "borrow": "Pegar emprestado"
-      },
-      "summary": {
-        "empty": {
-          "title": "Ganhe juros com seus ativos",
-          "endDesc": "Você ainda não tem depósitos. Confira abaixo os ativos recomendados para começar a ganhar juros.",
-          "description": "Impulsionado por AAVE. Seguro e sem taxas."
-        },
-        "totalSupplied": "Total Fornecido",
-        "totalBorrowed": "Total Emprestado",
-        "netWorth": "Valor Líquido",
-        "eMode": "E-Mode",
-        "healthFactor": "Fator de Saúde",
-        "healthFactorTip": "O fator de saúde indica a segurança da sua posição",
-        "netApy": "APY líquido",
-        "estDailyEarnings": "Estimativa de Ganhos Diários",
-        "more": "Mais",
-        "risky": "Arriscado",
-        "ethCorrelatedTip": "Ativos correlacionados com ETH",
-        "healthy": "Saudável",
-        "lq": "Se o Fator de Saúde cair abaixo de 1, a liquidação pode ser acionada."
-      },
-      "market": {
-        "core": "Mercado Principal"
-      },
-      "accountActions": {
-        "supply": "Fornecer",
-        "borrow": "Tomar emprestado",
-        "both": "Ambos"
-      },
-      "table": {
-        "token": "Token",
-        "actions": "Ações",
-        "collateral": "Garantia",
-        "type": "Tipo",
-        "myAssets": "Meus ativos",
-        "apy": "APY"
-      },
-      "supplyList": {
-        "more": "Mais tokens a serem fornecidos",
-        "collapse": "Recolher"
-      },
-      "borrowList": {
-        "collapse": "Recolher",
-        "more": "Mais tokens para pegar emprestado"
-      },
-      "submitted": "enviado",
-      "totalBorrow": "Total emprestado",
-      "isolate": "isolado",
-      "totalSupplied": "Total fornecido",
-      "netWorth": "Patrimônio líquido",
-      "borrowed": "Emprestado",
-      "title": "Empréstimo",
-      "netApy": "APY Líquido",
-      "estDailyEarning": "Est. Ganhos Diários",
-      "supplyBalance": "Saldo depositado",
-      "isolateTip": "Este é um mercado isolado",
-      "estNetApy": "APY líquido estimado",
-      "totalBorrowed": "Total emprestado",
-      "noData": "Nenhum dado",
-      "gotIt": "Entendi",
-      "supplied": "Fornecido",
-      "borrowApy": "Taxa de Empréstimo APY",
-      "totalSupply": "Total depositado",
-      "borrowBalance": "Saldo Emprestado",
-      "supplyApy": "APY de Suprimento",
-      "searchMarket": "Buscar Mercado",
-      "disabled": "DESABILITADO",
-      "enterAmount": "Digite a quantidade",
-      "selectMarket": "Selecionar Mercado",
-      "hfTitle": "Fator de Saúde",
-      "selectChain": "Selecionar rede",
-      "hf": "Fator de saúde",
-      "signFallback": {
-        "preExecFailedUseFullSign": "Simulação Falhou. Esta transação provavelmente falhará devido a erros da AAVE."
-      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -3266,7 +3023,9 @@
       "revoke": "Revogar",
       "approvals": "aprovações",
       "unselectAll": "Desmarcar Todos",
-      "selectAll": "Selecionar Todos"
+      "selectAll": "Selecionar Todos",
+      "approvalsCount": "{{count}} aprovações",
+      "approvalsCount_one": "{{count}} aprovação"
     }
   },
   "component": {
@@ -3379,6 +3138,14 @@
       "noTokens": "Nenhum Token",
       "noMatch": "Sem Correspondência",
       "noMatchSuggestion": "Tente pesquisar o endereço Contrato em {{ chainName }}",
+      "bridge": {
+        "liquidity": "Liquidez",
+        "value": "Valor",
+        "token": "Token",
+        "liquidityTips": "Quanto maior o volume histórico de transações, mais provável é que a ponte tenha sucesso.",
+        "high": "Alta liquidez",
+        "low": "Baixa liquidez"
+      },
       "hot": "Quente",
       "common": "Comum",
       "recent": "Recente",
@@ -3428,6 +3195,7 @@
       "help": "Por favor, entre em contato com a equipe oficial desta cadeia para suporte.",
       "viewDappOptions": "Ver Opções de Dapp",
       "noDapp": "Nenhum Dapp disponível",
+      "bridgeOnDapp": "Transferir entre redes no DApp",
       "noDapps": "Nenhum aplicativo descentralizado disponível nesta cadeia.",
       "swapOnDapp": "Troca em Dapp"
     },
@@ -3454,7 +3222,7 @@
     },
     "DesktopNav": {
       "comingSoon": "Em Breve",
-      "lending": "Empréstimo",
+      "perps": "Perps",
       "portfolio": "Portfólio"
     },
     "DesktopSelectAccountList": {

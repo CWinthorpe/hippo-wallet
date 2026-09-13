@@ -12,34 +12,48 @@ import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 
-export const useApproval = () => {
+export interface ApprovalBinding {
+  approvalId?: string;
+  approvalComponent: Approval['data']['approvalComponent'];
+  canResolve?: () => boolean;
+}
+
+export const useApproval = (binding?: ApprovalBinding) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
+  const mounted = useRef(true);
+  const bindingRef = useRef(binding);
+  bindingRef.current = binding;
 
-  // Capability binding: capture the approval this component actually rendered
-  // ONCE at mount, and bind every resolve/reject to that exact id. We never
-  // re-derive the id from the live queue inside the click handler, so a
-  // queue rotation can never make A's event handler resolve approval B.
-  const renderedApprovalIdRef = useRef<string | undefined>(undefined);
   useEffect(() => {
-    let disposed = false;
-    void getApproval()
-      .then((approval) => {
-        if (!disposed) {
-          renderedApprovalIdRef.current = approval?.id;
-        }
-      })
-      .catch(() => {
-        // approval unavailable; resolve/reject below will no-op safely
-      });
+    mounted.current = true;
     return () => {
-      disposed = true;
+      mounted.current = false;
     };
   }, []);
+
+  const matchesBinding = (approval?: Approval, approvalId?: string) => {
+    if (!approval || (approvalId && approval.id !== approvalId)) return false;
+    if (!binding) return true;
+    return (
+      mounted.current &&
+      !!binding.approvalId &&
+      binding.approvalId === bindingRef.current?.approvalId &&
+      binding.approvalComponent === bindingRef.current?.approvalComponent &&
+      approval.id === binding.approvalId &&
+      approval.data.approvalComponent === binding.approvalComponent
+    );
+  };
+
+  const canResolve = () =>
+    !binding ||
+    (mounted.current &&
+      binding.canResolve?.() !== false &&
+      bindingRef.current?.canResolve?.() !== false);
 
   const resolveApproval = async (
     data?: any,
@@ -47,55 +61,68 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    if (!canResolve()) return false;
     const approval = await getApproval();
-
-    // Bind this resolution to the approval that rendered this UI, captured at
-    // mount — never the live queue. If the queue advanced (or the session
-    // epoch changed) meanwhile, the background's exact-id + epoch guard makes
-    // the resolve a no-op instead of resolving whatever is current now.
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
-    if (!boundId) {
-      return;
-    }
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
 
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
-      return;
+      return false;
     }
 
-    if (approval) {
-      wallet.resolveApproval(data, forceReject, boundId);
-    }
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
+    const resolved = await wallet.resolveApproval(
+      data,
+      forceReject,
+      approval.id,
+      approval.data.approvalComponent
+    );
+    if (!resolved) return false;
 
     if (stay) {
-      return;
+      return true;
     }
     setTimeout(() => {
+      if (binding && !mounted.current) return;
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
       history.replace('/');
     }, 0);
+    return true;
   };
 
   const rejectApproval = async (
     err?,
     stay = false,
     isInternal = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: Approval['data']['approvalComponent']
   ) => {
     const approval = await getApproval();
-    const boundId = approvalId ?? renderedApprovalIdRef.current;
+    if (
+      !matchesBinding(approval, approvalId) ||
+      (approvalComponent &&
+        approval.data.approvalComponent !== approvalComponent)
+    ) {
+      return false;
+    }
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    if (approval && boundId) {
-      await wallet.rejectApproval(err, stay, isInternal, boundId);
-    }
-    if (!stay) {
+    const rejected = await wallet.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      approval.id,
+      approval.data.approvalComponent
+    );
+    if (!rejected) return false;
+    if (!stay && (!binding || mounted.current)) {
       history.push('/');
     }
+    return true;
   };
   return [getApproval, resolveApproval, rejectApproval] as const;
 };

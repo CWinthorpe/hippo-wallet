@@ -112,6 +112,7 @@
           "swap": "兑换",
           "send": "发送",
           "receive": "接收",
+          "gasTopUp": "Gas 充值",
           "queue": "队列",
           "transactions": "交易记录",
           "approvals": "授权",
@@ -119,13 +120,21 @@
           "more": "更多",
           "manageAddress": "管理地址",
           "nft": "NFT",
+          "rabbyPoints": "Hippo 积分",
+          "ecology": "生态系统",
+          "bridge": "跨链",
           "mobile": "同步手机端",
+          "perps": "Perps",
+          "gasAccount": "GasAccount",
           "setting": "设置",
           "dapps": "Dapp",
           "searchDapp": "搜索 Dapp",
           "settings": "设置",
-          "lending": "借贷",
-          "dragTip": "长按以重新排序"
+          "perpsPositions_one": "{{count}} 个持仓",
+          "perpsPositions_other": "{{count}} 个持仓",
+          "dragTip": "长按以重新排序",
+          "convertDust": "小额资产归集",
+          "staking": "质押"
         },
         "comingSoon": "即将推出",
         "soon": "即将推出",
@@ -150,7 +159,15 @@
         "chain": " 链、",
         "chainEnd": " 链",
         "appChainTips": "Hyperliquid 和 Polymarket 账户未包含",
-        "slotAppChainTips": "{{appChainNames}} 账户未包含"
+        "slotAppChainTips": "{{appChainNames}} 账户未包含",
+        "stablecoinSwapPopup": {
+          "title": "0% 兑换手续费",
+          "supportPrefix": "支持",
+          "supportCount": "30+",
+          "supportSuffix": "种稳定币，覆盖 40+ 条链",
+          "goToSwap": "去兑换",
+          "close": "关闭"
+        }
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -236,7 +253,10 @@
           "lockWallet": "锁定钱包",
           "manageAddress": "管理地址",
           "signatureRecord": "签名记录",
-          "searchDapps": "搜索 Dapp"
+          "searchDapps": "搜索 Dapp",
+          "gasTopUp": "Gas 充值",
+          "rabbyPoints": "Hippo 积分",
+          "ecosystem": "生态系统"
         },
         "followUs": "关注我们",
         "host": "Host",
@@ -265,6 +285,7 @@
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密码",
           "biometricUnlock": "通过生物识别解锁",
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
+          "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
           "dataAnalysis": "数据分析"
         },
@@ -340,6 +361,7 @@
         "customizedListTitle": "自定义代币",
         "SupportedExchanges": "支持的交易所",
         "OriginIssue": "在此区块链上原生发行",
+        "BridgeProvider": "跨链桥服务方",
         "customizedListTitles": "自定义代币",
         "AddToMyTokenList": "添加到我的代币列表",
         "blockedListTitle": "已隐藏代币",
@@ -353,8 +375,11 @@
         "verifyScamTips": "这是一个诈骗代币",
         "NoSupportedExchanges": "暂无支持的交易所",
         "noIssuer": "没有可用的发行方信息",
+        "BridgeIssue": "由第三方跨链桥发行的代币",
         "ListedBy": "上架方",
-        "fdvTips": "假设最大供应量全部流通时的市值。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为空，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量均未定义或为无限，则不显示 FDV。"
+        "fdvTips": "假设最大供应量全部流通时的市值。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为空，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量均未定义或为无限，则不显示 FDV。",
+        "bridge": "跨链",
+        "bridgeToEth": "跨链到 Ethereum"
       },
       "assets": {
         "usdValue": "美元价值",
@@ -404,10 +429,10 @@
           "noLpTokens": "没有流动性提供者（LP）代币"
         },
         "noAssets": "没有资产",
+        "unfoldChain": "还有 1 条链",
+        "unfoldChainPlural": "还有 {{moreLen}} 条链",
         "blockLinkText": "搜索代币地址以隐藏代币",
         "blockDescription": "被你隐藏的代币将显示在此处",
-        "unfoldChain": "展开 1 条链",
-        "unfoldChainPlural": "展开 {{moreLen}} 条链",
         "customLinkText": "搜索代币地址，添加代币",
         "customDescription": "你手动添加的代币将显示在此处",
         "comingSoon": "即将推出...",
@@ -505,6 +530,11 @@
       "recentConnectionGuide": {
         "button": "明白了",
         "title": "在此切换用于连接 Dapp 的地址"
+      },
+      "rabbyPointsPopup": {
+        "desc": "在 Hippo Mobile 中查看你的积分。",
+        "title": "Hippo 积分",
+        "downloadIntro": "还没有安装 App？立即下载。"
       },
       "noData": "无匹配的货币",
       "ZeroAssets": {
@@ -681,6 +711,7 @@
         "qrCodeError": "请检查你的网络或刷新二维码",
         "qrCode": "二维码",
         "url": "网址",
+        "changeBridgeServer": "更改桥接服务器",
         "status": {
           "received": "扫描成功\n等待确认",
           "rejected": "连接已取消\n请扫描二维码重试",
@@ -1121,6 +1152,7 @@
         "revokeOneByOne": "一一撤销",
         "resume": "继续",
         "pause": "暂停",
+        "useGasAccount": "你的 Gas 余额不足。你的 GasAccount 将支付 Gas 费用。",
         "gasNotEnough": "Gas 不足，无法提交",
         "submitTxFailed": "提交失败",
         "gasTooHigh": "Gas 费用较高",
@@ -1503,6 +1535,15 @@
       "mainnet": "主网",
       "imKeyNotConnected": "imKey 未连接",
       "imKeyConnected": "imKey 已连接",
+      "gasless": {
+        "unavailable": "Gas 余额不足",
+        "notEnough": "Gas 余额不足",
+        "GetFreeGasToSign": "领取 Free Gas",
+        "rabbyPayGas": "Hippo 将支付所需的 Gas 费用——你只需签名即可",
+        "customRpcUnavailableTip": "自定义 RPC 不支持 Free Gas",
+        "walletConnectUnavailableTip": "通过 WalletConnect 连接的移动钱包不支持 Free Gas",
+        "watchUnavailableTip": "仅观察地址不支持 Free Gas"
+      },
       "cancelTransaction": "取消交易",
       "detectedMultipleRequestsFromThisDapp": "检测到来自此 Dapp 的多个请求",
       "cancelCurrentTransaction": "取消当前交易",
@@ -1510,6 +1551,20 @@
       "blockDappFromSendingRequests": "阻止 Dapp 在 1 分钟内发送请求",
       "cancelConnection": "取消连接",
       "cancelCurrentConnection": "取消当前连接",
+      "gasAccount": {
+        "login": "登录",
+        "notEnough": "Gas 不足。Gas 余额：{{usd}}",
+        "deposit": "充值",
+        "signWithHardwareWalletToUse": "你需要使用 {{brand}} 签名后才能使用",
+        "customRPC": "使用自定义 RPC 时不支持",
+        "loginFirst": "请先登录 GasAccount",
+        "WalletConnectTips": "GasAccount 不支持 WalletConnect",
+        "useGasAccount": "使用 GasAccount",
+        "gotIt": "知道了",
+        "chainNotSupported": "GasAccount 不支持此链",
+        "loginTips": "要完成 GasAccount 登录，此交易将被放弃。你需要在登录后重新发起。",
+        "depositTips": "要完成 GasAccount 充值，此交易将被丢弃。充值完成后，你需要重新发起交易。"
+      },
       "iGotIt": "我明白了"
     },
     "signText": {
@@ -1808,6 +1863,15 @@
       "contract": "智能合约地址",
       "typedDataMessage": "签署类型化数据",
       "label": "标签",
+      "gasAccount": {
+        "currentTxCost": "转入你地址的 Gas 数量：",
+        "gasCost": "将 Gas 转入你地址所需的 Gas 费用：",
+        "totalCost": "总费用：",
+        "maxGas": "最大 Gas：",
+        "sendGas": "本次交易转入你地址的 Gas：",
+        "estimatedGas": "预估 Gas：",
+        "description": "使用 GasAccount 支付 Gas 费用。支付详情如下："
+      },
       "transferOwner": {
         "transferTo": "转移到",
         "title": "资产所有权转移",
@@ -1820,6 +1884,7 @@
       "batchRevokePermit2": {
         "title": "批量撤销 Permit2 授权"
       },
+      "gasAccountForGas": "使用我的 GasAccount 中的 USD 支付 Gas 费用",
       "nativeTokenForGas": "使用 {{chainName}} 上的 {{tokenName}} 代币支付 Gas 费用",
       "primaryType": "主要类型",
       "safeServiceNotAvailable": "Safe 服务当前不可用，请稍后再试",
@@ -1856,6 +1921,12 @@
       }
     },
     "signTypedData": {
+      "buyNFT": {
+        "expireTime": "过期时间",
+        "listOn": "挂单于",
+        "payToken": "卖出",
+        "receiveNFT": "接收 NFT"
+      },
       "contractCall": {
         "operationDecoded": "操作已从消息中解码"
       },
@@ -1872,6 +1943,12 @@
         "title": "代币授权 Permit2"
       },
       "safeCantSignText": "Safe 地址不支持用于签署文本",
+      "sellNFT": {
+        "listNFT": "挂出 NFT",
+        "receiveToken": "接收代币",
+        "specificBuyer": "指定买家",
+        "title": "NFT 挂单"
+      },
       "signMultiSig": {
         "title": "确认交易"
       },
@@ -1916,14 +1993,14 @@
       "insufficient-balance": "余额不足",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "滑点过低，可能会因高波动性而导致交易失败",
       "minimum-received": "最少收到",
+      "preferMEV": "优先使用 MEV 保护",
+      "preferMEVTip": "为 Ethereum 兑换启用“MEV Guarded”功能，以降低遭受三明治攻击的风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "need-to-approve-token-before-swap": "兑换前需要授权代币",
       "no-transaction-records": "无交易记录",
       "not-supported": "不支持",
       "pendingTip": "交易已提交。\n如果交易长时间处于待处理状态，可尝试在设置中清除待处理交易。",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Hippo 手续费",
-      "preferMEV": "优先使用 MEV 保护",
-      "preferMEVTip": "为 Ethereum 兑换启用“MEV Guarded”功能，以降低遭受三明治攻击的风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
       "recommend-slippage": "为了防止被抢先交易，我们建议滑点为 <2>{{ slippage }}</2>%",
@@ -1939,6 +2016,7 @@
       "swap-via-x": "通过 {{name}} 兑换",
       "testnet-is-not-supported": "不支持自定义网络",
       "the-following-swap-rates-are-found": "发现以下兑换报价",
+      "quotes": "报价",
       "best-subtitle": "最佳报价由最低的预估总成本决定，其中包括汇率和 Gas 费用。",
       "sort-with-gas": "按含 Gas 费用的总成本排序",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易没有滑点",
@@ -1964,7 +2042,17 @@
         "rate": "费率",
         "title": "Hippo 手续费",
         "button": "知道了",
-        "swapDesc": "Hippo Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Hippo 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。"
+        "bridgeDesc": "Hippo Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Hippo 收取 0.25% 的费用，该费用会自动包含在报价中。",
+        "swapDesc": "Hippo Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Hippo 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。",
+        "discountTitle": "Hippo 手续费优惠",
+        "free": "免费",
+        "cases": {
+          "wrap": "封装/解封原生代币",
+          "stablecoins": "稳定币",
+          "lstLrt": "LST/LRT 代币",
+          "million": "交易量 $1M+",
+          "hundredThousand": "交易量 $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "该代币的信用价值较低",
@@ -2100,6 +2188,7 @@
       "title": "获取 DeBank 测试网 Gas 代币",
       "mintedTip": "Hippo Badge 持有者每天可以获取一次",
       "notMintedTip": "仅 Hippo Badge 持有者可以获取",
+      "claimBadgeBtn": "领取 Hippo Badge",
       "time": "每日额度",
       "requested": "你今日已获取过",
       "requestBtn": "获取"
@@ -2766,6 +2855,7 @@
       "button": {
         "queue": "队列",
         "send": "发送",
+        "bridge": "跨链",
         "swap": "兑换",
         "pending": "{{pendingTxCount}} 笔待处理交易"
       },
@@ -2869,339 +2959,6 @@
       "networkErrorDescriptionFallback": "网站意外关闭了连接。请检查你的网络。",
       "opening": "正在打开 {{name}}...",
       "serviceNotSupported": "该服务在你当前所在的地区不支持。"
-    },
-    "lending": {
-      "availableCard": {
-        "singleAssetUnavailableForEmode": "不可借用。退出 E-Mode 后即可借用。",
-        "needSupply": "要借款，你需要提供资产作为抵押。",
-        "emodeNoAssets": "我们找不到任何与你搜索相关的资产。请尝试使用不同的分类。",
-        "emode": "某些资产在 E-Mode 下无法借用。退出 E-Mode 以访问所有资产。",
-        "canBorrow": "你可以根据你提供的抵押品借款，最高可达借款上限。",
-        "isolated": "由于隔离模式，借贷额度和资产受限。"
-      },
-      "list": {
-        "headers": {
-          "token": "代币",
-          "totalBorrowed": "总借款",
-          "token_balance": "代币/余额",
-          "mySupplies": "我的供应",
-          "my_assets": "我的资产",
-          "myBorrows": "我的借款",
-          "my_balance": "我的余额",
-          "token_tvl": "代币/TVL"
-        },
-        "item": {
-          "wrapperToken": "{{name}} 的封装代币"
-        }
-      },
-      "repayDetail": {
-        "tabs": {
-          "collateral": "抵押品",
-          "wallet": "钱包余额"
-        },
-        "amountTitle": "余额：",
-        "actions": "还款",
-        "repayWith": "使用以下资产还款",
-        "approveAndRepay": "授权并还款"
-      },
-      "supplyDetail": {
-        "supplied": "已提供",
-        "amountTitle": "可用：",
-        "actions": "供应",
-        "enabled": "已启用",
-        "supplyBalance": "供应余额",
-        "approveAndSupply": "授权并供应",
-        "unavailable": "不可用",
-        "availableToBorrow": "可借用",
-        "isolatedTips": "你现有的借贷资产不受支持。",
-        "supplyAPY": "供应年利率",
-        "collateralization": "抵押状态"
-      },
-      "withdrawDetail": {
-        "amountTitle": "余额：",
-        "remainingSupply": "剩余供应",
-        "actions": "提取"
-      },
-      "toggleCollateralDetail": {
-        "actions": "切换 {{asset}} 抵押品",
-        "enable": "将 {{asset}} 设为抵押品",
-        "error": "AAVE 服务出现了些错误。请稍后再试。",
-        "disable": "禁用 {{asset}} 作为抵押品"
-      },
-      "toggleCollateralModal": {
-        "toggleRiskTexts": {
-          "canNotUseThisCurrencyAsCollateral": "你无法将此货币用作抵押品。",
-          "doNotHaveSuppliesInThisCurrency": "你没有存入此资产。",
-          "zeroLTVWithdrawBlocked": "要执行此操作，必须先提取 LTV 为 0 的资产（{{assets}}），或停用其抵押品用途。",
-          "canNotSwitchUsageAsCollateralMode": "无法切换此资产的抵押品用途，因为这会触发清算。"
-        },
-        "openTitle": "确认启用",
-        "exitIsolationModeTitle": "退出隔离模式",
-        "enableIsolationModeTitle": "启用隔离模式",
-        "closeTitle": "确认禁用",
-        "riskToLiquidationText": "无法切换此资产的抵押品用途，因为这会触发清算。",
-        "exitIsolationModeDesc": "你将退出隔离模式，其他代币现在可以用作抵押品。",
-        "closeDesc": "禁用此资产作为抵押会影响你的借贷能力和健康系数。",
-        "openDesc": "将该资产启用为抵押品可以提高你的借贷能力和健康因子。然而，如果你的健康因子跌到 1 以下，可能会被清算。",
-        "enableIsolationModeDesc": "你正在进入隔离模式。在隔离模式下，你无法将其他资产用作抵押品。全局债务上限会限制隔离资产的借款能力。如要退出隔离模式，请先禁用 CRV 作为抵押品，再借入其他资产。"
-      },
-      "borrowDetail": {
-        "actions": "借入",
-        "swapDebt": "兑换",
-        "amountTitle": "可用：",
-        "borrowed": "借入",
-        "approveAndBorrow": "授权并借款",
-        "almostReachedWarning": "该资产的协议借贷上限为100%。无法进行进一步借贷。",
-        "almostReachedError": "可借款的最大额度受到限制，因为协议的借款上限已接近。"
-      },
-      "popup": {
-        "available": "可用的",
-        "remainingDebt": "剩余债务",
-        "title": "交易概览",
-        "amount": "金额",
-        "liquidationAt": "健康因子 < 1.0 时清算"
-      },
-      "borrowOverview": {
-        "title": "借款详情",
-        "liquidityPenalty": "清算罚金",
-        "totalBorrowed": "总借款",
-        "myBorrow": "我的借款",
-        "availableToBorrow": "可借金额",
-        "reachCapTip": "该资产已经达到借款上限。",
-        "borrowCap": "借贷上限"
-      },
-      "supplyOverview": {
-        "mySupply": "我的供应",
-        "walletBalance": "钱包余额",
-        "availableToSupply": "可供应",
-        "collateral": "抵押品",
-        "totalSupplied": "总供应量",
-        "title": "供应详情",
-        "useAsCollateral": "用作抵押",
-        "reachCap": "该资产已达到其供应上限。此市场没有可供供应的资产。",
-        "noBalance": "没有余额",
-        "almostCap": "此资产几乎已达到其借款上限。此市场可借款的金额仅剩 {{available}}。"
-      },
-      "risk": {
-        "warning": "借入该金额会使你的健康因子降至有清算风险的水平。",
-        "toggleCollateralWarning": "停用此资产的抵押品用途会使你的健康因子降至有清算风险的水平。",
-        "withdrawWarning": "提取该金额会使你的健康因子降至有清算风险的水平。",
-        "checkbox": "我了解警报，并想继续。",
-        "emodeBlockWarning": "禁用 E-Mode 会使你的健康因子降至有清算风险的水平。",
-        "blockEmodeWarning": "你无法禁用 E-Mode，因为这可能导致清算。要退出 E-Mode，请供应资产或偿还借款仓位。"
-      },
-      "lqDescription": {
-        "over3title": "健康因子 > 3.0：",
-        "over3desc": "你的仓位是安全的",
-        "liquidationTitle": "清算：",
-        "risky": "风险较高",
-        "below1desc": "你的持仓面临强制平仓的风险。",
-        "below1title": "健康因子 ≤ 1.0：",
-        "warningText": "你的健康因子过低。为了避免清算：\n1. 偿还部分或全部贷款\n2. 添加更多抵押品",
-        "introText": "健康因子反映借款仓位的安全程度。如果数值过低，你的抵押品可能会被清算。",
-        "desc": "清算价值",
-        "liquidation": "如果你的健康因子降至 1.0 以下，部分抵押品可能会被自动出售以偿还债务，并收取清算罚金，导致你损失部分抵押品。"
-      },
-      "modalDesc": {
-        "availableToBorrow": "可借用",
-        "isolatedTitle": "资产无法用作抵押品",
-        "isolatedSupplyDesc": "抵押品使用受到限制，因为处于隔离模式。",
-        "availableToBorrowDesc": "你可以根据你提供的抵押品借款，直到达到借款上限。",
-        "maxAmount": "这是根据你提供的全部抵押品计算出的最大可借金额。总借款额度的计算方式是：将每项抵押资产的市场价值乘以其最大 LTV，再将结果相加。",
-        "isolatedDesc": "该资产只能在隔离模式下用作抵押品，在此模式下，你无法提供其他资产抵押以进行借款。以隔离模式用作抵押的资产只能借至特定的债务上限。",
-        "globalIsolatedDesc": "在隔离模式下，你无法将其他资产用作抵押品。全局债务上限会限制隔离资产的借款能力。如要退出隔离模式，请先禁用 UNI 作为抵押品，再借入其他资产。",
-        "maxLTV": "最大 LTV 比率表示特定抵押品的最大借款能力。例如，抵押品的 LTV 为 75% 时，每提供价值 1 ETH 的抵押品，最多可借入价值 0.75 ETH 的资产。",
-        "lqDesc": "当强制清算发生时，清算人代表借款人偿还最多 50% 的未偿借款金额。作为回报，他们可以以折扣价格购买抵押品，并将差额（清算罚金）作为奖金保留。"
-      },
-      "repayWithAToken": {
-        "header": {
-          "balance": "余额",
-          "assets": "代币"
-        },
-        "title": "选择还款代币",
-        "zeroLtvCollateralTips": "你持有以下 LTV = 0 的抵押品。根据抵押品还款规则，你需要先使用这些抵押品还款。"
-      },
-      "manageEmode": {
-        "actions": {
-          "enable": "启用 E-Mode",
-          "disable": "禁用 E-Mode"
-        },
-        "guide": {
-          "buttonTitle": "管理 E-Mode",
-          "title": "效率模式 (E-Mode)",
-          "description": "E-Mode 增加你所选资产类别的 LTV。"
-        },
-        "categorySelector": {
-          "header": {
-            "asset": "资产"
-          },
-          "label": "资产类别",
-          "placeholder": "选择",
-          "desc": "必须先结清此类别之外的所有借款仓位，才能启用该类别。"
-        },
-        "debtSwapSelector": {
-          "header": {
-            "assets": "代币/余额",
-            "borrow": "我的借款",
-            "apy": "APY"
-          },
-          "title": "选择借贷代币"
-        },
-        "collateralSwapSelector": {
-          "header": {
-            "assets": "代币",
-            "collateral": "我的抵押品"
-          },
-          "title": "选择抵押代币"
-        },
-        "overview": {
-          "row": {
-            "collateral": "抵押品",
-            "asset": "资产",
-            "borrowable": "可借贷"
-          },
-          "title": "资产类别"
-        },
-        "disableTitle": "禁用",
-        "enabled": "• 已启用",
-        "unavailable": "• 不可用",
-        "title": "管理 E-Mode",
-        "unavailableTips": "你的现有借贷资产不受支持。",
-        "description": "启用 E-Mode 可以让你最大化借款能力。然而，借款仅限于所选类别内的资产。"
-      },
-      "debtSwap": {
-        "actions": {
-          "select": "选择",
-          "title": "债务交换",
-          "amount": "数量",
-          "borrowed": "借入",
-          "swapTo": "兑换为"
-        },
-        "overview": {
-          "title": "交易概览",
-          "borrowAPY": "借款年利率",
-          "borrowValueAfter": "兑换后的借款余额"
-        },
-        "button": {
-          "swap": "兑换"
-        },
-        "borrowBalance": "借入余额",
-        "title": "兑换借款仓位",
-        "entryTips": "一键兑换已借入的资产，减少操作步骤和费用。",
-        "lpRiskWarning": "兑换后的健康因子较低，你的仓位将面临更高的清算风险。",
-        "priceImpactTips": "价格影响较高（{{lostValue}}）。流动性较低或订单量较小时，此路径的返还金额可能波动较大。",
-        "lpDangerWarning": "本次兑换后你的健康因子将极低，可能触发清算。请选择其他资产或减少兑换金额。",
-        "maxLtvWarning": "抵押品不足以覆盖新的借贷仓位。钱包必须保留足够的借贷能力以执行债务切换。"
-      },
-      "repayWithCollateral": {
-        "action": {
-          "title": "使用 {{collateral}} 进行还款"
-        },
-        "overview": {
-          "title": "交易概述",
-          "borrowValueAfter": "偿还后的借款余额",
-          "collateralValueAfter": "还款后的抵押品余额"
-        },
-        "button": {
-          "repay": "偿还"
-        },
-        "repayWith": "用于偿还的抵押品",
-        "collateralNotEnough": "你的抵押品余额低于选择的金额。",
-        "toRepay": "预期还款金额"
-      },
-      "hfTips": {
-        "more": "更多",
-        "desc": "如果低于 1.0，你的抵押品可能会被清算。"
-      },
-      "disableBorrowTip": {
-        "desc": "无供应：要借款，你需要提供资产作为抵押。",
-        "noSupply": "首先供应资产以启用借款。"
-      },
-      "type": {
-        "supplied": "提供",
-        "borrowed": "借入"
-      },
-      "actions": {
-        "withdraw": "提取",
-        "supply": "供应",
-        "swap": "兑换",
-        "repay": "还款",
-        "borrow": "借入"
-      },
-      "summary": {
-        "empty": {
-          "title": "使用你的资产赚取利息",
-          "description": "由 AAVE 提供支持。安全且零费用。",
-          "endDesc": "你还没有任何存款。请查看下面推荐的资产以开始赚取利息。"
-        },
-        "healthy": "健康",
-        "risky": "风险较高",
-        "netWorth": "净资产",
-        "more": "更多",
-        "estDailyEarnings": "预计每日收益",
-        "totalBorrowed": "总借贷金额",
-        "eMode": "E-Mode",
-        "totalSupplied": "总供应量",
-        "healthFactorTip": "健康因子表示你持仓的安全性。",
-        "healthFactor": "健康因子",
-        "netApy": "净年化收益率",
-        "lq": "如果健康因子低于 1，可能会触发清算。",
-        "ethCorrelatedTip": "ETH 相关资产"
-      },
-      "market": {
-        "core": "核心市场"
-      },
-      "accountActions": {
-        "borrow": "借入",
-        "supply": "供应",
-        "both": "两者"
-      },
-      "table": {
-        "token": "代币",
-        "type": "类型",
-        "actions": "操作",
-        "collateral": "抵押品",
-        "myAssets": "我的资产",
-        "apy": "APY"
-      },
-      "supplyList": {
-        "collapse": "收起",
-        "more": "更多代币可供供应"
-      },
-      "borrowList": {
-        "more": "更多可以借用的代币",
-        "collapse": "收起"
-      },
-      "supplied": "供应",
-      "title": "借贷",
-      "totalSupply": "总供应量",
-      "gotIt": "明白了",
-      "isolate": "隔离的",
-      "supplyBalance": "供应余额",
-      "submitted": "已提交",
-      "netWorth": "净资产",
-      "noData": "没有数据",
-      "borrowBalance": "借款余额",
-      "totalSupplied": "总供应量",
-      "estDailyEarning": "预计每日收益",
-      "supplyApy": "供应年化收益率",
-      "estNetApy": "预计净年化收益率",
-      "borrowApy": "借款年利率",
-      "totalBorrow": "总借款",
-      "totalBorrowed": "总借贷金额",
-      "netApy": "净年化收益率",
-      "isolateTip": "这是一个隔离市场",
-      "borrowed": "借款",
-      "hf": "健康因子",
-      "enterAmount": "输入金额",
-      "selectMarket": "选择市场",
-      "hfTitle": "健康因子",
-      "searchMarket": "搜索市场",
-      "selectChain": "选择区块链",
-      "disabled": "禁用",
-      "signFallback": {
-        "preExecFailedUseFullSign": "模拟失败。此交易很可能因 AAVE 错误而失败。"
-      }
     },
     "desktopSmallSwap": {
       "title": "小额资产归集",
@@ -3311,7 +3068,9 @@
       "revoke": "撤销",
       "approvals": "授权",
       "unselectAll": "取消全选",
-      "selectAll": "全选"
+      "selectAll": "全选",
+      "approvalsCount": "{{count}} 项授权",
+      "approvalsCount_one": "{{count}} 项授权"
     }
   },
   "component": {
@@ -3424,6 +3183,14 @@
       "noTokens": "无代币",
       "noMatch": "无匹配",
       "noMatchSuggestion": "尝试搜索 {{ chainName }} 上的合约地址",
+      "bridge": {
+        "value": "价值",
+        "liquidityTips": "历史交易量越高，跨链成功的可能性就越大。",
+        "liquidity": "流动性",
+        "token": "代币",
+        "high": "高流动性",
+        "low": "低流动性"
+      },
       "recent": "最近",
       "hot": "热门",
       "common": "常用",
@@ -3472,6 +3239,7 @@
       "selectADapp": "选择一个 Dapp",
       "chainNotSupported": "在此链上不支持",
       "thirdPartyDappToProceed": "请使用第三方 Dapp 继续操作",
+      "bridgeOnDapp": "在 Dapp 上跨链",
       "noDapps": "该链上无可用 Dapp",
       "swapOnDapp": "在 Dapp 上兑换"
     },
@@ -3497,9 +3265,9 @@
       "allChains": "所有链"
     },
     "DesktopNav": {
+      "perps": "Perps",
       "comingSoon": "即将推出",
-      "portfolio": "投资组合",
-      "lending": "借贷"
+      "portfolio": "投资组合"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址",

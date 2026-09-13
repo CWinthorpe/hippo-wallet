@@ -225,6 +225,15 @@
       "importedDelegatedAddress": "İçe aktarılan delege adresi",
       "noDelegatedAddress": "İçe aktarılmış delege adresi yok",
       "coboSafeNotPermission": "Bu delege adresinin bu işlemi başlatma izni yok",
+      "gasAccount": {
+        "totalCost": "Toplam maliyet: ",
+        "currentTxCost": "Adresinize gönderilen gas miktarı:",
+        "sendGas": "Mevcut işlem için size aktarılan gas:",
+        "estimatedGas": "Tahmini gas:",
+        "maxGas": "Maksimum Gaz:",
+        "gasCost": "Adresinize gas aktarımı için gas maliyeti:",
+        "description": "GasAccount kullanarak gaz ücretlerini ödemek. Aşağıdaki ödeme detaylarını görüntüleyin:"
+      },
       "customRPCErrorModal": {
         "title": "Özel RPC Hatası",
         "button": "Özel RPC'yi Devre Dışı Bırak",
@@ -323,6 +332,7 @@
         "descTipWarningBoth": "İmza, varlık değişikliğine neden olabilir ve adres sahipliğini doğrulayabilir."
       },
       "nativeTokenForGas": "{{chainName}} üzerinde gaz ücretini ödemek için {{tokenName}} tokenini kullanın",
+      "gasAccountForGas": "Gas ödemesi yapmak için GasAccount'ımdaki USD'yi kullan",
       "chain": "Zincir",
       "importedAddress": "İthal edilen adres",
       "decodedTooltip": "Bu imza Hippo Wallet tarafından çözüldü",
@@ -451,6 +461,29 @@
       "submitTx": "İşlemi Gönder",
       "testnet": "Test ağı",
       "mainnet": "Ana ağ",
+      "gasless": {
+        "watchUnavailableTip": "Sadece izleme adresi Free Gas için desteklenmez.",
+        "rabbyPayGas": "Hippo, gerekli gaz ücretini karşılayacak – sadece imzalayın",
+        "GetFreeGasToSign": "Free Gas al",
+        "notEnough": "Gas bakiyesi yeterli değil",
+        "customRpcUnavailableTip": "Özel RPC'ler Free Gas için desteklenmemektedir.",
+        "unavailable": "Gas bakiyeniz yetersiz",
+        "walletConnectUnavailableTip": "WalletConnect ile bağlanan mobil cüzdanlar Free Gas için desteklenmez."
+      },
+      "gasAccount": {
+        "useGasAccount": "GasAccount Kullan",
+        "login": "Giriş yap",
+        "WalletConnectTips": "GasAccount tarafından WalletConnect desteklenmiyor",
+        "deposit": "Para Yatırma",
+        "notEnough": "Yeterli Gas yok. Gas bakiyesi: {{usd}}",
+        "gotIt": "Anladım",
+        "loginFirst": "Lütfen önce GasAccount'a giriş yapın",
+        "chainNotSupported": "Bu zincir GasAccount tarafından desteklenmiyor",
+        "customRPC": "Özel RPC kullanıldığında desteklenmez",
+        "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
+        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek.",
+        "signWithHardwareWalletToUse": "{{brand}} ile imzalamalısınız"
+      },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
         "hardwareRejectError": "Keystone isteği iptal edildi. Devam etmek için lütfen tekrar yetkilendirin.",
@@ -492,6 +525,12 @@
       "swapTokenOrder": {
         "title": "Token Emri"
       },
+      "sellNFT": {
+        "title": "NFT Emri",
+        "receiveToken": "Tokeni al",
+        "listNFT": "NFT Listele",
+        "specificBuyer": "Belirli alıcı"
+      },
       "signMultiSig": {
         "title": "İşlemi Onayla"
       },
@@ -500,6 +539,12 @@
       },
       "verifyAddress": {
         "title": "Adresi Doğrula"
+      },
+      "buyNFT": {
+        "payToken": "Token öde",
+        "receiveNFT": "NFT al",
+        "expireTime": "Son geçerlilik süresi",
+        "listOn": "Listele"
       },
       "contractCall": {
         "operationDecoded": "İşlem mesajdan çözüldü"
@@ -887,6 +932,7 @@
         "revokeWithLedger": "Ledger ile Yetki İptalini Başlat",
         "cancelBody": "Bu sayfayı kapatırsanız, kalan iptaller gerçekleştirilmez.",
         "simulationFailed": "Simülasyon Başarısız Oldu",
+        "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır.",
         "ledgerConfirmTitle": "Ledger ile Toplu İptal",
         "revokeWithOneKey": "OneKey ile iptal işlemini başlat",
         "oneKeySended": "Lütfen OneKey üzerinde isteği imzalayın ({{current}}/{{total}})",
@@ -922,6 +968,8 @@
       "insufficient-balance": "Yetersiz bakiye",
       "rabby-fee": "Hippo ücreti",
       "minimum-received": "Minimum alınacak",
+      "preferMEV": "MEV Korumalı Tercih Et",
+      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
       "there-is-no-fee-and-slippage-for-this-trade": "Bu işlemde fiyat kayması yoktur",
       "approve-tips": "1.Onayla → 2.Takas",
       "best": "En iyi",
@@ -940,6 +988,7 @@
       "edit": "Düzenle",
       "tradingSettingTips": "{{viewCount}} borsa teklif sunuyor ve {{tradeCount}} ticareti etkinleştiriyor",
       "the-following-swap-rates-are-found": "Aşağıdaki takas oranları bulundu",
+      "quotes": "Teklifler",
       "est-payment": "Tahm. Ödeme:",
       "est-receiving": "Tahm. Alınan:",
       "est-difference": "Tahm. Fark:",
@@ -969,7 +1018,17 @@
         "title": "Hippo ücreti",
         "wallet": "Cüzdan",
         "swapDesc": "Hippo Wallet, en iyi aggregatorlardan mümkün olan en iyi oranı bulur ve tekliflerinin güvenilirliğini doğrular. Hippo %0,25 ücret alır (Wrap için %0); bu ücret teklife otomatik olarak dahildir.",
-        "button": "Anladım"
+        "button": "Anladım",
+        "bridgeDesc": "Hippo Wallet, en iyi toplayıcılardan en iyi mümkün olan oranı her zaman bulacak ve tekliflerinin güvenilirliğini doğrulayacaktır. Hippo, otomatik olarak teklife dahil edilen %0.25 ücret alır.",
+        "discountTitle": "Hippo Ücret İndirimi",
+        "free": "Ücretsiz",
+        "cases": {
+          "wrap": "Yerel tokeni sar/sargısını aç",
+          "stablecoins": "Sabit coinler",
+          "lstLrt": "LST/LRT Tokeni",
+          "million": "Hacim $1M+",
+          "hundredThousand": "Hacim $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Bu tokenin düşük bir kredi değeri var",
@@ -988,7 +1047,6 @@
       "approve-swap": "Onayla ve Takas Yap",
       "sort-with-gas": "Gaz ile sırala",
       "usd-after-fees": "≈ {{usd}}",
-      "preferMEV": "MEV Korumalı Tercih Et",
       "no-fee-for-wrap": "Wrap için Hippo ücreti yok",
       "process-with-two-step-approve": "İki adımlı onayla devam et",
       "loss-tips": "{{usd}} kaybediyorsunuz. Küçük bir pazarda daha küçük bir miktar deneyin.",
@@ -998,7 +1056,6 @@
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "USDT iznini değiştirmek için 2 işlem gerekir. Önce izni sıfırlamanız, ardından yeni izin değerini belirlemeniz gerekir.",
-      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
       "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
       "approve": "Onayla",
       "search-by-token-name-address": "Token Adı / Adresi Ara",
@@ -1062,6 +1119,7 @@
           "swap": "Takas",
           "send": "Gönder",
           "receive": "Al",
+          "gasTopUp": "Gas yükleme",
           "queue": "Kuyruk",
           "transactions": "İşlemler",
           "approvals": "Onaylar",
@@ -1069,13 +1127,21 @@
           "more": "Daha Fazla",
           "manageAddress": "Adresi Yönet",
           "nft": "NFT",
+          "rabbyPoints": "Hippo Points",
+          "ecology": "Ekosistem",
+          "bridge": "Köprü",
           "mobile": "Mobil senkronizasyon",
+          "perps": "Perps",
+          "gasAccount": "GasAccount",
           "setting": "Ayarlar",
           "dapps": "Dapps",
           "searchDapp": "Dapp Araştırın",
           "settings": "Ayarlar",
-          "lending": "Kredi Verme",
-          "dragTip": "Uzun basma özelliği ile sıralama"
+          "perpsPositions_one": "{{count}} Pozisyon",
+          "perpsPositions_other": "{{count}} Pozisyonlar",
+          "dragTip": "Uzun basma özelliği ile sıralama",
+          "convertDust": "Tozu Dönüştür",
+          "staking": "Staking"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1100,7 +1166,15 @@
         "chainEnd": "zincir",
         "chain": "zincir,",
         "appChainTips": "Hyperliquid ve Polymarket hesapları dahil edilmedi",
-        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi"
+        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi",
+        "stablecoinSwapPopup": {
+          "title": "%0 Takas Ücreti",
+          "supportPrefix": "Desteklenen:",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin (40'tan fazla zincirde)",
+          "goToSwap": "Takasa Git",
+          "close": "Kapat"
+        }
       },
       "recentConnection": {
         "disconnected": "Bağlantı kesildi",
@@ -1230,7 +1304,10 @@
           "signatureRecord": "İmza Kaydı",
           "manageAddress": "Adresi Yönet",
           "connectedDapp": "Bağlı Dapp'ler",
-          "searchDapps": "Dapp'leri Ara"
+          "gasTopUp": "Gas yükleme",
+          "searchDapps": "Dapp'leri Ara",
+          "rabbyPoints": "Hippo Puanları",
+          "ecosystem": "Ekosistem"
         },
         "settings": {
           "label": "Ayarlar",
@@ -1247,6 +1324,7 @@
           "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
           "biometricUnlock": "Biyometriklerle Kilidi Açma",
           "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
+          "perpsFloatWidget": "Perps Kayan Widget'ı",
           "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
           "currency": "Para Birimi",
           "searchCurrency": "Para birimi ara",
@@ -1316,6 +1394,7 @@
         "blockedListTitles": "engellenen tokenlar",
         "ListedBy": "Listeleyen",
         "OriginalToken": "Orijinal Token",
+        "BridgeProvider": "Köprü Sağlayıcı",
         "NoListedBy": "Liste bilgisi mevcut değil",
         "verifyScamTips": "Bu bir dolandırıcılık token'ıdır.",
         "ContractAddress": "Sözleşme Adresi",
@@ -1330,11 +1409,14 @@
         "NoSupportedExchanges": "Desteklenen borsa yok",
         "customizedListTitle": "özel token",
         "maybeScamTips": "Bu düşük kaliteli bir token ve dolandırıcılık olabilir.",
+        "BridgeIssue": "Üçüncü taraf tarafından köprülenmiş token",
         "SupportedExchanges": "Desteklenen Borsalar",
         "customizedHasAddedTips": "Token Hippo tarafından listelenmemiştir. Bunu token listesine manuel olarak eklediniz.",
         "IssuerWebsite": "Yayımcının Web Sitesi",
         "blockedListTitle": "blokajlı token",
-        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez."
+        "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
+        "bridge": "Köprü",
+        "bridgeToEth": "Ethereum Zinciri'ne Köprü"
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -1384,10 +1466,10 @@
           "lowValueAssets_other": "{{count}} düşük değerli token"
         },
         "noAssets": "Varlık Yok",
+        "unfoldChain": "1 ağ daha",
+        "unfoldChainPlural": "{{moreLen}} ağ daha",
         "blockLinkText": "Tokeni engellemek için adresi ara",
         "blockDescription": "Tarafınızdan engellenen token burada gösterilecek",
-        "unfoldChain": "1 zinciri aç",
-        "unfoldChainPlural": "{{moreLen}} zinciri aç",
         "customLinkText": "Farklı bir token eklemek için adresi ara",
         "customDescription": "Tarafınızdan özel olarak eklenen token burada gösterilecek",
         "comingSoon": "Yakında...",
@@ -1483,6 +1565,11 @@
       "recentConnectionGuide": {
         "button": "Anladım",
         "title": "Dapp bağlantısı için burada adres değiştirin."
+      },
+      "rabbyPointsPopup": {
+        "desc": "Hippo Mobile'de puanlarınızı kontrol edin.",
+        "title": "Hippo Puanları",
+        "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
       },
       "noData": "Eşleşen para birimi yok",
       "ZeroAssets": {
@@ -1632,6 +1719,7 @@
         "qrCodeError": "Lütfen ağınızı kontrol edin veya QR kodunu yenileyin",
         "qrCode": "QR kodu",
         "url": "URL",
+        "changeBridgeServer": "Bridge sunucusunu değiştir",
         "status": {
           "received": "Tarama başarılı. Onay bekleniyor",
           "rejected": "Bağlantı iptal edildi. QR kodunu tarayarak yeniden deneyin.",
@@ -2060,6 +2148,7 @@
       "title": "DeBank Testnet Gas Tokeni İste",
       "mintedTip": "Hippo Rozeti sahipleri günde bir kez istekte bulunabilir",
       "notMintedTip": "Sadece Hippo Rozeti sahipleri talep edebilir",
+      "claimBadgeBtn": "Hippo Rozetini Talep Et",
       "time": "Günde bir kez",
       "requested": "Bugün talepte bulundunuz",
       "requestBtn": "İstek"
@@ -2721,6 +2810,7 @@
       },
       "button": {
         "queue": "Sıra",
+        "bridge": "Köprü",
         "pending": "{{pendingTxCount}} Beklemede",
         "send": "Gönder",
         "swap": "Değiştir"
@@ -2825,339 +2915,6 @@
       "networkErrorDescriptionFallback": "Site beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
       "serviceNotSupported": "Hizmet, mevcut bölgenizde desteklenmiyor.",
       "opening": "Açılıyor {{name}}..."
-    },
-    "lending": {
-      "availableCard": {
-        "canBorrow": "Temin ettiğiniz teminat bazında, borç limiti kadar borç alabilirsiniz.",
-        "emodeNoAssets": "Aramanıza uygun hiçbir varlık bulamadık. Farklı bir kategori ile tekrar deneyin.",
-        "singleAssetUnavailableForEmode": "Borç alınamaz. E-Mode'dan çıkın.",
-        "needSupply": "Borç almak için, teminat olarak varlık sağlamanız gerekir.",
-        "emode": "E-Mod’da bazı varlıklar borç alınamaz. Tüm varlıklara erişmek için E-Mod’dan çıkın.",
-        "isolated": "Borçlanma gücü ve varlıklar İzolasyon modu nedeniyle sınırlıdır."
-      },
-      "list": {
-        "headers": {
-          "totalBorrowed": "Toplam Borçlanan",
-          "token_tvl": "Token/TVL",
-          "mySupplies": "Benim kaynaklarım",
-          "token_balance": "Token/Bakiye",
-          "my_balance": "Bakiyem",
-          "my_assets": "Varlıklarım",
-          "myBorrows": "Borçlarım",
-          "token": "Token"
-        },
-        "item": {
-          "wrapperToken": "{{name}} için sarmalanmış token"
-        }
-      },
-      "repayDetail": {
-        "tabs": {
-          "wallet": "Cüzdan bakiyesi",
-          "collateral": "Teminat"
-        },
-        "actions": "Geri Ödeme",
-        "repayWith": "Şununla geri öde:",
-        "amountTitle": "Bakiye: ",
-        "approveAndRepay": "Onayla ve Geri Öde"
-      },
-      "supplyDetail": {
-        "supplied": "Yatırılan",
-        "actions": "Yatır",
-        "amountTitle": "Mevcut:",
-        "availableToBorrow": "Borç alınabilir",
-        "collateralization": "Teminatlandırma",
-        "enabled": "Etkinleştirildi",
-        "supplyBalance": "Yatırılan Bakiye",
-        "unavailable": "Kullanılamıyor",
-        "approveAndSupply": "Onayla ve Yatır",
-        "supplyAPY": "Yatırma APY'si",
-        "isolatedTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor."
-      },
-      "withdrawDetail": {
-        "amountTitle": "Bakiyeniz:",
-        "remainingSupply": "Kalan Yatırılan Tutar",
-        "actions": "Çekmek"
-      },
-      "toggleCollateralDetail": {
-        "error": "AAVE hizmetinde bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
-        "actions": "{{asset}} Teminatını Değiştir",
-        "disable": "{{asset}}'i Teminat Olarak Devre Dışı Bırak",
-        "enable": "{{asset}}'i Teminat Olarak Etkinleştir"
-      },
-      "toggleCollateralModal": {
-        "toggleRiskTexts": {
-          "canNotUseThisCurrencyAsCollateral": "Bu para birimini teminat olarak kullanamazsınız.",
-          "doNotHaveSuppliesInThisCurrency": "Bu varlıkta yatırılmış bakiyeniz yok.",
-          "canNotSwitchUsageAsCollateralMode": "Bu para birimini teminat modu olarak değiştiremezsiniz, çünkü bu teminat araması yapar.",
-          "zeroLTVWithdrawBlocked": "Sıfır LTV'ye sahip varlıklar ({{assets}}) bu işlemi gerçekleştirmek için teminat olarak çekilmeli veya devre dışı bırakılmalıdır."
-        },
-        "exitIsolationModeTitle": "İzolasyon Modundan Çık",
-        "closeTitle": "Gözden Geçirme Devre Dışı Bırakma",
-        "exitIsolationModeDesc": "İzole modundan çıkacaksınız ve diğer token'lar şimdi teminat olarak kullanılabilir.",
-        "enableIsolationModeTitle": "İzolasyon Modunu Etkinleştir",
-        "openTitle": "Gözden Geçirme Etkinleştirme",
-        "riskToLiquidationText": "Bu para birimi için teminat modu olarak kullanımı değiştiremezsiniz, çünkü bu teminat çağrısına neden olur.",
-        "closeDesc": "Bu varlığı teminat olarak devre dışı bırakmak, borçlanma gücünüzü ve Sağlık Faktörünü etkiler.",
-        "openDesc": "Bu varlıkları teminat olarak kullanmak, borçlanma gücünüzü ve Sağlık Faktörünüzü artırır. Ancak, sağlık faktörünüz 1'in altına düşerse tasfiye edilebilir.",
-        "enableIsolationModeDesc": "İzole moda giriyorsunuz. İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel bir borç tavanı, izole olan varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için başka bir varlık borçlanmadan önce CRV'yi teminat olarak devre dışı bırakın."
-      },
-      "borrowDetail": {
-        "actions": "Ödünç Al",
-        "swapDebt": "Değiştir",
-        "approveAndBorrow": "Onayla ve Borç Al",
-        "borrowed": "Ödünç Alınan",
-        "amountTitle": "Mevcut:",
-        "almostReachedWarning": "Protokol borç limiti bu varlık için %100'dür. Ek borç alma mümkün değildir.",
-        "almostReachedError": "Borç alabileceğiniz maksimum miktar, protokol borç limiti neredeyse ulaşıldığı için sınırlıdır."
-      },
-      "popup": {
-        "amount": "Miktar",
-        "title": "İşlem Genel Görünümü",
-        "remainingDebt": "Kalan borç",
-        "available": "mevcut",
-        "liquidationAt": "1.0'da likidasyon"
-      },
-      "borrowOverview": {
-        "myBorrow": "Benim Borç Alım",
-        "title": "Borçlanma ayrıntıları",
-        "totalBorrowed": "Toplam Borçlanan",
-        "borrowCap": "Kredi Limiti",
-        "availableToBorrow": "Ödünç Alınabilir",
-        "liquidityPenalty": "Tasfiye Cezası",
-        "reachCapTip": "Bu varlık borç limitiye ulaştı."
-      },
-      "supplyOverview": {
-        "totalSupplied": "Toplam Yatırılan",
-        "title": "Yatırma Detayları",
-        "collateral": "Teminat",
-        "noBalance": "Bakiyeniz yok",
-        "mySupply": "Yatırdıklarım",
-        "useAsCollateral": "Teminat olarak kullanın",
-        "walletBalance": "Cüzdan Bakiyesi",
-        "reachCap": "Bu varlık yatırma limitine ulaştı. Bu piyasaya daha fazla yatırılamaz.",
-        "availableToSupply": "Yatırılabilir",
-        "almostCap": "Bu varlık neredeyse borç sınırına ulaştı. Bu piyasadan borç alabileceğiniz yalnızca {{available}} mevcut."
-      },
-      "risk": {
-        "withdrawWarning": "Bu miktarı çekmek, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
-        "toggleCollateralWarning": "Bu varlığı teminat olarak devre dışı bırakmak Sağlık Faktörünüzü likidasyon riski taşıyan bir seviyeye düşürecektir.",
-        "warning": "Bu miktarı borç almak, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
-        "emodeBlockWarning": "E-Mode'u devre dışı bırakmak Sağlık Faktörünüzü tasfiye riski taşıyan bir seviyeye düşürür.",
-        "checkbox": "Uyarıyı anlıyorum ve devam etmek istiyorum.",
-        "blockEmodeWarning": "Tasfiyeye yol açabileceği için E-Mode'u devre dışı bırakamazsınız. E-Mode'dan çıkmak için varlık yatırın veya borç pozisyonlarınızı geri ödeyin."
-      },
-      "lqDescription": {
-        "risky": "Riskli",
-        "desc": "Tasfiye değeri",
-        "below1desc": "Pozisyonunuz likidasyon riski altındadır.",
-        "over3desc": "Pozisyonlarınız güvende.",
-        "over3title": "Sağlık faktörü > 3.0:",
-        "below1title": "Sağlık Faktörü ≤ 1.0:",
-        "introText": "Sağlık Faktörünüz, borçlanma pozisyonunuzun ne kadar güvenli olduğunu gösterir. Eğer çok düşük bir seviyeye inerse, teminatınız tasfiye edilebilir.",
-        "warningText": "Sağlık Faktörünüz çok düşük. Tasfiye önlemek için:\n1. Kredinizin bir kısmını veya tamamını geri ödeyin\n2. Daha fazla teminat ekleyin",
-        "liquidationTitle": "Tasfiye:",
-        "liquidation": "Eğer Sağlık Faktörünüz 1.0'ın altına düşerse, teminatınızın bir kısmı borcu ödemek için otomatik olarak satılabilir. Bir likidasyon cezası uygulanacak ve bu da teminatınızın bir kısmının kaybına neden olacaktır."
-      },
-      "modalDesc": {
-        "availableToBorrow": "Borç alınabilir",
-        "isolatedTitle": "Varlık teminat olarak kullanılamaz.",
-        "isolatedSupplyDesc": "Teminat kullanımı izolasyon modu nedeniyle sınırlıdır.",
-        "availableToBorrowDesc": "Temin sağladığınız teminat temelinde borç alabilir ve borç limiti ulaşılana kadar borç alabilirsiniz.",
-        "isolatedDesc": "Bu varlık yalnızca izolasyon modunda teminat olarak kullanılabilir; burada borç almak için başka varlık teminatı sağlayamazsınız. İzolasyon modunda teminat olarak kullanılan varlıklar yalnızca belirli bir borç tavanına kadar borç alınabilir.",
-        "maxLTV": "Maksimum LTV oranı, belirli bir teminatın maksimum borçlanma gücünü gösterir. Örneğin, teminatın LTV'si %75 ise kullanıcı her 1 ETH değerindeki teminat için ana para biriminde 0,75 ETH değerine kadar borç alabilir.",
-        "globalIsolatedDesc": "İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel borç limiti, izole varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için, başka bir varlık borçlanmadan önce UNI'yi teminat olarak devre dışı bırakın.",
-        "maxAmount": "Bu, sağlanan tüm teminatlarınıza dayalı olarak borç alabileceğiniz maksimum tutardır. Toplam borç alma gücünüz, her teminat varlığının piyasa değeri ile Max LTV'sini çarparak ve ardından sonuçları toplayarak hesaplanır.",
-        "lqDesc": "Bir tasfiye gerçekleştiğinde, tasfiye ediciler borçlu adına borçlu miktarın %50'sine kadar olan kısmı geri öderler. Bunun karşılığında, teminatı indirimli bir fiyattan satın alabilirler ve farkı (tasfiye cezası) bonus olarak alabilirler."
-      },
-      "repayWithAToken": {
-        "header": {
-          "balance": "Bakiyeniz",
-          "assets": "Jeton"
-        },
-        "title": "Geri Ödeme Tokeni Seçin",
-        "zeroLtvCollateralTips": "Aşağıdaki LTV = 0 teminatlarınız var ve bu nedenle, teminat geri ödeme kurallarına göre önce bu teminatlarla geri ödeme yapabilirsiniz."
-      },
-      "manageEmode": {
-        "actions": {
-          "enable": "E-Modu'nu Etkinleştir",
-          "disable": "E-Mode'u Devre Dışı Bırak"
-        },
-        "guide": {
-          "buttonTitle": "E-Modu Yönetimi",
-          "description": "E-Mode, seçilen varlık kategorisi için LTV'nizi artırır.",
-          "title": "Verimlilik modu (E-Modu)"
-        },
-        "categorySelector": {
-          "header": {
-            "asset": "Varlıklar"
-          },
-          "placeholder": "Seçin",
-          "label": "Varlık kategorisi",
-          "desc": "Bu kategoriyi etkinleştirmek için bu kategorinin dışındaki tüm borç pozisyonları kapatılmalıdır."
-        },
-        "debtSwapSelector": {
-          "header": {
-            "borrow": "Borçlarım",
-            "assets": "Token/Bakiye",
-            "apy": "APY"
-          },
-          "title": "Borç Alma Token'ını Seçin"
-        },
-        "collateralSwapSelector": {
-          "header": {
-            "assets": "Token",
-            "collateral": "Teminatım"
-          },
-          "title": "Teminat Token Seçin"
-        },
-        "overview": {
-          "row": {
-            "collateral": "Teminat",
-            "borrowable": "Borç Alınabilir",
-            "asset": "Varlık"
-          },
-          "title": "Varlık kategorisi"
-        },
-        "title": "E-Mode'u Yönet",
-        "disableTitle": "Devre dışı bırak",
-        "enabled": "• Etkinleştirildi",
-        "unavailableTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor.",
-        "unavailable": "• Kullanılamaz",
-        "description": "E-Modu'nu etkinleştirmek, borçlanma gücünüzü maksimize etmenizi sağlar. Ancak, borçlanma, seçilen kategori içindeki varlıklarla sınırlıdır."
-      },
-      "debtSwap": {
-        "actions": {
-          "borrowed": "Borç Alınan",
-          "swapTo": "Değiştir",
-          "amount": "Miktar",
-          "select": "Seçin",
-          "title": "Borç Değişimi"
-        },
-        "overview": {
-          "title": "İşlem Genel Görünümü",
-          "borrowAPY": "Borç apy",
-          "borrowValueAfter": "Takastan sonra borç bakiyesi"
-        },
-        "button": {
-          "swap": "Değişim"
-        },
-        "title": "Swap Borç Pozisyonu",
-        "borrowBalance": "Borç bakiyesi",
-        "entryTips": "Bir tıklamayla ödünç aldığınız varlığı değiştirin, adımları ve ücretleri azaltın.",
-        "lpRiskWarning": "Takastan sonra düşük sağlık faktörü. Pozisyonunuz likidasyon riski taşımaktadır.",
-        "priceImpactTips": "Yüksek fiyat etkisi ({{lostValue}}). Bu rota, düşük likidite veya küçük emir büyüklüğü nedeniyle daha yüksek getiri sağlayabilir.",
-        "lpDangerWarning": "Bu takas sonrası sağlık faktörünüz kritik derecede düşük olacak ve likidasyona yol açabilir. Lütfen farklı bir varlık seçin veya güvenli kalmak için takas miktarını azaltın.",
-        "maxLtvWarning": "Yeni borç pozisyonunu karşılamak için teminat yetersiz. Borç değişimini gerçekleştirmek için cüzdanda borç alma gücü kalmalıdır."
-      },
-      "repayWithCollateral": {
-        "action": {
-          "title": "{{collateral}} ile geri ödeme yap"
-        },
-        "overview": {
-          "collateralValueAfter": "Geri ödeme sonrasında teminat bakiyesi",
-          "title": "İşlem Genel Bakışı",
-          "borrowValueAfter": "Geri ödemeden sonraki borç bakiyesi"
-        },
-        "button": {
-          "repay": "Geri Ödeme"
-        },
-        "toRepay": "Beklenen geri ödeme miktarı",
-        "repayWith": "Geri ödenecek teminat",
-        "collateralNotEnough": "Teminat bakiyeniz seçilen tutardan daha düşük."
-      },
-      "hfTips": {
-        "more": "Daha fazlası",
-        "desc": "Eğer 1.0'ın altına düşerse, teminatınız tasfiye edilebilir."
-      },
-      "disableBorrowTip": {
-        "desc": "Yatırılmış varlık yok: borç almak için varlıkları teminat olarak yatırmanız gerekir.",
-        "noSupply": "Borçlanmayı etkinleştirmek için önce varlık yatırın."
-      },
-      "type": {
-        "borrowed": "Ödünç Alınan",
-        "supplied": "Yatırılan"
-      },
-      "actions": {
-        "borrow": "Ödünç Al",
-        "swap": "Değiştir",
-        "supply": "Yatır",
-        "repay": "Geri Öde",
-        "withdraw": "Çek"
-      },
-      "summary": {
-        "empty": {
-          "title": "Varlıklarınızla Faiz Kazanın",
-          "description": "AAVE tarafından desteklenmektedir. Güvenli ve sıfır ücrete sahip.",
-          "endDesc": "Henüz yatırılmış bir varlığınız yok. Faiz kazanmaya başlamak için aşağıdaki önerilen varlıklara göz atın."
-        },
-        "eMode": "E-Modu",
-        "totalBorrowed": "Toplam Borçlanan",
-        "netWorth": "Net değer",
-        "healthFactor": "Sağlık Faktörü",
-        "healthFactorTip": "Sağlık faktörü, pozisyonunuzun güvenliğini gösterir.",
-        "totalSupplied": "Toplam Yatırılan",
-        "netApy": "Net APY",
-        "healthy": "Sağlıklı",
-        "risky": "Riskli",
-        "estDailyEarnings": "Günlük Tahmini Kazanç",
-        "ethCorrelatedTip": "ETH ile korelasyonlu varlıklar",
-        "lq": "Sağlık Faktörü 1'in altına düşerse likidasyon tetiklenebilir.",
-        "more": "Daha fazla"
-      },
-      "market": {
-        "core": "Temel Pazar"
-      },
-      "accountActions": {
-        "borrow": "Ödünç Al",
-        "supply": "Yatırılanlar",
-        "both": "İkisi de"
-      },
-      "table": {
-        "collateral": "Teminat",
-        "actions": "Eylemler",
-        "token": "Token",
-        "myAssets": "Varlıklarım",
-        "type": "Türü",
-        "apy": "APY"
-      },
-      "supplyList": {
-        "collapse": "Daralt",
-        "more": "Yatırılabilecek daha fazla token"
-      },
-      "borrowList": {
-        "more": "Daha fazla borç alabileceğiniz tokenlar",
-        "collapse": "Daralt"
-      },
-      "borrowApy": "Borç Alma APY",
-      "totalBorrow": "Toplam Borç",
-      "gotIt": "Anladım",
-      "totalBorrowed": "Toplam borç alınan",
-      "supplyBalance": "Yatırılan Bakiye",
-      "supplyApy": "Yatırma APY'si",
-      "netApy": "Net APY",
-      "isolateTip": "Bu, izole bir piyasadır.",
-      "estDailyEarning": "Tahmini Günlük Kazanç",
-      "submitted": "gönderildi",
-      "supplied": "Yatırıldı",
-      "borrowed": "Ödünç Alındı",
-      "netWorth": "Ağırlık Değeri",
-      "estNetApy": "Tahmini net APY",
-      "isolate": "izole edilmiş",
-      "title": "Borç Verme",
-      "totalSupply": "Toplam Yatırılan",
-      "totalSupplied": "Toplam Yatırılan",
-      "borrowBalance": "Borç Bakiyesi",
-      "noData": "Veri yok",
-      "disabled": "DEVRE Dışı",
-      "hfTitle": "Sağlık Faktörü",
-      "enterAmount": "Miktar Girin",
-      "selectMarket": "Piyasa Seçin",
-      "hf": "Sağlık faktörü",
-      "searchMarket": "Pazar Ara",
-      "selectChain": "Zincir Seçin",
-      "signFallback": {
-        "preExecFailedUseFullSign": "Simülasyon Başarısız. Bu işlem büyük olasılıkla AAVE hataları nedeniyle başarısız olacak."
-      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -3267,7 +3024,9 @@
       "revoke": "İptal Et",
       "approvals": "onaylar",
       "unselectAll": "Tüm Seçimleri Kaldır",
-      "selectAll": "Tümünü Seç"
+      "selectAll": "Tümünü Seç",
+      "approvalsCount": "{{count}} onay",
+      "approvalsCount_one": "{{count}} onay"
     }
   },
   "component": {
@@ -3380,6 +3139,14 @@
       "noTokens": "Token yok",
       "noMatch": "Eşleşme yok",
       "noMatchSuggestion": "{{ chainName }} üzerinde sözleşme adresini aramayı deneyin",
+      "bridge": {
+        "token": "Token",
+        "value": "Değer",
+        "liquidity": "Likidite",
+        "liquidityTips": "Tarihi ticaret hacmi ne kadar yüksekse, köprünün başarılı olma olasılığı o kadar yüksektir.",
+        "high": "Yüksek likidite",
+        "low": "Düşük likidite"
+      },
       "hot": "Sıcak",
       "common": "Genel",
       "recent": "Son zamanlar",
@@ -3428,6 +3195,7 @@
       "noQuotesForChain": "Bu zincir için henüz teklif yok.",
       "help": "Lütfen destek için bu zincirin resmi ekibiyle iletişime geçin.",
       "viewDappOptions": "Dapp Seçeneklerini Görüntüle",
+      "bridgeOnDapp": "DApp üzerinden ağlar arası aktar",
       "swapOnDapp": "Dapp'ta Takas",
       "noDapps": "Bu zincirde kullanılabilir hiçbir Dapp yok."
     },
@@ -3453,8 +3221,8 @@
       "allChains": "Tüm Zincirler"
     },
     "DesktopNav": {
+      "perps": "Perps",
       "comingSoon": "Yakında",
-      "lending": "Kredi Verme",
       "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {

@@ -1,49 +1,42 @@
-import { INITIAL_OPENAPI_URL, INITIAL_TESTNET_OPENAPI_URL } from '@/constant';
+import { INITIAL_OPENAPI_URL } from '@/constant';
+import {
+  createOpenapiRuntime,
+  createOpenapiStoreTemplate,
+  OpenapiServiceStore,
+  openapiStoreSchema,
+} from '@/services/openapi';
+import type { PublicOpenapiStore } from '@/services/openapi';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { createPersistStore, patchPersistStore } from 'background/utils';
-export * from '@rabby-wallet/rabby-api/dist/types';
-import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign';
-import { rabbyOpenapiFetchAdapter } from 'background/utils/fetchAdapter';
-import { z } from 'zod';
 
-const openapiStoreSchema = z.object({
-  host: z.string().default(INITIAL_OPENAPI_URL),
-  testnetHost: z.string().default(INITIAL_TESTNET_OPENAPI_URL),
-  apiKey: z.string().nullable().default(null),
-  apiTime: z.number().nullable().default(null),
-});
-
-export type OpenapiServiceStore = z.output<typeof openapiStoreSchema>;
+export * from '@/services/openapi';
 
 /**
- * The half of the openapi store the UI is allowed to hold. `apiKey` is the
- * X-API-Key header on every api.rabby.io request, so it stays in the
- * background rather than being copied into each extension page.
- *
- * Hippo additionally never generates a key at all: public endpoints remain
- * signed by WebSignApiPlugin and no persistent installation identifier is
- * attached to functional API traffic.
+ * Hippo: the api.rabby.io client always runs through the force-policy fetch
+ * adapter so remote-data consent gates every Rabby/DeBank request, and no
+ * persistent installation identifier is ever attached (see OpenapiStore
+ * below). PUBLIC_OPENAPI_KEYS is re-declared here rather than imported from
+ * '@/services/openapi/types' to keep apiKey out of the UI-shared half.
  */
-export const PUBLIC_OPENAPI_KEYS = ['host', 'testnetHost'] as const;
+export const HIPPO_PUBLIC_OPENAPI_KEYS = ['host'] as const;
 
-export type PublicOpenapiStore = Pick<
+// Hippo narrows the UI-shared half to `host`: apiKey/apiTime never leave the
+// background (no persistent installation identifier is ever generated).
+export type HippoPublicOpenapiStore = Pick<
   OpenapiServiceStore,
-  typeof PUBLIC_OPENAPI_KEYS[number]
+  typeof HIPPO_PUBLIC_OPENAPI_KEYS[number]
 >;
 
-const pickPublicOpenapiStore = <T extends Partial<OpenapiServiceStore>>(
-  store: T
-): Pick<T, typeof PUBLIC_OPENAPI_KEYS[number] & keyof T> =>
+const pickPublicOpenapiStore = (
+  store: Partial<OpenapiServiceStore>
+): HippoPublicOpenapiStore =>
   Object.fromEntries(
     Object.entries(store).filter(([key]) =>
-      (PUBLIC_OPENAPI_KEYS as ReadonlyArray<string>).includes(key)
+      (HIPPO_PUBLIC_OPENAPI_KEYS as readonly string[]).includes(key)
     )
-  ) as Pick<T, typeof PUBLIC_OPENAPI_KEYS[number] & keyof T>;
+  ) as HippoPublicOpenapiStore;
 
-const createOpenapiStoreTemplate = (): OpenapiServiceStore =>
-  openapiStoreSchema.parse({});
-
-class OpenapiStore {
+class HippoOpenapiStore {
   store: OpenapiServiceStore = createOpenapiStoreTemplate();
   private initialized = false;
   private initialization: Promise<void>;
@@ -57,8 +50,12 @@ class OpenapiStore {
       name: 'openapi',
       template: createOpenapiStoreTemplate(),
       schema: openapiStoreSchema,
-      broadcastKeys: PUBLIC_OPENAPI_KEYS,
+      broadcastKeys: HIPPO_PUBLIC_OPENAPI_KEYS,
     });
+    // Remove the legacy endpoint after upgrading from builds that persisted a
+    // separate testnet OpenAPI client. Unknown schema keys are otherwise kept
+    // by the generic persistence layer to support downgrades.
+    Reflect.deleteProperty(this.store, 'testnetHost');
     this.initialized = true;
     // Do not attach a persistent installation identifier to functional API
     // traffic. Public endpoints remain signed by WebSignApiPlugin.
@@ -86,14 +83,6 @@ class OpenapiStore {
     this.patchStore({ host: value });
   }
 
-  get testnetHost() {
-    return this.store.testnetHost;
-  }
-
-  set testnetHost(value: string) {
-    this.patchStore({ testnetHost: value });
-  }
-
   get apiKey() {
     return this.store.apiKey;
   }
@@ -112,55 +101,18 @@ class OpenapiStore {
   }
 }
 
-const proxyStore = new OpenapiStore();
-
-const testnetStore = {
-  get host() {
-    return proxyStore.testnetHost;
-  },
-  set host(value: string) {
-    proxyStore.testnetHost = value;
-  },
-  get testnetHost() {
-    return proxyStore.testnetHost;
-  },
-  set testnetHost(value: string) {
-    proxyStore.testnetHost = value;
-  },
-  get apiKey() {
-    return proxyStore.apiKey;
-  },
-  set apiKey(value: string | null) {
-    proxyStore.apiKey = value;
-  },
-  get apiTime() {
-    return proxyStore.apiTime;
-  },
-  set apiTime(value: number | null) {
-    proxyStore.apiTime = value;
-  },
-};
+const proxyStore = new HippoOpenapiStore();
 
 if (!process.env.DEBUG) {
   proxyStore.host = INITIAL_OPENAPI_URL;
-  proxyStore.testnetHost = INITIAL_TESTNET_OPENAPI_URL;
 }
 
-const service = new OpenApiService({
-  plugin: WebSignApiPlugin,
-  adapter: rabbyOpenapiFetchAdapter,
+const openapiRuntime = createOpenapiRuntime({
+  kind: 'background',
   store: proxyStore,
+  initializeStore: proxyStore.init,
 });
-
-if (typeof window !== 'undefined') {
-  service.initSync();
-}
-
-export const testnetOpenapiService = new OpenApiService({
-  plugin: WebSignApiPlugin,
-  adapter: rabbyOpenapiFetchAdapter,
-  store: testnetStore,
-});
+const service = openapiRuntime.openapi;
 
 const disabledRabbyRPCError = () =>
   Object.assign(
@@ -182,30 +134,30 @@ const disableActionLogging = (client: OpenApiService) => {
 };
 
 disableRabbyRPCControlPlane(service);
-disableRabbyRPCControlPlane(testnetOpenapiService);
 disableActionLogging(service);
-disableActionLogging(testnetOpenapiService);
 
 export const initializeOpenapiStore = () => proxyStore.init();
+export const initializeOpenapiRuntime = () => openapiRuntime.ready;
 
-export const getOpenapiStore = (): PublicOpenapiStore =>
+export const getOpenapiStore = (): HippoPublicOpenapiStore =>
   pickPublicOpenapiStore(proxyStore.getStore());
 
 export const patchOpenapiStore = async (
-  partials: Partial<PublicOpenapiStore>
+  partials: Partial<PublicOpenapiStore> | HippoPublicOpenapiStore
 ) => {
   // Reachable from the UI through `setStorageItem`, so drop anything outside
   // the public half instead of trusting the caller's typing.
   proxyStore.patchStore(pickPublicOpenapiStore(partials));
 
-  const initializations: Promise<void>[] = [];
-  if (Object.prototype.hasOwnProperty.call(partials, 'host')) {
-    initializations.push(service.init());
+  // Keep the background request headers aligned with identity changes coming
+  // from any UI runtime.
+  if (
+    HIPPO_PUBLIC_OPENAPI_KEYS.some((key) =>
+      Object.prototype.hasOwnProperty.call(partials, key)
+    )
+  ) {
+    await openapiRuntime.reconfigure();
   }
-  if (Object.prototype.hasOwnProperty.call(partials, 'testnetHost')) {
-    initializations.push(testnetOpenapiService.init());
-  }
-  await Promise.all(initializations);
 };
 
 export default service;

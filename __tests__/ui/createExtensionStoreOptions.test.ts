@@ -11,9 +11,9 @@ jest.mock('@/ui/wallet', () => ({
   },
 }));
 
-type TestStore = {
+type TestSwapStore = {
   autoSlippage: boolean;
-  preferMEVGuarded: boolean;
+  mevProtection: boolean;
   recentToTokens: unknown[];
   selectedChain: string | null;
   selectedFromToken?: unknown;
@@ -21,9 +21,9 @@ type TestStore = {
   slippage: string;
 } & Record<string, unknown>;
 
-const testState: TestStore = {
+const swapState: TestSwapStore = {
   autoSlippage: true,
-  preferMEVGuarded: false,
+  mevProtection: true,
   recentToTokens: [],
   selectedChain: null,
   slippage: '0.1',
@@ -36,31 +36,35 @@ describe('createExtensionStoreOptions', () => {
     getStorageSnapshot.mockResolvedValue({
       origin: 'background-1',
       revision: 2,
-      state: testState,
+      state: swapState,
     });
     setStorageItem.mockResolvedValue(undefined);
-    const options = createExtensionStoreOptions<TestStore, 'whitelist'>({
+    const options = createExtensionStoreOptions<TestSwapStore, 'whitelist'>({
       storageKey: 'whitelist',
     });
 
     await expect(options.storage.get()).resolves.toEqual({
       origin: 'background-1',
       revision: 2,
-      state: testState,
+      state: swapState,
     });
     await options.storage.set({
       changedKeys: ['slippage'],
       partials: { slippage: '0.5' },
-      previousState: { ...testState, slippage: '0.1' },
-      state: { ...testState, slippage: '0.5' },
+      previousState: { ...swapState, slippage: '0.1' },
+      state: { ...swapState, slippage: '0.5' },
     });
-    expect(getStorageSnapshot).toHaveBeenCalledWith('whitelist');
-    expect(setStorageItem).toHaveBeenCalledWith('whitelist', { slippage: '0.5' }, []);
+    expect(getStorageSnapshot).toHaveBeenCalledWith('swap');
+    expect(setStorageItem).toHaveBeenCalledWith(
+      'swap',
+      { slippage: '0.5' },
+      []
+    );
 
     const listener = jest.fn();
     const dispose = options.sync!.engine.subscribe(listener);
     eventBus.emit(BROADCAST_TO_UI_EVENTS.storeChanged, {
-      bgStoreName: 'whitelist',
+      bgStoreName: 'swap',
       changedKey: 'slippage',
       changedKeys: ['slippage'],
       partials: { slippage: '1' },
@@ -84,7 +88,7 @@ describe('createExtensionStoreOptions', () => {
     const setStorageItem = wallet.setStorageItem as jest.Mock;
     setStorageItem.mockReset();
     setStorageItem.mockResolvedValue(undefined);
-    const options = createExtensionStoreOptions<TestStore, 'whitelist'>({
+    const options = createExtensionStoreOptions<TestSwapStore, 'whitelist'>({
       storageKey: 'whitelist',
     });
 
@@ -95,8 +99,8 @@ describe('createExtensionStoreOptions', () => {
         selectedFromToken: undefined,
         selectedToToken: undefined,
       },
-      previousState: testState,
-      state: { ...testState, selectedChain: 'BSC' as any },
+      previousState: swapState,
+      state: { ...swapState, selectedChain: 'BSC' as any },
     });
 
     const [, partials, clearedKeys] = setStorageItem.mock.calls[0];
@@ -109,7 +113,7 @@ describe('createExtensionStoreOptions', () => {
   });
 
   test('restores cleared fields from a broadcast that lost them in transit', () => {
-    const options = createExtensionStoreOptions<TestStore, 'whitelist'>({
+    const options = createExtensionStoreOptions<TestSwapStore, 'whitelist'>({
       storageKey: 'whitelist',
     });
     const listener = jest.fn();
@@ -118,7 +122,7 @@ describe('createExtensionStoreOptions', () => {
     eventBus.emit(
       BROADCAST_TO_UI_EVENTS.storeChanged,
       overWire({
-        bgStoreName: 'whitelist',
+        bgStoreName: 'swap',
         changedKey: 'selectedChain',
         changedKeys: ['selectedChain', 'selectedFromToken'],
         partials: { selectedChain: 'BSC', selectedFromToken: undefined },
@@ -129,9 +133,9 @@ describe('createExtensionStoreOptions', () => {
 
     const { state } = listener.mock.calls[0][0];
     expect(state.selectedChain).toBe('BSC');
-    expect(Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')).toBe(
-      true
-    );
+    expect(
+      Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')
+    ).toBe(true);
     expect(state.selectedFromToken).toBeUndefined();
     dispose();
   });
