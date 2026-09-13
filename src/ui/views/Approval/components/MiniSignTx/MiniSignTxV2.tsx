@@ -171,7 +171,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const handleAutoChangeGasMethod = useCallback(
     async (method: ApprovalGasMethod) => {
       try {
-        instance.setGasMethod(method);
+        // Hippo clamps the auto path to native as well (Gas Account removed).
+        instance.setGasMethod('native');
       } catch (error) {
         console.error('Gas method change error:', error);
       }
