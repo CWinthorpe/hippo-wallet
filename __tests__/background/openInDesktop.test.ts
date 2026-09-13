@@ -96,7 +96,8 @@ describe('rabby:openInDesktop', () => {
   });
 
   it.each([
-    { target: 'perps', desktopPath: '/desktop/perps' },
+    // Hippo removed the perps surface: its target falls back to profile.
+    { target: 'perps', desktopPath: '/desktop/profile' },
     { target: 'swap', desktopPath: '/desktop/profile?action=swap' },
     { target: 'bridge', desktopPath: '/desktop/profile?action=bridge' },
   ])(

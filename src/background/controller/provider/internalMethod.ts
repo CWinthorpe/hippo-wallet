@@ -150,7 +150,9 @@ const openInDesktop = async (req: ProviderRequest) => {
     let desktopPath: string;
     switch (requestedTarget) {
       case 'perps':
-        desktopPath = '/desktop/perps';
+        // Hippo removed the perps surface; route to profile like unknown
+        // targets so no retired desktop path can be opened.
+        desktopPath = '/desktop/profile';
         break;
       case 'swap':
         desktopPath = '/desktop/profile?action=swap';
