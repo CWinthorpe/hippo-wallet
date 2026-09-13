@@ -514,6 +514,7 @@ const runOnce = async (
   });
 
   let client;
+  let workerClient = null;
   try {
     await waitFor(
       () => fetchJson(`http://127.0.0.1:${port}/json/version`),
@@ -544,7 +545,6 @@ const runOnce = async (
     // end-to-end in the packaged runtime (an integer-only parser could not
     // survive a real decimal response), not just in unit fixtures.
     const rawQuotes = [];
-    let workerClient = null;
     if (worker?.webSocketDebuggerUrl) {
       try {
         workerClient = await CdpClient.connect(worker.webSocketDebuggerUrl);
