@@ -157,9 +157,9 @@ describe('private-build privacy invariants', () => {
     ].join('\n');
     expect(onboarding).not.toContain('setUserDataTrackingOptOut(false)');
 
-    const preferenceModel = read('src/ui/models/preference.ts');
-    expect(preferenceModel).not.toContain('userDataTrackingOptOut: value');
-    expect(preferenceModel).not.toContain('setUserDataTrackingOptOut(value)');
+    const preferenceModel = read('src/ui/state/preference.ts');
+    expect(preferenceModel).toContain('userDataTrackingOptOut: true');
+    
 
     const dashboard = read(
       'src/ui/views/Dashboard/components/DashboardPanel/index.tsx'

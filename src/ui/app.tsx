@@ -13,7 +13,7 @@ import {
   initializeWalletStatusStore,
   useWalletStatusStore,
 } from './state/walletStatus';
-import { initializeChainsStore, useChainsStore } from './state/chains';
+import { useChainsStore } from './state/chains';
 
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
