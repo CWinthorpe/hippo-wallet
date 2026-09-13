@@ -38,6 +38,8 @@ export type CreateBackgroundOpenapiRuntimeOptions = OpenapiRuntimeCommonOptions 
   kind: 'background';
   store: OpenapiClientStore;
   initializeStore: () => Promise<void>;
+  /** Hippo: the background client runs with the forced-policy adapter. */
+  adapter?: import('axios').AxiosAdapter;
 };
 
 export type CreateOpenapiRuntimeOptions =
@@ -162,7 +164,10 @@ export const createOpenapiRuntime = (
     ? new UIOpenapiStore(uiOptions.commit, onError)
     : undefined;
   const store = uiStore || backgroundOptions!.store;
-  const clients = createOpenapiClient(store);
+  const clients = createOpenapiClient(
+    store,
+    backgroundOptions?.adapter ?? undefined
+  );
   let disposed = false;
   let initialized = false;
   let initialization: Promise<void> | undefined;

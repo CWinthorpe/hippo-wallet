@@ -4,7 +4,19 @@ export type ApprovalGasDisplayMode =
   | 'legacy'
   | 'native_insufficient_prefers_gasAccount';
 
+// Hippo removes the Gas Account / sponsored-gas payment surface entirely.
+// The display layer pins the payment method to native: every resolver below
+// ignores 'gasAccount' input instead of mirroring it, so no approval view can
+// render or highlight a sponsored payment option even if upstream plumbing
+// keeps passing one. This is a display-state invariant, not new security
+// machinery.
 export const APPROVAL_GAS_DISPLAY_MODE: ApprovalGasDisplayMode = 'legacy';
+const HIPPO_FORCED_GAS_METHOD = 'native' as const;
+
+// Compile-time constant: consumers gate the Gas Account quick-switch JSX on
+// `HIPPO_GAS_METHOD_TABS_HIDDEN === true`, so terser folds the whole branch
+// away and no sponsored-gas control (or its label) survives in the bundle.
+export const HIPPO_GAS_METHOD_TABS_HIDDEN = true;
 
 const canUseApprovalGasAccount = ({
   gasAccountChainSupported,
@@ -21,8 +33,8 @@ export const isApprovalSmartGasDisplayEnabled = (
 ) => mode === 'native_insufficient_prefers_gasAccount';
 
 export const shouldHideApprovalGasMethodTabs = (
-  mode: ApprovalGasDisplayMode = APPROVAL_GAS_DISPLAY_MODE
-) => isApprovalSmartGasDisplayEnabled(mode);
+  _mode: ApprovalGasDisplayMode = APPROVAL_GAS_DISPLAY_MODE
+) => HIPPO_GAS_METHOD_TABS_HIDDEN;
 
 export const shouldAutoSwitchToApprovalGasAccount = ({
   nativeTokenInsufficient,
@@ -36,14 +48,19 @@ export const shouldAutoSwitchToApprovalGasAccount = ({
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
   isWalletConnect?: boolean;
-}) =>
-  !!nativeTokenInsufficient &&
-  !freeGasAvailable &&
-  canUseApprovalGasAccount({
-    gasAccountChainSupported,
-    noCustomRPC,
-    isWalletConnect: !!isWalletConnect,
-  });
+}) => {
+  // Hippo: the Gas Account payment surface is removed; never auto-switch.
+  if (HIPPO_FORCED_GAS_METHOD === 'native') return false;
+  return (
+    !!nativeTokenInsufficient &&
+    !freeGasAvailable &&
+    canUseApprovalGasAccount({
+      gasAccountChainSupported,
+      noCustomRPC,
+      isWalletConnect: !!isWalletConnect,
+    })
+  );
+};
 
 export const resolveApprovalGasMethod = ({
   mode = APPROVAL_GAS_DISPLAY_MODE,
@@ -62,19 +79,8 @@ export const resolveApprovalGasMethod = ({
   noCustomRPC?: boolean;
   isWalletConnect: boolean;
 }): ApprovalGasMethod => {
-  if (!isApprovalSmartGasDisplayEnabled(mode)) {
-    return legacyGasMethod || 'native';
-  }
-
-  return shouldAutoSwitchToApprovalGasAccount({
-    nativeTokenInsufficient,
-    gasAccountChainSupported,
-    freeGasAvailable,
-    noCustomRPC,
-    isWalletConnect,
-  })
-    ? 'gasAccount'
-    : 'native';
+  // Hippo: sponsored gas does not exist; every approval displays native.
+  return HIPPO_FORCED_GAS_METHOD;
 };
 
 export const resolveApprovalGasLevelMethod = ({

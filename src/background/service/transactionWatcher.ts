@@ -91,7 +91,7 @@ class TransactionWatcher {
         .catch(() => null);
     }
 
-    return RPCService.requestDefaultRPC({
+    return RPCService.requestReadRPC({
       chainServerId: chainItem.serverId,
       method: 'eth_getTransactionReceipt',
       params: [hash],

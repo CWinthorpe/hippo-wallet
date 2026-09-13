@@ -105,8 +105,13 @@ class CdpClient {
     this.socket = socket;
     this.nextId = 1;
     this.pending = new Map();
+    this.eventListeners = new Set();
     socket.on('message', (buffer) => {
       const message = JSON.parse(String(buffer));
+      if (message.method && !message.id) {
+        for (const listener of this.eventListeners) listener(message);
+        return;
+      }
       if (!message.id || !this.pending.has(message.id)) return;
       const { resolve, reject } = this.pending.get(message.id);
       this.pending.delete(message.id);
@@ -135,6 +140,11 @@ class CdpClient {
       this.pending.set(id, { resolve, reject });
       this.socket.send(JSON.stringify({ id, method, params }));
     });
+  }
+
+  onEvent(listener) {
+    this.eventListeners.add(listener);
+    return () => this.eventListeners.delete(listener);
   }
 
   close() {
@@ -528,6 +538,44 @@ const runOnce = async (
     client = await CdpClient.connect(page.webSocketDebuggerUrl);
     await client.send('Page.enable');
     await client.send('Runtime.enable');
+
+    // Capture the RAW order-book /quote responses at the service-worker
+    // boundary via CDP so the fractional sellTokenPrice requirement is proven
+    // end-to-end in the packaged runtime (an integer-only parser could not
+    // survive a real decimal response), not just in unit fixtures.
+    const rawQuotes = [];
+    let workerClient = null;
+    if (worker?.webSocketDebuggerUrl) {
+      try {
+        workerClient = await CdpClient.connect(worker.webSocketDebuggerUrl);
+        const quoteRequests = new Map();
+        workerClient.onEvent(async (message) => {
+          if (message.method === 'Network.responseReceived') {
+            const { requestId, response } = message.params || {};
+            if (String(response?.url || '').includes('/api/v1/quote')) {
+              quoteRequests.set(requestId, response.url);
+            }
+          } else if (message.method === 'Network.loadingFinished') {
+            const requestId = message.params?.requestId;
+            if (!quoteRequests.has(requestId)) return;
+            try {
+              const body = await workerClient.send('Network.getResponseBody', {
+                requestId,
+              });
+              const text = body?.base64Encoded
+                ? Buffer.from(body.body, 'base64').toString('utf8')
+                : body?.body;
+              rawQuotes.push(JSON.parse(text));
+            } catch (_) {
+              /* body expired; the remaining captures still assert */
+            }
+          }
+        });
+        await workerClient.send('Network.enable');
+      } catch (_) {
+        workerClient = null;
+      }
+    }
     const extensionPage = `chrome-extension://${extensionId}/index.html#/dex-swap`;
     await client.send('Page.navigate', { url: extensionPage });
     await waitFor(async () => {
@@ -539,11 +587,45 @@ const runOnce = async (
       return state?.[0]?.startsWith(extensionPage) && state?.[1] === 'complete';
     }, 'extension page load');
     const result = await evaluate(client, smokeExpression());
+
+    // The raw capture is mandatory: a smoke run that could not observe the
+    // fractional sellTokenPrice end-to-end does not satisfy the release gate.
+    if (!workerClient) {
+      throw new Error(
+        'Service-worker CDP target unavailable; cannot verify raw fractional sellTokenPrice'
+      );
+    }
+    let usdcSellRawPrice = null;
+    {
+      const decimalQuote = await waitFor(
+        async () =>
+          rawQuotes
+            .map((entry) => entry?.quote)
+            .find(
+              (quote) =>
+                String(quote?.sellToken || '').toLowerCase() === USDC
+            ) || null,
+        'raw USDC-sell /quote response capture',
+        15_000
+      );
+      const price = String(decimalQuote.sellTokenPrice ?? '');
+      // The packaged service already parsed and accepted this exact payload;
+      // now prove the raw field itself carried a nonzero fractional part.
+      if (!/^\d+\.\d*[1-9]\d*$/.test(price)) {
+        throw new Error(
+          'Raw CoW sellTokenPrice for the 6-decimal USDC sell was not a fractional decimal string: ' +
+            JSON.stringify(price)
+        );
+      }
+      usdcSellRawPrice = { hasFraction: true, decimals: price.split('.')[1].length };
+    }
+
     assertSmokeResult(result);
     return {
       run: runNumber,
       profile,
       extensionId,
+      rawUsdcSellTokenPrice: usdcSellRawPrice,
       normalOrderUid: result.normalQuote.expectedOrderUid,
       decimalPriceOrderUid: result.decimalPriceQuote.expectedOrderUid,
       nativeOrderUid: result.nativeQuote.expectedOrderUid,
@@ -555,6 +637,7 @@ const runOnce = async (
     const logs = stderr.join('').slice(-12_000);
     throw new Error(`${error.message}\nChromium stderr:\n${logs}`);
   } finally {
+    if (workerClient) workerClient.close();
     if (client) client.close();
     terminateProcessGroup(browser, 'SIGTERM');
     await Promise.race([

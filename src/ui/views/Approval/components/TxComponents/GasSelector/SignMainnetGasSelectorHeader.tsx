@@ -25,6 +25,7 @@ import {
   isApprovalGasMethodNotEnough,
   isGasAccountBalanceEnoughForDisplay,
   resolveApprovalGasMethod,
+  HIPPO_GAS_METHOD_TABS_HIDDEN,
 } from './approvalGasDisplay';
 import {
   resolveSignMainnetGasLevelFetchMode,
@@ -647,7 +648,10 @@ export const SignMainnetGasSelectorHeader = ({
       </TooltipV6>
     ) : null;
   const gasMethodQuickSwitch =
-    gasMethod && props.onChangeGasMethod && !props.disabled ? (
+    HIPPO_GAS_METHOD_TABS_HIDDEN !== true &&
+    gasMethod &&
+    props.onChangeGasMethod &&
+    !props.disabled ? (
       <div
         className={clsx(
           'p-2 rounded-md flex items-center relative shrink-0 mr-8',

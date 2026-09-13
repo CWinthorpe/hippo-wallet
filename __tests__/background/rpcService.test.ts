@@ -8,6 +8,9 @@ jest.mock('background/utils', () => ({
 
 jest.mock('@/utils/chain', () => ({
   findChainByEnum: jest.fn(() => ({ enum: 'ETH' })),
+  findChainByServerID: jest.fn((serverId: string) =>
+    serverId === 'eth' ? { enum: 'ETH', serverId } : undefined
+  ),
   getChainList: jest.fn(() => []),
 }));
 
@@ -463,6 +466,70 @@ describe('RPC read failover and broadcast routing', () => {
       localTransactionHash: keccak256(rawTx),
     });
     expect(service.defaultRPCRequest).toHaveBeenCalledTimes(1);
+  });
+
+  test('receipt reads prefer the enabled custom RPC over defaults', async () => {
+    const service = createService();
+    (service.request as jest.Mock).mockImplementation(async (host, _m, _p) => {
+      if (host === primary) return { result: '0x1' };
+      throw new Error(`unexpected host ${host}`);
+    });
+
+    await service.requestReadRPC({
+      chainServerId: 'eth',
+      method: 'eth_getTransactionReceipt',
+      params: ['0xabc'],
+    });
+    // Every call targeted the custom endpoint list; the bundled default
+    // privacy host was never contacted while a custom RPC is enabled.
+    const hosts = (service.request as jest.Mock).mock.calls.map((c) => c[0]);
+    expect(hosts.length).toBeGreaterThan(0);
+    expect(hosts.every((h) => h === primary || h === fallback)).toBe(true);
+    expect(hosts[0]).toBe(primary);
+  });
+
+  test('receipt reads use the default privacy list only without a custom RPC', async () => {
+    const service = new RPCService();
+    service.store.defaultRPC = service.store.defaultRPC || {};
+    service.store.defaultRPC['eth'] = {
+      chainServerId: 'eth',
+      rpcUrl: ['https://default.example'],
+    } as any;
+    service.defaultRPCRequest = jest
+      .fn()
+      .mockResolvedValue('0x1') as any;
+
+    await expect(
+      service.requestReadRPC({
+        chainServerId: 'eth',
+        method: 'eth_getTransactionReceipt',
+        params: ['0xabc'],
+      })
+    ).resolves.toBe('0x1');
+    expect(service.defaultRPCRequest).toHaveBeenCalledWith(
+      'https://default.example',
+      'eth_getTransactionReceipt',
+      ['0xabc']
+    );
+  });
+
+  test('history and watcher receipt polling never call requestDefaultRPC directly', () => {
+    const watcherSource = fs.readFileSync(
+      path.resolve(__dirname, '../../src/background/service/transactionWatcher.ts'),
+      'utf8'
+    );
+    const historySource = fs.readFileSync(
+      path.resolve(__dirname, '../../src/background/service/transactionHistory.ts'),
+      'utf8'
+    );
+    expect(watcherSource).toContain('requestReadRPC');
+    expect(watcherSource).not.toContain(
+      "RPCService.requestDefaultRPC({\n      chainServerId: chainItem.serverId,\n      method: 'eth_getTransactionReceipt'"
+    );
+    expect(historySource).toContain('requestReadRPC');
+    expect(historySource).not.toMatch(
+      /getRpcTxReceipt[^}]*requestDefaultRPC/s
+    );
   });
 
   test('provider broadcast path has no Rabby, gas-account, or bridge submission fallback', () => {

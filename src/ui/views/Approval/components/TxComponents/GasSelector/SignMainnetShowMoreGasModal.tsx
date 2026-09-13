@@ -32,7 +32,7 @@ import {
   resolveApprovalGasMethod,
   resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
-  shouldHideApprovalGasMethodTabs,
+  HIPPO_GAS_METHOD_TABS_HIDDEN,
 } from './approvalGasDisplay';
 import type {
   SignMainnetGasLevelState,
@@ -174,7 +174,7 @@ export const SignMainnetShowMoreGasModal = ({
               boxShadow: '0px 4px 12px 0px rgba(0, 0, 0, 0.10)',
             }}
           >
-            {shouldHideApprovalGasMethodTabs() ? null : (
+            {HIPPO_GAS_METHOD_TABS_HIDDEN ? null : (
               <div className="flex items-center p-2 m-[8px] rounded-md border-[0.5px] border-solid border-rabby-neutral-line bg-transparent">
                 <SignMainnetGasMethod
                   active={currentGasMethod === 'native'}

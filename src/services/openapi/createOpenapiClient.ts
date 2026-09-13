@@ -1,13 +1,17 @@
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign';
+import type { AxiosAdapter } from 'axios';
 
 import fetchAdapter from './fetchAdapter';
 import type { OpenapiClientStore } from './types';
 
-export const createOpenapiClient = (store: OpenapiClientStore) => {
+export const createOpenapiClient = (
+  store: OpenapiClientStore,
+  adapter: AxiosAdapter = fetchAdapter
+) => {
   const openapi = new OpenApiService({
     plugin: WebSignApiPlugin,
-    adapter: fetchAdapter,
+    adapter,
     store,
   });
   return {

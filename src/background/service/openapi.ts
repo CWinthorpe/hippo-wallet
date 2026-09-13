@@ -7,6 +7,7 @@ import {
 } from '@/services/openapi';
 import type { PublicOpenapiStore } from '@/services/openapi';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
+import { rabbyOpenapiFetchAdapter } from '@/services/openapi/fetchAdapter';
 import { createPersistStore, patchPersistStore } from 'background/utils';
 
 export * from '@/services/openapi';
@@ -111,6 +112,9 @@ const openapiRuntime = createOpenapiRuntime({
   kind: 'background',
   store: proxyStore,
   initializeStore: proxyStore.init,
+  // Hippo: every api.rabby.io/host request must pass the forced consent
+  // gate; unclassified hosts are rejected (matches pre-#4035 posture).
+  adapter: rabbyOpenapiFetchAdapter,
 });
 const service = openapiRuntime.openapi;
 

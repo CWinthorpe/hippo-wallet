@@ -62,6 +62,7 @@ import {
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
+import { HIPPO_GAS_METHOD_TABS_HIDDEN } from './GasSelector/approvalGasDisplay';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -784,7 +785,7 @@ const GasSelectorHeader = ({
     <>
       <HeaderStyled>
         <GasStyled {...gasHoverProps}>
-          {gasMethod ? (
+          {HIPPO_GAS_METHOD_TABS_HIDDEN !== true && gasMethod ? (
             <div
               className={clsx(
                 'p-2 rounded-md flex items-center relative',

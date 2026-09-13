@@ -952,22 +952,25 @@ const SignTx = ({
     [chain?.serverId, effectiveGasMethod, _currentAccount?.type]
   );
 
+  // Hippo removes the Gas Account / sponsored-gas payment surface: every
+  // gas-method setter below is clamped to native so no control (current or
+  // added by future upstream merges) can select a removed payment method.
   const handleAutoChangeGasMethod = useMemoizedFn(
     (method: ApprovalGasMethod) => {
-      setGasMethod(method);
+      setGasMethod('native');
     }
   );
 
   const handleManualChangeGasMethod = useMemoizedFn(
     (method: ApprovalGasMethod) => {
-      setManualGasMethod(method);
-      setGasMethod(method);
+      setManualGasMethod('native');
+      setGasMethod('native');
     }
   );
 
   const handleChangeGasAccount = useMemoizedFn(async () => {
-    setManualGasMethod('gasAccount');
-    setGasMethod('gasAccount');
+    setManualGasMethod('native');
+    setGasMethod('native');
     await gasAccountCostFn();
   });
 
@@ -987,8 +990,8 @@ const SignTx = ({
       }
 
       await gasAccountCostFn();
-      setManualGasMethod('gasAccount');
-      setGasMethod('gasAccount');
+      setManualGasMethod('native');
+      setGasMethod('native');
     }
   );
 

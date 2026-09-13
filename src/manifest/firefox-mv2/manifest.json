@@ -54,8 +54,6 @@
     "contextMenus",
     "http://*/*",
     "https://*/*",
-    "webRequest",
-    "webRequestBlocking",
     "*://*.eth/",
     "notifications"
   ],

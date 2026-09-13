@@ -9,12 +9,14 @@ import {
 } from '@/ui/views/Approval/components/TxComponents/GasSelector/approvalGasDisplay';
 
 describe('approval gas display method', () => {
-  test('keeps manual gas method selection visible by default', () => {
+  test('Hippo hides the removed Gas Account payment tabs in approvals', () => {
     expect(isApprovalSmartGasDisplayEnabled()).toBe(false);
-    expect(shouldHideApprovalGasMethodTabs()).toBe(false);
+    // Hippo removes the Gas Account / sponsored-gas surface: every approval
+    // shows the native payment method only.
+    expect(shouldHideApprovalGasMethodTabs()).toBe(true);
   });
 
-  test('keeps the native-insufficient auto switch condition available', () => {
+  test('never auto-switches to the removed Gas Account payment method', () => {
     expect(
       shouldAutoSwitchToApprovalGasAccount({
         nativeTokenInsufficient: true,
@@ -23,13 +25,23 @@ describe('approval gas display method', () => {
         noCustomRPC: true,
         isWalletConnect: false,
       })
-    ).toBe(true);
+    ).toBe(false);
   });
 
-  test('uses the selected gas method in legacy mode', () => {
+  test('resolves every approval display to native gas', () => {
     expect(
       resolveApprovalGasMethod({
         legacyGasMethod: 'native',
+        nativeTokenInsufficient: true,
+        gasAccountChainSupported: true,
+        freeGasAvailable: false,
+        noCustomRPC: true,
+        isWalletConnect: false,
+      })
+    ).toBe('native');
+    expect(
+      resolveApprovalGasMethod({
+        legacyGasMethod: 'gasAccount',
         nativeTokenInsufficient: true,
         gasAccountChainSupported: true,
         freeGasAvailable: false,
@@ -48,7 +60,7 @@ describe('approval gas display method', () => {
     ).toBe('native');
   });
 
-  test('still supports smart gas account resolution when explicitly requested', () => {
+  test('pins even explicit smart-mode requests to native (surface removed)', () => {
     expect(
       resolveApprovalGasMethod({
         mode: 'native_insufficient_prefers_gasAccount',
@@ -59,7 +71,16 @@ describe('approval gas display method', () => {
         noCustomRPC: true,
         isWalletConnect: false,
       })
-    ).toBe('gasAccount');
+    ).toBe('native');
+    expect(
+      resolveApprovalGasLevelMethod({
+        mode: 'native_insufficient_prefers_gasAccount',
+        currentGasMethod: 'native',
+        nativeTokenInsufficient: true,
+        sharedGasAccountAvailable: true,
+        isWalletConnect: false,
+      })
+    ).toBe('native');
   });
 
   test('keeps insufficient native gas levels red when gas account is available', () => {

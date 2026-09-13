@@ -91,7 +91,6 @@ const runtimeFiles = files.filter(({ relative }) =>
   ['.js', '.html', '.css'].includes(path.extname(relative).toLowerCase())
 );
 const requiredMarkers = [
-  'fc0e0867d8540f1d7df27c322976534d',
   'https://api.cow.fi/mainnet',
   'https://api.cow.fi/xdai',
   'https://api.cow.fi/arbitrum_one',
@@ -141,6 +140,35 @@ const missingMarkers = Object.entries(requiredFound)
   .map(([marker]) => marker);
 if (missingMarkers.length) {
   fail(`required CoW runtime markers missing: ${missingMarkers.join(', ')}`);
+}
+
+// WalletConnect/Reown project identity: exactly one occurrence of the
+// Hippo-owned project id in the runtime, verified by value read from the
+// repository constant. Evidence prints only the SHA-256 and the occurrence
+// count; the identifier value itself is never serialized to stdout.
+const brandSource = fs.readFileSync(
+  path.join(repo, 'src/constant/hippo-brand.ts'),
+  'utf8'
+);
+const wcMatch = brandSource.match(
+  /HIPPO_WALLETCONNECT_PROJECT_ID\s*=\s*['"]([0-9a-fA-F-]+)['"]/
+);
+if (!wcMatch) fail('Hippo WalletConnect project id constant missing in repo');
+const wcValue = wcMatch[1];
+const wcHash = crypto.createHash('sha256').update(wcValue).digest('hex');
+let wcOccurrences = 0;
+for (const { absolute } of runtimeFiles) {
+  const text = fs.readFileSync(absolute, 'utf8');
+  let index = text.indexOf(wcValue);
+  while (index !== -1) {
+    wcOccurrences += 1;
+    index = text.indexOf(wcValue, index + wcValue.length);
+  }
+}
+if (wcOccurrences !== 1) {
+  fail(
+    `expected exactly one WalletConnect project marker in the runtime, found ${wcOccurrences}`
+  );
 }
 
 const rules = JSON.parse(
@@ -208,6 +236,8 @@ console.log(
       treeSha256,
       runtimeFilesScanned: runtimeFiles.length,
       requiredCowMarkers: requiredMarkers,
+      walletConnectProjectSha256: wcHash,
+      walletConnectMarkerCount: wcOccurrences,
       privacyRuleCount: rules.length,
       sourceMaps: 0,
       symlinks: 0,

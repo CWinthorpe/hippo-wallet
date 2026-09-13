@@ -179,11 +179,13 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     [instance]
   );
 
+  // Hippo clamps every gas-method change to native (Gas Account surface
+  // removed); see SignTx.tsx for the matching approval-path clamp.
   const handleChangeGasMethod = useCallback(
     async (method: ApprovalGasMethod) => {
-      setManualGasMethod(method);
+      setManualGasMethod('native');
       try {
-        instance.setGasMethod(method, { manual: true });
+        instance.setGasMethod('native', { manual: true });
       } catch (error) {
         console.error('Gas method change error:', error);
       }
@@ -203,7 +205,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   );
 
   const handleChangeGasAccount = useMemoizedFn(async () => {
-    await handleChangeGasMethod('gasAccount');
+    await handleChangeGasMethod('native');
     if (ctx?.selectedGas) {
       await handleGasChange(ctx.selectedGas as any);
     }
@@ -469,8 +471,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       if (ctx.selectedGas) {
         await handleGasChange(ctx.selectedGas as any);
       }
-      setManualGasMethod('gasAccount');
-      instance.setGasMethod('gasAccount', { manual: true });
+      setManualGasMethod('native');
+      instance.setGasMethod('native', { manual: true });
     }
   );
 

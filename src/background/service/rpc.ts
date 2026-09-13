@@ -1,6 +1,6 @@
 import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
-import { findChainByEnum } from '@/utils/chain';
+import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { http } from '../utils/http';
 import { CUSTOM_RPC_ENABLED } from '@/constant';
 import { keccak256 } from 'viem';
@@ -441,6 +441,28 @@ export class RPCService {
       });
       throw wrapped;
     }
+  };
+
+  /**
+   * Replay-safe read that honors the Hippo RPC policy: an enabled custom
+   * RPC wins and receipt/hash traffic never leaks to bundled defaults while
+   * one is configured. Falls back to the privacy default list only when no
+   * custom endpoint is enabled for the chain.
+   */
+  requestReadRPC = async ({
+    chainServerId,
+    method,
+    params,
+  }: {
+    chainServerId: string;
+    method: string;
+    params: any;
+  }) => {
+    const chain = findChainByServerID(chainServerId);
+    if (chain && this.hasCustomRPC(chain.enum)) {
+      return this.requestCustomRPC(chain.enum, method, params);
+    }
+    return this.requestDefaultRPC({ chainServerId, method, params });
   };
 
   requestDefaultRPC = async ({

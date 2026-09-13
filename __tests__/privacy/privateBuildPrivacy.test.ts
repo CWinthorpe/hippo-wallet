@@ -159,7 +159,7 @@ describe('private-build privacy invariants', () => {
 
     const preferenceModel = read('src/ui/state/preference.ts');
     expect(preferenceModel).toContain('userDataTrackingOptOut: true');
-    
+
 
     const dashboard = read(
       'src/ui/views/Dashboard/components/DashboardPanel/index.tsx'

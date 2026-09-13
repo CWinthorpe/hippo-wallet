@@ -1001,7 +1001,7 @@ class TxHistory {
   };
 
   getRpcTxReceipt = (chainServerId: string, hash: string) => {
-    return RPCService.requestDefaultRPC({
+    return RPCService.requestReadRPC({
       chainServerId,
       method: 'eth_getTransactionReceipt',
       params: [hash],
