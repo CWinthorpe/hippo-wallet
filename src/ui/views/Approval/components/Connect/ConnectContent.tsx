@@ -20,7 +20,12 @@ import styled from 'styled-components';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
@@ -35,6 +40,7 @@ interface ConnectProps {
   params: any;
   onChainChange?(chain: CHAINS_ENUM): void;
   defaultChain?: CHAINS_ENUM;
+  approvalId?: string;
 }
 
 const ConnectWrapper = styled.div`
@@ -209,6 +215,7 @@ const SecurityLevelTipColor = {
 export const ConnectContent = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
+    approvalId,
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { state } = useLocation<{
@@ -216,7 +223,9 @@ export const ConnectContent = (props: ConnectProps) => {
   }>();
   const { showChainsModal = false } = state ?? {};
   const [showModal] = useState(showChainsModal);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'Connect')
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
@@ -582,7 +591,10 @@ export const ConnectContent = (props: ConnectProps) => {
   };
 
   const handleAllow = async () => {
-    resolveApproval(
+    // Upstream #4100 settle-before-close: await the settlement so an
+    // unmount cannot trip resolveApproval's mounted-check mid-flight.
+    // Hippo keeps perps removed, so stay is always false.
+    await resolveApproval(
       {
         defaultChain,
         defaultAccount: selectedAccount,

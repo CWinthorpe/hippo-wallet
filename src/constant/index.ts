@@ -575,6 +575,7 @@ export const EVENTS = {
   },
 
   RELOAD_APPROVAL: 'RELOAD_APPROVAL',
+  APPROVAL_CREATED: 'APPROVAL_CREATED',
 };
 
 export const EVENTS_IN_BG = {
