@@ -113,6 +113,24 @@ describe('Hippo Wallet branding invariants', () => {
     expect(locales).not.toContain('Rabby Mobile');
   });
 
+  test('contributor docs never instruct operating the product as Rabby', () => {
+    // Attribution lines ("derived from Rabby Wallet", license notices) are
+    // fine; instructions that tell a contributor to run/verify a product
+    // called Rabby are legacy identity leaks (gpt56 round-2 blocker,
+    // docs/translation.md).
+    const docs = ['README.md', ...fs.readdirSync(path.join(root, 'docs'))]
+      .filter((f) => f.endsWith('.md'))
+      .map((f) =>
+        read(f === 'README.md' ? 'README.md' : path.join('docs', f))
+      )
+      .join('\n');
+
+    expect(docs).not.toMatch(/in Rabby Wallet/);
+    expect(docs).not.toMatch(/\bstart Rabby\b/);
+    expect(docs).not.toMatch(/\blaunch Rabby\b/);
+    expect(docs).not.toMatch(/\bopen Rabby\b/);
+  });
+
   test('announces Hippo Wallet to dapps while keeping compatibility aliases', () => {
     const pageProvider = read(
       'node_modules/@rabby-wallet/page-provider/dist/index.js'
