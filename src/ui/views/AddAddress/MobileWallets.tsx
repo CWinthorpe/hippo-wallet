@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import { Tooltip } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Item, PageHeader } from '@/ui/component';
 import { useAddAddressWalletOptions } from './shared';
@@ -14,7 +14,12 @@ export const MobileWallets: React.FC<{
 }> = ({ isInModal, onBack, onNavigate }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { mobileWallets } = useAddAddressWalletOptions({ onNavigate });
+  // See AddAddressOptions/index.tsx for why this is read/forwarded.
+  const { approvalId } = (useLocation().state as { approvalId?: string }) || {};
+  const { mobileWallets } = useAddAddressWalletOptions({
+    onNavigate,
+    params: { approvalId },
+  });
 
   const handleBack = React.useCallback(() => {
     if (onBack) {

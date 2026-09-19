@@ -122,6 +122,11 @@ const forbiddenMarkers = [
   '-----BEGIN RSA PRIVATE KEY-----',
   '-----BEGIN OPENSSH PRIVATE KEY-----',
   'sourceMappingURL=data:application/json;base64,ey',
+  // #4098 (extension auto-update) and #4107 (perps portfolio card) were not
+  // ported; their CSS/marker residue must never reach the package.
+  'extension-update-card',
+  'extension-update-dialog',
+  ['perps', 'portfolio', 'breakdown'].join('-'),
 ];
 for (const { absolute, relative } of runtimeFiles) {
   const text = fs.readFileSync(absolute, 'utf8');

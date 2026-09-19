@@ -286,8 +286,61 @@ describe('approval identity static constraints', () => {
         'ui/views/Approval/components/Connect/ConnectContent.tsx'
       )
     );
-    const awaitsSettlement =
-      /await resolveApproval\(\s*\{\s*defaultChain/.test(source);
+    const awaitsSettlement = /await resolveApproval\(\s*\{\s*defaultChain/.test(
+      source
+    );
     expect(awaitsSettlement).toBe(true);
+  });
+
+  test('the mobile-wallet fallback path threads approvalId end-to-end', () => {
+    // Upstream #4100 threading, extended to Hippo's mobile-wallets fallback:
+    // an unknown-type ImportAddress approval that reaches the generic menu and
+    // then picks a mobile (WalletConnect) brand must still carry the approval
+    // ref to ImportSuccess, or the bound approval can never auto-settle.
+    const options = read(
+      path.join(SRC_ROOT, 'ui/component/AddAddressOptions/index.tsx')
+    );
+    const mobile = read(
+      path.join(SRC_ROOT, 'ui/views/AddAddress/MobileWallets.tsx')
+    );
+    const wc = read(path.join(SRC_ROOT, 'ui/views/WalletConnect/index.tsx'));
+
+    // 1. The menu item forwards approvalId (desktop onNavigate + popup route state).
+    const mobileItem = /connect-mobile-wallet[\s\S]*?onNavigate\?\.\('mobile-wallets', \{ approvalId \}\)[\s\S]*?pathname: '\/add-address\/mobile-wallets',\s*state: \{ approvalId \}/.test(
+      options
+    );
+    expect(mobileItem).toBe(true);
+
+    // 2. MobileWallets reads it from its own route state and passes params.
+    expect(
+      /const \{ approvalId \} = \(useLocation\(\)\.state as \{ approvalId\?: string \}\) \|\| \{\};/.test(
+        mobile
+      ) &&
+        /useAddAddressWalletOptions\(\{\s*onNavigate,\s*params: \{ approvalId \},/.test(
+          mobile
+        )
+    ).toBe(true);
+
+    // 3. WalletConnect view reads ambient/state approvalId and forwards it to
+    //    the success navigation (pre-existing #4100 contract, guarded here).
+    expect(
+      /state\?\.approvalId \|\| location\.state\?\.approvalId/.test(wc)
+    ).toBe(true);
+  });
+
+  test('removed-product CSS markers never return to the compiled stylesheets', () => {
+    // #4098 (extension auto-update) and #4107 (perps portfolio card) were not
+    // ported; their scoped CSS must stay out even when upstream keeps editing
+    // the same global stylesheets.
+    const settingsStyle = read(
+      path.join(SRC_ROOT, 'ui/views/Dashboard/components/Settings/style.less')
+    );
+    const antdOverwrite = read(
+      path.join(SRC_ROOT, 'ui/style/antd-overwrite.less')
+    );
+    expect(settingsStyle).not.toMatch(
+      /extension-update-card|extension-update-dialog/
+    );
+    expect(antdOverwrite).not.toMatch(/perps-portfolio-breakdown/);
   });
 });

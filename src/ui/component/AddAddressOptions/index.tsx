@@ -194,9 +194,12 @@ const AddAddressOptions: React.FC<{
         ),
         onClick: () => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('mobile-wallets');
+            onNavigate?.('mobile-wallets', { approvalId });
           } else {
-            history.push('/add-address/mobile-wallets');
+            history.push({
+              pathname: '/add-address/mobile-wallets',
+              state: { approvalId },
+            });
           }
         },
       },
