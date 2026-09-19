@@ -4,7 +4,7 @@ Hippo Wallet is a privacy-focused, self-custodial Chromium wallet derived from [
 
 ## Current release
 
-- **Version:** `0.94.8-hippo.13`
+- **Version:** `0.94.9-hippo.14`
 - **Target:** Chromium Manifest V3
 - **Repository:** [CWinthorpe/hippo-wallet](https://github.com/CWinthorpe/hippo-wallet)
 
