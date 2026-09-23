@@ -193,7 +193,13 @@ async function restoreAppState() {
   uninstalledService.setUninstalled();
 }
 
-restoreAppState();
+restoreAppState().catch((e) => {
+  // A throw here leaves `appStoreLoaded` false and `getBackgroundReady`
+  // unregistered, so every UI page waits until its bootstrap timeout.
+  // Hippo: console-only; upstream's Sentry capture dropped with the telemetry
+  // removal (this file ships no Sentry SDK).
+  console.error('[restoreAppState] failed', e);
+});
 {
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
