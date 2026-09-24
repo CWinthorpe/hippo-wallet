@@ -2,7 +2,7 @@
 
 Hippo Wallet is a downstream Rabby Wallet build intended for direct inspection and self-hosted use. It operates no Hippo telemetry collector, RPC relay, swap relay or account backend.
 
-This document describes release `0.94.9-hippo.14`.
+This document describes release `0.94.10-hippo.15`.
 
 ## Fail-closed Rabby/DeBank policy
 
