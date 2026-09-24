@@ -247,7 +247,7 @@ describe('CowSwapService', () => {
       sellAmountBeforeFee: SELL_AMOUNT,
       kind: 'sell',
       signingScheme: 'eip712',
-      priceQuality: 'optimal',
+      priceQuality: 'verified',
       validFor: 600,
     });
     expect(postedQuote.appData).toContain('Hippo Wallet');

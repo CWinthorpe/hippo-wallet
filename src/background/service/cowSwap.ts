@@ -841,7 +841,15 @@ export class CowSwapService {
       appDataHash,
       sellTokenBalance: 'erc20',
       buyTokenBalance: 'erc20',
-      priceQuality: 'optimal',
+      // CoW documents `verified` as the price quality for quotes that will be
+      // signed and submitted; `optimal` returns the best estimate without an
+      // on-chain simulation guarantee. Since 2026-09-24 CoW stopped
+      // simulation-verifying `optimal`-class quotes entirely (HTTP 200 with a
+      // valid quote but verified:false), which made the fail-closed
+      // `body.verified !== true` check below reject every Hippo quote. Request
+      // the simulated class so quotes are simulation-backed by construction;
+      // the fail-closed verification gate itself is unchanged.
+      priceQuality: 'verified',
       signingScheme: nativeSell ? 'eip1271' : 'eip712',
       ...(nativeSell ? { onchainOrder: true, verificationGasLimit: 0 } : {}),
     };
