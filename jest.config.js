@@ -27,6 +27,7 @@ module.exports = {
     '^background/(.*)$': '<rootDir>/src/background/$1',
     '^@rabby-wallet/staking-sdk$':
       '<rootDir>/node_modules/@rabby-wallet/staking-sdk/dist/index.js',
+    '\\.(less|css)$': '<rootDir>/__tests__/styleMock.js',
   },
 
   // A list of paths to directories that Jest should use to search for files in
@@ -47,6 +48,7 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
+    '^.+\\.tsx$': ['ts-jest', { tsconfig: { jsx: 'react' }, useESM: true }],
     '^.+\\.[tj]s$': [
       'ts-jest',
       {
