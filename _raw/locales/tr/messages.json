@@ -1130,7 +1130,6 @@
           "rabbyPoints": "Hippo Points",
           "ecology": "Ekosistem",
           "bridge": "Köprü",
-          "mobile": "Mobil senkronizasyon",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "setting": "Ayarlar",
@@ -1334,7 +1333,6 @@
         "currentVersion": "Mevcut Sürüm",
         "updateAvailable": "Güncelleme Mevcut",
         "supportedChains": "Entegre Zincirler",
-        "followUs": "Bizi Takip Edin",
         "testnetBackendServiceUrl": "Testnet Backend Servis URL'si",
         "clearWatchMode": "İzleme Modunu Temizle",
         "requestDeBankTestnetGasToken": "DeBank Testnet Gas Tokeni İste",
@@ -2593,25 +2591,6 @@
       "alert": "Bir Dapp'e bağlanamıyor musunuz çünkü Hippo Wallet bir seçenek olarak gözükmüyor mu?",
       "noDappFound": "Dapp bulunamadı",
       "manage": "İzin Verilen Dapp'leri Yönet"
-    },
-    "syncToMobile": {
-      "downloadGooglePlay": "Google Play",
-      "downloadAppleStore": "App Store",
-      "clickToShowQr": "Adresi seçmek ve QR kodunu göstermek için tıklayın",
-      "steps1": "1. Hippo Mobil'i indir",
-      "description": "Adres verileriniz tamamen çevrimdışı kalır, şifrelenir ve güvenli bir şekilde bir QR kodu aracılığıyla aktarılır.",
-      "steps2": "2. Hippo Mobil ile tarayın",
-      "steps2Description": "QR kodunuz hassas veriler içerir. Gizli tutun ve asla kimseyle paylaşmayın.",
-      "title": "Hippo Uzantısından Mobil Cihaza Cüzdan Adresini Senkronize Et",
-      "disableSelectAddress": "{{type}} adresi için senkronizasyon desteklenmiyor",
-      "disableSelectAddressWithPassphrase": "Ek parolalı {{type}} adreslerinde senkronizasyon desteklenmez",
-      "disableSelectAddressWithSlip39": "SLIP-39 kullanan {{type}} adreslerinin senkronizasyonu desteklenmiyor",
-      "selectedLenAddressesForSync_one": "Senkronizasyon için {{len}} adres seçildi",
-      "selectedLenAddressesForSync_other": "Senkronizasyon için {{len}} adres seçildi",
-      "selectAddress": {
-        "title": "Adresleri Senkronize Etmek İçin Seçin"
-      },
-      "verifyPassword": "Şifreyi Doğrula"
     },
     "search": {
       "sectionHeader": {

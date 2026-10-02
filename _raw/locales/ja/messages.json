@@ -1130,7 +1130,6 @@
           "ecology": "エコシステム",
           "rabbyPoints": "Hippo Points",
           "bridge": "ブリッジ",
-          "mobile": "モバイル同期",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "DApp",
@@ -1334,7 +1333,6 @@
         "currentVersion": "現在のバージョン",
         "updateAvailable": "アップデートが利用可能",
         "supportedChains": "統合されたチェーン",
-        "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
         "clearWatchMode": "閲覧専用アドレスをクリア",
         "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
@@ -2590,25 +2588,6 @@
       "manage": "許可されたDappsを管理",
       "title": "MetaMaskとして偽装してHippoを接続する",
       "alert": "Dappに接続できません。Hippo Walletがオプションとして表示されていないためですか？"
-    },
-    "syncToMobile": {
-      "downloadGooglePlay": "Google Play",
-      "steps2Description": " あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
-      "downloadAppleStore": "App Store",
-      "steps1": "Hippo Mobile をダウンロードする",
-      "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
-      "steps2": "2. Hippo Mobileでスキャン",
-      "title": "Hippo Extensionからモバイルへウォレットアドレスを同期",
-      "clickToShowQr": "クリックしてアドレスを選択し、QRコードを表示します",
-      "disableSelectAddress": "{{type}}アドレスのサポートされていない同期",
-      "disableSelectAddressWithPassphrase": "パスフレーズを使用する{{type}}アドレスは同期できません",
-      "disableSelectAddressWithSlip39": "SLIP-39を使用する{{type}}アドレスは同期できません",
-      "selectedLenAddressesForSync_one": "{{len}}件のアドレスを同期用に選択",
-      "selectedLenAddressesForSync_other": "{{len}}件のアドレスを同期用に選択",
-      "selectAddress": {
-        "title": "アドレスを選択して同期する"
-      },
-      "verifyPassword": "パスワードを確認してください"
     },
     "search": {
       "sectionHeader": {

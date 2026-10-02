@@ -1130,7 +1130,6 @@
           "rabbyPoints": "Hippo Points",
           "bridge": "Bridge",
           "ecology": "Ökosystem",
-          "mobile": "Mobile-Synchronisierung",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "searchDapp": "dApp suchen",
@@ -1334,7 +1333,6 @@
         "currentVersion": "Aktuelle Version",
         "updateAvailable": "Update verfügbar",
         "supportedChains": "Integrierte Netzwerke",
-        "followUs": "Folgen Sie uns",
         "testnetBackendServiceUrl": "Testnet-Backend-Service-URL",
         "clearWatchMode": "Beobachtungsmodus zurücksetzen",
         "requestDeBankTestnetGasToken": "DeBank-Testnet-Gas-Token anfordern",
@@ -2590,25 +2588,6 @@
       "step2": "Schritt 2",
       "alert": "Sie können keine Verbindung zu einer DApp herstellen, weil Hippo Wallet nicht als Option angezeigt wird?",
       "title": "Hippo als MetaMask getarnt verbinden"
-    },
-    "syncToMobile": {
-      "downloadAppleStore": "App Store",
-      "clickToShowQr": "Klicken, um Adressen auszuwählen und den QR-Code anzuzeigen",
-      "downloadGooglePlay": "Google Play",
-      "description": "Ihre Adressdaten bleiben vollständig offline, verschlüsselt und werden sicher über einen QR-Code übertragen.",
-      "title": "Wallet-Adressen aus der Hippo-Erweiterung mit der mobilen App synchronisieren",
-      "steps1": "1. Hippo Mobile herunterladen",
-      "steps2": "2. Mit Hippo Mobile scannen",
-      "steps2Description": " *Ihr QR-Code enthält sensible Daten. Halten Sie ihn geheim und geben Sie ihn niemals an andere weiter.",
-      "disableSelectAddress": "Synchronisierung für {{type}}-Adresse nicht unterstützt",
-      "disableSelectAddressWithPassphrase": "Synchronisierung für {{type}}-Adresse mit Passphrase nicht unterstützt",
-      "disableSelectAddressWithSlip39": "Synchronisierung für {{type}}-Adresse mit SLIP-39 nicht unterstützt",
-      "selectedLenAddressesForSync_one": "{{len}} Adresse für die Synchronisierung ausgewählt",
-      "selectedLenAddressesForSync_other": "{{len}} Adressen für die Synchronisierung ausgewählt",
-      "selectAddress": {
-        "title": "Adressen zum Synchronisieren auswählen"
-      },
-      "verifyPassword": "Passwort überprüfen"
     },
     "search": {
       "sectionHeader": {

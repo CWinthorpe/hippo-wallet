@@ -1118,7 +1118,6 @@
           "receive": "Nhận",
           "swap": "Hoán đổi",
           "send": "Gửi",
-          "mobile": "Đồng bộ di động",
           "nft": "NFT",
           "transactions": "Giao dịch",
           "queue": "Hàng đợi",
@@ -1330,7 +1329,6 @@
         "disableWhitelistTip": "Bạn có thể gửi tài sản đến bất kỳ địa chỉ nào sau khi đã vô hiệu hóa.",
         "clearPendingTip2": "Nó không ảnh hưởng đến số dư tài khoản của bạn hoặc yêu cầu bạn nhập lại cụm từ khôi phục. Tất cả tài sản và thông tin tài khoản đều được bảo mật.",
         "clearPendingTip1": "Hành động này sẽ xóa giao dịch đang chờ từ giao diện của bạn, giúp giải quyết các vấn đề do thời gian chờ lâu trên mạng gây ra.",
-        "followUs": "Theo dõi chúng tôi",
         "supportedChains": "Chuỗi tích hợp",
         "testnetBackendServiceUrl": "URL dịch vụ backend Testnet",
         "currentVersion": "Phiên bản hiện tại",
@@ -2587,25 +2585,6 @@
       "step2": "Bước 2",
       "alert": "Không thể kết nối với một Dapp vì nó không hiển thị Hippo Wallet như một tùy chọn?",
       "step1Desc": "Cho phép Hippo ngụy trang thành MetaMask trên Dapp hiện tại."
-    },
-    "syncToMobile": {
-      "selectAddress": {
-        "title": "Chọn Địa chỉ để Đồng bộ hóa"
-      },
-      "steps1": "1. Tải xuống Hippo Mobile",
-      "downloadGooglePlay": "Google Play",
-      "disableSelectAddress": "Không hỗ trợ đồng bộ cho địa chỉ {{type}}",
-      "disableSelectAddressWithSlip39": "Không hỗ trợ đồng bộ địa chỉ {{type}} dùng SLIP-39",
-      "downloadAppleStore": "Cửa hàng ứng dụng",
-      "clickToShowQr": "Nhấn để chọn địa chỉ và hiển thị mã QR",
-      "disableSelectAddressWithPassphrase": "Không hỗ trợ đồng bộ cho địa chỉ {{type}} với cụm mật khẩu.",
-      "title": "Đồng bộ địa chỉ ví từ mở rộng Hippo sang di động",
-      "selectedLenAddressesForSync_other": "Đã chọn {{len}} địa chỉ để đồng bộ hóa",
-      "steps2": "2. Quét bằng Hippo Mobile",
-      "selectedLenAddressesForSync_one": "Đã chọn {{len}} địa chỉ để đồng bộ",
-      "description": "Dữ liệu địa chỉ của bạn luôn ở chế độ ngoại tuyến, được mã hóa và được chuyển giao một cách an toàn qua mã QR.",
-      "steps2Description": " *Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*",
-      "verifyPassword": "Xác thực Mật khẩu"
     },
     "search": {
       "sectionHeader": {

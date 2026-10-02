@@ -123,7 +123,6 @@
           "rabbyPoints": "Hippo 積分",
           "bridge": "跨鏈",
           "ecology": "生態系統",
-          "mobile": "同步手機端",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "searchDapp": "搜尋 Dapp",
@@ -258,7 +257,6 @@
           "gasTopUp": "Gas 充值",
           "ecosystem": "生態系統"
         },
-        "followUs": "關注我們",
         "host": "Host",
         "inputOpenapiHost": "請輸入 OpenAPI Host",
         "lock": {
@@ -2637,25 +2635,6 @@
       "step2": "步驟 2",
       "manage": "管理允許的 Dapp",
       "alert": "無法連接到 Dapp，因為它沒有顯示 Hippo Wallet 作為選項？"
-    },
-    "syncToMobile": {
-      "downloadGooglePlay": "Google Play",
-      "downloadAppleStore": "App Store",
-      "description": "你的地址資料全程保持離線，經加密後透過 QR 碼安全傳輸。",
-      "title": "從 Hippo 擴展同步錢包地址至手機",
-      "steps2Description": "你的 QR 碼包含敏感資料。請妥善保管，切勿與任何人分享。",
-      "clickToShowQr": "點擊選擇地址並顯示 QR 碼",
-      "steps1": "1. 下載 Hippo Mobile",
-      "steps2": "2. 使用 Hippo Mobile 掃描",
-      "disableSelectAddress": "不支援同步 {{type}} 地址",
-      "disableSelectAddressWithPassphrase": "不支援同步使用密碼短語的 {{type}} 地址",
-      "disableSelectAddressWithSlip39": "不支援同步使用 SLIP-39 的 {{type}} 地址",
-      "selectedLenAddressesForSync_one": "已選擇 {{len}} 個地址進行同步",
-      "selectedLenAddressesForSync_other": "已選擇 {{len}} 個地址進行同步",
-      "selectAddress": {
-        "title": "選擇要同步的地址"
-      },
-      "verifyPassword": "驗證密碼"
     },
     "search": {
       "sectionHeader": {

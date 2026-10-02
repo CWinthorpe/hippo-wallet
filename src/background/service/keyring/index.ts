@@ -39,7 +39,7 @@ import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
-import { filterKeyringData, generateAliasName } from '@/utils/account';
+import { generateAliasName } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
@@ -1636,67 +1636,6 @@ export class KeyringService extends EventEmitter {
     return (this.store
       .getState()
       .unencryptedKeyringData?.map((item) => item.type) ?? []) as string[];
-  }
-
-  async getSyncVault(filteredAccounts: Account[]) {
-    const serializedKeyrings = await Promise.all(
-      this.keyrings.map((keyring) => {
-        return Promise.all([keyring.type, keyring.serialize()]).then(
-          async (serializedKeyringArray) => {
-            // Label the output values on each serialized Keyring:
-            return {
-              type: serializedKeyringArray[0] as string,
-              data: serializedKeyringArray[1] as any,
-              accounts: (await keyring.getAccounts()) as string[],
-            };
-          }
-        );
-      })
-    );
-
-    const accounts: string[] = [];
-
-    const syncKeyringData = serializedKeyrings
-      .map(({ type, data, accounts: _accounts }) => {
-        if (
-          filteredAccounts.find((item) =>
-            _accounts.find(
-              (address) =>
-                isSameAddress(address, item.address) && item.type === type
-            )
-          )
-        ) {
-          // clean mnemonic keyring
-          if (type === KEYRING_CLASS.MNEMONIC) {
-            data = {
-              mnemonic: data.mnemonic,
-              accountDetails: data.accountDetails,
-              publicKey: data.publicKey,
-            };
-          }
-
-          const currentAddresses = _accounts.filter((address) =>
-            filteredAccounts.find(
-              (item) =>
-                isSameAddress(address, item.address) && item.type === type
-            )
-          );
-          const currentData = filterKeyringData(data, currentAddresses);
-
-          accounts.push(...currentAddresses);
-
-          return { type, data: currentData };
-        }
-      })
-      .filter(Boolean) as KeyringSerializedData[];
-
-    const encryptedString = await passwordEncrypt({
-      data: syncKeyringData,
-      password: this.password,
-      persisted: false,
-    });
-
-    return { vault: encryptedString, accounts };
   }
 
   async encryptWithPassword(

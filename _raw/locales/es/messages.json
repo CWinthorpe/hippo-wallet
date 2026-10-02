@@ -1130,7 +1130,6 @@
           "ecology": "Ecosistema",
           "bridge": "Bridge",
           "rabbyPoints": "Hippo Points",
-          "mobile": "Sincronización móvil",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "dApps",
@@ -1334,7 +1333,6 @@
         "currentVersion": "Versión actual",
         "updateAvailable": "Actualización disponible",
         "supportedChains": "Redes integradas",
-        "followUs": "Síguenos",
         "testnetBackendServiceUrl": "URL del servicio backend de testnet",
         "clearWatchMode": "Borrar modo de solo lectura",
         "requestDeBankTestnetGasToken": "Solicitar token de gas del testnet de DeBank",
@@ -2590,25 +2588,6 @@
       "step1": "Paso 1",
       "alert": "¿No puedes conectarte a una dApp porque Hippo Wallet no aparece como opción?",
       "step2": "Paso 2"
-    },
-    "syncToMobile": {
-      "title": "Sincronizar direcciones de la extensión Hippo con la app móvil",
-      "steps2": "2. Escanea con Hippo Mobile",
-      "downloadGooglePlay": "Google Play",
-      "description": "Tus datos de dirección permanecen totalmente fuera de línea, cifrados y se transfieren de manera segura a través de un código QR.",
-      "clickToShowQr": "Haz clic para seleccionar direcciones y mostrar el código QR",
-      "steps1": "1. Descarga Hippo Mobile",
-      "downloadAppleStore": "App Store",
-      "steps2Description": " *Tu código QR contiene datos sensibles. Manténlo privado y nunca lo compartas con nadie.",
-      "disableSelectAddress": "La sincronización no es compatible con direcciones {{type}}",
-      "disableSelectAddressWithPassphrase": "La sincronización no es compatible con direcciones {{type}} que usan passphrase",
-      "disableSelectAddressWithSlip39": "La sincronización no es compatible con direcciones {{type}} que usan SLIP-39",
-      "selectedLenAddressesForSync_one": "{{len}} dirección seleccionada para sincronizar",
-      "selectedLenAddressesForSync_other": "{{len}} direcciones seleccionadas para sincronizar",
-      "selectAddress": {
-        "title": "Seleccionar direcciones para sincronizar"
-      },
-      "verifyPassword": "Verificar contraseña"
     },
     "search": {
       "sectionHeader": {

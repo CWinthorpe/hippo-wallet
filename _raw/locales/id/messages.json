@@ -1129,7 +1129,6 @@
           "bridge": "Jembatan",
           "send": "Kirim",
           "approvals": "Persetujuan",
-          "mobile": "Sinkronisasi seluler",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
@@ -1332,7 +1331,6 @@
         "testnetBackendServiceUrl": "URL Layanan Backend Testnet",
         "currentVersion": "Versi Saat Ini",
         "requestDeBankTestnetGasToken": "Minta Token Gas DeBank Testnet",
-        "followUs": "Ikuti Kami",
         "supportedChains": "Rantai Terintegrasi",
         "updateAvailable": "Pembaruan Tersedia",
         "clearWatchMode": "Hapus Mode Tonton",
@@ -2587,25 +2585,6 @@
       "alert": "Tidak dapat terhubung ke Dapp karena tidak menampilkan Hippo Wallet sebagai pilihan?",
       "step1Desc": "Izinkan Hippo menyamar sebagai MetaMask di Dapp saat ini",
       "step1": "Langkah 1"
-    },
-    "syncToMobile": {
-      "selectAddress": {
-        "title": "Pilih Alamat untuk Disinkronkan"
-      },
-      "downloadGooglePlay": "Google Play",
-      "steps2": "2. Pindai dengan Hippo Mobile",
-      "title": "Sinkronisasikan Alamat Dompet dari Hippo Extension ke Mobile",
-      "clickToShowQr": "Klik untuk Memilih Alamat dan Tampilkan Kode QR",
-      "steps1": "1. Unduh Hippo Mobile",
-      "downloadAppleStore": "App Store",
-      "selectedLenAddressesForSync_one": "{{len}} alamat dipilih untuk disinkronkan",
-      "disableSelectAddress": "Sinkronisasi tidak didukung untuk alamat {{type}}",
-      "description": "Data alamat Anda tetap sepenuhnya offline, terenkripsi, dan ditransfer dengan aman melalui kode QR.",
-      "disableSelectAddressWithSlip39": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan SLIP-39",
-      "steps2Description": " *QR code Anda berisi data sensitif. Jaga kerahasiaannya dan jangan pernah membagikannya kepada siapa pun.",
-      "selectedLenAddressesForSync_other": "Dipilih {{len}} alamat untuk disinkronkan",
-      "disableSelectAddressWithPassphrase": "Sinkronisasi tidak didukung untuk alamat {{type}} dengan frasa sandi",
-      "verifyPassword": "Verifikasi Kata Sandi"
     },
     "search": {
       "sectionHeader": {

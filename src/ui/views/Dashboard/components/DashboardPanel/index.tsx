@@ -35,7 +35,6 @@ import {
   RcIconApprovalsCC,
   RcIconDappsCC,
   RcIconManageCC,
-  RcIconMobileSyncCC,
   RcIconReceiveCC,
   RcIconSearchCC,
   RcIconSendCC,
@@ -96,12 +95,6 @@ const GlobalStyle = createGlobalStyle`
 
         &.icon-spin {
           animation: icn-spin 1.5s linear infinite;
-        }
-
-        &.icon-rabby-mobile {
-          width: 24px;
-          height: 24px;
-          margin-bottom: 4px;
         }
 
         &.icon-points {
@@ -408,16 +401,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: onSettingClick,
     } as IPanelItem,
 
-    mobile: {
-      icon: RcIconMobileSyncCC,
-      eventKey: 'Hippo Mobile',
-      content: t('page.dashboard.home.panel.mobile'),
-      onClick: () => {
-        openInternalPageInTab('sync');
-      },
-      isFullscreen: true,
-    } as IPanelItem,
-
     searchDapp: {
       icon: RcIconSearchCC,
       eventKey: 'Search Dapp',
@@ -446,15 +429,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
-    return [
-      'swap',
-      'send',
-      'receive',
-      'transactions',
-      'security',
-      'mobile',
-      'dapps',
-    ];
+    return ['swap', 'send', 'receive', 'transactions', 'security', 'dapps'];
   }, []);
 
   const getPanelKeys = useMemoizedFn(() => {

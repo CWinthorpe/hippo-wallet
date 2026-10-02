@@ -1117,7 +1117,6 @@
         "panel": {
           "swap": "스왑",
           "bridge": "브리지",
-          "mobile": "모바일 동기화",
           "more": "더 보기",
           "feedback": "피드백",
           "rabbyPoints": "Hippo 포인트",
@@ -1330,7 +1329,6 @@
         "1Day": "1일",
         "aboutUs": "우리에 대해",
         "supportedChains": "통합 체인",
-        "followUs": "팔로우 해주세요",
         "updateAvailable": "업데이트 가능",
         "clearWatchAddressContent": "모든 Watch Mode 주소를 삭제했는지 확인하셨나요?",
         "currentVersion": "현재 버전",
@@ -2587,25 +2585,6 @@
       "alert": "Dapp에 연결할 수 없나요? Hippo Wallet이 옵션으로 표시되지 않아서요?",
       "step1Desc": "Hippo가 현재 Dapp에서 MetaMask로 가장하도록 허용합니다.",
       "manage": "허용된 Dapp 관리하기"
-    },
-    "syncToMobile": {
-      "selectAddress": {
-        "title": "주소 동기화 선택"
-      },
-      "disableSelectAddressWithSlip39": "SLIP-39를 사용하는 {{type}} 주소는 동기화할 수 없습니다.",
-      "steps1": "1. Hippo Mobile을 다운로드하세요",
-      "downloadAppleStore": "앱 스토어",
-      "title": "Hippo 확장 프로그램에서 모바일로 지갑 주소 동기화",
-      "downloadGooglePlay": "구글 플레이",
-      "clickToShowQr": "주소 선택 및 QR 코드 표시 클릭",
-      "disableSelectAddress": "{{type}} 주소에 대한 동기화를 지원하지 않습니다.",
-      "description": "귀하의 주소 데이터는 완전히 오프라인 상태로 유지되며, 암호화되어 QR 코드를 통해 안전하게 전송됩니다.",
-      "disableSelectAddressWithPassphrase": "{{type}} 주소에 대한 패스프레이즈를 사용한 동기화는 지원되지 않습니다.",
-      "selectedLenAddressesForSync_one": "선택된 {{len}} 주소를 동기화합니다.",
-      "selectedLenAddressesForSync_other": "선택된 {{len}} 주소를 동기화합니다.",
-      "steps2Description": " *귀하의 QR 코드에는 민감한 데이터가 포함되어 있습니다. 개인 정보를 유지하고 누구와도 공유하지 마십시오.",
-      "steps2": "2. Hippo Mobile로 스캔하세요",
-      "verifyPassword": "비밀번호 확인"
     },
     "search": {
       "sectionHeader": {

@@ -1130,7 +1130,6 @@
           "nft": "NFT",
           "bridge": "Кроссчейн",
           "ecology": "Экосистема",
-          "mobile": "Синхронизация с мобильным",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "setting": "Настройки",
@@ -1335,7 +1334,6 @@
         "currentVersion": "Текущая версия",
         "updateAvailable": "Доступно обновление",
         "supportedChains": "Поддерживаемые сети",
-        "followUs": "Подписаться",
         "testnetBackendServiceUrl": "URL сервиса для тестовых сетей",
         "clearWatchMode": "Очистить Режим Просмотра",
         "requestDeBankTestnetGasToken": "Запросить тестовые токены газа DeBank",
@@ -2592,25 +2590,6 @@
       "step1": "Шаг 1",
       "step2": "Шаг 2",
       "alert": "Не удается подключиться к Dapp, потому что Hippo Wallet не отображается в качестве опции?"
-    },
-    "syncToMobile": {
-      "clickToShowQr": "Нажмите, чтобы выбрать адрес и показать QR -код",
-      "downloadAppleStore": "App Store",
-      "steps1": "1. Загрузите Hippo Mobile",
-      "downloadGooglePlay": "Google Play",
-      "steps2": "2. Сканируйте с помощью Hippo Mobile",
-      "title": "Синхронизировать адрес кошелька из расширения Hippo на мобильный устройство",
-      "description": "Ваши данные адреса остаются полностью оффлайн, зашифрованными и надежно передаются через QR-код.",
-      "steps2Description": "Ваш QR-код содержит конфиденциальные данные. Держите его в тайне и никогда не делитесь им ни с кем.",
-      "disableSelectAddress": "Синхронизация адреса {{type}} не поддерживается",
-      "disableSelectAddressWithPassphrase": "Синхронизация адреса {{type}} с парольной фразой не поддерживается",
-      "disableSelectAddressWithSlip39": "Синхронизация адреса {{type}} с SLIP-39 не поддерживается",
-      "selectedLenAddressesForSync_one": "Выбран {{len}} адрес для синхронизации",
-      "selectedLenAddressesForSync_other": "Выбрано адресов для синхронизации: {{len}}",
-      "selectAddress": {
-        "title": "Выберите адреса для синхронизации"
-      },
-      "verifyPassword": "Подтвердите пароль"
     },
     "search": {
       "sectionHeader": {

@@ -83,7 +83,6 @@ import {
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
-import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
@@ -104,11 +103,6 @@ const Main = () => {
       <Switch>
         <Route exact path="/welcome">
           <Welcome />
-        </Route>
-
-        {/* todo remove */}
-        <Route exact path="/sync">
-          <SyncToMobile />
         </Route>
 
         <Route exact path="/new-user/guide">

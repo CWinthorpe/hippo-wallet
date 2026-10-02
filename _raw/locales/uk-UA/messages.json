@@ -1132,7 +1132,6 @@
           "bridge": "Кросчейн",
           "ecology": "Екосистема",
           "rabbyPoints": "Hippo Points",
-          "mobile": "Мобільна синхронізація",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
@@ -1336,7 +1335,6 @@
         "currentVersion": "Поточна версія",
         "updateAvailable": "Доступне оновлення",
         "supportedChains": "Підтримувані мережі",
-        "followUs": "Слідкуйте за нами",
         "testnetBackendServiceUrl": "URL-адреса внутрішньої служби Testnet",
         "clearWatchMode": "Очистити режим спостереження",
         "requestDeBankTestnetGasToken": "Запросити тестові токени для DeBank Testnet",
@@ -2601,25 +2599,6 @@
       "alert": "Не вдається підключитися до Dapp, оскільки Hippo Wallet не відображається серед варіантів?",
       "noDappFound": "Жодного Dapp не знайдено",
       "step1Desc": "Дозволити Hippo маскуватися під MetaMask на поточному Dapp"
-    },
-    "syncToMobile": {
-      "steps2": "2. Сканувати за допомогою Hippo Mobile",
-      "clickToShowQr": "Натисніть, щоб вибрати адресу й показати QR-код",
-      "downloadAppleStore": "App Store",
-      "steps1": "Завантажте Hippo Mobile",
-      "title": "Синхронізуйте адресу гаманця з розширення Hippo на мобільний пристрій",
-      "description": "Ваші дані адреси залишаються повністю офлайн, зашифрованими та безпечно передаються через QR-код.",
-      "downloadGooglePlay": "Google Play",
-      "steps2Description": "Ваш QR-код містить конфіденційні дані. Тримайте його в таємниці та ніколи не діліться ним із будь-ким.",
-      "disableSelectAddress": "Синхронізація не підтримується для адреси типу {{type}}",
-      "disableSelectAddressWithPassphrase": "Синхронізація не підтримується для адреси типу {{type}} з додатковою парольною фразою",
-      "disableSelectAddressWithSlip39": "Синхронізація адреси типу {{type}} зі SLIP-39 не підтримується",
-      "selectedLenAddressesForSync_one": "Вибрано {{len}} адресу для синхронізації",
-      "selectedLenAddressesForSync_other": "Вибрано {{len}} адрес для синхронізації",
-      "selectAddress": {
-        "title": "Виберіть адреси для синхронізації"
-      },
-      "verifyPassword": "Перевірити пароль"
     },
     "search": {
       "sectionHeader": {

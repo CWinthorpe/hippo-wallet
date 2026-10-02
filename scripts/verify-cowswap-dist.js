@@ -127,6 +127,13 @@ const forbiddenMarkers = [
   'extension-update-card',
   'extension-update-dialog',
   ['perps', 'portfolio', 'breakdown'].join('-'),
+  // Release-audit round-1 B1 closure: Rabby mobile-app destinations and
+  // Rabby social links (SyncToMobile route, Follow Us menu) were removed
+  // with the surfaces that referenced them; neither may reach the package.
+  'com.debank.rabbymobile',
+  'rabby-wallet-crypto-evm',
+  'twitter.com/rabby_io',
+  'discord.com/invite/seFBCWmUre',
 ];
 for (const { absolute, relative } of runtimeFiles) {
   const text = fs.readFileSync(absolute, 'utf8');

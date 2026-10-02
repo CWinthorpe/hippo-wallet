@@ -27,13 +27,8 @@ import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/d
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
 import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.svg';
 
-import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
 
-import IconDiscordHover from 'ui/assets/discord-hover.svg';
-import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
-import IconTwitterHover from 'ui/assets/twitter-hover.svg';
-import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
 import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
@@ -51,7 +46,6 @@ import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
 import { ReactComponent as RcIconSettingsFeatureConnectedDapps } from 'ui/assets/dashboard/settings/connected-dapps.svg';
-import { ReactComponent as RcIconSettingsAboutFollowUs } from 'ui/assets/dashboard/settings/follow-us.svg';
 import { ReactComponent as RcIconSettingsAboutSupporetedChains } from 'ui/assets/dashboard/settings/supported-chains.svg';
 import { ReactComponent as RcIconSettingsAboutVersion } from 'ui/assets/dashboard/settings/version.svg';
 import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/settings/git-fork-cc.svg';
@@ -916,16 +910,6 @@ const SettingsInner = ({
         },
 
         {
-          leftIcon: RcIconRabbyMobileCC,
-          leftIconClassName: 'text-r-neutral-body w-24 h-24',
-          leftIconStyle: { marginRight: '-2px', marginLeft: '-2px' },
-          content: t('page.dashboard.home.panel.mobile'),
-          onClick: () => {
-            openInternalPageInTab('sync');
-          },
-        },
-
-        {
           leftIcon: RcIconSettingsSearchDapps,
           content: t('page.dashboard.settings.features.searchDapps'),
           onClick: () => {
@@ -1407,71 +1391,6 @@ const SettingsInner = ({
                 src={RcIconArrowRight}
                 className="icon icon-arrow-right"
               />
-            </>
-          ),
-        },
-        {
-          leftIcon: RcIconSettingsAboutFollowUs,
-          content: t('page.dashboard.settings.followUs'),
-          // onClick: () => {},
-          rightIcon: (
-            <>
-              <a
-                href="https://twitter.com/rabby_io"
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => {
-                  matomoRequestEvent({
-                    category: 'Setting',
-                    action: 'clickToUse',
-                    label: 'Find us|Twitter',
-                  });
-
-                  ga4.fireEvent('More_FindUsTwitter', {
-                    event_category: 'Click More',
-                  });
-
-                  reportSettings('twitter');
-                }}
-                className="ml-12 group"
-              >
-                <ThemeIcon
-                  src={RcIconTwitter}
-                  className="w-20 group-hover:w-0 group-hover:h-0 group-hover:overflow-hidden"
-                />
-                <ThemeIcon
-                  src={IconTwitterHover}
-                  className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
-                />
-              </a>
-              <a
-                href="https://discord.com/invite/seFBCWmUre"
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => {
-                  matomoRequestEvent({
-                    category: 'Setting',
-                    action: 'clickToUse',
-                    label: 'Find us|Discord',
-                  });
-
-                  ga4.fireEvent('More_FindUsDiscord', {
-                    event_category: 'Click More',
-                  });
-
-                  reportSettings('discord');
-                }}
-                className="ml-12 group"
-              >
-                <ThemeIcon
-                  src={RcIconDiscord}
-                  className="w-20 overflow-hidden group-hover:w-0 group-hover:h-0 "
-                />
-                <ThemeIcon
-                  src={IconDiscordHover}
-                  className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
-                />
-              </a>
             </>
           ),
         },

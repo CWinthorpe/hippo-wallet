@@ -5585,34 +5585,6 @@ export class WalletController extends BaseController {
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
 
-  getSyncDataString = async (filteredAccounts: Account[]) => {
-    const { vault, accounts } = await keyringService.getSyncVault(
-      filteredAccounts
-    );
-    const whitelist = await this.getWhitelist();
-    const highligtedAddresses = await this.getHighlightedAddresses();
-    const alianNames = await this.getAllAlianName();
-
-    const filteredWhitelist = whitelist.filter((item) => {
-      return accounts.some((account) => isSameAddress(account, item));
-    });
-    const filteredHighligtedAddresses = highligtedAddresses.filter((item) => {
-      return accounts.some((account) => isSameAddress(account, item.address));
-    });
-    const filteredAlianNames = alianNames.filter((item) => {
-      return accounts.some(
-        (account) => item.address && isSameAddress(account, item.address)
-      );
-    });
-
-    return JSON.stringify({
-      vault: JSON.parse(vault),
-      whitelist: filteredWhitelist,
-      highligtedAddresses: filteredHighligtedAddresses,
-      alianNames: filteredAlianNames,
-    });
-  };
-
   setRateGuideLastExposure: typeof preferenceService.setRateGuideLastExposure = async (
     ...args
   ) => {

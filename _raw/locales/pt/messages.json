@@ -1118,7 +1118,6 @@
           "swap": "Trocar",
           "more": "Mais",
           "rabbyPoints": "Hippo Points",
-          "mobile": "Sincronização móvel",
           "nft": "NFT",
           "ecology": "Ecossistema",
           "receive": "Receber",
@@ -1329,7 +1328,6 @@
         "clearPendingTip2": "Não afeta os saldos da sua conta nem exige que reintroduza a sua frase de recuperação. Todos os ativos e detalhes da conta permanecem seguros.",
         "disableWhitelistTip": "Depois de desativar esta opção, pode enviar ativos para qualquer endereço",
         "clearPendingTip1": "Esta ação remove a transação pendente da sua interface, ajudando a resolver problemas causados por longas durações de pendência na rede.",
-        "followUs": "Siga-nos",
         "supportedChains": "Redes integradas",
         "currentVersion": "Versão Atual",
         "testnetBackendServiceUrl": "URL do Serviço de Backend Testnet",
@@ -2587,25 +2585,6 @@
       "step1Desc": "Permitir que o Hippo se disfarce de MetaMask no Dapp atual",
       "step2Desc": "Atualizar e ligar via MetaMask",
       "step1": "Passo 1"
-    },
-    "syncToMobile": {
-      "selectAddress": {
-        "title": "Selecionar Endereços para Sincronizar"
-      },
-      "disableSelectAddress": "A sincronização não é suportada para endereços {{type}}",
-      "downloadGooglePlay": "Google Play",
-      "steps1": "1. Transfira o Hippo Mobile",
-      "downloadAppleStore": "Loja de Aplicações",
-      "disableSelectAddressWithPassphrase": "A sincronização não é suportada para endereços {{type}} com palavra-passe adicional",
-      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização",
-      "steps2": "2. Leia o código com o Hippo Mobile",
-      "clickToShowQr": "Clique para Selecionar Endereço e Mostrar Código QR",
-      "selectedLenAddressesForSync_one": "Selecionado {{len}} endereço para sincronização",
-      "title": "Sincronizar Endereço da Carteira da Extensão Hippo para o Móvel",
-      "description": "Os dados dos seus endereços permanecem totalmente offline, encriptados e são transferidos em segurança através de um código QR.",
-      "disableSelectAddressWithSlip39": "A sincronização não é suportada para endereços {{type}} com SLIP-39",
-      "steps2Description": "O seu código QR contém dados confidenciais. Mantenha-o privado e nunca o partilhe com ninguém.",
-      "verifyPassword": "Verificar Palavra-passe"
     },
     "search": {
       "sectionHeader": {

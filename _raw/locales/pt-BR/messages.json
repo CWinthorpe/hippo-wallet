@@ -1130,7 +1130,6 @@
           "ecology": "Ecossistema",
           "rabbyPoints": "Hippo Points",
           "bridge": "Ponte",
-          "mobile": "Sincronização móvel",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "searchDapp": "Pesquisar Dapp",
@@ -1334,7 +1333,6 @@
         "currentVersion": "Versão Atual",
         "updateAvailable": "Atualização Disponível",
         "supportedChains": "Cadeias Suportadas",
-        "followUs": "Siga-nos",
         "testnetBackendServiceUrl": "URL do Serviço de Backend de Teste",
         "clearWatchMode": "Limpar Modo de Observação",
         "requestDeBankTestnetGasToken": "Solicitar Token de Gás de Testnet DeBank",
@@ -2590,25 +2588,6 @@
       "title": "Conectar Hippo disfarçando como MetaMask",
       "noDappFound": "Nenhum Dapp encontrado",
       "step1Desc": "Permita que Hippo se disfarce como MetaMask no Dapp atual"
-    },
-    "syncToMobile": {
-      "title": "Sincronizar Endereço da Carteira da Extensão Hippo para o Celular",
-      "downloadAppleStore": "App Store",
-      "downloadGooglePlay": "Google Play",
-      "clickToShowQr": "Clique para selecionar o endereço e mostrar o código QR",
-      "steps1": "1. Baixe o Hippo Mobile",
-      "description": "Seus dados de endereço permanecem totalmente offline, criptografados e transferidos com segurança via um código QR.",
-      "steps2Description": "Seu código QR contém dados sensíveis. Mantenha-o privado e nunca o compartilhe com ninguém.",
-      "steps2": "2. Escanear com Hippo Mobile",
-      "disableSelectAddress": "Não há suporte à sincronização de endereços {{type}}",
-      "disableSelectAddressWithPassphrase": "A sincronização não é compatível com endereços {{type}} que usam passphrase",
-      "disableSelectAddressWithSlip39": "Não há suporte à sincronização de endereços {{type}} com SLIP-39",
-      "selectedLenAddressesForSync_one": "Selecionado {{len}} endereço para sincronização",
-      "selectedLenAddressesForSync_other": "Selecionados {{len}} endereços para sincronização",
-      "selectAddress": {
-        "title": "Selecionar Endereços para Sincronizar"
-      },
-      "verifyPassword": "Verificar Senha"
     },
     "search": {
       "sectionHeader": {

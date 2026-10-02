@@ -1249,7 +1249,6 @@
           "ecology": "Ecosystem",
           "bridge": "Bridge",
           "perps": "Perps",
-          "mobile": "Mobile Sync",
           "gasAccount": "GasAccount",
           "setting": "Setting",
           "searchDapp": "Search Dapp",
@@ -1452,7 +1451,6 @@
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
         "supportedChains": "Integrated Chains",
-        "followUs": "Follow Us",
         "testnetBackendServiceUrl": "Testnet Backend Service URL",
         "clearWatchMode": "Clear Watch Mode",
         "requestDeBankTestnetGasToken": "Request DeBank Testnet Gas Token",
@@ -2706,25 +2704,6 @@
         "enabled": "Disguise enabled. Refresh the Dapp to reconnect.",
         "disabled": "Disguise disabled. Refresh the Dapp."
       }
-    },
-    "syncToMobile": {
-      "title": "Sync Wallet Address from Hippo Extension to Mobile",
-      "description": "Your address data stays fully offline, encrypted, and securely           transferred via a QR code.",
-      "steps1": "1. Download Hippo Mobile",
-      "steps2": "2. Scan with Hippo Mobile",
-      "steps2Description": " *Your QR code contains sensitive data. Keep it private and never             share it with anyone.",
-      "downloadGooglePlay": "Google Play",
-      "downloadAppleStore": "App Store",
-      "clickToShowQr": "Click to Select Address  and Show QR Code",
-      "selectAddress": {
-        "title": "Select Addresses to Sync"
-      },
-      "disableSelectAddress": "Sync not supported for {{type}} address",
-      "disableSelectAddressWithSlip39": "Sync not supported for {{type}} address with slip39",
-      "disableSelectAddressWithPassphrase": "Sync not supported for {{type}} address with passphrase",
-      "selectedLenAddressesForSync_one": "Selected {{len}} address for sync",
-      "selectedLenAddressesForSync_other": "Selected {{len}} addresses for sync",
-      "verifyPassword": "Verify Password"
     },
     "search": {
       "sectionHeader": {

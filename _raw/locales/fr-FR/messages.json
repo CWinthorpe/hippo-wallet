@@ -879,7 +879,6 @@
           "ecology": "Écosystème",
           "bridge": "Bridge",
           "rabbyPoints": "Hippo Points",
-          "mobile": "Synchronisation mobile",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "setting": "Paramètres",
@@ -1024,7 +1023,6 @@
           "gasTopUp": "Recharger le gas",
           "ecosystem": "Écosystème"
         },
-        "followUs": "Suivez-nous",
         "host": "Hôte",
         "inputOpenapiHost": "Veuillez saisir l'hôte OpenAPI",
         "lock": {
@@ -2918,25 +2916,6 @@
       "title": "Connecter Hippo en se faisant passer pour MetaMask",
       "manage": "Gérer les DApps autorisées",
       "step2": "Étape 2"
-    },
-    "syncToMobile": {
-      "steps1": "1. Télécharger Hippo Mobile",
-      "title": "Synchroniser les adresses de l'extension Hippo avec l'application mobile",
-      "clickToShowQr": "Cliquer pour sélectionner des adresses et afficher le code QR",
-      "steps2Description": " *Votre code QR contient des données sensibles. Gardez-le confidentiel et ne le partagez jamais.",
-      "downloadGooglePlay": "Google Play",
-      "downloadAppleStore": "App Store",
-      "description": "Les données de vos adresses restent entièrement hors ligne et chiffrées, puis sont transférées en toute sécurité par code QR.",
-      "steps2": "2. Scanner avec Hippo Mobile",
-      "disableSelectAddress": "La synchronisation n'est pas prise en charge pour les adresses {{type}}",
-      "disableSelectAddressWithPassphrase": "La synchronisation n'est pas prise en charge pour les adresses {{type}} avec une passphrase",
-      "disableSelectAddressWithSlip39": "La synchronisation n'est pas prise en charge pour les adresses {{type}} avec SLIP-39",
-      "selectedLenAddressesForSync_one": "{{len}} adresse sélectionnée pour la synchronisation",
-      "selectedLenAddressesForSync_other": "{{len}} adresses sélectionnées pour la synchronisation",
-      "selectAddress": {
-        "title": "Sélectionner les adresses à synchroniser"
-      },
-      "verifyPassword": "Vérifier le mot de passe"
     },
     "search": {
       "sectionHeader": {

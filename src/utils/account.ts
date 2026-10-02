@@ -144,17 +144,6 @@ export function normalizeAndVaryChainList(chain_balances: ChainWithBalance[]) {
   };
 }
 
-export const SYNC_KEYRING_TYPES = [
-  KEYRING_CLASS.MNEMONIC,
-  KEYRING_CLASS.PRIVATE_KEY,
-  KEYRING_CLASS.HARDWARE.ONEKEY,
-  KEYRING_CLASS.HARDWARE.LEDGER,
-  KEYRING_CLASS.GNOSIS,
-  KEYRING_CLASS.HARDWARE.KEYSTONE,
-  KEYRING_CLASS.WATCH,
-  KEYRING_CLASS.HARDWARE.TREZOR,
-];
-
 interface Account {
   type: string;
   address: string;
@@ -169,57 +158,6 @@ export const isSameAccount = (a: Account, b: Account) => {
     a.brandName === b.brandName &&
     a.type === b.type
   );
-};
-
-export const filterKeyringData = (
-  data: string[] | object,
-  addresses: string[]
-) => {
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  const keys = Object.keys(data);
-  const KEYSTONE_KEEP_KEYS = ['paths', 'indexes'];
-
-  for (const key of keys) {
-    const value = data[key];
-
-    if (Array.isArray(value)) {
-      if (isAddress(value[0])) {
-        data[key] = value.filter((item) =>
-          addresses.some((address) => isSameAddress(item, address))
-        );
-      }
-    } else if (isObject(value)) {
-      const subKeys = Object.keys(value);
-      const keyringMeta = data as {
-        keyringMode?: string;
-        name?: string;
-      };
-      const isKeystonePubkey =
-        keyringMeta?.keyringMode === 'pubkey' &&
-        keyringMeta.name === 'Keystone';
-      const shouldSkipAddressFiltering =
-        isKeystonePubkey && KEYSTONE_KEEP_KEYS.includes(key);
-
-      if (
-        !shouldSkipAddressFiltering &&
-        subKeys.length > 0 &&
-        isAddress(subKeys[0])
-      ) {
-        const filteredSubKeys = subKeys.filter((item) =>
-          addresses.some((address) => isSameAddress(item, address))
-        );
-        data[key] = filteredSubKeys.reduce((acc, subKey) => {
-          acc[subKey] = value[subKey];
-          return acc;
-        }, {} as Record<string, any>);
-      }
-    }
-  }
-
-  return data;
 };
 
 export function sortAccountByPriority(a: Account, b: Account) {

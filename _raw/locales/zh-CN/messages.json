@@ -123,7 +123,6 @@
           "rabbyPoints": "Hippo 积分",
           "ecology": "生态系统",
           "bridge": "跨链",
-          "mobile": "同步手机端",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "setting": "设置",
@@ -258,7 +257,6 @@
           "rabbyPoints": "Hippo 积分",
           "ecosystem": "生态系统"
         },
-        "followUs": "关注我们",
         "host": "Host",
         "inputOpenapiHost": "请输入 OpenAPI Host",
         "lock": {
@@ -2637,25 +2635,6 @@
       "title": "通过伪装成 MetaMask 来连接 Hippo",
       "step2Desc": "刷新并通过 MetaMask 连接",
       "manage": "管理允许的 Dapp"
-    },
-    "syncToMobile": {
-      "steps2": "2. 使用 Hippo Mobile 扫描",
-      "clickToShowQr": "点击选择地址并显示二维码",
-      "description": "你的地址数据始终完全离线、加密，并通过二维码安全传输。",
-      "downloadGooglePlay": "Google Play",
-      "steps2Description": "你的二维码包含敏感数据。请保管好，绝不要与他人分享。",
-      "steps1": "1. 下载 Hippo Mobile",
-      "downloadAppleStore": "App Store",
-      "title": "从 Hippo 扩展同步钱包地址到移动端",
-      "disableSelectAddress": "不支持同步 {{type}} 地址",
-      "disableSelectAddressWithPassphrase": "不支持同步使用密码短语的 {{type}} 地址",
-      "disableSelectAddressWithSlip39": "不支持同步使用 SLIP-39 的 {{type}} 地址",
-      "selectedLenAddressesForSync_one": "已选择 {{len}} 个地址进行同步",
-      "selectedLenAddressesForSync_other": "已选择 {{len}} 个地址进行同步",
-      "selectAddress": {
-        "title": "选择要同步的地址"
-      },
-      "verifyPassword": "验证密码"
     },
     "search": {
       "sectionHeader": {
