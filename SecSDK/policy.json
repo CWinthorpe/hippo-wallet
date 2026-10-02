@@ -70498,20 +70498,6 @@
       "node_modules/safe-buffer/index.js"
     ]
   },
-  "node_modules/fflate/esm/browser.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "TextDecoder": "r",
-      "TextEncoder": "r",
-      "URL": "r",
-      "Worker": "r",
-      "onmessage": "rw",
-      "postMessage": "r",
-      "queueMicrotask": "r",
-      "setTimeout": "r"
-    }
-  },
   "node_modules/for-each/index.js": {
     "enable": true,
     "require": [
@@ -96918,15 +96904,12 @@
       "node_modules/antd/lib/skeleton/Input.js",
       "node_modules/antd/lib/typography/Paragraph.js",
       "node_modules/bignumber.js/bignumber.js",
-      "node_modules/buffer/index.js",
       "node_modules/clipboard/dist/clipboard.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/dayjs/dayjs.min.js",
-      "node_modules/fflate/esm/browser.js",
       "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/lodash/lodash.js",
       "node_modules/p-queue/dist/index.js",
-      "node_modules/qrcode.react/lib/esm/index.js",
       "node_modules/qs/lib/index.js",
       "node_modules/rc-switch/es/index.js",
       "node_modules/react-i18next/dist/es/index.js",
@@ -96965,7 +96948,6 @@
       "src/ui/assets/check-2.svg",
       "src/ui/assets/check.svg",
       "src/ui/assets/component/icon-copy-cc.svg",
-      "src/ui/assets/create-mnemonics/mask-lock.svg",
       "src/ui/assets/dapps.svg",
       "src/ui/assets/dashboard/arrow-down-cc.svg",
       "src/ui/assets/dashboard/index.tsx",
@@ -97043,7 +97025,6 @@
       "src/ui/hooks/useSigner.tsx",
       "src/ui/state/customRPC.ts",
       "src/ui/state/importMnemonics.ts",
-      "src/ui/state/whitelist.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/biometric.ts",
@@ -97061,8 +97042,6 @@
       "src/ui/utils/transaction.ts",
       "src/ui/utils/url.ts",
       "src/ui/utils/useCheckSeedPhraseBackup.ts",
-      "src/ui/utils/WalletContext.tsx",
-      "src/ui/utils/webapi.tsx",
       "src/ui/views/Activities/index.tsx",
       "src/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase.tsx",
       "src/ui/views/AddAddress/AddNewAddress.tsx",
@@ -97717,8 +97696,6 @@
   "src/utils/account.ts": {
     "enable": true,
     "require": [
-      "node_modules/lodash/lodash.js",
-      "src/background/utils/index.ts",
       "src/constant/index.ts",
       "src/ui/assets/waitcup.svg",
       "src/utils/chain.ts"
