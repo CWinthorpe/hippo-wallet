@@ -1370,7 +1370,13 @@
         "biometricUnlockDisableFailed": "Biyometrik kilidi devre dışı bırakmayı başaramadı",
         "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açma desteği sunmamaktadır.",
         "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın.",
-        "clearPendingCheckbox": "Yerel nonce verilerimi ve imza kayıtlarını da sıfırla"
+        "clearPendingCheckbox": "Yerel nonce verilerimi ve imza kayıtlarını da sıfırla",
+        "removedToken": {
+          "title": "Kaldırılan Tokenlar",
+          "description": "Kaldırılan tokenlar, tüm adreslerinizde portföyünüzden gizlenir ancak bakiye hesaplamasına dahil edilmeye devam eder.",
+          "loadFailed": "Token yüklenemedi",
+          "retry": "Tekrar Dene"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1414,7 +1420,19 @@
         "blockedListTitle": "blokajlı token",
         "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
         "bridge": "Köprü",
-        "bridgeToEth": "Ethereum Zinciri'ne Köprü"
+        "bridgeToEth": "Ethereum Zinciri'ne Köprü",
+        "removed": {
+          "more": "Daha Fazla",
+          "removeToken": "Tokenı kaldır",
+          "remove": "Kaldır",
+          "confirmTitle": "Bu token kaldırılsın mı?",
+          "portfolioNotice": "Bu token, kaldırıldıktan sonra portföyünüzde görünmeyecektir.",
+          "restoreNotice": "“Ayarlar >> Kaldırılan Tokenlar” bölümünden istediğiniz zaman geri yükleyebilirsiniz.",
+          "warning": "Kaldırılan tokenlar, tüm adreslerinizde portföyünüzden gizlenir ancak bakiye hesaplamasına dahil edilmeye devam eder.",
+          "removeFailed": "Token kaldırılamadı",
+          "restore": "Kaldırılan tokenı geri yükle",
+          "restoreFailed": "Token geri yüklenemedi"
+        }
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -1711,6 +1729,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "Bilgisayarınızın saati senkronize olmadığı için WalletConnect bağlanamıyor. Otomatik tarih ve saat ayarını etkinleştirip tekrar deneyin.",
         "connectYour": "Bağla",
         "viaWalletConnect": "Wallet Connect ile",
         "connectedSuccessfully": "Başarıyla Bağlandı",
@@ -2876,6 +2895,14 @@
           "floorDifference": "Taban fiyatı farkı",
           "offerPrice": "Teklif Fiyatı",
           "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
+        },
+        "verifyError": {
+          "unsupportedChain": "Bu ağda NFT alım satımı henüz desteklenmiyor",
+          "currency": "Güvenlik kontrolü başarısız: ödeme tokenı beklenen tokenla eşleşmiyor",
+          "nft": "Güvenlik kontrolü başarısız: emirdeki NFT seçtiğiniz NFT ile eşleşmiyor",
+          "amount": "Güvenlik kontrolü başarısız: alacağınız tutar gösterilen tutarla eşleşmiyor",
+          "recipient": "Güvenlik kontrolü başarısız: gelir adresinize gönderilmeyecek",
+          "invalid": "Güvenlik kontrolü başarısız: emir verileri geçersiz. Lütfen daha sonra tekrar deneyin"
         },
         "empty": "Hayır, NFT'ler yok",
         "pending": "Beklemede",

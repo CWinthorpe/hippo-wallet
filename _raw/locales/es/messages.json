@@ -1370,7 +1370,13 @@
         "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
         "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
         "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico.",
-        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas"
+        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas",
+        "removedToken": {
+          "title": "Tokens eliminados",
+          "description": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "loadFailed": "No se pudo cargar el token",
+          "retry": "Reintentar"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1414,7 +1420,19 @@
         "OriginalToken": "Token original",
         "fdvTips": "La capitalización de mercado si la oferta máxima estuviera en circulación. Valoración totalmente diluida (FDV) = precio × oferta máxima. Si no se especifica la oferta máxima, FDV = precio × oferta total. Si ninguna de las dos está definida o es infinita, no se muestra la FDV.",
         "bridgeToEth": "Hacer bridge a Ethereum",
-        "bridge": "Bridge"
+        "bridge": "Bridge",
+        "removed": {
+          "more": "Más",
+          "removeToken": "Eliminar token",
+          "remove": "Eliminar",
+          "confirmTitle": "¿Eliminar este token?",
+          "portfolioNotice": "Este token dejará de aparecer en tu Portafolio después de eliminarlo.",
+          "restoreNotice": "Puedes restaurarlo en cualquier momento en «Configuración >> Tokens eliminados».",
+          "warning": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "removeFailed": "No se pudo eliminar el token",
+          "restore": "Restaurar token eliminado",
+          "restoreFailed": "No se pudo restaurar el token"
+        }
       },
       "assets": {
         "usdValue": "VALOR EN USD",
@@ -1711,6 +1729,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect no puede conectarse porque la hora de tu ordenador no está sincronizada. Activa la fecha y hora automáticas y vuelve a intentarlo.",
         "connectYour": "Conectar tu",
         "viaWalletConnect": "mediante WalletConnect",
         "connectedSuccessfully": "Conectado exitosamente",
@@ -2873,6 +2892,14 @@
           "creatorFeeTips1": "El vendedor pagará las regalías del creador. Su pago es obligatorio.",
           "totalEst": "Ingresos totales estimados",
           "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea."
+        },
+        "verifyError": {
+          "unsupportedChain": "El comercio de NFT aún no es compatible con esta cadena",
+          "currency": "Falló la verificación de seguridad: el token de pago no coincide con el esperado",
+          "nft": "Falló la verificación de seguridad: el NFT de la orden no coincide con el que seleccionaste",
+          "amount": "Falló la verificación de seguridad: el monto que recibirías no coincide con el mostrado",
+          "recipient": "Falló la verificación de seguridad: los fondos no se enviarían a tu dirección",
+          "invalid": "Falló la verificación de seguridad: los datos de la orden no son válidos. Inténtalo de nuevo más tarde"
         },
         "empty": "Sin NFTs",
         "hideLowValue": "Ocultar NFTs de bajo valor",

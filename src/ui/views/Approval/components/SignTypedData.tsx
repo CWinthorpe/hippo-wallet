@@ -6,6 +6,8 @@ import { Button, Drawer, Modal, Skeleton } from 'antd';
 import { useScroll } from 'react-use';
 import { useSize } from 'ahooks';
 import { cloneDeep } from 'lodash';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/ui/query/queryKey';
 import { underline2Camelcase } from '@/background/utils';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
@@ -44,10 +46,7 @@ import {
   isDeepJSON,
   normalizeTypeData,
 } from './TypedDataActions/utils';
-import {
-  ContextActionData,
-  Level,
-} from '@rabby-wallet/rabby-security-engine/dist/rules';
+import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
@@ -75,7 +74,6 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
-import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
@@ -173,7 +171,6 @@ const SignTypedData = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
-  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
@@ -184,9 +181,6 @@ const SignTypedData = ({
   const tokenDetail = useSignStore((state) => state.tokenDetail);
   const closeTokenDetailPopup = useSignStore(
     (state) => state.closeTokenDetailPopup
-  );
-  const [currentChainId, setCurrentChainId] = useState<number | undefined>(
-    undefined
   );
 
   const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
@@ -224,15 +218,6 @@ const SignTypedData = ({
   ] = useState<ReactNode | null>();
 
   const { data, session, method, isGnosis } = params;
-  const requestKey = JSON.stringify([
-    approvalId,
-    method,
-    data,
-    session.origin,
-    currentAccount.address,
-    currentAccount.type,
-    currentChainId,
-  ]);
   const [parsedMessage, setParsedMessage] = useState('');
   const [_message, setMessage] = useState('');
 
@@ -268,6 +253,52 @@ const SignTypedData = ({
     () => normalizePolygonMetaTransactionTypedData(signTypedData),
     [signTypedData]
   );
+  const payloadChainId = normalizedSignTypedData?.domain?.chainId;
+  const currentChainQuery = useQuery({
+    queryKey: createQueryKey(
+      'approvalCurrentChainId',
+      { address: currentAccount.address },
+      {
+        approvalId,
+        origin: session.origin,
+        accountType: currentAccount.type,
+        method,
+        contextChainId: params.$ctx?.chainId,
+        payloadChainId,
+      }
+    ),
+    queryFn: async ({ signal }) => {
+      if (session.origin !== INTERNAL_REQUEST_ORIGIN) {
+        const site = await wallet.getConnectedSite(session.origin);
+        if (signal.aborted) throw new Error('Typed-data chain query aborted');
+        return site ? findChain({ enum: site.chain })?.id ?? null : null;
+      }
+      if (params.$ctx?.chainId) return params.$ctx.chainId;
+      return payloadChainId
+        ? findChain({ id: payloadChainId })?.id ?? null
+        : null;
+    },
+    networkMode: 'always',
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const currentChainId = currentChainQuery.data ?? undefined;
+  const isLoadingCurrentChainId =
+    currentChainQuery.isPending || currentChainQuery.isFetching;
+  const currentChainIdError = currentChainQuery.isError;
+  const requestKey = JSON.stringify([
+    approvalId,
+    method,
+    data,
+    session.origin,
+    currentAccount.address,
+    currentAccount.type,
+    currentChainId,
+  ]);
 
   useEffect(() => {
     try {
@@ -360,26 +391,6 @@ const SignTypedData = ({
     accountAddress: currentAccount.address,
   });
 
-  const getCurrentChainId = async () => {
-    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
-      const site = await wallet.getConnectedSite(params.session.origin);
-      if (site) {
-        return findChain({
-          enum: site.chain,
-        })?.id;
-      }
-    } else if (params.$ctx?.chainId) {
-      return params.$ctx.chainId;
-    } else {
-      return chain?.id;
-    }
-  };
-  useEffect(() => {
-    getCurrentChainId().then((id) => {
-      setCurrentChainId(id);
-    });
-  }, [params.session.origin]);
-
   const {
     value: parsedResponse,
     loading,
@@ -429,6 +440,10 @@ const SignTypedData = ({
     securityEvaluation.revision === securityRevision &&
     securityEvaluation.message === parsedMessage;
   const evaluationReady =
+    // Resolving the site chain changes requestKey. Wait before showing content
+    // so fast testnet/V1 parsing cannot render once with an incomplete context.
+    !isLoadingCurrentChainId &&
+    !currentChainIdError &&
     !loading &&
     !error &&
     !preparationError &&
@@ -449,6 +464,7 @@ const SignTypedData = ({
     'typedData'
   );
   const securityCheckFailed =
+    currentChainIdError ||
     !!error ||
     preparationError ||
     (evaluationIsCurrent && securityEvaluation?.status === 'error');
@@ -486,6 +502,9 @@ const SignTypedData = ({
     setPreparedActions(null);
     setPreparationError(false);
     setSecurityRevision((revision) => revision + 1);
+    if (currentChainIdError) {
+      void currentChainQuery.refetch();
+    }
     retryParse();
   };
 
@@ -735,14 +754,6 @@ const SignTypedData = ({
     return requireData;
   };
 
-  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
-    addSignMessageOriginFallback(ctx, {
-      isUnparsedAction: isUnparsedAction.current,
-      isInternalOrigin: params.session.origin === INTERNAL_REQUEST_ORIGIN,
-      message: parsedMessage,
-      origin: params.session.origin,
-    });
-
   const getSecurityEngineResult = async ({
     data,
     requireData,
@@ -756,7 +767,7 @@ const SignTypedData = ({
         id: Number(data.chainId),
       })?.serverId;
     }
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'typed_data',
       actionData: data,
       requireData,
@@ -768,7 +779,6 @@ const SignTypedData = ({
       },
       origin: params.session.origin,
     });
-    const ctx = withOriginFallback(baseCtx);
     const result = await executeEngine(ctx);
     if (
       !Array.isArray(result) ||
@@ -916,7 +926,6 @@ const SignTypedData = ({
     if (loading || error || parsedResponse?.requestKey !== requestKey) return;
     const prepare = async () => {
       const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
-      isUnparsedAction.current = typedDataActionData?.action === null;
       if (!typedDataActionData) {
         setPreparedActions({
           requestKey,

@@ -1370,7 +1370,13 @@
         "biometricUnlockEnabled": "Biometrische Entsperrung aktiviert.",
         "biometricUnlockSetupDesc": "Bestätigen Sie Ihr Passwort, um die biometrische Entsperrung zu aktivieren.",
         "clearPendingCheckbox": "Auch meine lokalen Nonce-Daten und Signaturaufzeichnungen zurücksetzen",
-        "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung."
+        "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung.",
+        "removedToken": {
+          "title": "Entfernte Token",
+          "description": "Entfernte Token werden für alle Ihre Adressen in Ihrem Portfolio ausgeblendet, aber weiterhin bei der Berechnung Ihres Guthabens berücksichtigt.",
+          "loadFailed": "Token konnte nicht geladen werden",
+          "retry": "Erneut versuchen"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",
@@ -1414,7 +1420,19 @@
         "BridgeIssue": "Von einem Drittanbieter gebridgter Token",
         "fdvTips": "Die Marktkapitalisierung, falls das maximale Angebot vollständig im Umlauf wäre. Vollständig verwässerte Bewertung (FDV) = Preis × maximales Angebot. Ist das maximale Angebot nicht angegeben, gilt: FDV = Preis × Gesamtangebot. Ist weder das maximale noch das Gesamtangebot definiert oder ist es unendlich, wird die FDV nicht angezeigt.",
         "bridge": "Bridge",
-        "bridgeToEth": "Zu Ethereum bridgen"
+        "bridgeToEth": "Zu Ethereum bridgen",
+        "removed": {
+          "more": "Mehr",
+          "removeToken": "Token entfernen",
+          "remove": "Entfernen",
+          "confirmTitle": "Diesen Token entfernen?",
+          "portfolioNotice": "Dieser Token wird nach dem Entfernen nicht mehr in Ihrem Portfolio angezeigt.",
+          "restoreNotice": "Sie können ihn jederzeit unter „Einstellungen >> Entfernte Token“ wiederherstellen.",
+          "warning": "Entfernte Token werden für alle Ihre Adressen in Ihrem Portfolio ausgeblendet, aber weiterhin bei der Berechnung Ihres Guthabens berücksichtigt.",
+          "removeFailed": "Token konnte nicht entfernt werden",
+          "restore": "Entfernten Token wiederherstellen",
+          "restoreFailed": "Token konnte nicht wiederhergestellt werden"
+        }
       },
       "assets": {
         "usdValue": "USD WERT",
@@ -1711,6 +1729,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect kann keine Verbindung herstellen, weil die Uhrzeit deines Computers nicht synchronisiert ist. Aktiviere die automatische Einstellung von Datum und Uhrzeit und versuche es erneut.",
         "connectYour": "Verbinden Sie Ihre",
         "viaWalletConnect": "über WalletConnect",
         "connectedSuccessfully": "Erfolgreich verbunden",
@@ -2873,6 +2892,14 @@
           "creatorFeeTips1": "Die Urhebervergütung wird vom Verkäufer gezahlt und ist verpflichtend.",
           "offer": "Angebot",
           "platform": "Plattform"
+        },
+        "verifyError": {
+          "unsupportedChain": "NFT-Handel wird auf dieser Chain noch nicht unterstützt",
+          "currency": "Sicherheitsprüfung fehlgeschlagen: Der Zahlungstoken entspricht nicht dem erwarteten Token",
+          "nft": "Sicherheitsprüfung fehlgeschlagen: Das NFT im Auftrag entspricht nicht dem ausgewählten",
+          "amount": "Sicherheitsprüfung fehlgeschlagen: Der Betrag, den du erhältst, entspricht nicht der Anzeige",
+          "recipient": "Sicherheitsprüfung fehlgeschlagen: Der Erlös würde nicht an deine Adresse gesendet",
+          "invalid": "Sicherheitsprüfung fehlgeschlagen: Die Auftragsdaten sind ungültig. Bitte versuche es später erneut"
         },
         "confirmingTx": "Ihre Transaktion wird bestätigt",
         "hideLowValue": "NFTs mit niedrigem Wert ausblenden",

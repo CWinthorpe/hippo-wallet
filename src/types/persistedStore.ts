@@ -1,6 +1,7 @@
 import type { ContactBookStore } from '@/background/service/contactBook';
 import type { CurrencyStore } from '@/background/service/currency';
 import type { CustomRPCServiceStore } from '@/background/service/rpc';
+import type { RemovedTokensServiceStore } from '@/background/service/removedTokens';
 import type { WhitelistStore } from '@/background/service/whitelist';
 import type { PublicOpenapiStore } from '@/services/openapi';
 
@@ -9,6 +10,7 @@ export type PersistedStoreMap = {
   currency: CurrencyStore;
   openapi: PublicOpenapiStore;
   rpc: CustomRPCServiceStore;
+  removedTokens: RemovedTokensServiceStore;
   whitelist: WhitelistStore;
 };
 

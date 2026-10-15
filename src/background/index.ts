@@ -39,6 +39,7 @@ import {
   pageStateCacheService,
   permissionService,
   preferenceService,
+  removedTokensService,
   RPCService,
   securityEngineService,
   sessionService,
@@ -101,6 +102,7 @@ async function restoreAppState() {
   await customTestnetService.init();
   await permissionService.init();
   await preferenceService.init();
+  await removedTokensService.init();
   await currencyService.init();
   await transactionWatchService.init();
 

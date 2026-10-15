@@ -1370,7 +1370,13 @@
         "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
         "biometricUnlockSetupDesc": "Konfirmasi kata sandi Anda untuk mengaktifkan pembukaan kunci biometrik.",
         "clearPendingCheckbox": "Atur ulang juga data nonce lokal dan catatan tanda tangan saya",
-        "biometricUnlockDisabled": "Biometric unlock dinonaktifkan"
+        "biometricUnlockDisabled": "Biometric unlock dinonaktifkan",
+        "removedToken": {
+          "title": "Token yang Dihapus",
+          "description": "Token yang dihapus akan disembunyikan dari Portofolio di semua alamat Anda, tetapi tetap disertakan dalam perhitungan saldo.",
+          "loadFailed": "Gagal memuat token",
+          "retry": "Coba lagi"
+        }
       },
       "tokenDetail": {
         "txFailed": "Gagal",
@@ -1414,7 +1420,19 @@
         "myBalance": "Saldo Saya",
         "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan.",
         "bridge": "Jembatan",
-        "bridgeToEth": "Jembatan ke Rantai Ethereum"
+        "bridgeToEth": "Jembatan ke Rantai Ethereum",
+        "removed": {
+          "more": "Lainnya",
+          "removeToken": "Hapus token",
+          "remove": "Hapus",
+          "confirmTitle": "Hapus token ini?",
+          "portfolioNotice": "Token ini tidak akan muncul lagi di Portofolio setelah dihapus.",
+          "restoreNotice": "Anda dapat memulihkannya kapan saja di “Pengaturan >> Token yang Dihapus”.",
+          "warning": "Token yang dihapus akan disembunyikan dari Portofolio di semua alamat Anda, tetapi tetap disertakan dalam perhitungan saldo.",
+          "removeFailed": "Gagal menghapus token",
+          "restore": "Pulihkan token yang dihapus",
+          "restoreFailed": "Gagal memulihkan token"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1720,6 +1738,7 @@
         "haveOneKey": "Belum memiliki OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect tidak dapat terhubung karena waktu komputer Anda tidak sinkron. Aktifkan tanggal dan waktu otomatis, lalu coba lagi.",
         "status": {
           "brandError": "Aplikasi dompet salah.",
           "accountError": "Alamat tidak cocok.",
@@ -2870,6 +2889,14 @@
           "platform": "Platform",
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "creatorFee": "Biaya pencipta ({{fee}}%)"
+        },
+        "verifyError": {
+          "unsupportedChain": "Perdagangan NFT belum didukung di chain ini",
+          "currency": "Pemeriksaan keamanan gagal: token pembayaran tidak sesuai dengan yang diharapkan",
+          "nft": "Pemeriksaan keamanan gagal: NFT dalam order tidak sesuai dengan yang Anda pilih",
+          "amount": "Pemeriksaan keamanan gagal: jumlah yang akan Anda terima tidak sesuai dengan yang ditampilkan",
+          "recipient": "Pemeriksaan keamanan gagal: hasil penjualan tidak akan dikirim ke alamat Anda",
+          "invalid": "Pemeriksaan keamanan gagal: data order tidak valid. Silakan coba lagi nanti"
         },
         "empty": "Tidak ada NFT",
         "all": "Semua",

@@ -22,6 +22,7 @@ import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
   preferenceService,
+  removedTokensService,
   notificationService,
   permissionService,
   sessionService,
@@ -45,6 +46,11 @@ import {
   miscService,
   feedbackService,
 } from 'background/service';
+import {
+  clearWalletConnectTransportError,
+  getWalletConnectTransportErrorCode,
+  reportWalletConnectTransportError,
+} from 'background/utils/walletconnectTransportError';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -633,6 +639,7 @@ export class WalletController extends BaseController {
   };
 
   getApproval = notificationService.getApproval;
+  closeNotificationWindow = notificationService.closeNotificationWindow;
   resolveApprovalFor = notificationService.resolveApprovalFor;
   rejectApprovalFor = notificationService.rejectApprovalFor;
 
@@ -1882,6 +1889,8 @@ export class WalletController extends BaseController {
         return getOpenapiStore() as PersistedStoreMap[Key];
       case 'rpc':
         return RPCService.getCustomRPCStore() as PersistedStoreMap[Key];
+      case 'removedTokens':
+        return removedTokensService.store as PersistedStoreMap[Key];
       case 'whitelist':
         return whitelistService.getStore() as PersistedStoreMap[Key];
       default:
@@ -1932,6 +1941,11 @@ export class WalletController extends BaseController {
         changedChains.forEach(this.syncCustomTestnetRPC);
         return;
       }
+      case 'removedTokens':
+        removedTokensService.patchStore(
+          patch as PersistedStorePatch<'removedTokens'>
+        );
+        return;
       case 'whitelist':
         whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
         return;
@@ -2882,6 +2896,9 @@ export class WalletController extends BaseController {
     }
   };
 
+  getWalletConnectTransportErrorCode = () =>
+    getWalletConnectTransportErrorCode();
+
   getWalletConnectStatus = (address: string, brandName: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -3006,17 +3023,14 @@ export class WalletController extends BaseController {
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        clearWalletConnectTransportError();
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
           params: { uri },
         });
       });
 
-      keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
-      });
+      keyring.on('transport_error', reportWalletConnectTransportError);
 
       keyring.on('statusChange', (data) => {
         eventBus.emit(EVENTS.broadcastToUI, {
@@ -4281,6 +4295,10 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
+  getBridgeTxHistory: typeof transactionHistoryService.getBridgeTxHistory = (
+    address
+  ) => transactionHistoryService.getBridgeTxHistory(address);
+
   getRecentPendingTxHistory: typeof transactionHistoryService.getRecentPendingTxHistory = (
     address,
     type
@@ -4688,6 +4706,14 @@ export class WalletController extends BaseController {
   addBlockedToken = preferenceService.addBlockedToken;
 
   removeBlockedToken = preferenceService.removeBlockedToken;
+
+  getRemovedTokens = removedTokensService.getRemovedTokens;
+
+  isTokenRemoved = removedTokensService.isTokenRemoved;
+
+  addRemovedToken = removedTokensService.addRemovedToken;
+
+  removeRemovedToken = removedTokensService.removeRemovedToken;
 
   getCollectionStarred = preferenceService.getCollectionStarred;
 

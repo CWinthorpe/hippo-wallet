@@ -1447,6 +1447,12 @@
           "perpsFloatWidget": "Perps Floating Widget",
           "dataAnalysis": "Data Analysis"
         },
+        "removedToken": {
+          "title": "Removed Tokens",
+          "description": "Removed tokens will be hidden from your Portfolio across all your addresses, but still included in your balance calculation.",
+          "loadFailed": "Failed to load token",
+          "retry": "Retry"
+        },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
@@ -1491,6 +1497,18 @@
         "clearPendingCheckbox": "Also reset my local nonce data and signature record"
       },
       "tokenDetail": {
+        "removed": {
+          "more": "More",
+          "removeToken": "Remove token",
+          "remove": "Remove",
+          "confirmTitle": "Remove this token?",
+          "portfolioNotice": "This token will no longer appear in your Portfolio after removal.",
+          "restoreNotice": "You can restore it anytime in “Settings >> Removed Tokens”.",
+          "warning": "Removed tokens will be hidden from your Portfolio across all your addresses, but still included in your balance calculation.",
+          "removeFailed": "Failed to remove token",
+          "restore": "Restore removed token",
+          "restoreFailed": "Failed to restore token"
+        },
         "noIssuer": "No issuer information available",
         "NoListedBy": "No listing information available",
         "NoSupportedExchanges": "No supported exchanges available",
@@ -1878,6 +1896,7 @@
         "haveOneKey": "Don't have a OneKey yet?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect cannot connect because your computer time is out of sync. Enable automatic date and time, then retry.",
         "connectYour": "Connect your",
         "viaWalletConnect": "via Wallet Connect",
         "connectedSuccessfully": "Connected successfully",
@@ -2881,6 +2900,14 @@
           "rabbyFee": "Hippo fee (0%)",
           "totalEst": "Total est. proceeds",
           "acceptOffer": "Accept Offer"
+        },
+        "verifyError": {
+          "unsupportedChain": "NFT trading is not supported on this chain yet",
+          "currency": "Security check failed: the payment token doesn't match the expected token",
+          "nft": "Security check failed: the NFT in the order doesn't match the one you selected",
+          "amount": "Security check failed: the amount you'd receive doesn't match what's shown",
+          "recipient": "Security check failed: the proceeds would not be sent to your address",
+          "invalid": "Security check failed: the order data is invalid. Please try again later"
         }
       }
     },
