@@ -226,6 +226,15 @@ describe('private-build privacy invariants', () => {
     }
     expect(walletController).not.toContain('postGasStationOrder');
     expect(walletController).not.toContain('gasTopUp =');
+    // Audit R17-B1: upstream #4120's bridge-history accessors must not
+    // survive the merge — the UI->background dispatcher exposes every
+    // WalletController method dynamically, so a controller/service accessor
+    // is a live removed-product API surface even without a static caller.
+    expect(walletController).not.toContain('getBridgeTxHistory');
+    const txHistoryService = read(
+      'src/background/service/transactionHistory.ts'
+    );
+    expect(txHistoryService).not.toContain('getBridgeTxHistory');
 
     const approvalSources = [
       'src/ui/views/Approval/components/SignTx.tsx',

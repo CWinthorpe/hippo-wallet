@@ -465,12 +465,6 @@ class TxHistory {
       .slice(0, 200);
   }
 
-  getBridgeTxHistory(address: string) {
-    return this.store.bridgeTxHistory.filter((item) =>
-      isSameAddress(item.address, address)
-    );
-  }
-
   getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {

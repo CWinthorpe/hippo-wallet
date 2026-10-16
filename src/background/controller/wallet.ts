@@ -4295,9 +4295,6 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
-  getBridgeTxHistory: typeof transactionHistoryService.getBridgeTxHistory = (
-    address
-  ) => transactionHistoryService.getBridgeTxHistory(address);
 
   getRecentPendingTxHistory: typeof transactionHistoryService.getRecentPendingTxHistory = (
     address,
