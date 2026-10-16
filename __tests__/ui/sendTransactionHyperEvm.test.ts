@@ -97,8 +97,13 @@ const send = (
     ignoreGasCheck: true,
     ignoreGasNotEnoughCheck: true,
     ignoreSimulationFailed: true,
-    isGasAccount: true,
-    isGasLess: true,
+    // Hippo adaptation: upstream drove this path with the (removed) Gas
+    // Account/sponsored flags set; Hippo's sendTransaction rejects those
+    // flags at entry. The flags are inert past that guard here, so the
+    // HyperEVM calcGasLimit assertions below are pinned on the ordinary
+    // send path with zero security assertion dropped.
+    isGasAccount: false,
+    isGasLess: false,
     waitCompleted: false,
     extra: {
       preExecResult: {
