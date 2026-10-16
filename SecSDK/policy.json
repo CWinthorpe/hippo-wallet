@@ -91427,6 +91427,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/arrow-right-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/arrow-right-gray.svg": {
     "enable": true,
     "require": [
@@ -91545,6 +91551,27 @@
   "src/ui/assets/dashboard/panel/index.tsx": {
     "enable": true,
     "require": [
+      "node_modules/react/index.js",
+      "src/ui/assets/dashboard/panel/receive-cc.svg",
+      "src/ui/assets/dashboard/panel/send-cc.svg",
+      "src/ui/assets/dashboard/panel/swap-cc.svg"
+    ]
+  },
+  "src/ui/assets/dashboard/panel/receive-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/dashboard/panel/send-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/dashboard/panel/swap-cc.svg": {
+    "enable": true,
+    "require": [
       "node_modules/react/index.js"
     ]
   },
@@ -91590,6 +91617,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/desktop/profile/more-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/edit-pen-cc.svg": {
     "enable": true,
     "require": [
@@ -91603,6 +91636,12 @@
     ]
   },
   "src/ui/assets/empty-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/icon-back-cc.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -92641,6 +92680,14 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/component/DropdownWithMask/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/dropdown/index.js",
+      "node_modules/react-dom/index.js",
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/component/Empty/index.tsx": {
     "enable": true,
     "require": [
@@ -92803,6 +92850,7 @@
       "src/ui/utils/time.ts",
       "src/ui/views/Approval/components/SignTx.tsx",
       "src/utils/chain.ts",
+      "src/utils/hyperEvm.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
     ]
@@ -93205,6 +93253,13 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/component/WalletConnect/ClockSkewWarning.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/component/WalletConnect/SessionSignal.tsx": {
     "enable": true,
     "require": [
@@ -93245,6 +93300,16 @@
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/component/WalletConnect/useWalletConnectClockSkew.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/eventBus.ts",
+      "src/ui/utils/WalletContext.tsx",
+      "src/utils/walletconnect-error.ts"
     ]
   },
   "src/ui/component/WalletConnect/useWalletConnectIcon.ts": {
@@ -93351,6 +93416,7 @@
       "src/ui/component/ChainSelector/Modal.tsx",
       "src/ui/component/ChainSelector/style.less",
       "src/ui/component/Checkbox/index.tsx",
+      "src/ui/component/DropdownWithMask/index.tsx",
       "src/ui/component/Empty/index.tsx",
       "src/ui/component/FallbackSiteLogo/index.tsx",
       "src/ui/component/Field/style.less",
@@ -93367,9 +93433,11 @@
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/component/TxHistory/style.less",
+      "src/ui/component/WalletConnect/ClockSkewWarning.tsx",
       "src/ui/component/WalletConnect/useBrandNameHasWallet.ts",
       "src/ui/component/WalletConnect/useDisplayBrandName.ts",
       "src/ui/component/WalletConnect/useSessionStatus.ts",
+      "src/ui/component/WalletConnect/useWalletConnectClockSkew.ts",
       "src/ui/component/WordsMatrix/index.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/hooks/useBrandIcon.ts",
@@ -93576,6 +93644,15 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/hooks/useRemovedTokens.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/ui/state/createStore/createExtensionStoreOptions.ts",
+      "src/ui/state/createStore/createRabbyStore.ts",
+      "src/utils/removedTokens.ts"
+    ]
+  },
   "src/ui/hooks/useScreenshotContextMenuVisible.ts": {
     "enable": true,
     "require": [
@@ -93667,6 +93744,7 @@
       "changeLogs/09396.md",
       "changeLogs/09397.md",
       "changeLogs/09399.md",
+      "changeLogs/09412.md",
       "node_modules/@dnd-kit/core/dist/core.esm.js",
       "node_modules/@dnd-kit/sortable/dist/sortable.esm.js",
       "node_modules/@dnd-kit/utilities/dist/utilities.esm.js",
@@ -93748,6 +93826,7 @@
       "src/ui/assets/dashboard/panel/index.tsx",
       "src/ui/assets/dashboard/settings/icon-right-arrow.svg",
       "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/icon-back-cc.svg",
       "src/ui/assets/icon-pinned-fill.svg",
       "src/ui/assets/icon-pinned.svg",
       "src/ui/assets/index.ts",
@@ -93771,6 +93850,7 @@
       "src/ui/component/NewUserImport/index.tsx",
       "src/ui/component/SeedPhraseBackupAlert.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
       "src/ui/component/Whitelist/Modal.tsx",
@@ -93781,6 +93861,8 @@
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useGnosisNetworks.ts",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/hooks/useRemovedTokens.ts",
+      "src/ui/query/queryKey.ts",
       "src/ui/state/account.ts",
       "src/ui/state/chains.ts",
       "src/ui/state/contactBook.ts",
@@ -93801,6 +93883,7 @@
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/index.ts",
       "src/ui/utils/portfolio/index.ts",
+      "src/ui/utils/token.ts",
       "src/ui/utils/withAccountChange.tsx",
       "src/ui/views/CommonPopup/AssetList/ChainItem.tsx",
       "src/ui/views/Dashboard/components/BalanceView/useCurve.ts",
@@ -93809,6 +93892,7 @@
       "src/ui/views/Dashboard/components/OfflineChainNotify/index.tsx",
       "src/ui/views/Dashboard/components/RecentConnections/style.less",
       "src/ui/views/Dashboard/components/Settings/style.less",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
       "src/ui/views/Dashboard/style.less",
       "src/ui/views/DesktopRoute.tsx",
       "src/ui/views/MainRoute.tsx",
@@ -93819,6 +93903,7 @@
       "src/utils/ga4.ts",
       "src/utils/index.ts",
       "src/utils/matomo-request.ts",
+      "src/utils/removedTokens.ts",
       "src/utils/transaction.ts",
       "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object"
     ]
@@ -95247,6 +95332,7 @@
       "src/ui/views/GasAccount/hooks/runtime.ts",
       "src/utils/chain.ts",
       "src/utils/ga4.ts",
+      "src/utils/hyperEvm.ts",
       "src/utils/matomo-request.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
@@ -95543,6 +95629,7 @@
       "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
       "node_modules/@safe-global/protocol-kit/dist/src/index.js",
       "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/@tanstack/react-query/build/modern/useQuery.js",
       "node_modules/ahooks/es/useMount/index.js",
       "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/ahooks/es/useSize/index.js",
@@ -95604,14 +95691,17 @@
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/TokenChart/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/component/WalletConnect/ClockSkewWarning.tsx",
       "src/ui/component/WalletConnect/useDisplayBrandName.ts",
       "src/ui/component/WalletConnect/useSessionStatus.ts",
+      "src/ui/component/WalletConnect/useWalletConnectClockSkew.ts",
       "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
       "src/ui/hooks/useCurrentBalance.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/query/queryKey.ts",
       "src/ui/state/exchange.ts",
       "src/ui/state/securityEngine.ts",
       "src/ui/state/sign.ts",
@@ -95868,6 +95958,7 @@
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/useNFTCollections.ts",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/hooks/useRemovedTokens.ts",
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
@@ -96128,19 +96219,34 @@
     "require": [
       "node_modules/ahooks/es/useInfiniteScroll/index.js",
       "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/dropdown/index.js",
       "node_modules/antd/es/image/index.js",
+      "node_modules/antd/es/menu/index.js",
+      "node_modules/antd/es/message/index.js",
       "node_modules/antd/es/skeleton/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/arrow-right-cc.svg",
+      "src/ui/assets/dashboard/panel/receive-cc.svg",
+      "src/ui/assets/dashboard/panel/send-cc.svg",
+      "src/ui/assets/dashboard/panel/swap-cc.svg",
+      "src/ui/assets/desktop/profile/more-cc.svg",
+      "src/ui/assets/icon-back-cc.svg",
       "src/ui/assets/token-default.svg",
+      "src/ui/component/DropdownWithMask/index.tsx",
       "src/ui/component/index.tsx",
+      "src/ui/component/Popup/index.tsx",
       "src/ui/component/TokenChart/index.tsx",
       "src/ui/component/TokenSelector/context.tsx",
+      "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/usePopupContainer.tsx",
+      "src/ui/hooks/useRemovedTokens.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/portfolio/lpToken.ts",
       "src/ui/utils/token.ts",
@@ -96376,6 +96482,7 @@
       "src/ui/assets/dashboard/asset-empty.svg",
       "src/ui/assets/dashboard/portfolio/cc-add.svg",
       "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/desktop/profile/more-cc.svg",
       "src/ui/assets/icon-copy-cc.svg",
       "src/ui/assets/icon-pinned-fill.svg",
       "src/ui/assets/icon-pinned.svg",
@@ -96415,6 +96522,7 @@
       "src/ui/hooks/useNFTCollections.ts",
       "src/ui/hooks/usePopupContainer.tsx",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/hooks/useRemovedTokens.ts",
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
@@ -96944,6 +97052,7 @@
       "src/stats.ts",
       "src/ui/assets/approval/loading.svg",
       "src/ui/assets/approval/success.svg",
+      "src/ui/assets/arrow-right-cc.svg",
       "src/ui/assets/arrow-right-gray.svg",
       "src/ui/assets/check-2.svg",
       "src/ui/assets/check.svg",
@@ -97631,7 +97740,8 @@
       "src/ui/utils/useRepeatImportConfirm.tsx",
       "src/ui/views/WalletConnect/style.less",
       "src/utils/chain.ts",
-      "src/utils/index.ts"
+      "src/utils/index.ts",
+      "src/utils/walletconnect-error.ts"
     ]
   },
   "src/ui/views/WalletConnect/style.less": {
@@ -97768,6 +97878,7 @@
       "src/constant/txGasLimit.ts",
       "src/i18n.ts",
       "src/utils/chain.ts",
+      "src/utils/hyperEvm.ts",
       "src/utils/tempo.ts"
     ]
   },
@@ -97821,6 +97932,8 @@
       "changeLogs/09399.md",
       "changeLogs/09410hippo15.md",
       "changeLogs/09411hippo16.md",
+      "changeLogs/09412.md",
+      "changeLogs/09412hippo17.md",
       "changeLogs/0944hippo12.md",
       "changeLogs/0948hippo13.md",
       "changeLogs/0949hippo14.md",
@@ -97861,7 +97974,8 @@
       "changeLogs/zh-CN/09394.md",
       "changeLogs/zh-CN/09396.md",
       "changeLogs/zh-CN/09397.md",
-      "changeLogs/zh-CN/09399.md"
+      "changeLogs/zh-CN/09399.md",
+      "changeLogs/zh-CN/09412.md"
     ]
   }
 }
