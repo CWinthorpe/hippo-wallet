@@ -93454,6 +93454,7 @@
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/ui/views/Dashboard/components/NFT/NFTModal.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
+      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
     ]
@@ -96209,7 +96210,6 @@
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/utils/address.ts",
       "src/ui/utils/index.ts",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
     ]
@@ -96387,19 +96387,6 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react/index.js",
-      "src/ui/assets/token-default.svg",
-      "src/ui/utils/index.ts",
-      "src/ui/utils/token.ts",
-      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx"
     ]
   },
   "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx": {
@@ -96581,7 +96568,6 @@
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/index.css",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx",
       "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/ui/views/GnosisQueue/index.tsx",
@@ -97934,6 +97920,7 @@
       "changeLogs/09411hippo16.md",
       "changeLogs/09412.md",
       "changeLogs/09412hippo17.md",
+      "changeLogs/09413hippo18.md",
       "changeLogs/0944hippo12.md",
       "changeLogs/0948hippo13.md",
       "changeLogs/0949hippo14.md",
