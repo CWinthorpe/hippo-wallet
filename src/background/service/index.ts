@@ -25,6 +25,4 @@ export { default as securityEngineService } from './securityEngine';
 export { default as HDKeyRingLastAddAddrTimeService } from './HDKeyRingLastAddAddrTime';
 export { default as uninstalledService } from './uninstalled';
 export { default as OfflineChainsService } from './offlineChain';
-
-export { default as miscService } from './misc';
 export { default as feedbackService } from './feedback';

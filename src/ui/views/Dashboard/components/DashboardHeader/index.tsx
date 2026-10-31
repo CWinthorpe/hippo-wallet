@@ -1,4 +1,3 @@
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import type { UserFeedbackItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Button } from 'antd';
 import clsx from 'clsx';
@@ -19,8 +18,6 @@ import { AddressViewer, Popup } from 'ui/component';
 import { useRabbySelector } from 'ui/store';
 import { formatUsdValue, useWallet } from 'ui/utils';
 
-import { getKRCategoryByType } from '@/utils/transaction';
-
 import { RcIconSettingCC } from '@/ui/assets/dashboard';
 
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
@@ -29,7 +26,6 @@ import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConn
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { copyAddress } from '@/ui/utils/clipboard';
 
-import { ga4 } from '@/utils/ga4';
 import { useMemoizedFn } from 'ahooks';
 import styled from 'styled-components';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
@@ -99,16 +95,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   );
 
   const handleSwitchAddress = useMemoizedFn(() => {
-    matomoRequestEvent({
-      category: 'Front Page Click',
-      action: 'Click',
-      label: 'Change Address',
-    });
-
-    ga4.fireEvent('Click_ChangeAddress', {
-      event_category: 'Front Page Click',
-    });
-
     history.push('/switch-address');
   });
 
@@ -175,18 +161,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
               className="w-[16px] h-[16px] cursor-pointer opacity-60 hover:opacity-80"
               onClick={() => {
                 copyAddress(currentAccount.address);
-                matomoRequestEvent({
-                  category: 'AccountInfo',
-                  action: 'headCopyAddress',
-                  label: [
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                  ].join('|'),
-                });
-
-                ga4.fireEvent('Click_CopyAddress', {
-                  event_category: 'Front Page Click',
-                });
               }}
             />
           </div>
@@ -255,15 +229,6 @@ const FeedbackEntry = () => {
       if (!lastRepliedFeedback) return;
 
       startViewingFeedback(lastRepliedFeedback);
-
-      // matomoRequestEvent({
-      //   category: 'Click_Header',
-      //   action: 'Click_Setting',
-      // });
-
-      // ga4.fireEvent('Click_Setting', {
-      //   event_category: 'Click_Header',
-      // });
     },
     [lastRepliedFeedback, startViewingFeedback]
   );

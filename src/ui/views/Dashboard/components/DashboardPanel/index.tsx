@@ -2,8 +2,6 @@ import { KEYRING_TYPE, ThemeIconType } from '@/constant';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { appIsDev } from '@/utils/env';
-import { ga4 } from '@/utils/ga4';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   closestCenter,
   DndContext,
@@ -157,7 +155,6 @@ type IPanelItem = {
   disabled?: boolean;
   commingSoonBadge?: boolean;
   disableReason?: string;
-  eventKey: string;
   iconClassName?: string;
   subContent?: React.ReactNode;
   isFullscreen?: boolean;
@@ -211,16 +208,6 @@ const SortablePanelItem: React.FC<{
         <div
           key={index}
           onClick={(evt) => {
-            matomoRequestEvent({
-              category: 'Dashboard',
-              action: 'clickEntry',
-              label: item.eventKey,
-            });
-
-            ga4.fireEvent(`Entry_${item.eventKey}`, {
-              event_category: 'Dashboard',
-            });
-
             item?.onClick(evt);
           }}
           className="panel-item group"
@@ -331,7 +318,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     disabled?: boolean;
     commingSoonBadge?: boolean;
     disableReason?: string;
-    eventKey: string;
     iconClassName?: string;
     subContent?: React.ReactNode;
     isFullscreen?: boolean;
@@ -340,7 +326,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const panelItems = {
     swap: {
       icon: RcIconSwapCC,
-      eventKey: 'Swap',
       content: t('page.dashboard.home.panel.swap'),
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
@@ -348,7 +333,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     send: {
       icon: RcIconSendCC,
-      eventKey: 'Send',
       content: t('page.dashboard.home.panel.send'),
       onClick: () => {
         history.push('/send-token?rbisource=dashboard');
@@ -357,7 +341,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
     receive: {
       icon: RcIconReceiveCC,
-      eventKey: 'Receive',
       content: t('page.dashboard.home.panel.receive'),
       onClick: () => {
         history.push('/receive?rbisource=dashboard');
@@ -365,7 +348,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     // queue: {
     //   icon: RcIconTransactionsCC,
-    //   eventKey: 'Queue',
     //   content: t('page.dashboard.home.panel.queue'),
     //   badge: gnosisPendingCount,
     //   onClick: () => {
@@ -374,7 +356,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     // } as IPanelItem,
     transactions: {
       icon: RcIconTransactionsCC,
-      eventKey: 'Transactions',
       content: t('page.dashboard.home.panel.transactions'),
       onClick: () => {
         history.push('/history');
@@ -382,7 +363,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     security: {
       icon: RcIconApprovalsCC,
-      eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
         history.push('/revoke-approvals');
@@ -396,14 +376,12 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     more: {
       icon: RcIconSettingCC,
-      eventKey: 'More',
       content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
 
     searchDapp: {
       icon: RcIconSearchCC,
-      eventKey: 'Search Dapp',
       content: t('page.dashboard.home.panel.searchDapp'),
       onClick: () => {
         openInternalPageInTab('dapp-search');
@@ -412,7 +390,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     dapps: {
       icon: RcIconDappsCC,
-      eventKey: 'Dapps ',
       content: t('page.dashboard.home.panel.dapps'),
       onClick: () => {
         setIsShowDappsPopup(true);
@@ -420,7 +397,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     } as IPanelItem,
     manageAddress: {
       icon: RcIconManageCC,
-      eventKey: 'Manage Address',
       content: t('page.dashboard.home.panel.manageAddress'),
       onClick: () => {
         history.push('/settings/address');

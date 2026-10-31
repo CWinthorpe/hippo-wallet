@@ -53,12 +53,6 @@ jest.mock('@/background/service/metamaskModeService', () => ({
   },
 }));
 
-jest.mock('@/utils/ga4', () => ({
-  ga4: {
-    fireEvent: jest.fn(),
-  },
-}));
-
 import { keyringService, preferenceService } from 'background/service';
 import wallet from '@/background/controller/wallet';
 import internalMethods from '@/background/controller/provider/internalMethod';

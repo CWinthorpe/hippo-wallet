@@ -5,7 +5,6 @@ import {
   INTERNAL_REQUEST_ORIGIN,
   INTERNAL_REQUEST_SESSION,
   KEYRING_TYPE,
-  KEYRING_CATEGORY_MAP,
 } from '@/constant';
 import { intToHex, WalletControllerType } from '@/ui/utils';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -34,7 +33,6 @@ import {
   ParsedTransactionActionData,
   ActionRequireData,
 } from '@rabby-wallet/rabby-action';
-import stats from '@/stats';
 import { getCexInfo } from '../state/exchange';
 import { Account } from '@/background/service/preference';
 import {
@@ -153,28 +151,6 @@ export const sendTransaction = async ({
   }
 
   const signingTxId = await wallet.addSigningTx(tx);
-
-  let reportGasLevel = normalGas.level;
-  if (!reportGasLevel) {
-    reportGasLevel = 'normal';
-    try {
-      reportGasLevel = await wallet.getReportGasLevel();
-    } catch (error) {
-      console.error('getReportGasLevel error', error);
-    }
-  }
-
-  wallet.reportStats('createTransaction', {
-    type: currentAccount.brandName,
-    category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    chainId: chain.serverId,
-    createdBy: ga ? 'rabby' : 'dapp',
-    source: ga?.source || '',
-    trigger: ga?.trigger || '',
-    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-    swapUseSlider: ga?.swapUseSlider ?? '',
-    gasLevel: reportGasLevel,
-  });
 
   // pre exec tx
   const preExecResult =
@@ -503,51 +479,6 @@ export const sendTransaction = async ({
     }
   }
 
-  const handleSendAfter = async () => {
-    const statsData = await wallet.getStatsData();
-
-    if (statsData?.signed) {
-      const sData: any = {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.signedSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createdBy: statsData?.createdBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-        networkType: statsData?.networkType,
-      };
-      if (statsData.signMethod) {
-        sData.signMethod = statsData.signMethod;
-      }
-      stats.report('signedTransaction', sData);
-    }
-    if (statsData?.submit) {
-      stats.report('submitTransaction', {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.submitSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createdBy: statsData?.createdBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-        networkType: statsData?.networkType || '',
-      });
-    }
-  };
-
-  wallet.reportStats('signTransaction', {
-    type: currentAccount.brandName,
-    category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    chainId: chain.serverId,
-    createdBy: ga ? 'rabby' : 'dapp',
-    source: ga?.source || '',
-    trigger: ga?.trigger || '',
-    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-  });
-
   // submit tx
   let hash = '';
   try {
@@ -581,9 +512,7 @@ export const sendTransaction = async ({
       result: undefined,
       account: account!,
     });
-    await handleSendAfter();
   } catch (e) {
-    await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
     eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
@@ -693,25 +622,6 @@ export const sendTransactionByMiniSignV2 = async ({
   });
 
   const signingTxId = await wallet.addSigningTx(tx);
-
-  let reportGasLevel = 'normal';
-  try {
-    reportGasLevel = await wallet.getReportGasLevel();
-  } catch (error) {
-    console.error('getReportGasLevel error', error);
-  }
-
-  wallet.reportStats('createTransaction', {
-    type: currentAccount.brandName,
-    category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    chainId: chain.serverId,
-    createdBy: ga ? 'rabby' : 'dapp',
-    source: ga?.source || '',
-    trigger: ga?.trigger || '',
-    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-    swapUseSlider: ga?.swapUseSlider ?? '',
-    gasLevel: reportGasLevel,
-  });
 
   const transaction: TxWithTempoExtras<Tx> = {
     from: tx.from,
@@ -875,51 +785,6 @@ export const sendTransactionByMiniSignV2 = async ({
 
   onProgress?.('builded');
 
-  const handleSendAfter = async () => {
-    const statsData = await wallet.getStatsData();
-
-    if (statsData?.signed) {
-      const sData: any = {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.signedSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createdBy: statsData?.createdBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-        networkType: statsData?.networkType,
-      };
-      if (statsData.signMethod) {
-        sData.signMethod = statsData.signMethod;
-      }
-      stats.report('signedTransaction', sData);
-    }
-    if (statsData?.submit) {
-      stats.report('submitTransaction', {
-        type: statsData?.type,
-        chainId: statsData?.chainId,
-        category: statsData?.category,
-        success: statsData?.submitSuccess,
-        preExecSuccess: statsData?.preExecSuccess,
-        createdBy: statsData?.createdBy,
-        source: statsData?.source,
-        trigger: statsData?.trigger,
-        networkType: statsData?.networkType || '',
-      });
-    }
-  };
-
-  wallet.reportStats('signTransaction', {
-    type: currentAccount.brandName,
-    category: KEYRING_CATEGORY_MAP[currentAccount.type],
-    chainId: chain.serverId,
-    createdBy: ga ? 'rabby' : 'dapp',
-    source: ga?.source || '',
-    trigger: ga?.trigger || '',
-    networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-  });
-
   // submit tx
   let hash = '';
   const account = currentAccount;
@@ -951,9 +816,7 @@ export const sendTransactionByMiniSignV2 = async ({
       result: undefined,
       account: account,
     });
-    await handleSendAfter();
   } catch (e) {
-    await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
     eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);

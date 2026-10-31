@@ -218,6 +218,21 @@ export const FooterBar: React.FC<Props> = ({
 
   const { isDarkTheme } = useThemeMode();
 
+  // Hippo has no Gas Account / gasless surfaces; upstream #4083 security gate
+  // applies with those inputs fixed to off.
+  const processDisabled = isApprovalProcessDisabled({
+    securityBlocked,
+    hasUnprocessedSecurityResult:
+      !!securityLevel && !!hasUnProcessSecurityResult,
+    payGasByGasAccount: false,
+    useGasLess: false,
+    disabledProcess: props.disabledProcess,
+  });
+  const tooltipEnabled = props.enableTooltip;
+  // Keep the disabled reason tooltip open instead of showing it on hover.
+  const showDisabledReason =
+    processDisabled && !!tooltipEnabled && !!props.tooltipContent;
+
   if (!account) {
     return null;
   }
@@ -241,17 +256,9 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           {...props}
           gasLess={false}
-          disabledProcess={isApprovalProcessDisabled({
-            securityBlocked,
-            hasUnprocessedSecurityResult:
-              !!securityLevel && !!hasUnProcessSecurityResult,
-            // Hippo has no Gas Account / gasless surfaces; upstream #4083
-            // security gate applies with those inputs fixed to off.
-            payGasByGasAccount: false,
-            useGasLess: false,
-            disabledProcess: props.disabledProcess,
-          })}
-          enableTooltip={props.enableTooltip}
+          disabledProcess={processDisabled}
+          enableTooltip={tooltipEnabled}
+          tooltipVisible={showDisabledReason}
         />
         {securityLevel && hasUnProcessSecurityResult && (
           <div

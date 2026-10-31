@@ -43,7 +43,6 @@ import {
   HDKeyRingLastAddAddrTimeService,
   uninstalledService,
   OfflineChainsService,
-  miscService,
   feedbackService,
 } from 'background/service';
 import {
@@ -197,6 +196,10 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import {
+  disableExtraFeeProtection,
+  enableExtraFeeProtection,
+} from './walletUtils/extraFeeProtection';
 import {
   assertApprovalSigningBinding,
   waitForApprovalSigning,
@@ -1791,6 +1794,9 @@ export class WalletController extends BaseController {
     });
   };
 
+  enableExtraFeeProtection = enableExtraFeeProtection;
+  disableExtraFeeProtection = disableExtraFeeProtection;
+
   enableDappAccount = (enabled: boolean) => {
     preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
     const currentAccount = preferenceService.getCurrentAccount();
@@ -1844,10 +1850,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({
       unlockPreferredMethod: method,
     });
-  };
-
-  updateGa4EventTime = (timestamp: number) => {
-    preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
@@ -4718,9 +4720,6 @@ export class WalletController extends BaseController {
 
   removeCollectionStarred = preferenceService.removeCollectionStarred;
 
-  reportStats = (name: string, params: EventParams) => {
-    stats.report(name, params);
-  };
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
@@ -5229,14 +5228,6 @@ export class WalletController extends BaseController {
     return await keyring.scanAccount();
   };
 
-  setStatsData = (data: any) => {
-    notificationService.setStatsData(data);
-  };
-
-  getStatsData = () => {
-    return notificationService.getStatsData();
-  };
-
   _currentCoinbaseStashId?: undefined | null | number;
 
   connectCoinbase = async () => {
@@ -5626,9 +5617,6 @@ export class WalletController extends BaseController {
       params,
     });
   };
-
-  setReportGasLevel = miscService.setCurrentGasLevel;
-  getReportGasLevel = miscService.getCurrentGasLevel;
 
   getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;

@@ -1,4 +1,3 @@
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
@@ -24,7 +23,6 @@ import {
   pageStateCacheService,
   signTextHistoryService,
   RPCService,
-  notificationService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { TxPushType } from 'background/service/openapi';
@@ -35,7 +33,6 @@ import {
   CHAINS_ENUM,
   SAFE_RPC_METHODS,
   KEYRING_TYPE,
-  KEYRING_CATEGORY_MAP,
   EVENTS,
   INTERNAL_REQUEST_SESSION,
   INTERNAL_REQUEST_ORIGIN,
@@ -49,13 +46,11 @@ import {
   ApprovalRes,
   is7702Tx,
 } from '@/utils/transaction';
-import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from '@/ui/views/Approval/components/AddChain/type';
 import { formatTxMetaForRpcResult } from 'background/utils/tx';
 import { findChain, findChainByEnum, isTestnet } from '@/utils/chain';
 import eventBus from '@/eventBus';
-import { StatsData } from '../../service/notification';
 import {
   CustomTestnetTokenBase,
   TestnetChain,
@@ -69,8 +64,11 @@ import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import {
+  findInvalidTypedDataValue,
   findShadowedBuiltinType,
+  isTypeGraphTooLarge,
   parseTypedDataJson,
+  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -91,29 +89,6 @@ import {
   getSigningContext,
   takeSigningCarrier,
 } from '@/utils/sentry';
-
-const reportSignText = (params: {
-  method: string;
-  account: Account;
-  success: boolean;
-}) => {
-  const { method, account, success } = params;
-  matomoRequestEvent({
-    category: 'SignText',
-    action: 'completeSignText',
-    label: [
-      KEYRING_CATEGORY_MAP[account.type],
-      account.brandName,
-      success,
-    ].join('|'),
-  });
-  stats.report('completeSignText', {
-    type: account.brandName,
-    category: KEYRING_CATEGORY_MAP[account.type],
-    method,
-    success,
-  });
-};
 
 /**
  * Fail-closed signing gate. Any signature path that consumes an approval
@@ -309,15 +284,19 @@ const signTypedDataVlidation = ({
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
   if (parsed.hasProtoKey) {
-    throw ethErrors.rpc.invalidParams('data should not contain __proto__ key');
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   const jsonData = parsed.json;
   const shadowedType = findShadowedBuiltinType(jsonData?.types);
   if (shadowedType) {
-    throw ethErrors.rpc.invalidParams(
-      `types should not redefine built-in type: ${shadowedType}`
-    );
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
+  if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
+    throw ethErrors.rpc.invalidParams('invalid typed data');
+  }
+  reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
+    rawTypedData: data,
+  });
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
       ?.chain;
@@ -570,7 +549,6 @@ class ProviderController extends BaseController {
     const eip7702RevokeAuthorization =
       options?.data?.$ctx?.eip7702RevokeAuthorization || [];
 
-    let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete txParams.isSwap;
     delete txParams.swapPreferMEVGuarded;
@@ -737,25 +715,6 @@ class ProviderController extends BaseController {
 
     const chainItem = findChainByEnum(chain);
 
-    const statsData: StatsData = {
-      signed: false,
-      signedSuccess: false,
-      submit: false,
-      submitSuccess: false,
-      type: currentAccount.brandName,
-      chainId: chainItem?.serverId || '',
-      category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      preExecSuccess: cacheExplain
-        ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-        : true,
-      createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-      source: options?.data?.$ctx?.ga?.source || '',
-      trigger: options?.data?.$ctx?.ga?.trigger || '',
-      networkType: chainItem?.isTestnet
-        ? 'Custom Network'
-        : 'Integrated Network',
-      reported: false,
-    };
     const tempoCalls = isTempoTx ? normalizeTempoCalls(approvalRes) : undefined;
     const shouldUseKeyringTempoSign =
       isTempoTx && isSimpleOrHdKeyringType(currentAccount.type);
@@ -867,9 +826,6 @@ class ProviderController extends BaseController {
         currentAccount.type === KEYRING_TYPE.GnosisKeyring ||
         currentAccount.type === KEYRING_TYPE.CoboArgusKeyring
       ) {
-        signedTransactionSuccess = true;
-        statsData.signed = true;
-        statsData.signedSuccess = true;
         return;
       }
 
@@ -878,17 +834,6 @@ class ProviderController extends BaseController {
         pushType?: TxPushType;
       }) => {
         const { hash, pushType = 'default' } = info;
-        if (
-          options?.data?.$ctx?.stats?.afterSign?.length &&
-          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
-        ) {
-          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
-            if (name && params) {
-              stats.report(name, params);
-            }
-          });
-        }
-
         const { r, s, v, ...other } = approvalRes;
 
         if (hash) {
@@ -898,8 +843,6 @@ class ProviderController extends BaseController {
           transactionHistoryService.postCacheHistoryData(key, hash);
         }
 
-        statsData.submit = true;
-        statsData.submitSuccess = true;
         if (isSend) {
           pageStateCacheService.clear();
         }
@@ -948,32 +891,6 @@ class ProviderController extends BaseController {
         }
       };
       const onTransactionSubmitFailed = (e: any) => {
-        if (
-          options?.data?.$ctx?.stats?.afterSign?.length &&
-          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
-        ) {
-          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
-            if (name && params) {
-              stats.report(name, params);
-            }
-          });
-        }
-
-        stats.report('submitTransaction', {
-          type: currentAccount.brandName,
-          chainId: chainItem?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          success: false,
-          preExecSuccess: cacheExplain
-            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-            : true,
-          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: options?.data?.$ctx?.ga?.source || '',
-          trigger: options?.data?.$ctx?.ga?.trigger || '',
-          networkType: chainItem?.isTestnet
-            ? 'Custom Network'
-            : 'Integrated Network',
-        });
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
             tx: {
@@ -990,10 +907,6 @@ class ProviderController extends BaseController {
           });
         }
         const errMsg = e.details || e.message || JSON.stringify(e);
-        if (notificationService.statsData?.signMethod) {
-          statsData.signMethod = notificationService.statsData?.signMethod;
-        }
-        notificationService.setStatsData(statsData);
         throw new Error(errMsg);
       };
 
@@ -1002,23 +915,9 @@ class ProviderController extends BaseController {
           hash: signedTx,
           pushType: 'default',
         });
-        if (
-          currentAccount.type === KEYRING_TYPE.WalletConnectKeyring ||
-          currentAccount.type === KEYRING_TYPE.CoinbaseKeyring
-        ) {
-          statsData.signed = true;
-          statsData.signedSuccess = true;
-        }
-        if (notificationService.statsData?.signMethod) {
-          statsData.signMethod = notificationService.statsData?.signMethod;
-        }
-        notificationService.setStatsData(statsData);
         return signedTx;
       }
 
-      signedTransactionSuccess = true;
-      statsData.signed = true;
-      statsData.signedSuccess = true;
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
       });
@@ -1088,10 +987,6 @@ class ProviderController extends BaseController {
               ? 'mev'
               : 'default',
         });
-        if (notificationService.statsData?.signMethod) {
-          statsData.signMethod = notificationService.statsData.signMethod;
-        }
-        notificationService.setStatsData(statsData);
         return hash;
       } catch (e: any) {
         const chainData = findChain({
@@ -1111,14 +1006,6 @@ class ProviderController extends BaseController {
         onTransactionSubmitFailed(errMsg);
       }
     } catch (e) {
-      if (!signedTransactionSuccess) {
-        statsData.signed = true;
-        statsData.signedSuccess = false;
-      }
-      if (notificationService.statsData?.signMethod) {
-        statsData.signMethod = notificationService.statsData?.signMethod;
-      }
-      notificationService.setStatsData(statsData);
       throw typeof e === 'object' ? e : new Error(e);
     }
   };
@@ -1171,36 +1058,22 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     assertSigningApprovalResult(approvalRes);
-    try {
-      const [string, from] = data.params;
-      const hex = isHexString(string) ? string : stringToHex(string);
-      const keyring = await this._checkAddress(from, req);
-      const result = await keyringService.signPersonalMessage(
-        keyring,
-        { data: hex, from },
-        approvalRes?.extra
-      );
+    const [string, from] = data.params;
+    const hex = isHexString(string) ? string : stringToHex(string);
+    const keyring = await this._checkAddress(from, req);
+    const result = await keyringService.signPersonalMessage(
+      keyring,
+      { data: hex, from },
+      approvalRes?.extra
+    );
 
-      signTextHistoryService.createHistory({
-        address: from,
-        text: string,
-        origin: session.origin,
-        type: 'personalSign',
-      });
-      reportSignText({
-        account: currentAccount,
-        method: 'personalSign',
-        success: true,
-      });
-      return result;
-    } catch (e) {
-      reportSignText({
-        account: currentAccount,
-        method: 'personalSign',
-        success: false,
-      });
-      throw e;
-    }
+    signTextHistoryService.createHistory({
+      address: from,
+      text: string,
+      origin: session.origin,
+      type: 'personalSign',
+    });
+    return result;
   };
 
   @Reflect.metadata('PRIVATE', true)
@@ -1251,36 +1124,22 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     assertSigningApprovalResult(approvalRes);
-    try {
-      const result = await this._signTypedData(
-        {
-          from,
-          data,
-          version: 'V1',
-          extra: approvalRes?.extra,
-        },
-        req
-      );
-      signTextHistoryService.createHistory({
-        address: from,
-        text: data,
-        origin: session.origin,
-        type: 'ethSignTypedData',
-      });
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedData',
-        success: true,
-      });
-      return result;
-    } catch (e) {
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedData',
-        success: false,
-      });
-      throw e;
-    }
+    const result = await this._signTypedData(
+      {
+        from,
+        data,
+        version: 'V1',
+        extra: approvalRes?.extra,
+      },
+      req
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedData',
+    });
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
@@ -1302,36 +1161,22 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     assertSigningApprovalResult(approvalRes);
-    try {
-      const result = await this._signTypedData(
-        {
-          from,
-          data,
-          version: 'V1',
-          extra: approvalRes?.extra,
-        },
-        req
-      );
-      signTextHistoryService.createHistory({
-        address: from,
-        text: data,
-        origin: session.origin,
-        type: 'ethSignTypedDataV1',
-      });
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV1',
-        success: true,
-      });
-      return result;
-    } catch (e) {
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV1',
-        success: false,
-      });
-      throw e;
-    }
+    const result = await this._signTypedData(
+      {
+        from,
+        data,
+        version: 'V1',
+        extra: approvalRes?.extra,
+      },
+      req
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV1',
+    });
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
@@ -1352,36 +1197,22 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     assertSigningApprovalResult(approvalRes);
-    try {
-      const result = await this._signTypedData(
-        {
-          from,
-          data,
-          version: 'V3',
-          extra: approvalRes?.extra,
-        },
-        req
-      );
-      signTextHistoryService.createHistory({
-        address: from,
-        text: data,
-        origin: session.origin,
-        type: 'ethSignTypedDataV3',
-      });
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV3',
-        success: true,
-      });
-      return result;
-    } catch (e) {
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV3',
-        success: false,
-      });
-      throw e;
-    }
+    const result = await this._signTypedData(
+      {
+        from,
+        data,
+        version: 'V3',
+        extra: approvalRes?.extra,
+      },
+      req
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV3',
+    });
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
@@ -1402,36 +1233,22 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     assertSigningApprovalResult(approvalRes);
-    try {
-      const result = await this._signTypedData(
-        {
-          from,
-          data,
-          version: 'V4',
-          extra: approvalRes?.extra,
-        },
-        req
-      );
-      signTextHistoryService.createHistory({
-        address: from,
-        text: data,
-        origin: session.origin,
-        type: 'ethSignTypedDataV4',
-      });
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV4',
-        success: true,
-      });
-      return result;
-    } catch (e) {
-      reportSignText({
-        account: currentAccount,
-        method: 'ethSignTypedDataV4',
-        success: false,
-      });
-      throw e;
-    }
+    const result = await this._signTypedData(
+      {
+        from,
+        data,
+        version: 'V4',
+        extra: approvalRes?.extra,
+      },
+      req
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV4',
+    });
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', [

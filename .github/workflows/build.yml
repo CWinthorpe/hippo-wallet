@@ -16,6 +16,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       WALLETCONNECT_PROJECT_ID: ${{ vars.WALLETCONNECT_PROJECT_ID }}
+      # The 16 GB hosted runner runs out of memory when several Terser workers
+      # minify the bundles at once; one worker keeps the peak out of swap.
+      TERSER_PARALLEL: '1'
     steps:
       - name: checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
