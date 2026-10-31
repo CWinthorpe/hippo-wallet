@@ -37,19 +37,18 @@ describe('GA page_view', () => {
     expect(getPageViewPath('')).toBe('');
   });
 
-  test('does not send the account in page_location', async () => {
+  // Hippo adaptation: upstream's regression asserts the GA wire format.
+  // Hippo's ga4 facade is a permanent no-op (privateBuildPrivacy pins it), so
+  // the pinned invariant here is that no network request is ever made and the
+  // address/brand never leave the extension. getPageViewPath itself keeps the
+  // query-stripping behavior under test above.
+  test('never sends page_location anywhere', async () => {
     await ga4.firePageViewEvent({
       pageLocation: getPageViewPath(
         `#/settings/address-detail?address=${ADDRESS}&brandName=Ledger`
       ),
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const body = fetchMock.mock.calls[0][1].body as string;
-    const [event] = JSON.parse(body).events;
-    expect(event.name).toBe('page_view');
-    expect(event.params.page_location).toBe('/settings/address-detail');
-    expect(body).not.toContain(ADDRESS);
-    expect(body).not.toContain('Ledger');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
