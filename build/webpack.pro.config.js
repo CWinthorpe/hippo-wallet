@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
+const MinimizerPlugin = require('minimizer-webpack-plugin');
 const sentrySourceMap = !!process.env.sourcemap || false;
 const SecSDK = require('warden-for-js').WardenPlugin;
 
@@ -23,14 +23,19 @@ const config = {
   optimization: {
     minimize: true,
     minimizer: [
-      new TerserPlugin({
-        // Parallel minification exceeded 14 GiB RSS on ARM64 release builds.
-        // Serialize it so production packaging remains deterministic and does
-        // not depend on the host's OOM killer.
+      // Upstream #4204 moved webpack 5.108.4 to minimizer-webpack-plugin
+      // (webpack no longer ships terser-webpack-plugin). Hippo keeps
+      // serialization: parallel minification exceeded 14 GiB RSS on ARM64
+      // release builds, so minify stays single-worker for deterministic,
+      // OOM-safe production packaging regardless of TERSER_PARALLEL.
+      new MinimizerPlugin({
         parallel: false,
-        terserOptions: {
-          compress: {
-            pure_funcs: ['console.log', 'console.debug', 'console.info'],
+        minify: {
+          implementation: MinimizerPlugin.terserMinify,
+          options: {
+            compress: {
+              pure_funcs: ['console.log', 'console.debug', 'console.info'],
+            },
           },
         },
       }),
