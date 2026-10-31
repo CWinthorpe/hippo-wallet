@@ -8,7 +8,12 @@ const WebSocket = require('ws');
 
 const MAX_ATTEMPTS_PER_RUN = Number(process.env.COWSWAP_SMOKE_ATTEMPTS || '3');
 
-const PUBLIC_EOA = '0x28c6c06298d514db089934071355e5743bf21d60';
+// Balance-gated smoke fixture (read-only quote/simulation paths). The prior
+// fixture 0x28c6c06298...d514db08 drained to zero WETH on 2026-10-30
+// (third-party key reuse — vanity address), so the product's honest
+// balance check correctly refused the sell. Rotated to a long-dormant
+// publicly-funded EOA holding WETH, USDC, and ETH above the smoke amounts.
+const PUBLIC_EOA = '0x57757e3d981446d585af0d9ae4d7df6d64647806';
 const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const NATIVE = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
