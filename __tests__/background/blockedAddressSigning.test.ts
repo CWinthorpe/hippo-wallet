@@ -57,7 +57,6 @@ jest.mock('@/background/service/customTestnet', () => ({}));
 jest.mock('@/background/utils/rpcCache', () => ({}));
 jest.mock('@/background/utils/buildinProvider', () => ({}));
 jest.mock('@/background/utils/tx', () => ({}));
-jest.mock('@/background/utils/gasAccountLogin', () => ({}));
 jest.mock('@/background/controller/walletUtils/fix', () => ({}));
 
 const isBlockedAddress = openapiService.isBlockedAddress as jest.Mock;

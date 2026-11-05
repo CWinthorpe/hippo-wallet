@@ -3,40 +3,24 @@ jest.mock('@/constant', () => ({
   CHAINS_ENUM: { ETH: 'ETH' },
 }));
 
-jest.mock('@/utils/chain', () => ({
-  supportedChainToChain: jest.fn((item) => item),
-  updateChainStore: jest.fn(),
-}));
-
-jest.mock('@/utils/env', () => ({ isManifestV3: true }));
 jest.mock('@/background/utils', () => ({ createPersistStore: jest.fn() }));
-jest.mock('@/background/utils/http', () => ({ http: { get: jest.fn() } }));
 
 jest.mock('@/background/service', () => ({
-  openapiService: {},
   permissionService: { resetSitesWithUnsupportedChain: jest.fn() },
   sessionService: { broadcastEvent: jest.fn() },
 }));
 
-jest.mock('webextension-polyfill', () => ({
-  __esModule: true,
-  default: { storage: { local: { set: jest.fn() } } },
-}));
-
-import browser from 'webextension-polyfill';
 import { permissionService, sessionService } from '@/background/service';
 import { syncChainService } from '@/background/service/syncChain';
-import { http } from '@/background/utils/http';
-import { updateChainStore } from '@/utils/chain';
 
-const mockChainList = (list: { enum: string; is_disabled?: boolean }[]) => {
-  jest.mocked(http.get).mockResolvedValue({ data: list });
-};
-
-describe('syncChainService.syncMainnetChainList', () => {
+// Hippo ships its reviewed chain inventory with the extension and never runs
+// upstream's remote chain-list fetch (#4224), so the fetch-side cases of the
+// upstream regressor (ETH-less list rejection) do not apply here. What Hippo
+// keeps — and must keep working — is the disconnect/notify path that the
+// startup permission bootstrap and custom-network removal call.
+describe('syncChainService.disconnectSitesWithUnsupportedChain', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, 'error').mockImplementation(() => undefined);
     jest
       .mocked(permissionService.resetSitesWithUnsupportedChain)
       .mockReturnValue([]);
@@ -46,20 +30,7 @@ describe('syncChainService.syncMainnetChainList', () => {
     jest.restoreAllMocks();
   });
 
-  it('drops a chain list without ETH', async () => {
-    mockChainList([{ enum: 'BSC' }, { enum: 'ETH', is_disabled: true }]);
-
-    await syncChainService.syncMainnetChainList({ force: true });
-
-    expect(updateChainStore).not.toHaveBeenCalled();
-    expect(browser.storage.local.set).not.toHaveBeenCalled();
-    expect(
-      permissionService.resetSitesWithUnsupportedChain
-    ).not.toHaveBeenCalled();
-  });
-
-  it('disconnects and notifies the dapps whose chain was removed', async () => {
-    mockChainList([{ enum: 'ETH' }]);
+  it('disconnects and notifies the dapps whose chain was removed', () => {
     jest
       .mocked(permissionService.resetSitesWithUnsupportedChain)
       .mockReturnValue([
@@ -67,11 +38,8 @@ describe('syncChainService.syncMainnetChainList', () => {
         { origin: 'https://b.com', isConnected: false },
       ] as ReturnType<typeof permissionService.resetSitesWithUnsupportedChain>);
 
-    await syncChainService.syncMainnetChainList({ force: true });
+    syncChainService.disconnectSitesWithUnsupportedChain();
 
-    expect(updateChainStore).toHaveBeenCalledWith({
-      mainnetList: [{ enum: 'ETH' }],
-    });
     expect(sessionService.broadcastEvent).toHaveBeenCalledTimes(2);
     expect(sessionService.broadcastEvent).toHaveBeenCalledWith(
       'accountsChanged',
@@ -85,5 +53,11 @@ describe('syncChainService.syncMainnetChainList', () => {
       'https://a.com',
       true
     );
+  });
+
+  it('notifies nobody when every site chain is still supported', () => {
+    syncChainService.disconnectSitesWithUnsupportedChain();
+
+    expect(sessionService.broadcastEvent).not.toHaveBeenCalled();
   });
 });
