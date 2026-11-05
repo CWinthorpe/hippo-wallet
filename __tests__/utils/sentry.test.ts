@@ -1,6 +1,7 @@
 import { SENTRY_IGNORED_SAMPLES } from '../fixtures/sentry-ignored-samples';
 import {
   sanitizeSentryBreadcrumbUrl,
+  scrubSentryEvent,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
@@ -143,5 +144,71 @@ describe('Sentry breadcrumb privacy', () => {
         'https://api.example/account/0x0123456789abcdef0123456789abcdef01234567?token=secret#details'
       )
     ).toBe('https://api.example/account/[redacted]');
+  });
+});
+
+// Ported from upstream #4248 (feat(sentry): keep token contract ids readable),
+// exercised directly on scrubSentryEvent: Hippo strips Sentry initialization and
+// ingestion, so the upstream client-driven form of this regressor cannot run
+// here, while the shared redaction pipeline in src/utils/sentry.ts is retained.
+describe('scrubSentryEvent token-contract exemption (upstream #4248)', () => {
+  const user = '0x9bba7ebC9c69db92950def377d732b91bb22d02f';
+  const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+  test('keeps a single address under token-contract keys in structured fields', () => {
+    const event = {
+      tags: { token_id: usdc, owner: user },
+      extra: {
+        order: {
+          fromTokenId: usdc,
+          quote: { pay_token_id: usdc, receive_token_id: weth },
+          // A loose /token/ match would keep these.
+          tokenOwner: user,
+          token_holder: user,
+          // Only a single, exact address is kept.
+          to_token_id: `${usdc},${weth}`,
+          token_address: `0x${'0'.repeat(24)}${usdc.slice(2)}`,
+          tokenId: 'eth',
+        },
+      },
+      exception: {
+        values: [
+          {
+            type: 'Error',
+            // Free text can't say which hex is a token, so all of it is redacted.
+            value: `swap failed {"fromTokenId":"${usdc}","owner":"${user}"}`,
+          },
+        ],
+      },
+    };
+
+    const scrubbed = scrubSentryEvent(event as any);
+
+    expect(scrubbed.tags.token_id).toBe(usdc);
+    expect(scrubbed.extra.order).toEqual({
+      fromTokenId: usdc,
+      quote: { pay_token_id: usdc, receive_token_id: weth },
+      tokenOwner: '[redacted-address]',
+      token_holder: '[redacted-address]',
+      to_token_id: '[redacted-address],[redacted-address]',
+      token_address: '[redacted-hex]',
+      tokenId: 'eth',
+    });
+    expect(scrubbed.exception.values[0].value).toBe(
+      'swap failed {"fromTokenId":"[redacted-address]","owner":"[redacted-address]"}'
+    );
+    // Holder address must not survive anywhere in the serialized event.
+    expect(JSON.stringify(scrubbed).toLowerCase()).not.toContain(
+      user.slice(2).toLowerCase()
+    );
+  });
+
+  test('keeps tokenAddress in a structured field but still redacts holder addresses in free text', () => {
+    const scrubbed = scrubSentryEvent({
+      extra: { tokenAddress: usdc, memo: `${user} sent` },
+    } as any);
+    expect(scrubbed.extra.tokenAddress).toBe(usdc);
+    expect(scrubbed.extra.memo).toBe('[redacted-address] sent');
   });
 });
