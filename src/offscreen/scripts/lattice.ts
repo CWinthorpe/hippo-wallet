@@ -3,6 +3,7 @@ import {
   KnownOrigins,
 } from '@/constant/offscreen-communication';
 import { isTrustedBackgroundSender } from './senderAuth';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 async function openConnectorTab(url: string) {
   const browserTab = window.open(url);
@@ -32,7 +33,8 @@ export default function initLattice() {
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (
       msg.target !== OffscreenCommunicationTarget.latticeOffscreen ||
-      !isTrustedBackgroundSender(sender)
+      !isTrustedBackgroundSender(sender) ||
+      !isPrivilegedOffscreenSender(sender)
     ) {
       return;
     }

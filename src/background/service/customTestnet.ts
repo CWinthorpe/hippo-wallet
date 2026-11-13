@@ -9,7 +9,6 @@ import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { intToHex } from '@ethereumjs/util';
 import supportedTestnetChainLogos from './data/supported_testnet_chains.json';
-import { abiERC1155, abiERC721 } from '@metamask/metamask-eth-abis';
 import { GasLevel, ParseTxResponse, Tx } from 'background/service/openapi';
 import {
   createPersistStore,
@@ -24,6 +23,7 @@ import {
   createClient,
   decodeFunctionData,
   defineChain,
+  erc1155Abi,
   erc20Abi,
   erc721Abi,
   getContract,
@@ -48,6 +48,19 @@ import RPCService, { RPCServiceStore } from './rpc';
 // import openapiService from './openapi';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
+
+// viem's erc721Abi has no ERC-165 `supportsInterface`, which we use to detect
+// ERC-721 contracts.
+const erc721WithErc165Abi = [
+  ...erc721Abi,
+  {
+    type: 'function',
+    name: 'supportsInterface',
+    stateMutability: 'view',
+    inputs: [{ name: 'interfaceId', type: 'bytes4' }],
+    outputs: [{ name: '', type: 'bool' }],
+  },
+] as const;
 
 export interface TestnetChainBase {
   id: number;
@@ -907,7 +920,7 @@ class CustomTestnetService {
 
     const contract = getContract({
       address: tokenId as `0x${string}`,
-      abi: abiERC721,
+      abi: erc721WithErc165Abi,
       client,
     });
 
@@ -952,7 +965,7 @@ class CustomTestnetService {
 
     const contract = getContract({
       address: tokenId as `0x${string}`,
-      abi: abiERC1155,
+      abi: erc1155Abi,
       client,
     });
 
@@ -1095,7 +1108,7 @@ class CustomTestnetService {
 
     try {
       const tokenURI = await readContract(client, {
-        abi: abiERC1155,
+        abi: erc1155Abi,
         address: contractAddress as `0x${string}`,
         functionName: 'uri',
         args: [BigInt(tokenId)],
@@ -1390,7 +1403,7 @@ class CustomTestnetService {
         }
       } else if (details.type === TOKEN_STANDARD.ERC1155) {
         const parsedData = decodeFunctionData({
-          abi: abiERC1155,
+          abi: erc1155Abi,
           data: data as `0x${string}`,
         });
         if (!parsedData) {

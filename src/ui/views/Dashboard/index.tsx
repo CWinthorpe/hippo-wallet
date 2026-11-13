@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
-import remarkGfm from 'remark-gfm';
 
 import { AuthenticationModal, Modal } from 'ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
@@ -161,7 +160,7 @@ const Dashboard = () => {
       >
         <div>
           <p className="mb-12">{version}</p>
-          <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+          <ReactMarkdown children={updateContent} />
         </div>
       </Modal>
 

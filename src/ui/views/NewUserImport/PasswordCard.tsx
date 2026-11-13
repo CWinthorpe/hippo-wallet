@@ -8,9 +8,7 @@ import { sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { ReactComponent as RcIconCheckCC } from 'ui/assets/icon-checked-cc.svg';
 import { ReactComponent as RcIconSuccessCC } from 'ui/assets/icon-checked-success-cc.svg';
-import { ReactComponent as RcIconUnCheckCC } from 'ui/assets/icon-unchecked-cc.svg';
 import { ReactComponent as RcIconEyeCC } from 'ui/assets/new-user-import/eye-cc.svg';
 import { ReactComponent as RcIconEyeCloseCC } from 'ui/assets/new-user-import/eye-close-cc.svg';
 
@@ -95,6 +93,10 @@ const Container = styled.div`
     transition: none;
   }
 
+  .ant-switch-checked {
+    background-color: var(--r-blue-default, #4c65ff);
+  }
+
   .ant-form-item-explain {
     color: var(--r-red-default, #e34935);
     font-size: 13px;
@@ -128,7 +130,6 @@ interface Props {
 export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [agreeTerm, setAgreeTerm] = useState(true);
   const [isShowPassword, setIsShowPassword] = useState(false);
 
   const [form] = Form.useForm<{
@@ -137,15 +138,14 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
   }>();
 
   const handleSubmit = useMemoizedFn(async () => {
-    if (!agreeTerm) {
-      return;
-    }
     try {
       await form.validateFields();
     } catch {
       // The form shows the error; the rejection carries both passwords.
       return;
     }
+    // Hippo: telemetry is removed; new-wallet setup stays hard opt-out of any
+    // usage-data tracking without exposing a data-collection choice.
     await wallet.setUserDataTrackingOptOut(true);
     onSubmit?.(form.getFieldsValue().password);
   });
@@ -315,69 +315,39 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
                   0 ||
                 !form.isFieldsTouched();
               return (
-                <footer className="mt-auto">
-                  <div
-                    className="flex items-center justify-center gap-[4px] cursor-pointer"
-                    onClick={() => {
-                      setAgreeTerm((prev) => !prev);
-                    }}
-                  >
-                    {agreeTerm ? (
-                      <div className={'text-rabby-blue-default'}>
-                        <RcIconCheckCC
-                          viewBox="0 0 20 20"
-                          className="w-[16px] h-[16px]"
-                        />
-                      </div>
-                    ) : (
-                      <div className={'text-r-neutral-foot'}>
-                        <RcIconUnCheckCC
-                          viewBox="0 0 20 20"
-                          className="w-[16px] h-[16px]"
-                        />
-                      </div>
-                    )}
-                    <div className="text-[13px] text-r-neutral-foot leading-[16px]">
-                      <Trans
-                        t={t}
-                        i18nKey="page.newUserImport.PasswordCard.agree"
-                      >
-                        I agree to the{' '}
-                        <span
-                          className="text-rabby-blue-default font-medium cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            gotoTermsOfUse();
-                          }}
-                        >
-                          Terms of Use
-                        </span>
-                        and
-                        <span
-                          className="text-rabby-blue-default font-medium cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            gotoPrivacy();
-                          }}
-                        >
-                          Privacy Policy
-                        </span>
-                      </Trans>
-                    </div>
-                  </div>
-
+                <footer className="mt-auto pt-[20px]">
                   <Button
                     onClick={handleSubmit}
                     block
-                    disabled={!agreeTerm || isDisabled}
+                    disabled={isDisabled}
                     type="primary"
                     className={clsx(
-                      'mt-[20px] h-[52px] shadow-none rounded-[8px]',
+                      'h-[52px] shadow-none rounded-[8px]',
                       'text-[15px] leading-[18px] font-medium'
                     )}
                   >
                     {t('global.Confirm')}
                   </Button>
+                  <div className="mt-[12px] text-center text-[12px] leading-[16px] text-r-neutral-foot">
+                    <Trans
+                      t={t}
+                      i18nKey="page.newUserImport.PasswordCard.termsNotice"
+                      components={{
+                        terms: (
+                          <span
+                            className="text-r-blue-default font-medium cursor-pointer"
+                            onClick={gotoTermsOfUse}
+                          />
+                        ),
+                        privacy: (
+                          <span
+                            className="text-r-blue-default font-medium cursor-pointer"
+                            onClick={gotoPrivacy}
+                          />
+                        ),
+                      }}
+                    />
+                  </div>
                 </footer>
               );
             }}

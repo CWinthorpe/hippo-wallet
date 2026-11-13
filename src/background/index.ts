@@ -65,6 +65,7 @@ import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+import { createReadyGate, holdPortRequests } from './utils/readyGate';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -73,7 +74,7 @@ Safe.openapiService = openapiService;
 
 const { PortMessage } = Message;
 
-let appStoreLoaded = false;
+const backgroundReadyGate = createReadyGate();
 
 async function restoreAppState() {
   // Determine the keyring session state from durable storage BEFORE any
@@ -136,7 +137,7 @@ async function restoreAppState() {
 
   rpcCache.start();
 
-  appStoreLoaded = true;
+  backgroundReadyGate.open();
   eventBus.emit(BACKGROUND_READY_EVENT);
 
   syncChainService.roll();
@@ -197,11 +198,12 @@ async function restoreAppState() {
 }
 
 restoreAppState().catch((e) => {
-  // A throw here leaves `appStoreLoaded` false and `getBackgroundReady`
-  // unregistered, so every UI page waits until its bootstrap timeout.
+  // A throw here leaves `getBackgroundReady` unregistered and held port
+  // requests rejected; every UI page waits until its bootstrap timeout.
   // Hippo: console-only; upstream's Sentry capture dropped with the telemetry
   // removal (this file ships no Sentry SDK).
   console.error('[restoreAppState] failed', e);
+  backgroundReadyGate.fail(ethErrors.provider.disconnected());
 });
 {
   keyringService.on('unlock', () => {
@@ -234,57 +236,61 @@ browser.runtime.onConnect.addListener((port) => {
       return;
     }
     const pm = new PortMessage(port);
-    pm.listen((data) => {
-      if (data?.type) {
-        switch (data.type) {
-          case 'broadcast':
-            eventBus.emit(data.method, data.params);
-            break;
-          case 'openapi':
-            if (walletController.openapi[data.method]) {
-              return walletController.openapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
-          case 'fakeTestnetOpenapi':
-            if (walletController.fakeTestnetOpenapi[data.method]) {
-              return walletController.fakeTestnetOpenapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
-          case 'controller':
-          default:
-            if (data.method) {
-              const controllerMethod = walletController[data.method];
-              if (typeof controllerMethod !== 'function') {
-                throw new Error(
-                  `Unknown wallet controller method: ${String(data.method)}`
+    // The port is accepted before the stores are restored; hold its requests
+    // until they are, instead of letting them read an undefined store.
+    pm.listen(
+      holdPortRequests(backgroundReadyGate, port, (data: any) => {
+        if (data?.type) {
+          switch (data.type) {
+            case 'broadcast':
+              eventBus.emit(data.method, data.params);
+              break;
+            case 'openapi':
+              if (walletController.openapi[data.method]) {
+                return walletController.openapi[data.method].apply(
+                  null,
+                  data.params
                 );
               }
-              const res = controllerMethod.call(null, ...data.params);
-              if (!IS_FIREFOX) {
-                return res;
+              break;
+            case 'fakeTestnetOpenapi':
+              if (walletController.fakeTestnetOpenapi[data.method]) {
+                return walletController.fakeTestnetOpenapi[data.method].apply(
+                  null,
+                  data.params
+                );
               }
-              if (typeof res?.then === 'function') {
-                return res.then((x) => {
-                  if (typeof x !== 'object' || isNull(x)) {
-                    return x;
-                  }
-                  return transformFunctionsToZero(x);
-                });
+              break;
+            case 'controller':
+            default:
+              if (data.method) {
+                const controllerMethod = walletController[data.method];
+                if (typeof controllerMethod !== 'function') {
+                  throw new Error(
+                    `Unknown wallet controller method: ${String(data.method)}`
+                  );
+                }
+                const res = controllerMethod.call(null, ...data.params);
+                if (!IS_FIREFOX) {
+                  return res;
+                }
+                if (typeof res?.then === 'function') {
+                  return res.then((x) => {
+                    if (typeof x !== 'object' || isNull(x)) {
+                      return x;
+                    }
+                    return transformFunctionsToZero(x);
+                  });
+                }
+                if (typeof res !== 'object' || isNull(res)) {
+                  return res;
+                }
+                return transformFunctionsToZero(res);
               }
-              if (typeof res !== 'object' || isNull(res)) {
-                return res;
-              }
-              return transformFunctionsToZero(res);
-            }
+          }
         }
-      }
-    });
+      })
+    );
 
     const boardcastCallback = (data: any) => {
       pm.send('message', {
@@ -313,7 +319,7 @@ browser.runtime.onConnect.addListener((port) => {
       browser.runtime.sendMessage({ type: 'pageOpened' });
       pm.send('message', { event: BACKGROUND_READY_MESSAGE });
     };
-    if (appStoreLoaded) {
+    if (backgroundReadyGate.isOpen) {
       activateUIConnection();
     } else {
       eventBus.addEventListener(BACKGROUND_READY_EVENT, activateUIConnection);
@@ -357,7 +363,7 @@ browser.runtime.onConnect.addListener((port) => {
   });
 
   pm.listen(async (_data) => {
-    if (!appStoreLoaded) {
+    if (!backgroundReadyGate.isOpen) {
       throw ethErrors.provider.disconnected();
     }
 

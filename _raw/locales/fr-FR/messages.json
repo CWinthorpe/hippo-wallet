@@ -1053,7 +1053,8 @@
           "biometricUnlock": "Déverrouiller par biométrie",
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise",
-          "dataAnalysis": "Analyse des données",
+          "helpImproveRabby": "Aidez à améliorer Hippo",
+          "helpImproveRabbyDesc": "Partagez des données d'utilisation anonymes pour aider à améliorer Hippo. Les données collectées ne sont associées ni à vous ni à votre compte.",
           "extraFeeProtection": "Protection contre les frais supplémentaires",
           "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },
@@ -2785,7 +2786,11 @@
           }
         },
         "title": "Définir le mot de passe",
-        "agree": "J'accepte les<1/> <2>Conditions d'utilisation</2> et la <4>Politique de confidentialité</4>",
+        "dataCollection": {
+          "title": "Aidez à améliorer Hippo",
+          "desc": "Partagez des données d'utilisation anonymes pour aider à améliorer Hippo. Les données collectées ne sont associées ni à vous ni à votre compte. Vous pouvez modifier ce choix à tout moment dans les Paramètres."
+        },
+        "termsNotice": "En continuant, vous acceptez les <terms>Conditions d'utilisation</terms> et reconnaissez avoir pris connaissance de la <privacy>Politique de confidentialité</privacy>.",
         "desc": "Il sera utilisé pour déverrouiller le portefeuille et chiffrer les données"
       },
       "successful": {
@@ -3035,6 +3040,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Recherche de l’adresse...",
       "emptyWhitelist": {
         "title": "Ajouter l'adresse à la liste blanche",
         "desc": "Ajoutez des adresses de confiance à la liste blanche pour effectuer rapidement des transferts sans avoir à les confirmer la prochaine fois.",

@@ -1332,7 +1332,8 @@
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
-          "dataAnalysis": "Análise de Dados",
+          "helpImproveRabby": "Ajude a melhorar o Hippo",
+          "helpImproveRabbyDesc": "Compartilhe dados de uso anônimos para ajudar a melhorar o Hippo. Os dados coletados não são associados a você nem à sua conta.",
           "extraFeeProtection": "Proteção contra taxas extras",
           "extraFeeProtectionDesc": "Bloqueia solicitações de assinatura que permitem que extensões do navegador cobrem taxas extras"
         },
@@ -2457,7 +2458,11 @@
         },
         "title": "Definir Senha",
         "desc": "Será usado para desbloquear a carteira e criptografar os dados",
-        "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e a <4>Política de Privacidade</4>"
+        "dataCollection": {
+          "title": "Ajude a melhorar o Hippo",
+          "desc": "Compartilhe dados de uso anônimos para ajudar a melhorar o Hippo. Os dados coletados não são associados a você nem à sua conta. Você pode alterar isso a qualquer momento em Configurações."
+        },
+        "termsNotice": "Ao continuar, você concorda com os <terms>Termos de Uso</terms> e reconhece a <privacy>Política de Privacidade</privacy>."
       },
       "successful": {
         "start": "Começar",
@@ -2706,6 +2711,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Buscando endereço...",
       "emptyWhitelist": {
         "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas - sem confirmação necessária na próxima vez.",
         "title": "Adicionar endereço à lista de permissões",

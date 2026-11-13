@@ -4,6 +4,7 @@ import {
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
 import { isTrustedBackgroundSender } from './senderAuth';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initImKey() {
   const bridge = new ImKeyBridge();
@@ -20,7 +21,8 @@ export function initImKey() {
     ) => {
       if (
         msg.target !== OffscreenCommunicationTarget.imkeyOffscreen ||
-        !isTrustedBackgroundSender(sender)
+        !isTrustedBackgroundSender(sender) ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }

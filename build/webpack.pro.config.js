@@ -31,7 +31,9 @@ const config = {
       new MinimizerPlugin({
         parallel: false,
         minify: {
-          implementation: MinimizerPlugin.terserMinify,
+          // SWC takes the same compress options and minifies far faster than
+          // Terser, with less memory
+          implementation: MinimizerPlugin.swcMinify,
           options: {
             compress: {
               pure_funcs: ['console.log', 'console.debug', 'console.info'],

@@ -7,6 +7,7 @@ import {
 import browser from 'webextension-polyfill';
 import * as bitbox from '@bitboxswiss/bitbox-api';
 import { isTrustedBackgroundSender } from './senderAuth';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initBitBox02() {
   const bridge = new BitBox02Bridge();
@@ -23,7 +24,8 @@ export function initBitBox02() {
     ) => {
       if (
         msg.target !== OffscreenCommunicationTarget.bitbox02Offscreen ||
-        !isTrustedBackgroundSender(sender)
+        !isTrustedBackgroundSender(sender) ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }

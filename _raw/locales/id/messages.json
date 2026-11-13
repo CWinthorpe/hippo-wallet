@@ -1308,7 +1308,8 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data",
+          "helpImproveRabby": "Bantu tingkatkan Hippo",
+          "helpImproveRabbyDesc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Hippo. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda.",
           "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
@@ -2453,7 +2454,11 @@
           }
         },
         "title": "Atur Kata Sandi",
-        "agree": "Saya setuju dengan <1/> <2>Ketentuan Penggunaan</2> dan <4>Kebijakan Privasi</4>",
+        "dataCollection": {
+          "title": "Bantu tingkatkan Hippo",
+          "desc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Hippo. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda. Anda dapat mengubahnya kapan saja di Pengaturan."
+        },
+        "termsNotice": "Dengan melanjutkan, Anda menyetujui <terms>Ketentuan Penggunaan</terms> dan mengakui <privacy>Kebijakan Privasi</privacy>.",
         "desc": "Ini akan digunakan untuk membuka dompet dan mengenkripsi data."
       },
       "successful": {
@@ -2703,6 +2708,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Mencari alamat...",
       "emptyWhitelist": {
         "title": "Tambahkan alamat ke daftar putih",
         "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak diperlukan konfirmasi di lain waktu",

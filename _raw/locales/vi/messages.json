@@ -1308,7 +1308,8 @@
           "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ",
-          "dataAnalysis": "Phân tích dữ liệu",
+          "helpImproveRabby": "Giúp cải thiện Hippo",
+          "helpImproveRabbyDesc": "Chia sẻ dữ liệu sử dụng ẩn danh để giúp cải thiện Hippo. Dữ liệu thu thập không liên kết với bạn hoặc tài khoản của bạn.",
           "extraFeeProtection": "Chống phí bổ sung",
           "extraFeeProtectionDesc": "Chặn các yêu cầu chữ ký cho phép tiện ích trình duyệt thu thêm phí"
         },
@@ -2454,7 +2455,11 @@
         },
         "title": "Đặt Mật Khẩu",
         "desc": "Nó sẽ được sử dụng để mở khóa ví và mã hóa dữ liệu.",
-        "agree": "Tôi đồng ý với<1/> <2>Các Điều Khoản Sử Dụng</2> và <4>Chính Sách Bảo Mật</4>"
+        "dataCollection": {
+          "title": "Giúp cải thiện Hippo",
+          "desc": "Chia sẻ dữ liệu sử dụng ẩn danh để giúp cải thiện Hippo. Dữ liệu thu thập không liên kết với bạn hoặc tài khoản của bạn. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong Cài đặt."
+        },
+        "termsNotice": "Bằng việc tiếp tục, bạn đồng ý với <terms>Các Điều Khoản Sử Dụng</terms> và xác nhận <privacy>Chính Sách Bảo Mật</privacy>."
       },
       "successful": {
         "create": "Tạo thành công",
@@ -2703,6 +2708,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Đang tìm địa chỉ...",
       "emptyWhitelist": {
         "title": "Thêm địa chỉ vào danh sách trắng",
         "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh - không cần xác nhận lần sau.",

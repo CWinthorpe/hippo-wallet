@@ -8,6 +8,7 @@ import {
 
 import { installTrezorBrowserApi } from './trezor-browser-api';
 import { isTrustedBackgroundSender } from './senderAuth';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 type TrezorRequest = {
   target: OffscreenCommunicationTarget;
@@ -107,6 +108,7 @@ export function initTrezor() {
     (msg: TrezorRequest, sender, sendResponse) => {
       if (
         !isTrustedBackgroundSender(sender) ||
+        !isPrivilegedOffscreenSender(sender) ||
         msg.target !== OffscreenCommunicationTarget.trezorOffscreen
       ) {
         return;

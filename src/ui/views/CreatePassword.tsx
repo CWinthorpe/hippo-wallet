@@ -9,7 +9,6 @@ import clsx from 'clsx';
 import { useCss, useToggle } from 'react-use';
 import ReactMarkdown from 'react-markdown';
 import TermOfUse from '@/constant/term-of-use.md';
-import remarkGfm from 'remark-gfm';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -277,11 +276,7 @@ const CreatePassword = () => {
             maxHeight: 496,
           }}
         >
-          <ReactMarkdown
-            className="markdown-body"
-            children={TermOfUse}
-            remarkPlugins={[remarkGfm]}
-          />
+          <ReactMarkdown className="markdown-body" children={TermOfUse} />
         </div>
       </Drawer>
     </Spin>

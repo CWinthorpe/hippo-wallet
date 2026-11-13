@@ -4,6 +4,7 @@ import {
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
 import { isTrustedBackgroundSender } from './senderAuth';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initOneKey() {
   const bridge = new OneKeyBridge();
@@ -20,7 +21,8 @@ export function initOneKey() {
     ) => {
       if (
         msg.target !== OffscreenCommunicationTarget.onekeyOffscreen ||
-        !isTrustedBackgroundSender(sender)
+        !isTrustedBackgroundSender(sender) ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }

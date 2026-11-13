@@ -27,7 +27,6 @@ import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode
 import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.svg';
 
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
-
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
 import { ReactComponent as RcIconClearCC } from 'ui/assets/icon-clear-cc.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
@@ -54,6 +53,7 @@ import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.
 import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed-token.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconClearSigningCC } from 'ui/assets/dashboard/settings/clear-signing-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
 import { ReactComponent as RcIconExtraFeeProtectionCC } from 'ui/assets/dashboard/settings/extra-fee-protection-cc.svg';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
@@ -62,7 +62,6 @@ import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import { useAsync, useCss } from 'react-use';
-import semver from 'semver-compare';
 import Contacts from '../Contacts';
 import RecentConnections from '../RecentConnections';
 import SwitchThemeModal from './components/SwitchThemeModal';
@@ -76,7 +75,6 @@ import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 
 import { useMemoizedFn } from 'ahooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
-import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import {
@@ -85,6 +83,23 @@ import {
 } from '@/ui/utils/biometric';
 import { useOpenapiStore } from '@/ui/state/openapi';
 import { appIsDebugPkg, appIsDev } from '@/utils/env';
+
+/**
+ * Upstream #4231 replaced the semver-compare dependency with this helper.
+ */
+const compareVersions = (a: string, b: string) => {
+  const pa = a.split('.');
+  const pb = b.split('.');
+  for (let i = 0; i < 3; i++) {
+    const na = Number(pa[i]);
+    const nb = Number(pb[i]);
+    if (na > nb) return 1;
+    if (nb > na) return -1;
+    if (!isNaN(na) && isNaN(nb)) return 1;
+    if (isNaN(na) && !isNaN(nb)) return -1;
+  }
+  return 0;
+};
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -607,6 +622,40 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
+/**
+ * Setting title followed by an ⓘ tooltip icon. The icon is kept on the same
+ * line as the last word (or last character for text without spaces, e.g.
+ * CJK), so a title that wraps neither pushes the icon to the right edge nor
+ * leaves it alone on a new line.
+ */
+const TitleWithInfoTooltip = ({
+  title,
+  tooltip,
+}: {
+  title: string;
+  tooltip: React.ReactNode;
+}) => {
+  const text = title.trimEnd();
+  const lastSpace = text.lastIndexOf(' ');
+  const chars = Array.from(text);
+  const head =
+    lastSpace >= 0 ? text.slice(0, lastSpace + 1) : chars.slice(0, -1).join('');
+  const tail =
+    lastSpace >= 0 ? text.slice(lastSpace + 1) : chars.slice(-1).join('');
+
+  return (
+    <span>
+      {head}
+      <span className="whitespace-nowrap">
+        {tail}
+        <TooltipV6 overlayClassName="rectangle" title={tooltip}>
+          <RcIconInfoCC className="inline-block align-middle ml-[4px] w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
+        </TooltipV6>
+      </span>
+    </span>
+  );
+};
+
 const SettingsInner = ({
   visible,
   onClose,
@@ -634,6 +683,8 @@ const SettingsInner = ({
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
+  const [clearSigningPending, setClearSigningPending] = useState(false);
+  const [extraFeePending, setExtraFeePending] = useState(false);
 
   const lockShortcutLabel = useMemo(() => {
     return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
@@ -649,6 +700,9 @@ const SettingsInner = ({
 
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
+  );
+  const isLedgerClearSigningEnabled = useRabbySelector(
+    (state) => !!state.preference.isLedgerClearSigningEnabled
   );
   const isExtraFeeProtectionEnabled = useRabbySelector((state) =>
     isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
@@ -694,21 +748,17 @@ const SettingsInner = ({
   });
 
   const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
-    if (!isExtraFeeProtectionEnabled) {
-      await dispatch.preference.enableExtraFeeProtection();
-      return;
-    }
     try {
-      await AuthenticationModalPromise({
-        title: t('page.dashboard.settings.settings.extraFeeProtection'),
-        confirmText: t('global.confirm'),
-        cancelText: t('global.Cancel'),
-        validationHandler: (password: string) =>
-          dispatch.preference.disableExtraFeeProtection(password),
-        wallet,
-      });
-    } catch (e) {
-      // cancelled: protection stays on
+      setExtraFeePending(true);
+      if (isExtraFeeProtectionEnabled) {
+        await dispatch.preference.disableExtraFeeProtection();
+      } else {
+        await dispatch.preference.enableExtraFeeProtection();
+      }
+    } catch (error) {
+      message.error((error as Error)?.message || 'Failed to update setting');
+    } finally {
+      setExtraFeePending(false);
     }
   });
 
@@ -757,6 +807,19 @@ const SettingsInner = ({
     }
   );
 
+  const handleToggleLedgerClearSigning = useMemoizedFn(
+    async (checked: boolean) => {
+      try {
+        setClearSigningPending(true);
+        await dispatch.preference.setIsLedgerClearSigningEnabled(checked);
+      } catch (error) {
+        message.error((error as Error)?.message || 'Failed to update setting');
+      } finally {
+        setClearSigningPending(false);
+      }
+    }
+  );
+
   const handleClickClearWatchMode = () => {
     confirm({
       className: 'modal-support-darkmode',
@@ -771,7 +834,9 @@ const SettingsInner = ({
   const { value: hasNewVersion = false } = useAsync(async () => {
     const data = await wallet.openapi.getLatestVersion();
 
-    return semver(process.env.release || '0.0.0', data.version_tag) === -1;
+    return (
+      compareVersions(process.env.release || '0.0.0', data.version_tag) === -1
+    );
   });
 
   const updateVersionClassName = useCss({
@@ -937,22 +1002,32 @@ const SettingsInner = ({
           leftIcon: RcIconExtraFeeProtectionCC,
           leftIconClassName: 'text-r-neutral-body',
           content: (
-            <span className="flex items-center gap-[4px]">
-              {t('page.dashboard.settings.settings.extraFeeProtection')}
-              <TooltipV6
-                overlayClassName="rectangle"
-                title={t(
-                  'page.dashboard.settings.settings.extraFeeProtectionDesc'
-                )}
-              >
-                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
-              </TooltipV6>
-            </span>
+            <TitleWithInfoTooltip
+              title={t('page.dashboard.settings.settings.extraFeeProtection')}
+              tooltip={t(
+                'page.dashboard.settings.settings.extraFeeProtectionDesc'
+              )}
+            />
           ),
           rightIcon: (
             <Switch
               checked={isExtraFeeProtectionEnabled}
               onChange={handleToggleExtraFeeProtection}
+              loading={extraFeePending}
+              disabled={extraFeePending}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearSigningCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.ledgerClearSigning'),
+          rightIcon: (
+            <Switch
+              checked={isLedgerClearSigningEnabled}
+              onChange={handleToggleLedgerClearSigning}
+              loading={clearSigningPending}
+              disabled={clearSigningPending}
             />
           ),
         },

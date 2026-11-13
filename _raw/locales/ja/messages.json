@@ -1332,7 +1332,8 @@
           "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
           "searchCurrency": "通貨を検索",
-          "dataAnalysis": "データ分析",
+          "helpImproveRabby": "Hippoの改善に協力する",
+          "helpImproveRabbyDesc": "匿名の使用状況データを共有して、Hippoの改善にご協力ください。収集されたデータがあなたやあなたのアカウントに関連付けられることはありません。",
           "extraFeeProtection": "追加手数料保護",
           "extraFeeProtectionDesc": "ブラウザ拡張機能による追加手数料の徴収を許可する署名リクエストをブロックします"
         },
@@ -2457,7 +2458,11 @@
         },
         "title": "パスワードを設定",
         "desc": "ウォレットをアンロックし、データを暗号化するために使用されます。",
-        "agree": "私は<1/><2>利用規約</2>と<4>プライバシーポリシー</4>に同意します"
+        "dataCollection": {
+          "title": "Hippoの改善に協力する",
+          "desc": "匿名の使用状況データを共有して、Hippoの改善にご協力ください。収集されたデータがあなたやあなたのアカウントに関連付けられることはありません。この設定はいつでも「設定」で変更できます。"
+        },
+        "termsNotice": "続行すると、<terms>利用規約</terms>に同意し、<privacy>プライバシーポリシー</privacy>を確認したものとみなされます。"
       },
       "successful": {
         "start": "スタート",
@@ -2706,6 +2711,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "アドレスを検索中...",
       "emptyWhitelist": {
         "title": "ホワイトリストにアドレスを追加",
         "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を行います - 次回は確認は必要ありません。",

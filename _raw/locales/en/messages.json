@@ -1432,6 +1432,7 @@
           "ecosystem": "Ecosystem"
         },
         "settings": {
+          "__skip_translation": ["ledgerClearSigning"],
           "label": "Settings",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Modify RPC URL",
@@ -1450,7 +1451,9 @@
           "biometricUnlockHint": "Use biometrics to unlock on this device.",
           "biometricUnlockUnsupported": "This device does not support biometric unlock.",
           "perpsFloatWidget": "Perps Floating Widget",
-          "dataAnalysis": "Data Analysis",
+          "ledgerClearSigning": "Ledger Clear Signing",
+          "helpImproveRabby": "Help improve Hippo",
+          "helpImproveRabbyDesc": "Share anonymous usage data to help improve Hippo. Collected data is not associated with you or your account.",
           "extraFeeProtection": "Extra Fee Protection",
           "extraFeeProtectionDesc": "Blocks signature requests that allow browser extensions to charge extra fees"
         },
@@ -2572,7 +2575,11 @@
             "notMatch": "Passwords do not match"
           }
         },
-        "agree": "I agree to the<1/> <2>Terms of Use</2> and <4>Privacy Policy</4>",
+        "dataCollection": {
+          "title": "Help improve Hippo",
+          "desc": "Share anonymous usage data to help improve Hippo. Collected data is not associated with you or your account. You can change this anytime in Settings."
+        },
+        "termsNotice": "By continuing, you agree to the <terms>Terms of Use</terms> and acknowledge the <privacy>Privacy Policy</privacy>.",
         "desc": "It will be used to unlock wallet and encrypt data"
       },
       "successful": {
@@ -2919,6 +2926,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Looking up address...",
       "title": "Address",
       "enterAddress": "Enter address",
       "enterAddressOrENS": "Enter or search address",
