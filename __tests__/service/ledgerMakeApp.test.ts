@@ -1,3 +1,18 @@
+// Upstream #4280 made eth-ledger-keyring import the preference service, whose
+// module chain pulls the full background service registry (webapi/tab,
+// customTestnet/ipfs), which this file's webextension mock does not provide
+// (upstream runs no Jest CI on this plane; the file is red as authored).
+// keyring.test.ts mocks the same boundary. These regressors were written
+// against the clear-signing-on branch (they assert ContextModuleBuilder /
+// mockContextModule wiring), so the stub pins that branch; the production
+// preference default stays upstream's (off, user-switchable).
+jest.mock('background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getIsLedgerClearSigningEnabled: jest.fn(() => true),
+  },
+}));
+
 import { BehaviorSubject, of, Subject } from 'rxjs';
 
 const mockListenToAvailableDevices = jest.fn();

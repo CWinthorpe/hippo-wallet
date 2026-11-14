@@ -1,3 +1,14 @@
+// Upstream #4280 made eth-ledger-keyring import the preference service, whose
+// module chain pulls the full background service registry (webapi/tab,
+// customTestnet/ipfs). keyring.test.ts mocks the same boundary; these
+// regressors do not exercise the Ledger clear-signing preference.
+jest.mock('background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getIsLedgerClearSigningEnabled: jest.fn(() => false),
+  },
+}));
+
 jest.mock(
   '@ledgerhq/device-management-kit',
   () => ({

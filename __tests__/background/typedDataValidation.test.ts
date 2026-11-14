@@ -21,7 +21,6 @@ jest.mock('@/background/service/blockedAddress', () => ({}));
 jest.mock('@/background/utils/rpcCache', () => ({}));
 jest.mock('@/background/utils/buildinProvider', () => ({}));
 jest.mock('@/background/utils/tx', () => ({}));
-jest.mock('@/background/utils/gasAccountLogin', () => ({}));
 jest.mock('@/background/controller/walletUtils/fix', () => ({}));
 
 const captureMessage = Sentry.captureMessage as jest.Mock;
