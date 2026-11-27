@@ -364,6 +364,18 @@ class ProviderController extends BaseController {
       chainServerId = forceChainServerId;
     }
 
+    // The chain can be missing (custom network removed, chain list not yet
+    // restored). Fail closed before the cache or any RPC is touched.
+    const chain = findChain({
+      serverId: chainServerId,
+    });
+    if (!chain) {
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain "${chainServerId}".`,
+      });
+    }
+
     const currentAddress = account?.address?.toLowerCase() || '0x';
     const rpcCacheChainId = `${chainServerId}:${RPCService.getRoutingVersion()}`;
     const cache = RpcCache.get(currentAddress, {
@@ -372,9 +384,6 @@ class ProviderController extends BaseController {
       chainId: rpcCacheChainId,
     });
     if (cache) return cache;
-    const chain = findChain({
-      serverId: chainServerId,
-    })!;
     if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
       const promise = RPCService.requestCustomRPC(
         chain.enum as CHAINS_ENUM,
