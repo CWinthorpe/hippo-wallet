@@ -12,8 +12,8 @@ jest.mock('background/service', () => ({
     getSite: jest.fn(() => undefined),
   },
   RPCService: {
-    probeBestRPC: jest.fn(),
     hasCustomRPC: jest.fn(() => false),
+    getRoutingVersion: jest.fn(() => 0),
     requestCustomRPC: jest.fn(),
     requestDefaultRPC: jest.fn(async () => '0xdefault'),
   },
@@ -92,7 +92,6 @@ describe('ethRpc with an unknown chain', () => {
       code: 4902,
     });
 
-    expect(RPCService.probeBestRPC).not.toHaveBeenCalled();
     expect(RPCService.requestCustomRPC).not.toHaveBeenCalled();
     expect(RPCService.requestDefaultRPC).not.toHaveBeenCalled();
     expect(customTestnetService.getClient).not.toHaveBeenCalled();
