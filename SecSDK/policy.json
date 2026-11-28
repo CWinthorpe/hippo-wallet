@@ -77955,7 +77955,6 @@
     "require": [
       "node_modules/@metamask/abi-utils/dist/index.js",
       "node_modules/@metamask/eth-sig-util/dist/index.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
       "src/i18n.ts",
       "src/ui/views/Approval/components/Actions/utils.tsx",
       "src/ui/views/Approval/components/SignTypedDataExplain/parseSignTypedDataMessage.ts"
@@ -78000,6 +77999,7 @@
       "node_modules/@safe-global/protocol-kit/dist/src/index.js",
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/@tanstack/react-query/build/modern/useQuery.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/ahooks/es/useSize/index.js",
       "node_modules/antd/es/button/index.js",
@@ -80318,6 +80318,7 @@
       "changeLogs/09415hippo20.md",
       "changeLogs/09416hippo21.md",
       "changeLogs/09417hippo22.md",
+      "changeLogs/09417hippo23.md",
       "changeLogs/0944hippo12.md",
       "changeLogs/0948hippo13.md",
       "changeLogs/0949hippo14.md",
